@@ -6,7 +6,7 @@ import {AntDesignOutlined} from "@ant-design/icons";
 const {Header} = Layout;
 
 
-export default function AppHeader({onInStockButtonClick}) {
+export default function AppHeader({onMainSwitchBtnClick, toggleButtonText}) {
     return (
         <Header style={{
             backgroundColor: '#00111a',
@@ -19,13 +19,13 @@ export default function AppHeader({onInStockButtonClick}) {
                 <img src={logo} alt="Logo" style={{maxHeight: '59px', paddingRight: '8px'}}/>
                 <span style={{color: 'white', fontFamily: "Urfa", fontSize: 'clamp(10px, 3vw, 30px)'}}>ЦИФРО ХАБ</span>
             </div>
-            <InStockButton onClick={onInStockButtonClick}/>
+            <MainSwitchBtn onClick={onMainSwitchBtnClick} toggleButtonText={toggleButtonText}/>
         </Header>
     );
 }
 
 
-function InStockButton({onClick}) {
+function MainSwitchBtn({onClick, toggleButtonText}) {
     const useStyle = createStyles(({prefixCls, css}) => ({
         linearGradientButton: css`
             &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
@@ -59,7 +59,7 @@ function InStockButton({onClick}) {
         >
             <Space>
                 <Button type="primary" size="large" icon={<AntDesignOutlined/>} onClick={onClick}>
-                    КАТАЛОГ НАЛИЧИЯ
+                    {toggleButtonText}
                 </Button>
             </Space>
         </ConfigProvider>

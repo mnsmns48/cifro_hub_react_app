@@ -10,16 +10,18 @@ const {Sider} = Layout;
 
 export default function App() {
     const {token: {colorBgContainer, borderRadiusLG}} = theme.useToken()
-    const [showInStockMenu, setShowInStockMenu] = useState(false);
-    const handleInStockButtonClick = () => {
-        setShowInStockMenu(!showInStockMenu); // Переключаем состояние
+    const [toggleButtonText, setToggleButtonText] = useState("КАТАЛОГ НАЛИЧИЯ");
+    const [mainMenu, setMainMenu] = useState(false);
+    const handleMainSwitchBtnClick = () => {
+        setMainMenu(!mainMenu);
+        setToggleButtonText(mainMenu ? "ХАБ ДОСТАВКИ": "КАТАЛОГ НАЛИЧИЯ")
     };
     return (<>
             <Layout>
-                <AppHeader onInStockButtonClick={handleInStockButtonClick}/>
+                <AppHeader onMainSwitchBtnClick={handleMainSwitchBtnClick} toggleButtonText={toggleButtonText}/>
                 <Layout style={{background: colorBgContainer, borderRadius: borderRadiusLG}}>
                     <Sider style={{textAlign: 'center'}}>
-                        {showInStockMenu ? <InStockMenu/> : <HubMenu/>}
+                        {mainMenu ? <HubMenu/>: <InStockMenu/> }
                     </Sider>
                     <AppContent/>
                 </Layout>
