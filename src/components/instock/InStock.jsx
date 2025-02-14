@@ -3,18 +3,18 @@ import React from "react";
 import {LaptopOutlined, NotificationOutlined, UserOutlined} from "@ant-design/icons";
 
 
-export default function SideMenu() {
+export default function InStockMenu() {
     const items2 = [UserOutlined, LaptopOutlined, NotificationOutlined].map((icon, index) => {
         const key = String(index + 1);
         return {
-            key: `sub${key}`,
+            key: `Key In Stock menu ${key}`,
             icon: React.createElement(icon),
-            label: `subnav ${key}`,
+            label: `Label In Stock menu ${key}`,
             children: new Array(4).fill(null).map((_, j) => {
                 const subKey = index * 4 + j + 1;
                 return {
                     key: subKey,
-                    label: `option${subKey}`,
+                    label: `Label Children In Stock menu${subKey}`,
                 };
             }),
         };
@@ -30,6 +30,5 @@ export default function SideMenu() {
             }}
             items={items2}
         />
-
     )
 }
