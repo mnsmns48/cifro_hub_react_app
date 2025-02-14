@@ -11,7 +11,7 @@ export default function AppContent() {
                 minHeight: 320,
             }}
         >
-            Здесь будет ой ёй
+            Здесь будет контент
         </Content>
     )
 }

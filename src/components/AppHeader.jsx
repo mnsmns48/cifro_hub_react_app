@@ -6,8 +6,7 @@ import {AntDesignOutlined} from "@ant-design/icons";
 const {Header} = Layout;
 
 
-// eslint-disable-next-line react/prop-types
-export default function AppHeader({ onInStockButtonClick }) {
+export default function AppHeader({onInStockButtonClick}) {
     return (
         <Header style={{
             backgroundColor: '#00111a',
@@ -25,8 +24,8 @@ export default function AppHeader({ onInStockButtonClick }) {
     );
 }
 
-// eslint-disable-next-line react/prop-types
-function InStockButton({ onClick }) {
+
+function InStockButton({onClick}) {
     const useStyle = createStyles(({prefixCls, css}) => ({
         linearGradientButton: css`
             &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
