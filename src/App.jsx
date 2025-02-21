@@ -10,20 +10,27 @@ const {Sider} = Layout;
 
 export default function App() {
     const {token: {colorBgContainer, borderRadiusLG}} = theme.useToken()
-    const [toggleButtonText, setToggleButtonText] = useState("КАТАЛОГ НАЛИЧИЯ");
+    const [toggleButtonText, setToggleButtonText] = useState("ХАБ ДОСТАВКИ");
     const [mainMenu, setMainMenu] = useState(false);
+    const [contentDataId, setContentDataId] = useState('')
     const handleMainSwitchBtnClick = () => {
         setMainMenu(!mainMenu);
-        setToggleButtonText(mainMenu ? "ХАБ ДОСТАВКИ": "КАТАЛОГ НАЛИЧИЯ")
+        setToggleButtonText(mainMenu ? "ХАБ ДОСТАВКИ" : "Каталог НАЛИЧИЯ")
     };
+
+    const handleContentCatalogId = (contentDataId) => {
+        setContentDataId(contentDataId)
+    }
+
     return (<>
             <Layout>
-                <AppHeader onMainSwitchBtnClick={handleMainSwitchBtnClick} toggleButtonText={toggleButtonText}/>
+                <AppHeader onMainSwitchBtnClick={handleMainSwitchBtnClick}
+                           toggleButtonText={toggleButtonText}/>
                 <Layout style={{background: colorBgContainer, borderRadius: borderRadiusLG}}>
-                    <Sider style={{textAlign: 'center'}}>
-                        {mainMenu ? <HubMenu/>: <InStockMenu/> }
+                    <Sider style={{textAlign: 'left'}}>
+                        {mainMenu ? <HubMenu/> : <InStockMenu onClick={handleContentCatalogId}/>}
                     </Sider>
-                    <AppContent/>
+                    <AppContent contentDataId={contentDataId}/>
                 </Layout>
                 <AppFooter/>
             </Layout>
