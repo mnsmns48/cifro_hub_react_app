@@ -18,8 +18,8 @@ export default function AppContent({contentDataId}) {
     }, [contentDataId]);
     return (
         <Content style={{
-            padding: '0 100px',
-            minHeight: 320,
+            padding: '20px 100px'
+
         }}>
             <ProductList content={contentData}/>
         </Content>

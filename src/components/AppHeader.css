@@ -1,0 +1,12 @@
+@font-face {
+    font-family: 'Urfa Thin';
+    src: url('/fonts/urfa/Urfa Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.logo {
+    color: white;
+    font-family: 'Urfa Thin', sans-serif;
+    font-size: clamp(10px, 3vw, 30px);
+}

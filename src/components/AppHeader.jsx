@@ -2,6 +2,7 @@ import {Button, ConfigProvider, Layout, Space,} from "antd";
 import logo from '/logo-cifro-hub.svg'
 import {createStyles} from "antd-style";
 import {AntDesignOutlined} from "@ant-design/icons";
+import './AppHeader.css'
 
 const {Header} = Layout;
 
@@ -17,7 +18,7 @@ export default function AppHeader({onMainSwitchBtnClick, toggleButtonText}) {
         }}>
             <div style={{display: 'flex', alignItems: 'center'}}>
                 <img src={logo} alt="Logo" style={{maxHeight: '59px', paddingRight: '8px'}}/>
-                <span style={{color: 'white', fontFamily: "Urfa", fontSize: 'clamp(10px, 3vw, 30px)'}}>ЦИФРО ХАБ</span>
+                <span className="logo">ЦИФРО ХАБ</span>
             </div>
             <MainSwitchBtn onClick={onMainSwitchBtnClick} toggleButtonText={toggleButtonText}/>
         </Header>
