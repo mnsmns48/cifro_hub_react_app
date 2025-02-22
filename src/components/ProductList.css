@@ -1,6 +1,23 @@
-.ant-card-head-title {
-    font: 0.84rem "Fira Sans", sans-serif;
+@font-face {
+    font-family: 'GTEestiProDisplay-Medium';
+    src: url('/fonts/gteestipro/GTEestiProDisplay-Medium.ttf') format('opentype');
 }
-.ant-card-meta-title {
-    font-size: large;
+
+.ant-card .ant-card-meta-title {
+    font-family: "Fira Sans", sans-serif;
+    color: #272933;
+    font-size: 14px;
+    font-weight: normal;
+    white-space: pre-line;
+    text-align: center;
+    min-height: 2.4em;
+    line-height: 1.2em;
+}
+
+.price {
+    font-family: 'GTEestiProDisplay-Medium', sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: end;
+    font-size: 24px;
 }

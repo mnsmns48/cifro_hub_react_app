@@ -59,7 +59,7 @@ function MainSwitchBtn({onClick, toggleButtonText}) {
             }}
         >
             <Space>
-                <Button type="primary" size="large" icon={<AntDesignOutlined/>} onClick={onClick}>
+                <Button type="primary" size="large" icon={null} onClick={onClick}>
                     {toggleButtonText}
                 </Button>
             </Space>

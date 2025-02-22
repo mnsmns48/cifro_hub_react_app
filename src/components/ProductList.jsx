@@ -8,17 +8,18 @@ const ProductList = ({content}) => {
             <Flex wrap gap="large" justify="start">
                 {Array.isArray(content) ? (
                     content.map((item) => (
-                        <Card key={item.code} title={item.name} style={{width: 300}}
+                        <Card key={item.code} style={{width: 300}}
                               hoverable={true}
                               size={"default"}
                               cover={<Image src={`${import.meta.env.VITE_BACKEND}/api2/images/${item.code}.jpg`}
-                                            alt={item.name} style={{'width': '250px', margin: 8}}
+                                            alt={item.name} style={{'width': '280px', margin: 5}}
                                             onError={(e) => {
                                                 console.error("Image load error:", e);
                                             }}/>}>
-                            <Meta title={`${item.price} руб`} description={`В наличии ${item.qty} шт`}/>
+                            <Meta title={item.name} description={`Осталось ${item.qty} шт`}/>
+
                             <div className="additional">
-                                <p className="price">Price: 20$</p>
+                                <p className="price">{`${item.price} ₽`}</p>
                             </div>
                         </Card>
                     ))
