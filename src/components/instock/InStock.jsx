@@ -2,7 +2,7 @@ import {Menu} from 'antd';
 import {useEffect, useState} from "react";
 import {LaptopOutlined, NotificationOutlined, UserOutlined} from "@ant-design/icons";
 import axios from "axios";
-
+import './InStock.css'
 
 export default function InStockMenu({onClick}) {
     const [rootMenuItems, setRootMenuItems] = useState([]);
@@ -32,12 +32,9 @@ export default function InStockMenu({onClick}) {
             mode="inline"
             defaultSelectedKeys={['1']}
             defaultOpenKeys={['sub1']}
-            style={{
-                height: '100%',
-                width: '290px'
-            }}
             items={rootMenuItems}
             onClick={handleMenuClick}
+            className="side-menu"
         />
     )
 }
