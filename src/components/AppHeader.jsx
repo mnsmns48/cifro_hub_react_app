@@ -9,13 +9,7 @@ const {Header} = Layout;
 
 export default function AppHeader({onMainSwitchBtnClick, toggleButtonText}) {
     return (
-        <Header style={{
-            backgroundColor: '#00111a',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingLeft: '10px',
-        }}>
+        <Header className="header">
             <div style={{display: 'flex', alignItems: 'center'}}>
                 <img src={logo} alt="Logo" style={{maxHeight: '59px', paddingRight: '8px'}}/>
                 <span className="logo">ЦИФРО ХАБ</span>
