@@ -21,7 +21,14 @@ const ProductList = ({content}) => {
                             <div className="additional">
                                 <p className="price">{`${item.price} ₽`}</p>
                             </div>
+
+                            {item.info && typeof item.info === "object" && (
+                                <pre style={{marginTop: 10, fontSize: 'small'}}>
+                                {JSON.stringify(JSON.parse(item.info.info), null)}
+                                    </pre>
+                            )}
                         </Card>
+
                     ))
                 ) : (
                     <p>No items to display</p>
