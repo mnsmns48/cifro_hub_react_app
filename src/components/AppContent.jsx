@@ -1,8 +1,8 @@
-import {Flex, Layout} from "antd";
+import {Layout} from "antd";
 import axios from "axios";
 import {useEffect, useState} from "react";
 import ProductList from "./ProductList.jsx";
-
+import './AppContent.css'
 
 const {Content} = Layout;
 
@@ -17,10 +17,7 @@ export default function AppContent({contentDataId}) {
         fetchContentData()
     }, [contentDataId]);
     return (
-        <Content style={{
-            padding: '20px 100px'
-
-        }}>
+        <Content>
             <ProductList content={contentData}/>
         </Content>
     )
