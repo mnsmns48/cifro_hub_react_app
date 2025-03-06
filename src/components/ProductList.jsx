@@ -1,6 +1,7 @@
 import {Card, Flex, Image} from "antd";
 import Meta from "antd/es/card/Meta";
 import './ProductList.css';
+import ProductFeatures from "./ProductFeatures.jsx";
 
 const ProductList = ({content}) => {
     return (
@@ -17,16 +18,10 @@ const ProductList = ({content}) => {
                                                 console.error("Image load error:", e);
                                             }}/>}>
                             <Meta title={item.name} description={`Осталось ${item.qty} шт`}/>
-
                             <div className="additional">
                                 <p className="price">{`${item.price} ₽`}</p>
                             </div>
-
-                            {item.info && typeof item.info === "object" && (
-                                <pre style={{marginTop: 10, fontSize: 'small'}}>
-                                {JSON.stringify(JSON.parse(item.info.info), null)}
-                                    </pre>
-                            )}
+                            {'info' in item && <ProductFeatures info={item.info} />}
                         </Card>
 
                     ))

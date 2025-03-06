@@ -8,7 +8,7 @@ export default function InStockMenu({onClick}) {
     const [rootMenuItems, setRootMenuItems] = useState([]);
     const fetchRootMenu = async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND}/api2/root`);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND}/api2/`);
             if (response.data && response.data.root_menu) {
                 const parsedMenuItems = JSON.parse(response.data.root_menu);
                 setRootMenuItems(parsedMenuItems);
@@ -33,7 +33,7 @@ export default function InStockMenu({onClick}) {
             defaultSelectedKeys={['1']}
             defaultOpenKeys={['sub1']}
             items={rootMenuItems}
-            onClick={handleMenuClick}
+            onSelect={handleMenuClick}
             className="side-menu"
         />
     )
