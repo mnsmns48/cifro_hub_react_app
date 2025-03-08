@@ -1,10 +1,11 @@
 import React, {Suspense} from "react";
+import {Spin} from "antd";
 
 
 function shortSmartPhoneSpecification(info, source) {
     const MyComponent  = React.lazy(() => import(`./description_sources/${source}.jsx`));
     return (
-        <Suspense fallback={<div>Обновление...</div>}>
+        <Suspense fallback={<div><Spin /></div>}>
             <MyComponent features_array={info} />
         </Suspense>
     );

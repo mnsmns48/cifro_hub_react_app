@@ -21,3 +21,10 @@
     text-align: end;
     font-size: 24px;
 }
+
+.short-smart-phone-specification {
+    /*font-size: 5vw;*/
+    font-size: 9px;
+    text-align: left;
+    white-space: nowrap;
+}

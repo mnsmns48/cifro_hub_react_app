@@ -21,7 +21,9 @@ const ProductList = ({content}) => {
                             <div className="additional">
                                 <p className="price">{`${item.price} ₽`}</p>
                             </div>
-                            {'info' in item && <ProductFeatures info={item.info} />}
+                            <div className="short-smart-phone-specification">
+                                {'info' in item && <ProductFeatures info={item.info}/>}
+                            </div>
                         </Card>
 
                     ))
