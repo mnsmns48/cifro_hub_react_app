@@ -1,17 +1,23 @@
-import {Display, ReleaseDate} from "./smartPhoneFeature.js";
+import * as gsmarena from './description_sources/gsmarena';
+import * as nanoreview from './description_sources/nanoreview';
 
-const shortSpecifications = (features_array, source) => {
+const module_sources = {
+    gsmarena,
+    nanoreview,
+};
 
-    const releaseDateObj = ReleaseDate(features_array)
-    const displayObj = Display(features_array)
+function shortSmartPhoneSpecification(info, source) {
+    const renderShortSmartPhoneSpecification = module_sources[source]?.renderShortSmartPhoneSpecification;
+    if (!renderShortSmartPhoneSpecification) {
+        return <div>Module not found for source: {source}</div>;
+    }
     return (
         <>
-            <p>{releaseDateObj}</p>
-            <p>{displayObj}</p>
-            <p>{source}</p>
+            renderShortSmartPhoneSpecification()
         </>
-    )
+    );
 }
+
 
 export default function smartPhone({info}) {
     let features_array = [];
@@ -23,7 +29,7 @@ export default function smartPhone({info}) {
     }
     return (
         <>
-            {shortSpecifications(features_array, info.source)}
+            {shortSmartPhoneSpecification(features_array, info.source)}
         </>
     )
 }
