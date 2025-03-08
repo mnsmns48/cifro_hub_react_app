@@ -26,7 +26,7 @@ const ProductList = ({content}) => {
 
                     ))
                 ) : (
-                    <p>No items to display</p>
+                    <p>Здесь пусто</p>
                 )}
             </Flex>
         </>

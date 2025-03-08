@@ -1,20 +1,12 @@
-import * as gsmarena from './description_sources/gsmarena';
-import * as nanoreview from './description_sources/nanoreview';
+import React, {Suspense} from "react";
 
-const module_sources = {
-    gsmarena,
-    nanoreview,
-};
 
 function shortSmartPhoneSpecification(info, source) {
-    const renderShortSmartPhoneSpecification = module_sources[source]?.renderShortSmartPhoneSpecification;
-    if (!renderShortSmartPhoneSpecification) {
-        return <div>Module not found for source: {source}</div>;
-    }
+    const MyComponent  = React.lazy(() => import(`./description_sources/${source}.jsx`));
     return (
-        <>
-            renderShortSmartPhoneSpecification()
-        </>
+        <Suspense fallback={<div>Обновление...</div>}>
+            <MyComponent features_array={info} />
+        </Suspense>
     );
 }
 

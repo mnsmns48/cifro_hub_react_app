@@ -1,7 +1,7 @@
-export default function renderShortSmartPhoneSpecification() {
+export default function gsmarena({features_array}) {
     return (
         <>
-            from_gsmarena
+            from {JSON.stringify(features_array)}
         </>
 
     )
