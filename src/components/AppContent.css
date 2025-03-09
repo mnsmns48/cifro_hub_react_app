@@ -1,3 +1,10 @@
 .ant-layout-content {
-    padding: 20px 100px;
+    flex: 1;
+    padding: 10px 130px;
+    justify-content: space-around;
+}
+
+.layout-container {
+    display: flex;
+    width: 100%;
 }

@@ -32,30 +32,11 @@ export const sanitizeInputNumber = (item) => {
 };
 
 
-export const createShortSmartPhoneSpecification = (
-    features_array,
-    releaseDateFn,
-    displayFn,
-    batteryFn,
-    quickChargeFn,
-    cameraSpecsFn,
-    cpuSpecsFn,
-    antutuScoreFn
-) => {
-    const releaseDateObj = releaseDateFn(features_array);
-    const displayObj = displayFn(features_array);
-    const batteryObj = batteryFn(features_array);
-    const quickCharge = quickChargeFn(features_array)
-    const cameraSpecs = cameraSpecsFn(features_array)
-    const cpuSpecs = cpuSpecsFn(features_array)
-    const antutuScore = antutuScoreFn(features_array)
-    return {
-        ...releaseDateObj,
-        ...displayObj,
-        ...batteryObj,
-        ...quickCharge,
-        ...cameraSpecs,
-        ...cpuSpecs,
-        ...antutuScore
-    };
+export const createShortSmartPhoneSpecification = (features_array, ...shortSpecificationFunctions) => {
+    return shortSpecificationFunctions.reduce((specs, fn) => {
+        return {
+            ...specs,
+            ...fn(features_array)
+        };
+    }, {});
 };

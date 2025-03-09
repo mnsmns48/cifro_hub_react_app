@@ -17,15 +17,14 @@ const ProductList = ({content}) => {
                                             onError={(e) => {
                                                 console.error("Image load error:", e);
                                             }}/>}>
-                            <Meta title={item.name} description={`Осталось ${item.qty} шт`}/>
                             <div className="additional">
                                 <p className="price">{`${item.price} ₽`}</p>
                             </div>
-                            <div className="short-smart-phone-specification">
+                            <Meta title={item.name} description={`Осталось ${item.qty} шт`}/>
+                            <div className="short-smart-phone-specification ">
                                 {'info' in item && <ProductFeatures info={item.info}/>}
                             </div>
                         </Card>
-
                     ))
                 ) : (
                     <p>Здесь пусто</p>

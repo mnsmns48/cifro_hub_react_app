@@ -1,6 +1,17 @@
 import {createShortSmartPhoneSpecification, monthsMap, sanitizeInputNumber} from "../../../../utils.js";
 import {RenderShortSpecs} from "../smartPhone.jsx";
 
+const processCameraSpecs = (item) => {
+    const regex = /(\d+(\.\d+)?)\s*MP/g;
+    const megapixels = [];
+    let match;
+    while ((match = regex.exec(item)) !== null) {
+        megapixels.push(match[1]);
+    }
+    return megapixels.length > 1 ? megapixels.join(' + ') : megapixels[0] || null;
+};
+
+
 const gsmarenaReleaseDate = (features_array) => {
     const getReleaseDate = (item) => {
         const releaseDate = item['Launch']?.['Status'] || null;
@@ -166,15 +177,6 @@ const gsmarenaCamera = (features_array) => {
             item['Main Camera']?.['Quad'] || null
         return cameraSpecs ? processCameraSpecs(cameraSpecs) : null
     }
-    const processCameraSpecs = (item) => {
-        const regex = /(\d+(\.\d+)?)\s*MP/g;
-        const megapixels = [];
-        let match;
-        while ((match = regex.exec(item)) !== null) {
-            megapixels.push(match[1]);
-        }
-        return megapixels.length > 1 ? megapixels.join(' + ') : megapixels[0] || null;
-    };
     let cameraSpecs;
     for (const item of features_array) {
         if (!cameraSpecs) {
@@ -185,6 +187,26 @@ const gsmarenaCamera = (features_array) => {
         }
     }
     return cameraSpecs ? {cameraSpecs} : null
+}
+
+const gsmarenaSelfie = (features_array) => {
+    const getCamera = (item) => {
+        const selfieSpecs =
+            item['Selfie camera']?.['Single'] ||
+            item['Selfie camera']?.['Dual'] || null
+        return selfieSpecs ? processCameraSpecs(selfieSpecs) : null
+    }
+
+    let selfieSpecs;
+    for (const item of features_array) {
+        if (!selfieSpecs) {
+            selfieSpecs = getCamera(item);
+        }
+        if (selfieSpecs) {
+            break;
+        }
+    }
+    return selfieSpecs ? {selfieSpecs} : null
 }
 
 
@@ -231,16 +253,14 @@ const gsmarenaAntutu = (features_array) => {
                     maxVersion = version;
                 }
             }
-            return maxScore > 0 ? { antutuScore: maxScore, version: maxVersion } : null;
+            return maxScore > 0 ? {antutuScore: maxScore, version: maxVersion} : null;
         }
         return null;
     };
-
     const getAntutuScore = (item) => {
         const performanceData = item['Tests']?.['Performance'] || null;
         return performanceData ? extractAntutuScore(performanceData) : null;
     };
-
     let maxAntutuResult = null;
     for (const item of features_array) {
         const antutuResult = getAntutuScore(item);
@@ -258,6 +278,27 @@ const gsmarenaAntutu = (features_array) => {
 };
 
 
+const gsmarenaSystem = (features_array) => {
+    const getSystem = (item) => {
+        const system = item['Platform']?.['OS'] || null;
+        return system ? cleanSystemString(system) : null;
+    }
+    const cleanSystemString = (str) => {
+        return str.replace(/,\s*up.*?upgrades,\s*/g, ', ');
+    };
+    let system;
+    for (const item of features_array) {
+        if (!system) {
+            system = getSystem(item);
+        }
+        if (system) {
+            break;
+        }
+    }
+    return system ? {system} : null
+}
+
+
 const gsmarenaShortSmartPhoneSpecification = (features_array) => {
     return createShortSmartPhoneSpecification(
         features_array,
@@ -267,7 +308,9 @@ const gsmarenaShortSmartPhoneSpecification = (features_array) => {
         gsmarenaQuickCharge,
         gsmarenaCamera,
         gsmarenaCPU,
-        gsmarenaAntutu
+        gsmarenaSelfie,
+        gsmarenaAntutu,
+        gsmarenaSystem
     );
 };
 

@@ -3,13 +3,14 @@
     src: url('/fonts/gteestipro/GTEestiProDisplay-Medium.ttf') format('opentype');
 }
 
-.side-menu {
-    height: 100%;
-    width: 200px;
-}
 
 .ant-menu-title-content {
     font-family: 'GTEestiProDisplay-Medium', sans-serif;
     font-size: 15px;
     color: #43434b
+}
+
+
+.side-menu {
+    width: 300px;
 }

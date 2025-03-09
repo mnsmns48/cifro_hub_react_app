@@ -52,11 +52,18 @@ export const RenderShortSpecs = ({features_array, shortSpecificationFn}) => {
                         ]}
                         />
                     )}
-                    {shortSpecs.quickCharge && (
+                    {shortSpecs.quickCharge ? (
                         <ShortInfoBlock title="Быстрая зарядка" specs={[
                             {value: shortSpecs.quickCharge}
                         ]}
                         />
+                    ) : (
+                        shortSpecs.selfieSpecs && (
+                            <ShortInfoBlock title="Селфи " specs={[
+                                {value: shortSpecs.selfieSpecs, label: ' mpx'}
+                            ]}
+                            />
+                        )
                     )}
                     {shortSpecs.cameraSpecs && (
                         <ShortInfoBlock title="Камеры" specs={[
@@ -74,7 +81,7 @@ export const RenderShortSpecs = ({features_array, shortSpecificationFn}) => {
                             ]}
                         />
                     )}
-                    {shortSpecs.antutuScore && (
+                    {shortSpecs.antutuScore ? (
                         <ShortInfoBlock
                             title="Тест производительности Antutu"
                             specs={[
@@ -82,6 +89,15 @@ export const RenderShortSpecs = ({features_array, shortSpecificationFn}) => {
                                 {value: shortSpecs.antutuScore}
                             ]}
                         />
+                    ) : (
+                        shortSpecs.system && (
+                            <ShortInfoBlock
+                                title=""
+                                specs={[
+                                    {value: shortSpecs.system}
+                                ]}
+                            />
+                        )
                     )}
                 </>
             )}
