@@ -192,7 +192,7 @@ const gsmarenaCPU = (features_array) => {
     const getCPU = (item) => {
         const cpuInfo = item['Platform']?.['Chipset'] || null;
         if (cpuInfo) {
-            const match = cpuInfo.match(/^(.+?)\s*\((\d+)\s*nm\)$/);
+            const match = cpuInfo.match(/^(.+?)\s*\((\d+)\s*nm\)/);
             if (match) {
                 const [, cpu, cpuLithographyProcess] = match;
                 return {cpu, cpuLithographyProcess};
@@ -215,34 +215,46 @@ const gsmarenaCPU = (features_array) => {
 
 const gsmarenaAntutu = (features_array) => {
     const extractAntutuScore = (input) => {
-        const regex = /AnTuTu:\s*(\d+)\s*\(v(\d+)\)/g;
-        let match;
-        let maxScore = 0;
-        let maxVersion = 0;
-        while ((match = regex.exec(input)) !== null) {
-            const score = parseInt(match[1], 10); // Извлекаем результат AnTuTu
-            const version = parseInt(match[2], 10); // Извлекаем номер версии
-            if (version > maxVersion || (version === maxVersion && score > maxScore)) {
-                maxScore = score;
-                maxVersion = version;
+        const antutuSectionRegex = /AnTuTu:\s*(.*)/g;
+        let antutuSectionMatch;
+        if ((antutuSectionMatch = antutuSectionRegex.exec(input)) !== null) {
+            const antutuSection = antutuSectionMatch[1];
+            const numbersRegex = /(\d+)\s*\(v(\d+)\)/g;
+            let maxScore = 0;
+            let maxVersion = 0;
+            let match;
+            while ((match = numbersRegex.exec(antutuSection)) !== null) {
+                const score = parseInt(match[1], 10);
+                const version = parseInt(match[2], 10);
+                if (version > maxVersion || (version === maxVersion && score > maxScore)) {
+                    maxScore = score;
+                    maxVersion = version;
+                }
             }
+            return maxScore > 0 ? { antutuScore: maxScore, version: maxVersion } : null;
         }
-        return maxScore > 0 ? {antutuScore: maxScore, version: maxVersion} : null;
+        return null;
     };
+
     const getAntutuScore = (item) => {
         const performanceData = item['Tests']?.['Performance'] || null;
         return performanceData ? extractAntutuScore(performanceData) : null;
     };
-    let antutuScore = null;
+
+    let maxAntutuResult = null;
     for (const item of features_array) {
-        if (!antutuScore) {
-            antutuScore = getAntutuScore(item);
-        }
-        if (antutuScore) {
-            break;
+        const antutuResult = getAntutuScore(item);
+        if (antutuResult) {
+            if (
+                !maxAntutuResult ||
+                antutuResult.version > maxAntutuResult.version ||
+                (antutuResult.version === maxAntutuResult.version && antutuResult.antutuScore > maxAntutuResult.antutuScore)
+            ) {
+                maxAntutuResult = antutuResult;
+            }
         }
     }
-    return antutuScore ? antutuScore : null;
+    return maxAntutuResult;
 };
 
 
