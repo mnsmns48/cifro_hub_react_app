@@ -27,7 +27,7 @@ export default function App() {
                 <AppHeader onMainSwitchBtnClick={handleMainSwitchBtnClick}
                            toggleButtonText={toggleButtonText}/>
                 <Layout style={{background: colorBgContainer, borderRadius: borderRadiusLG}}>
-                    <Sider style={{textAlign: 'left'}}>
+                    <Sider breakpoint={"xs"} reverseArrow={true} style={{textAlign: 'left'}}>
                         {mainMenu ? <HubMenu/> : <InStockMenu onClick={handleContentCatalogId}/>}
                     </Sider>
                     <AppContent contentDataId={contentDataId}/>
