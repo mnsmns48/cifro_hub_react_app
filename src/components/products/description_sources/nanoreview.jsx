@@ -1,4 +1,5 @@
-import {monthsMap} from "../../../../utils.js";
+import {createShortSmartPhoneSpecification, monthsMap, sanitizeInputNumber} from "../../../../utils.js";
+import {RenderShortSpecs} from "../smartPhone.jsx";
 
 const nanoreviewReleaseDate = (features_array) => {
     let releaseDate;
@@ -37,7 +38,8 @@ const nanoreviewDisplay = (features_array) => {
     };
 
     const getDisplayRefreshRate = (item) => {
-        return item['Экран']?.['Частота обновления'] || item['Display']?.['Refresh rate'] || null
+        const displayRefreshRate = item['Экран']?.['Частота обновления'] || item['Display']?.['Refresh rate'] || null
+        return displayRefreshRate ? sanitizeInputNumber(displayRefreshRate) : null;
     }
     const extractNumericValue = (str) => {
         const match = str.match(/(\d+\.\d+)/);
@@ -79,10 +81,12 @@ const nanoreviewDisplay = (features_array) => {
 
 const nanoreviewBattery = (features_array) => {
     const getBatteryCapacity = (item) => {
-        return item['Батарея']?.['Объем'] || item['Battery']?.['Capacity'] || null;
+        const batteryCapacity = item['Батарея']?.['Объем'] || item['Battery']?.['Capacity'] || null;
+        return batteryCapacity ? sanitizeInputNumber(batteryCapacity) : null;
     };
     const getBatteryMaxPowerCharge = (item) => {
-        return item['Батарея']?.['Макс. мощность зарядки'] || item['Battery']?.['Max charge power'] || null;
+        const batteryMaxPowerCharge = item['Батарея']?.['Макс. мощность зарядки'] || item['Battery']?.['Max charge power'] || null;
+        return batteryMaxPowerCharge ? sanitizeInputNumber(batteryMaxPowerCharge) : null;
     };
     let batteryCapacity;
     let batteryMaxPowerCharge;
@@ -109,69 +113,64 @@ const nanoreviewQuickCharge = (features_array) => {
         const quickCharge = item['Батарея']?.['Быстрая зарядка'] || item['Battery']?.['Fast charging'] || null;
         return quickCharge ? translateToRussian(quickCharge) : null;
     };
-
     const translateToRussian = (str) => {
         if (str.includes('Yes')) {
             return str.replace('Yes', 'Да').replace('in', 'за').replace('min', 'минут');
         }
         return str;
     };
-
-    let quickCharge;
+    const extractBracketsContent = (str) => {
+        const match = str.match(/\((.*?)\)/);
+        return match ? match[1] : null;
+    };
+    let quickCharge = "Нет";
     for (const item of features_array) {
-        if (!quickCharge) {
-            quickCharge = getQuickCharge(item);
-        }
-        if (quickCharge) {
+        const quickChargeValue = getQuickCharge(item);
+        if (quickChargeValue && quickChargeValue.startsWith("Да")) {
+            quickCharge = extractBracketsContent(quickChargeValue) || "Нет";
             break;
         }
     }
-    return quickCharge ? {quickCharge} : null
-}
+    return {quickCharge};
+};
 
 const nanoreviewCamera = (features_array) => {
     const convertCameraSpecs = (str) => {
         const regex = /(\d+)\s*MP/g;
-        const types = str.match(/(\w+):/g);
-
-        let result = '';
-        let index = 0;
+        const megapixels = [];
 
         for (const match of str.matchAll(regex)) {
-            const typeInitial = types[index] ? types[index][0] : '';
-            const megapixels = match[1];
-
-            result += `${typeInitial}: ${megapixels}MP `;
-            index++;
+            megapixels.push(match[1]);
         }
-        return result.trim()
-    }
+        return megapixels.join(' + ');
+    };
     const getCamera = (item) => {
         const cameraSpecs = item['Основная камера']?.['Количество объективов'] || item['Main camera']?.['Lenses'] || null;
-        return cameraSpecs ? convertCameraSpecs(cameraSpecs) : null
-    }
-    let Camera;
+        return cameraSpecs ? convertCameraSpecs(cameraSpecs) : null;
+    };
+    let cameraSpecs = null;
     for (const item of features_array) {
-        if (!Camera) {
-            Camera = getCamera(item);
+        if (!cameraSpecs) {
+            cameraSpecs = getCamera(item);
         }
-        if (Camera) {
+        if (cameraSpecs) {
             break;
         }
     }
-    return Camera ? {Camera} : null
-}
+    return cameraSpecs ? {cameraSpecs} : null;
+};
 
 const nanoreviewCPU = (features_array) => {
     const extractLithographyProcess = (str) => {
         const match = str.match(/(\d+)\s*(nanometers|нанометров)/i);
-        return match ? `${match[1]} нм` : null;
+        return match ? match[1] : null;
     }
     const getCPU = (item) => {
         return item['Производительность']?.['Чипсет'] || item['Performance']?.['Chipset'] || null;
     }
     const getCPUMaxClock = (item) => {
-        return item['Производительность']?.['Макс. частота'] || item['Performance']?.['Max clock'] || null;
+        const maxClock = item['Производительность']?.['Макс. частота'] || item['Performance']?.['Max clock'] || null;
+        return maxClock ? sanitizeInputNumber(maxClock) : null
     }
     const getCPULithographyProcess = (item) => {
         const process = item['Производительность']?.['Размер транзистора'] || item['Performance']?.['Lithography process'] || null;
@@ -198,75 +197,41 @@ const nanoreviewCPU = (features_array) => {
 }
 
 const nanoreviewAntutu = (features_array) => {
-    const getAntutu = (item) => {
+    const getAntutuScore = (item) => {
         return item['Производительность']?.['Total score'] || item['Performance']?.['Total score'] || null;
     }
-    let Antutu;
+    let antutuScore;
     for (const item of features_array) {
-        if (!Antutu) {
-            Antutu = getAntutu(item);
+        if (!antutuScore) {
+            antutuScore = getAntutuScore(item);
         }
-        if (Antutu) {
+        if (antutuScore) {
             break;
         }
     }
-    return Antutu ? {Antutu} : null
+    return antutuScore ? {antutuScore} : null
 }
 
 
+const nanoreviewShortSmartPhoneSpecification = (features_array) => {
+    return createShortSmartPhoneSpecification(
+        features_array,
+        nanoreviewReleaseDate,
+        nanoreviewDisplay,
+        nanoreviewBattery,
+        nanoreviewQuickCharge,
+        nanoreviewCamera,
+        nanoreviewCPU,
+        nanoreviewAntutu
+    );
+};
+
+
 export default function nanoreview({features_array}) {
-    const releaseDateObj = nanoreviewReleaseDate(features_array)
-    const displayObj = nanoreviewDisplay(features_array)
-    const batteryObj = nanoreviewBattery(features_array)
-    const quickChargeObj = nanoreviewQuickCharge(features_array)
-    const cameraObj = nanoreviewCamera(features_array)
-    const cpuObj = nanoreviewCPU(features_array)
-    const antutuObj = nanoreviewAntutu(features_array)
     return (
-        <>
-        {displayObj && (
-            <div>
-                Дисплей:
-                {displayObj.displayType && ` ${displayObj.displayType}`}
-                {displayObj.displaySize && ` ${displayObj.displaySize}"`}
-                {displayObj.displayResolution && ` ${displayObj.displayResolution}`}
-                {displayObj.displayRefreshRate && ` ${displayObj.displayRefreshRate}`}
-            </div>
-        )}
-        {batteryObj && (
-            <div>
-                АКБ:
-                {batteryObj.batteryCapacity && ` ${batteryObj.batteryCapacity}`}
-                {batteryObj.batteryMaxPowerCharge && ` ${batteryObj.batteryMaxPowerCharge}`}
-            </div>
-        )}
-        {quickChargeObj && (
-            <div>
-                Быстрая зарядка: {quickChargeObj.quickCharge}
-            </div>
-        )}
-            {cameraObj && (
-                <div>
-                    Камеры: {cameraObj.Camera}
-                </div>
-            )}
-            {cpuObj && (
-                <div>
-                    {cpuObj.cpu && ` ${cpuObj.cpu}`}
-                    {cpuObj.cpuMaxClock && ` ${cpuObj.cpuMaxClock}`}
-                    {cpuObj.cpuLithographyProcess && ` ${cpuObj.cpuLithographyProcess}`}
-                </div>
-            )}
-            {antutuObj && (
-                <div>
-                    Оценка производительности Antutu: {antutuObj.Antutu}
-                </div>
-            )}
-            {releaseDateObj?.month && releaseDateObj?.year && (
-                <div>
-                    Дата выхода: {releaseDateObj.month} {releaseDateObj.year}
-                </div>
-            )}
-        </>
-    )
+        <RenderShortSpecs
+            features_array={features_array}
+            shortSpecificationFn={nanoreviewShortSmartPhoneSpecification}
+        />
+    );
 }
