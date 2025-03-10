@@ -1,7 +1,19 @@
 .ant-layout-content {
     flex: 1;
-    padding: 10px 130px;
+    padding: 10px;
     justify-content: space-around;
+}
+
+@media (min-width: 768px) {
+    .ant-layout-content {
+        padding: 10px 40px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .ant-layout-content {
+        padding: 10px 130px;
+    }
 }
 
 .layout-container {

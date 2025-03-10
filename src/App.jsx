@@ -12,14 +12,20 @@ export default function App() {
     const {token: {colorBgContainer, borderRadiusLG}} = theme.useToken()
     const [toggleButtonText, setToggleButtonText] = useState("ХАБ ДОСТАВКИ");
     const [mainMenu, setMainMenu] = useState(false);
-    const [contentDataId, setContentDataId] = useState('')
+    const [contentDataId, setContentDataId] = useState('');
+    const [collapsed, setCollapsed] = useState(window.innerWidth <= 768);
+    
     const handleMainSwitchBtnClick = () => {
         setMainMenu(!mainMenu);
         setToggleButtonText(mainMenu ? "ХАБ ДОСТАВКИ" : "Каталог НАЛИЧИЯ")
     };
 
     const handleContentCatalogId = (contentDataId) => {
-        setContentDataId(contentDataId)
+        setContentDataId(contentDataId);
+        // На мобильных устройствах автоматически сворачиваем сайдбар после выбора
+        if (window.innerWidth <= 768) {
+            setCollapsed(true);
+        }
     }
 
     return (<>
@@ -27,7 +33,15 @@ export default function App() {
                 <AppHeader onMainSwitchBtnClick={handleMainSwitchBtnClick}
                            toggleButtonText={toggleButtonText}/>
                 <Layout style={{background: colorBgContainer, borderRadius: borderRadiusLG}}>
-                    <Sider breakpoint={"xs"} reverseArrow={true} style={{textAlign: 'left'}}>
+                    <Sider 
+                        breakpoint="md"
+                        collapsedWidth="0"
+                        collapsed={collapsed}
+                        onCollapse={(collapsed) => setCollapsed(collapsed)}
+                        zeroWidthTriggerStyle={{ top: '10px' }}
+                        style={{textAlign: 'left'}}
+                        width={250}
+                    >
                         {mainMenu ? <HubMenu/> : <InStockMenu onClick={handleContentCatalogId}/>}
                     </Sider>
                     <AppContent contentDataId={contentDataId}/>

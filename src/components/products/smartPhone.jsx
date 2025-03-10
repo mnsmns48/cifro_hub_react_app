@@ -13,10 +13,12 @@ function shortSmartPhoneSpecification(info, source) {
 
 
 const ShortInfoBlock = ({title, specs}) => (
-    <div>
-        {title}
-        {specs.map((spec) =>
-            spec.value && ` ${spec.value}${spec.label || ""}`)}
+    <div className="spec-item">
+        {title && <span className="spec-title">{title}:</span>}
+        <span className="spec-value">
+            {specs.map((spec, index) =>
+                spec.value ? ` ${spec.value}${spec.label || ""}${index < specs.length - 1 && specs[index + 1].value ? ',' : ''}` : null)}
+        </span>
     </div>
 );
 

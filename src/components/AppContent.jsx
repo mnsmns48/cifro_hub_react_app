@@ -9,7 +9,7 @@ export default function AppContent({contentDataId}) {
     const [contentData, setContentData] = useState({});
 
     const fetchContentData = () => {
-        axios.get(`${import.meta.env.VITE_BACKEND}/api2/${contentDataId}`)
+        axios.get(`/api2/${contentDataId}`) //${import.meta.env.VITE_BACKEND}
             .then((response) => {
                 const data = response.data?.items || {};
                 if (data && typeof data === 'string') {
