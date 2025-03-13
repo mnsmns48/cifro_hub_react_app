@@ -22,75 +22,6 @@
     font-size: 24px;
 }
 
-.short-smart-phone-specification {
-    font-family: 'Roboto', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 12px;
-    text-align: left;
-    white-space: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: thin;
-    scrollbar-color: #d9d9d9 transparent;
-    text-overflow: ellipsis;
-    color: #555;
-    margin-top: 12px;
-    padding: 8px;
-    border-radius: 6px;
-    background-color: #f8f9fa;
-    transition: all 0.2s ease;
-    letter-spacing: 0.2px;
-    line-height: 1.4;
-    max-width: 100%;
-    cursor: pointer;
-}
-
-.short-smart-phone-specification::-webkit-scrollbar {
-    height: 4px;
-}
-
-.short-smart-phone-specification::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.short-smart-phone-specification::-webkit-scrollbar-thumb {
-    background-color: #d9d9d9;
-    border-radius: 20px;
-}
-
-.short-smart-phone-specification:hover {
-    font-size: 13px;
-    background-color: #f0f2f5;
-    color: #333;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    scrollbar-color: #1890ff transparent;
-}
-
-.short-smart-phone-specification:hover::-webkit-scrollbar-thumb {
-    background-color: #1890ff;
-}
-
-.short-smart-phone-specification .spec-item {
-    display: flex;
-    margin-bottom: 3px;
-    align-items: baseline;
-}
-
-.short-smart-phone-specification .spec-title {
-    font-weight: 500;
-    color: #666;
-    margin-right: 4px;
-}
-
-.short-smart-phone-specification .spec-value {
-    color: #333;
-}
-
-.short-smart-phone-specification:hover .spec-title,
-.short-smart-phone-specification:hover .spec-value {
-    color: #1890ff;
-}
-
-/* Адаптивные стили для карточек продуктов */
 .product-card {
     width: 100%;
     max-width: 100%;
@@ -99,12 +30,11 @@
 
 .product-image {
     width: 100%;
-    max-width: 280px;
+    max-width: 350px;
     margin: 5px auto;
     display: block;
 }
 
-/* Адаптивный контейнер для списка продуктов */
 .product-list-container {
     width: 100%;
     display: flex;
@@ -115,53 +45,10 @@
     padding: 0 15px;
 }
 
-/* Медиа-запросы для адаптивности */
-/* Мобильные устройства */
-@media (max-width: 576px) {
-    .product-card {
-        max-width: 100%;
-        margin: 0 0 16px;
-    }
-    
-    .price {
-        font-size: 20px;
-    }
-    
-    .ant-card .ant-card-meta-title {
-        font-size: 13px;
-    }
-    
-    .product-list-container {
-        max-width: 100%;
-        padding: 0 10px;
-    }
+
+.product-card {
+    flex: 0 0 calc(50% - 24px);
+    max-width: calc(50% - 24px);
+    margin: 0 12px 24px;
 }
 
-/* iPad и планшеты - 2 карточки в ряд */
-@media (min-width: 577px) and (max-width: 991px) {
-    .product-card {
-        flex: 0 0 calc(50% - 16px);
-        max-width: calc(50% - 16px);
-        margin: 0 8px 16px;
-    }
-    
-    .product-list-container {
-        max-width: 768px;
-    }
-}
-
-/* Десктопы - 4 карточки в ряд */
-@media (min-width: 992px) {
-    .product-card {
-        flex: 0 0 calc(25% - 24px);
-        max-width: calc(25% - 24px);
-        margin: 0 12px 24px;
-    }
-}
-
-/* Очень большие экраны */
-@media (min-width: 1400px) {
-    .product-list-container {
-        max-width: 1320px;
-    }
-}

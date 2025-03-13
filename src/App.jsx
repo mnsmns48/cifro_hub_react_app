@@ -3,7 +3,7 @@ import AppHeader from "./components/AppHeader.jsx";
 import AppFooter from "./components/AppFooter.jsx";
 import AppContent from "./components/AppContent.jsx";
 import {useState} from "react";
-import InStockMenu from "./components/instock/InStock.jsx";
+import InStockMenu from "./components/instock/InStockMenu.jsx";
 import HubMenu from "./components/hub/HubMenu.jsx";
 
 const {Sider} = Layout;
@@ -14,7 +14,7 @@ export default function App() {
     const [mainMenu, setMainMenu] = useState(false);
     const [contentDataId, setContentDataId] = useState('');
     const [collapsed, setCollapsed] = useState(window.innerWidth <= 768);
-    
+
     const handleMainSwitchBtnClick = () => {
         setMainMenu(!mainMenu);
         setToggleButtonText(mainMenu ? "ХАБ ДОСТАВКИ" : "Каталог НАЛИЧИЯ")
@@ -33,7 +33,7 @@ export default function App() {
                 <AppHeader onMainSwitchBtnClick={handleMainSwitchBtnClick}
                            toggleButtonText={toggleButtonText}/>
                 <Layout style={{background: colorBgContainer, borderRadius: borderRadiusLG}}>
-                    <Sider 
+                    <Sider
                         breakpoint="md"
                         collapsedWidth="0"
                         collapsed={collapsed}
