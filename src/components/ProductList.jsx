@@ -3,6 +3,11 @@ import Meta from "antd/es/card/Meta";
 import './ProductList.css';
 import ProductFeatures from "./ProductFeatures.jsx";
 
+
+function cleanTitle(title) {
+    return title.replace(/смартфон/gi, '').trim();
+}
+
 const ProductList = ({content}) => {
     return (
         <>
@@ -23,16 +28,15 @@ const ProductList = ({content}) => {
                             <div className="additional">
                                 <p className="price">{`${item.price} ₽`}</p>
                             </div>
-                            <Meta title={item.name} description={`Осталось ${item.qty} шт`}/>
-                            {/*<Tooltip */}
-                            {/*    title="Прокрутите для просмотра всех характеристик" */}
-                            {/*    placement="bottomLeft"*/}
-                            {/*    mouseEnterDelay={0.5}*/}
-                            {/*>*/}
-                                <div className="short-smart-phone-specification">
-                                    {'info' in item && <ProductFeatures info={item.info}/>}
-                                </div>
-                            {/*</Tooltip>*/}
+                            <div style={{textAlign: 'right'}}>
+                                <Meta
+                                    title={<span className="product-title">{cleanTitle(item.name)}</span>}
+                                    description={`Осталось ${item.qty} шт`}
+                                />
+                            </div>
+                            <div className="short-smart-phone-specification">
+                                {'info' in item && <ProductFeatures info={item.info}/>}
+                            </div>
                         </Card>
                     ))
                 ) : (

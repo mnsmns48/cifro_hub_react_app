@@ -6,7 +6,7 @@ import {useState} from "react";
 import InStockMenu from "./components/instock/InStockMenu.jsx";
 import HubMenu from "./components/hub/HubMenu.jsx";
 
-const {Sider} = Layout;
+const {Sider, Content} = Layout;
 
 export default function App() {
     const {token: {colorBgContainer, borderRadiusLG}} = theme.useToken()
@@ -22,16 +22,18 @@ export default function App() {
 
     const handleContentCatalogId = (contentDataId) => {
         setContentDataId(contentDataId);
-        // На мобильных устройствах автоматически сворачиваем сайдбар после выбора
         if (window.innerWidth <= 768) {
             setCollapsed(true);
         }
     }
 
     return (<>
-            <Layout>
-                <AppHeader onMainSwitchBtnClick={handleMainSwitchBtnClick}
-                           toggleButtonText={toggleButtonText}/>
+            <Layout style={{maxWidth: '1600px', margin: '0 auto'}}>
+                <AppHeader 
+                    onMainSwitchBtnClick={handleMainSwitchBtnClick}
+                    toggleButtonText={toggleButtonText}
+                    style={{position: 'sticky', top: 0, zIndex: 1}}
+                />
                 <Layout style={{background: colorBgContainer, borderRadius: borderRadiusLG}}>
                     <Sider
                         breakpoint="md"
@@ -39,12 +41,20 @@ export default function App() {
                         collapsed={collapsed}
                         onCollapse={(collapsed) => setCollapsed(collapsed)}
                         zeroWidthTriggerStyle={{ top: '10px' }}
-                        style={{textAlign: 'left'}}
+                        style={{
+                            textAlign: 'left',
+                            background: '#fff',
+                            padding: '15px'
+                        }}
                         width={250}
                     >
                         {mainMenu ? <HubMenu/> : <InStockMenu onClick={handleContentCatalogId}/>}
                     </Sider>
-                    <AppContent contentDataId={contentDataId}/>
+                    <Content style={{
+                        padding: '20px'
+                    }}>
+                        <AppContent contentDataId={contentDataId}/>
+                    </Content>
                 </Layout>
                 <AppFooter/>
             </Layout>

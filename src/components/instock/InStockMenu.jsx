@@ -35,6 +35,7 @@ export default function InStockMenu({onClick}) {
             items={rootMenuItems}
             onSelect={handleMenuClick}
             className="side-menu"
+
         />
     )
 }
