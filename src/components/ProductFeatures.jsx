@@ -1,4 +1,3 @@
-import './ProductFeatures.css';
 import SmartPhone from "./products/smartPhone.jsx";
 
 
