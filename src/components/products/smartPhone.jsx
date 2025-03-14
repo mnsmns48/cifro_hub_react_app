@@ -12,12 +12,15 @@ function shortSmartPhoneSpecification(info, source) {
 }
 
 
-const ShortInfoBlock = ({title, specs}) => (
+const ShortInfoBlock = ({ title, specs }) => (
     <div className="spec-item">
-        {title && <span className="spec-title">{title}:</span>}
+        {title && (
+            <span className="spec-title" style={{ fontWeight: 'bold' }}>{title} </span>
+        )}
         <span className="spec-value">
             {specs.map((spec, index) =>
-                spec.value ? ` ${spec.value}${spec.label || ""}${index < specs.length - 1 && specs[index + 1].value ? ',' : ''}` : null)}
+                spec.value ? ` ${spec.value}${spec.label || ""}${index < specs.length - 1 && specs[index + 1].value ? '' : ''}` : null
+            )}
         </span>
     </div>
 );
@@ -38,11 +41,16 @@ export const RenderShortSpecs = ({features_array, shortSpecificationFn}) => {
                             ]}
                         />
                     )}
-                    {(shortSpecs.displayType || shortSpecs.displaySize || shortSpecs.displayResolution || shortSpecs.displayRefreshRate) && (
+                    {(shortSpecs.displayType || shortSpecs.displaySize || shortSpecs.displayResolution) && (
                         <ShortInfoBlock title="Дисплей" specs={[
                             {value: shortSpecs.displayType},
                             {value: shortSpecs.displaySize, label: '"'},
-                            {value: shortSpecs.displayResolution},
+                            {value: shortSpecs.displayResolution}
+                        ]}
+                        />
+                    )}
+                    {(shortSpecs.displayRefreshRate) && (
+                        <ShortInfoBlock title="Частота обновления" specs={[
                             {value: shortSpecs.displayRefreshRate, label: ' Гц'},
                         ]}
                         />
@@ -78,7 +86,7 @@ export const RenderShortSpecs = ({features_array, shortSpecificationFn}) => {
                             title=""
                             specs={[
                                 {value: shortSpecs.cpu},
-                                {value: shortSpecs.cpuMaxClock, label: ' МГц'},
+                                {value: shortSpecs.cpuMaxClock, label: '⚕︎'},
                                 {value: shortSpecs.cpuLithographyProcess, label: ' нм'},
                             ]}
                         />

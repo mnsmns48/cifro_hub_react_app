@@ -14,6 +14,8 @@ export default function AppHeader({onInStockButtonClick}) {
             justifyContent: 'space-between',
             alignItems: 'center',
             paddingLeft: '10px',
+            height: '85px',
+            borderRadius: '25px',
         }}>
             <div style={{display: 'flex', alignItems: 'center'}}>
                 <img src={logo} alt="Logo" style={{maxHeight: '59px', paddingRight: '8px'}}/>
@@ -64,4 +66,4 @@ function InStockButton({onClick}) {
             </Space>
         </ConfigProvider>
     );
-};
+}

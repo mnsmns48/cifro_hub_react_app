@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'Urfa Thin';
-    src: url('/fonts/urfa/Urfa Regular.otf') format('opentype');
+    src: url('fonts/urfa/Urfa Regular.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
