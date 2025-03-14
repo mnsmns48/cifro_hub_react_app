@@ -6,13 +6,13 @@
 
 @media (min-width: 768px) {
     .ant-layout-content {
-        padding: 10px 40px;
+        padding: 10px 10px;
     }
 }
 
 @media (min-width: 1200px) {
     .ant-layout-content {
-        padding: 10px 130px;
+        padding: 10px 10px;
     }
 }
 

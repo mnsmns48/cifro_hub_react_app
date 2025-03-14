@@ -41,11 +41,16 @@ export const RenderShortSpecs = ({features_array, shortSpecificationFn}) => {
                             ]}
                         />
                     )}
-                    {(shortSpecs.displayType || shortSpecs.displaySize || shortSpecs.displayResolution) && (
+                    {(shortSpecs.displayType || shortSpecs.displaySize) && (
                         <ShortInfoBlock title="Дисплей" specs={[
                             {value: shortSpecs.displayType},
-                            {value: shortSpecs.displaySize, label: '"'},
-                            {value: shortSpecs.displayResolution}
+                            {value: shortSpecs.displaySize, label: '"'}
+                        ]}
+                        />
+                    )}
+                    {(shortSpecs.displayResolution) && (
+                        <ShortInfoBlock title="Разрешение" specs={[
+                            {value: shortSpecs.displayResolution},
                         ]}
                         />
                     )}
@@ -93,7 +98,7 @@ export const RenderShortSpecs = ({features_array, shortSpecificationFn}) => {
                     )}
                     {shortSpecs.antutuScore ? (
                         <ShortInfoBlock
-                            title="Тест производительности Antutu"
+                            title="Тест скорости Antutu"
                             specs={[
                                 {value: shortSpecs.version ? `v${shortSpecs.version}` : null},
                                 {value: shortSpecs.antutuScore}

@@ -28,8 +28,8 @@ export default function App() {
     }
 
     return (<>
-            <Layout style={{maxWidth: '1600px', margin: '0 auto'}}>
-                <AppHeader 
+            <Layout style={{maxWidth: '1400px', margin: '0 auto'}}>
+                <AppHeader
                     onMainSwitchBtnClick={handleMainSwitchBtnClick}
                     toggleButtonText={toggleButtonText}
                     style={{position: 'sticky', top: 0, zIndex: 1}}
@@ -44,9 +44,9 @@ export default function App() {
                         style={{
                             textAlign: 'left',
                             background: '#fff',
-                            padding: '15px'
+                            padding: '15px',
                         }}
-                        width={250}
+                        width={300}
                     >
                         {mainMenu ? <HubMenu/> : <InStockMenu onClick={handleContentCatalogId}/>}
                     </Sider>
