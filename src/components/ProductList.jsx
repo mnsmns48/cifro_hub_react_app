@@ -1,4 +1,4 @@
-import {Card, Image, Tooltip} from "antd";
+import {Card, Image} from "antd";
 import Meta from "antd/es/card/Meta";
 import './ProductList.css';
 import ProductFeatures from "./ProductFeatures.jsx";
