@@ -3,7 +3,7 @@ import SmartPhone from "./products/smartPhone.jsx";
 
 const ProductFeatures = ({info}) => {
     if (!info.product_type) {
-        return <div>Описание будет добавлено позже</div>; // Если product_type отсутствует
+        return <div>Описание будет добавлено позже</div>;
     }
     const renderComponent = () => {
         switch (info.product_type) {

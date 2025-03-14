@@ -48,15 +48,11 @@ export const RenderShortSpecs = ({features_array, shortSpecificationFn}) => {
                         ]}
                         />
                     )}
-                    {(shortSpecs.displayResolution) && (
-                        <ShortInfoBlock title="Разрешение" specs={[
-                            {value: shortSpecs.displayResolution},
-                        ]}
-                        />
-                    )}
-                    {(shortSpecs.displayRefreshRate) && (
-                        <ShortInfoBlock title="Частота обновления" specs={[
+                    {(shortSpecs.displayResolution || shortSpecs.displayRefreshRate) && (
+                        <ShortInfoBlock title="Картинка" specs={[
+                            {value: shortSpecs.displayResolution, label: ' x'},
                             {value: shortSpecs.displayRefreshRate, label: ' Гц'},
+
                         ]}
                         />
                     )}
@@ -122,7 +118,7 @@ export const RenderShortSpecs = ({features_array, shortSpecificationFn}) => {
 
 
 export default function SmartPhone({info}) {
-    let features_array = [];
+    let features_array;
     try {
         features_array = JSON.parse(info.info || '[]');
     } catch (error) {

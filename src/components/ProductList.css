@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'GTEestiProDisplay-Medium';
-    src: url('fonts/gteestipro/GTEestiProDisplay-Medium.ttf') format('opentype');
+    src: url('/fonts/gteestipro/GTEestiProDisplay-Medium.ttf') format('opentype');
 }
 
 .ant-card .ant-card-meta-title {
@@ -17,7 +17,7 @@
 .product-title {
     font-family: 'GTEestiProDisplay-Medium', sans-serif;
     font-size: 19px;
-    color: #656565;
+    color: #4f4f4f;
     text-align: center;
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -31,9 +31,9 @@
     font-family: 'GTEestiProDisplay-Medium', sans-serif;
     margin: 0;
     padding: 0;
-    padding-bottom: 1px;
     text-align: end;
     font-size: 26px;
+
 }
 
 .product-card {
@@ -42,12 +42,23 @@
     margin-bottom: 16px;
 }
 
+.ant-card-body {
+    padding-top: 5px !important;
+}
+
 .product-image {
     width: 100%;
     max-width: 400px;
     margin: 10px auto;
     padding: 1px;
     display: block;
+}
+
+.short-smart-phone-specification {
+    padding-top: 9px;
+    display: flex;
+    font-size: 13px;
+    font-family: 'Cormorant', sans-serif;
 }
 
 .product-list-container {
@@ -74,35 +85,32 @@
 
 @media (max-width: 1200px) {
     .product-card {
-        width: calc(50% - 20px);
+        width: calc(100% - 20px);
+    }
+    .short-smart-phone-specification {
+        font-size: calc(100% + 20%);
     }
 
-    .short-smart-phone-specification {
-        font-size: 10px;
-    }
 }
 
 @media (max-width: 768px) {
     .product-card {
-        width: calc(50% - 20px);
+        width: calc(100% - 20px);
     }
-
     .short-smart-phone-specification {
-        font-size: 5px;
-
+        font-size: calc(100% - 38%);
     }
 }
 
 @media (max-width: 480px) {
     .product-card {
-        width: calc(100% - 20px);
+        width: calc(100%);
     }
-
+    .product-title {
+        font-size: 10px;
+    }
+    .short-smart-phone-specification {
+        font-size: calc(100% - 50%);
+    }
 }
 
-.short-smart-phone-specification {
-    padding-top: 11px;
-    display: flex;
-    font-size: 13px;
-    font-family: 'Cormorant', sans-serif;
-}

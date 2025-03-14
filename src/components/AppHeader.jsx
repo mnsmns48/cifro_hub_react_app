@@ -60,7 +60,7 @@ function InStockButton({onClick}) {
             }}
         >
             <Space>
-                <Button type="primary" size="large" icon={<AntDesignOutlined/>} onClick={onClick}>
+                <Button type="primary" size="medium" icon={<AntDesignOutlined/>} onClick={onClick}>
                     КАТАЛОГ НАЛИЧИЯ
                 </Button>
             </Space>
