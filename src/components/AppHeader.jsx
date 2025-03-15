@@ -21,7 +21,7 @@ export default function AppHeader({onInStockButtonClick}) {
                 <img src={logo} alt="Logo" style={{maxHeight: '59px', paddingRight: '8px'}}/>
                 <span style={{color: 'white', fontFamily: "Urfa", fontSize: 'clamp(10px, 3vw, 30px)'}}>ЦИФРО ХАБ</span>
             </div>
-            <InStockButton onClick={onInStockButtonClick}/>
+            {/* <InStockButton onClick={onInStockButtonClick}/> */}
         </Header>
     );
 }

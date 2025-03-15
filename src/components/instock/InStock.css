@@ -9,3 +9,8 @@
     font-size: 15px;
     color: #43434b;
 }
+
+
+.ant-menu.ant-menu-root.ant-menu-inline.side-menu {
+    border-inline-end: none !important;
+}

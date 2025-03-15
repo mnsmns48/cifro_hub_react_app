@@ -5,7 +5,7 @@ const {Footer} = Layout;
 
 export default function AppFooter() {
     return (
-        <Footer style={{textAlign: 'center'}}>
+        <Footer style={{textAlign: 'center', backgroundColor: 'white'}}>
             п. Ленино, Проспект Ленина 9 ©{new Date().getFullYear()} Цифро Хаб
         </Footer>
     )

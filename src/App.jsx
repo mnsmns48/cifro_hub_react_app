@@ -5,6 +5,7 @@ import AppContent from "./components/AppContent.jsx";
 import {useState} from "react";
 import InStockMenu from "./components/instock/InStockMenu.jsx";
 import HubMenu from "./components/hub/HubMenu.jsx";
+import AppCarousel from "./components/Carousel.jsx";
 
 const {Sider, Content} = Layout;
 
@@ -17,7 +18,7 @@ export default function App() {
 
     const handleMainSwitchBtnClick = () => {
         setMainMenu(!mainMenu);
-        setToggleButtonText(mainMenu ? "ХАБ ДОСТАВКИ" : "Каталог НАЛИЧИЯ")
+        setToggleButtonText(!mainMenu ? "Каталог НАЛИЧИЯ" : "ХАБ ДОСТАВКИ")
     };
 
     const handleContentCatalogId = (contentDataId) => {
@@ -28,12 +29,13 @@ export default function App() {
     }
 
     return (<>
-            <Layout style={{maxWidth: '1400px', margin: '0 auto'}}>
+            <Layout style={{maxWidth: '1400px', margin: '0 auto', backgroundColor: 'white'}}>
                 <AppHeader
                     onMainSwitchBtnClick={handleMainSwitchBtnClick}
                     toggleButtonText={toggleButtonText}
                     style={{position: 'sticky', top: 0, zIndex: 1}}
                 />
+                <AppCarousel />
                 <Layout style={{background: colorBgContainer, borderRadius: borderRadiusLG}}>
                     <Sider
                         breakpoint="md"
