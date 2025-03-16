@@ -2,6 +2,7 @@ import {Card, Image} from "antd";
 import Meta from "antd/es/card/Meta";
 import './ProductList.css';
 import ProductFeatures from "./ProductFeatures.jsx";
+import { useNavigate } from 'react-router-dom';
 
 
 function cleanTitle(title) {
@@ -9,6 +10,12 @@ function cleanTitle(title) {
 }
 
 const ProductList = ({content}) => {
+    const navigate = useNavigate();
+
+    const handleProductClick = (productId) => {
+        navigate(`/product/${productId}`);
+    };
+
     return (
         <>
             <div className="product-list-container">
@@ -16,6 +23,7 @@ const ProductList = ({content}) => {
                     content.map((item) => (
                         <Card
                             key={item.code}
+                                // onClick={() => handleProductClick(item.code)}
                             className="product-card"
                             hoverable={true}
                             size={"default"}

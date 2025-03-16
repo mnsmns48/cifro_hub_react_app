@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import {Menu} from 'antd';
 import {useEffect, useState} from "react";
 import {LaptopOutlined, NotificationOutlined, UserOutlined} from "@ant-design/icons";
@@ -5,6 +6,7 @@ import axios from "axios";
 import './InStock.css'
 
 export default function InStockMenu({onClick}) {
+    const navigate = useNavigate();
     const [rootMenuItems, setRootMenuItems] = useState([]);
     const fetchRootMenu = async () => {
         try {
@@ -19,7 +21,8 @@ export default function InStockMenu({onClick}) {
     };
 
     const handleMenuClick = (e) => {
-        onClick(e.key)
+        onClick(e.key);
+        navigate(`/category/${e.key}`);
     }
 
     useEffect(() => {
