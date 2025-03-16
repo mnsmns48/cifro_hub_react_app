@@ -1,10 +1,10 @@
 import {Menu} from 'antd';
 import React, {useEffect, useState} from "react";
 import {LaptopOutlined, NotificationOutlined, UserOutlined} from "@ant-design/icons";
-import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
-
-export default function HubMenu() {
+export default function HubMenu({onClick, endpoint = 'hub'}) {
+    const navigate = useNavigate();
     const items2 = [UserOutlined, LaptopOutlined, NotificationOutlined].map((icon, index) => {
         const key = String(index + 1);
         return {
@@ -21,6 +21,11 @@ export default function HubMenu() {
         };
     });
 
+    const handleMenuClick = (e) => {
+        onClick?.(e.key);
+        navigate(`/${endpoint}/${e.key}`);
+    };
+
     return (
         <Menu
             mode="inline"
@@ -30,6 +35,7 @@ export default function HubMenu() {
                 height: '100%'
             }}
             items={items2}
+            onSelect={handleMenuClick}
         />
     )
 }

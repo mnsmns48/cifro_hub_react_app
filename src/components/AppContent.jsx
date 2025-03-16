@@ -3,13 +3,18 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 import ProductList from "./ProductList.jsx";
 import './AppContent.css'
+import {useParams} from "react-router-dom";
 
 const {Content} = Layout;
 export default function AppContent({contentDataId}) {
     const [contentData, setContentData] = useState({});
+    const params = useParams();
+    const categoryId = params.id || contentDataId;
 
     const fetchContentData = () => {
-        axios.get(`/api2/${contentDataId}`) //${import.meta.env.VITE_BACKEND}
+        if (!categoryId) return;
+        
+        axios.get(`${import.meta.env.VITE_BACKEND}/api2/${categoryId}`)
             .then((response) => {
                 const data = response.data?.items || {};
                 if (data && typeof data === 'string') {
@@ -30,12 +35,11 @@ export default function AppContent({contentDataId}) {
                 console.error("Error fetching content data:", error);
                 setContentData({});
             });
-
     };
 
     useEffect(() => {
         fetchContentData();
-    }, [contentDataId]);
+    }, [categoryId]);
 
     return (
         <Content>

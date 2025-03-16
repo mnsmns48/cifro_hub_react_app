@@ -5,7 +5,7 @@ import {LaptopOutlined, NotificationOutlined, UserOutlined} from "@ant-design/ic
 import axios from "axios";
 import './InStock.css'
 
-export default function InStockMenu({onClick}) {
+export default function InStockMenu({onClick, endpoint = 'instock'}) {
     const navigate = useNavigate();
     const [rootMenuItems, setRootMenuItems] = useState([]);
     const fetchRootMenu = async () => {
@@ -22,7 +22,7 @@ export default function InStockMenu({onClick}) {
 
     const handleMenuClick = (e) => {
         onClick(e.key);
-        navigate(`/category/${e.key}`);
+        navigate(`/${endpoint}/${e.key}`);
     }
 
     useEffect(() => {
