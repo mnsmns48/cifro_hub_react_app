@@ -9,7 +9,7 @@ import HubMenu from "./components/hub/HubMenu.jsx";
 import AppCarousel from "./components/AppCarousel.jsx";
 import ProductDetail from "./components/ProductDetail.jsx";
 
-const {Sider, Content} = Layout;
+const {Header, Content, Sider} = Layout;
 
 const MENU_TYPE = {
     IN_STOCK: {
@@ -47,47 +47,76 @@ export default function App() {
 
     return (
         <Router>
-            <Layout style={{maxWidth: '1400px', margin: '0 auto', backgroundColor: 'white'}}>
-                <AppHeader
-                    onMainSwitchBtnClick={handleMainSwitchBtnClick}
-                    toggleButtonText={currentMenu.text}
-                    style={{
-                        position: 'sticky',
+            <Layout style={{ 
+                minHeight: '100vh',
+                backgroundColor: 'white'
+            }}>
+                {/* Внешний контейнер с фиксированной шириной */}
+                <div style={{
+                    maxWidth: '1400px',
+                    margin: '0 auto',
+                    width: '100%',
+                    position: 'relative'
+                }}>
+                    {/* Фиксированный header */}
+                    <Header style={{
+                        margin: '10px',
+                        position: 'fixed',
                         top: 0,
-                        zIndex: 1,
-                        backgroundColor: 'white'
-                    }}
-                />
-                <AppCarousel/>
-                <Layout style={{background: colorBgContainer, borderRadius: borderRadiusLG}}>
-                    <Sider
-                        breakpoint="md"
-                        collapsedWidth="0"
-                        collapsed={collapsed}
-                        onCollapse={(collapsed) => setCollapsed(collapsed)}
-                        zeroWidthTriggerStyle={{top: '10px'}}
-                        style={{
-                            textAlign: 'left',
-                            background: '#fff',
-                            padding: '15px',
-                        }}
-                        width={300}
-                    >
-                        <CurrentMenuComponent
-                            onClick={handleContentCatalogId}
-                            endpoint={currentMenu.endpoint}
+                        width: '100%',
+                        maxWidth: '1400px',
+                        zIndex: 1000,
+                        backgroundColor: 'white',
+                        padding: '0 20px',
+                        height: '64px',
+                    }}>
+                        <AppHeader
+                            onMainSwitchBtnClick={handleMainSwitchBtnClick}
+                            toggleButtonText={currentMenu.text}
                         />
-                    </Sider>
-                    <Content>
-                        <Routes>
-                            <Route path="/" element={<AppContent contentDataId={contentDataId}/>}/>
-                            <Route path="/:endpoint/:id"
-                                   element={<AppContent contentDataId={contentDataId} endpoint={currentMenu.endpoint}/>}/>
-                            {/*<Route path="/product/:productId" element={<ProductDetail />} />*/}
-                        </Routes>
-                    </Content>
-                </Layout>
-                <AppFooter style={{backgroundColor: 'white'}}/>
+                    </Header>
+
+                    {/* Отступ для контента под фиксированным header */}
+                    <div style={{ paddingTop: '64px' }}>
+                        <AppCarousel/>
+                        <Layout style={{
+                            background: colorBgContainer,
+                            borderRadius: borderRadiusLG
+                        }}>
+                            <Sider
+                                breakpoint="md"
+                                collapsedWidth="0"
+                                collapsed={collapsed}
+                                onCollapse={(collapsed) => setCollapsed(collapsed)}
+                                zeroWidthTriggerStyle={{ top: '10px' }}
+                                style={{
+                                    textAlign: 'left',
+                                    background: '#fff',
+                                    padding: '15px',
+                                    borderRight: 'none'
+                                }}
+                                width={300}
+                            >
+                                <CurrentMenuComponent
+                                    onClick={handleContentCatalogId}
+                                    endpoint={currentMenu.endpoint}
+                                />
+                            </Sider>
+                            <Content style={{
+                                padding: '20px'
+                            }}>
+                                <Routes>
+                                    <Route path="/" element={<AppContent contentDataId={contentDataId}/>}/>
+                                    <Route path="/:endpoint/:id"
+                                           element={<AppContent contentDataId={contentDataId} endpoint={currentMenu.endpoint}/>}/>
+                                    {/*<Route path="/product/:productId" element={<ProductDetail />} />*/}
+                                </Routes>
+                            </Content>
+                        </Layout>
+                    </div>
+
+                    <AppFooter style={{ backgroundColor: 'white' }}/>
+                </div>
             </Layout>
         </Router>
     );

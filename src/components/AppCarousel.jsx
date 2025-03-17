@@ -5,7 +5,7 @@ const carouselStyle = {
     width: '40%',
     margin: '0 auto',
     marginBottom: '15px',
-    marginTop: '15px'
+    marginTop: '25px'
 };
 
 const imageStyle = {
