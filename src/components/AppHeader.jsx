@@ -18,8 +18,12 @@ export default function AppHeader({onInStockButtonClick}) {
             borderRadius: '25px',
         }}>
             <div style={{display: 'flex', alignItems: 'center'}}>
-                <img src={logo} alt="Logo" style={{maxHeight: '59px', paddingRight: '8px'}}/>
-                <span style={{color: 'white', fontFamily: "Urfa", fontSize: 'clamp(10px, 3vw, 30px)'}}>ЦИФРО ХАБ</span>
+                <a href="/" style={{ display: 'flex', alignItems: 'center'}}>
+                    <img src={logo} alt="Logo" style={{ maxHeight: '59px', paddingRight: '8px' }} />
+                    <span style={{ color: 'white', fontFamily: "Urfa", fontSize: 'clamp(10px, 3vw, 30px)' }}>
+                        ЦИФРО ХАБ
+                    </span>
+                </a>
             </div>
              {/*<InStockButton onClick={onInStockButtonClick}/>*/}
         </Header>

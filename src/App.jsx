@@ -73,7 +73,7 @@ export default function App() {
                         }}
                         width={300}
                     >
-                        <CurrentMenuComponent 
+                        <CurrentMenuComponent
                             onClick={handleContentCatalogId}
                             endpoint={currentMenu.endpoint}
                         />

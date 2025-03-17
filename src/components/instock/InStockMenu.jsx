@@ -35,6 +35,15 @@ export default function InStockMenu({onClick, endpoint = 'instock'}) {
         onClick(e.key);
         navigate(`/${endpoint}/${e.key}`);
     }
+    
+    const openMenu = (e) => {
+        if (Array.isArray(e) && e.length > 0) {
+            const lastElement = e[e.length - 1];
+            onClick(lastElement);
+            navigate(`/${endpoint}/${lastElement}`);
+        }
+
+    }
 
     useEffect(() => {
         fetchRootMenu();
@@ -44,10 +53,9 @@ export default function InStockMenu({onClick, endpoint = 'instock'}) {
     return (
         <Menu
             mode="inline"
-            defaultSelectedKeys={['1']}
-            defaultOpenKeys={['sub1']}
             items={rootMenuItems}
-            onSelect={handleMenuClick}
+            onClick={handleMenuClick}
+            onOpenChange={openMenu}
             className="side-menu"
         />
     )
