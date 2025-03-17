@@ -87,6 +87,7 @@
     .product-card {
         width: calc(100% - 20px);
     }
+
     .short-smart-phone-specification {
         font-size: calc(100% + 20%);
     }
@@ -97,6 +98,7 @@
     .product-card {
         width: calc(100% - 20px);
     }
+
     .short-smart-phone-specification {
         font-size: calc(100% - 38%);
     }
@@ -106,9 +108,11 @@
     .product-card {
         width: calc(100%);
     }
+
     .product-title {
         font-size: 10px;
     }
+
     .short-smart-phone-specification {
         font-size: calc(100% - 50%);
     }
