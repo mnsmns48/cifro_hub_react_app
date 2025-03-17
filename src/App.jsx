@@ -6,8 +6,8 @@ import AppContent from "./components/AppContent.jsx";
 import {useState} from "react";
 import InStockMenu from "./components/instock/InStockMenu.jsx";
 import HubMenu from "./components/hub/HubMenu.jsx";
-import AppCarousel from "./components/Carousel.jsx";
-// import ProductDetail from "./components/ProductDetail.jsx";
+import AppCarousel from "./components/AppCarousel.jsx";
+import ProductDetail from "./components/ProductDetail.jsx";
 
 const {Sider, Content} = Layout;
 
@@ -81,7 +81,8 @@ export default function App() {
                     <Content>
                         <Routes>
                             <Route path="/" element={<AppContent contentDataId={contentDataId}/>}/>
-                            <Route path="/:endpoint/:id" element={<AppContent contentDataId={contentDataId}/>}/>
+                            <Route path="/:endpoint/:id"
+                                   element={<AppContent contentDataId={contentDataId} endpoint={currentMenu.endpoint}/>}/>
                             {/*<Route path="/product/:productId" element={<ProductDetail />} />*/}
                         </Routes>
                     </Content>

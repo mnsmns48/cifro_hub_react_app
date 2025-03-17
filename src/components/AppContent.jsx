@@ -6,7 +6,7 @@ import './AppContent.css'
 import {useParams} from "react-router-dom";
 
 const {Content} = Layout;
-export default function AppContent({contentDataId}) {
+export default function AppContent({contentDataId, endpoint}) {
     const [contentData, setContentData] = useState({});
     const params = useParams();
     const categoryId = params.id || contentDataId;
@@ -43,7 +43,7 @@ export default function AppContent({contentDataId}) {
 
     return (
         <Content>
-            <ProductList content={contentData}/>
+            <ProductList content={contentData} endpoint={endpoint}/>
         </Content>
     );
 }

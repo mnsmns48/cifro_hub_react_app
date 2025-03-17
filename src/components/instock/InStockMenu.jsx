@@ -14,12 +14,23 @@ export default function InStockMenu({onClick, endpoint = 'instock'}) {
             if (response.data && response.data.root_menu) {
                 const parsedMenuItems = JSON.parse(response.data.root_menu);
                 setRootMenuItems(parsedMenuItems);
+                const priorityOrder = ["Смартфоны", "Планшеты", "Кнопочные телефоны"];
+                const sortedItems = [...parsedMenuItems].sort((a, b) => {
+                    const aIndex = priorityOrder.indexOf(a.label);
+                    const bIndex = priorityOrder.indexOf(b.label);
+                    if (aIndex !== -1 && bIndex !== -1) {
+                        return aIndex - bIndex;
+                    }
+                    if (aIndex !== -1) return -1;
+                    if (bIndex !== -1) return 1;
+                    return a.label.localeCompare(b.label);
+                });
+                setRootMenuItems(sortedItems);
             }
         } catch (error) {
             console.error("Error root menu:", error);
         }
     };
-
     const handleMenuClick = (e) => {
         onClick(e.key);
         navigate(`/${endpoint}/${e.key}`);

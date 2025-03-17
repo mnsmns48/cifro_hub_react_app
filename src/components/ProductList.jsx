@@ -9,11 +9,10 @@ function cleanTitle(title) {
     return title.replace(/смартфон/gi, '').trim();
 }
 
-const ProductList = ({content}) => {
+const ProductList = ({content, endpoint}) => {
     const navigate = useNavigate();
-
-    const handleProductClick = (productId) => {
-        navigate(`/product/${productId}`);
+    const handleProductClick = (productId, endpoint) => {
+        navigate(`/${endpoint}_product/${productId}`);
     };
 
     return (
@@ -23,7 +22,7 @@ const ProductList = ({content}) => {
                     content.map((item) => (
                         <Card
                             key={item.code}
-                                // onClick={() => handleProductClick(item.code)}
+                                // onClick={() => handleProductClick(item.code, endpoint)}
                             className="product-card"
                             hoverable={true}
                             size={"default"}
