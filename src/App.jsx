@@ -51,7 +51,6 @@ export default function App() {
                 minHeight: '100vh',
                 backgroundColor: 'white'
             }}>
-                {/* Внешний контейнер с фиксированной шириной */}
                 <div style={{
                     maxWidth: '1400px',
                     margin: '0 auto',
@@ -93,7 +92,12 @@ export default function App() {
                                     textAlign: 'left',
                                     background: '#fff',
                                     padding: '15px',
-                                    borderRight: 'none'
+                                    // borderRight: 'none',
+                                    position: 'fixed',
+                                    // left: 'auto',
+                                    // height: 'calc(100vh - 64px)',
+                                    // overflow: 'auto',
+                                    // top: '120px'
                                 }}
                                 width={300}
                             >
@@ -103,7 +107,8 @@ export default function App() {
                                 />
                             </Sider>
                             <Content style={{
-                                padding: '20px'
+                                padding: '20px',
+                                marginLeft: '300px'
                             }}>
                                 <Routes>
                                     <Route path="/" element={<AppContent contentDataId={contentDataId}/>}/>
@@ -115,7 +120,10 @@ export default function App() {
                         </Layout>
                     </div>
 
-                    <AppFooter style={{ backgroundColor: 'white' }}/>
+                    <AppFooter style={{ 
+                        backgroundColor: 'white',
+                        marginLeft: '300px'
+                    }}/>
                 </div>
             </Layout>
         </Router>
