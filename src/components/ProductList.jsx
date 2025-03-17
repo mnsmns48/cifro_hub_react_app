@@ -13,7 +13,7 @@ function cleanTitle(title) {
 const ProductList = ({content, endpoint}) => {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    const location = useLocation();
+    // const location = useLocation();
     const pageSize = 12;
     const currentPage = parseInt(searchParams.get('page')) || 1;
     const startIndex = (currentPage - 1) * pageSize;

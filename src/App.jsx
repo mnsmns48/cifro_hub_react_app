@@ -47,23 +47,19 @@ export default function App() {
 
     return (
         <Router>
-            <Layout style={{ 
-                minHeight: '100vh',
-                backgroundColor: 'white'
-            }}>
+            <Layout style={{minHeight: '100vh', backgroundColor: 'white'}}>
                 <div style={{
-                    maxWidth: '1400px',
+                    maxWidth: '1340px',
                     margin: '0 auto',
                     width: '100%',
                     position: 'relative'
                 }}>
-                    {/* Фиксированный header */}
                     <Header style={{
                         margin: '10px',
                         position: 'fixed',
                         top: 0,
                         width: '100%',
-                        maxWidth: '1400px',
+                        maxWidth: '1340px',
                         zIndex: 1000,
                         backgroundColor: 'white',
                         padding: '0 20px',
@@ -76,54 +72,36 @@ export default function App() {
                     </Header>
 
                     {/* Отступ для контента под фиксированным header */}
-                    <div style={{ paddingTop: '64px' }}>
+                    <div style={{paddingTop: '64px'}}>
                         <AppCarousel/>
                         <Layout style={{
                             background: colorBgContainer,
                             borderRadius: borderRadiusLG
                         }}>
-                            <Sider
-                                breakpoint="md"
-                                collapsedWidth="0"
-                                collapsed={collapsed}
-                                onCollapse={(collapsed) => setCollapsed(collapsed)}
-                                zeroWidthTriggerStyle={{ top: '10px' }}
-                                style={{
-                                    textAlign: 'left',
-                                    background: '#fff',
-                                    padding: '15px',
-                                    // borderRight: 'none',
-                                    position: 'fixed',
-                                    // left: 'auto',
-                                    // height: 'calc(100vh - 64px)',
-                                    // overflow: 'auto',
-                                    // top: '120px'
-                                }}
-                                width={300}
-                            >
+                            <Sider breakpoint="md"
+                                   collapsedWidth="0"
+                                   collapsed={collapsed}
+                                   onCollapse={(collapsed) => setCollapsed(collapsed)}
+                                   zeroWidthTriggerStyle={{top: '10px'}}
+                                   style={{textAlign: 'left', background: '#fff', padding: '15px'}}
+                                   width={300}>
                                 <CurrentMenuComponent
                                     onClick={handleContentCatalogId}
                                     endpoint={currentMenu.endpoint}
                                 />
                             </Sider>
-                            <Content style={{
-                                padding: '20px',
-                                marginLeft: '300px'
-                            }}>
+                            <Content>
                                 <Routes>
                                     <Route path="/" element={<AppContent contentDataId={contentDataId}/>}/>
                                     <Route path="/:endpoint/:id"
-                                           element={<AppContent contentDataId={contentDataId} endpoint={currentMenu.endpoint}/>}/>
+                                           element={<AppContent contentDataId={contentDataId}
+                                                                endpoint={currentMenu.endpoint}/>}/>
                                     {/*<Route path="/product/:productId" element={<ProductDetail />} />*/}
                                 </Routes>
                             </Content>
                         </Layout>
                     </div>
-
-                    <AppFooter style={{ 
-                        backgroundColor: 'white',
-                        marginLeft: '300px'
-                    }}/>
+                    <AppFooter style={{backgroundColor: 'white'}}/>
                 </div>
             </Layout>
         </Router>

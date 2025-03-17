@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 const carouselStyle = {
     width: '40%',
     margin: '0 auto',
-    marginBottom: '15px',
-    marginTop: '25px'
+    marginBottom: '10px',
+    marginTop: '30px'
 };
 
 const imageStyle = {
