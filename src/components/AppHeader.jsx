@@ -2,25 +2,18 @@ import {Button, ConfigProvider, Layout, Space,} from "antd";
 import logo from '/logo-cifro-hub.svg'
 import {createStyles} from "antd-style";
 import {AntDesignOutlined} from "@ant-design/icons";
+import './AppHeader.css'
 
 const {Header} = Layout;
 
 
 export default function AppHeader({onInStockButtonClick}) {
     return (
-        <Header style={{
-            backgroundColor: '#00111a',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingLeft: '10px',
-            height: '85px',
-            borderRadius: '25px',
-        }}>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-                <a href="/" style={{ display: 'flex', alignItems: 'center'}}>
-                    <img src={logo} alt="Logo" style={{ maxHeight: '59px', paddingRight: '8px' }} />
-                    <span style={{ color: 'white', fontFamily: "Urfa", fontSize: 'clamp(10px, 3vw, 30px)' }}>
+        <Header className='header'>
+            <div className='logo-align'>
+                <a href="/" className='logo-align'>
+                    <img src={logo} alt="Logo" className='logo-size' />
+                    <span className='logo'>
                         ЦИФРО ХАБ
                     </span>
                 </a>

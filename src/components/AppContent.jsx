@@ -13,8 +13,8 @@ export default function AppContent({contentDataId, endpoint}) {
 
     const fetchContentData = () => {
         const apiEndpoint = categoryId 
-            ? `${import.meta.env.VITE_BACKEND}/api2/${categoryId}`
-            : `${import.meta.env.VITE_BACKEND}/api2/root`;
+            ? `/api2/${categoryId}` //${import.meta.env.VITE_BACKEND}
+            : `/api2/root`; //${import.meta.env.VITE_BACKEND}
         
         axios.get(apiEndpoint)
             .then((response) => {

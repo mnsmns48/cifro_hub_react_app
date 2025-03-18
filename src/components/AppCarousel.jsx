@@ -1,27 +1,7 @@
-import { Carousel } from 'antd';
-import { useEffect, useState } from 'react';
+import {Carousel} from 'antd';
+import {useEffect, useState} from 'react';
+import './AppCarousel.css'
 
-const carouselStyle = {
-    width: '40%',
-    margin: '0 auto',
-    marginBottom: '10px',
-    marginTop: '30px'
-};
-
-const imageStyle = {
-    width: '100%',
-    height: '120px',
-    objectFit: 'cover'
-};
-
-
-const carouselSettings = {
-    autoplay: true,
-    autoplaySpeed: 5000,
-    dots: true,
-    effect: 'fade',
-    pauseOnHover: true
-};
 
 const AppCarousel = () => {
     const [slides, setSlides] = useState([]);
@@ -31,16 +11,15 @@ const AppCarousel = () => {
         const slideImages = Object.keys(images).map(path => {
             return path.replace('/public/slide/', '/slide/');
         });
-        
         setSlides(slideImages);
     }, []);
 
     return (
-        <div style={carouselStyle}>
-            <Carousel {...carouselSettings}>
+        <div className="carouselStyle">
+            <Carousel autoplay={true} autoplaySpeed={5000} dots={true} effect={"fade"} pauseOnHover={true}>
                 {slides.map((slide, index) => (
                     <div key={index}>
-                        <img src={slide} alt={`Slide ${index + 1}`} style={imageStyle} />
+                        <img src={slide} alt={`Slide ${index + 1}`} className="carousel-image" />
                     </div>
                 ))}
             </Carousel>
@@ -48,4 +27,4 @@ const AppCarousel = () => {
     );
 };
 
-export default AppCarousel; 
+export default AppCarousel;

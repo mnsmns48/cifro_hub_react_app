@@ -5,20 +5,30 @@
     font-style: normal;
 }
 
+.header {
+    background: linear-gradient(to right, #202d4b, #293b62);
+    display: flex;
+    justify-content: space-between;
+    height: 75px;
+    position: fixed;
+    width: 98%;
+    max-width: 1340px;
+    z-index: 1000;
+    padding: 0 20px 0 10px;
+    border-radius: 25px;
+}
+.logo-align {
+    display: flex;
+    align-items: center
+}
+
+.logo-size {
+    max-height: 59px;
+    padding-right: 8px;
+}
 
 .logo {
     color: white;
     font-family: 'Urfa Regular', sans-serif;
     font-size: clamp(10px, 3vw, 30px);
 }
-
-.header {
-    background: linear-gradient(to right, #1b2d49, #1f2c48);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-left: 10px;
-    height: 75px;
-    border-radius: 15px
-}
-

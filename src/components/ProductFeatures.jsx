@@ -2,22 +2,20 @@ import SmartPhone from "./products/smartPhone.jsx";
 
 
 const ProductFeatures = ({info}) => {
-    if (!info.product_type) {
-        return <div>Описание будет добавлено позже</div>;
-    }
+    if (!info?.product_type) return null;
+
     const renderComponent = () => {
         switch (info.product_type) {
             case "phone":
                 return <SmartPhone info={info}/>;
             default:
-                return <div>Описание будет добавлено позже</div>;
+                return null;
         }
     };
+
     return (
-        <div className="specificity-product">
-            {renderComponent()}
-        </div>
-    )
-}
+        <div className="specificity-product">{renderComponent()}</div>
+    );
+};
 
 export default ProductFeatures;
