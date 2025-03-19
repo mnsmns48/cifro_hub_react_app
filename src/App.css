@@ -3,3 +3,22 @@
     margin: 0 auto;
     position: relative;
 }
+
+
+.ant-menu.ant-menu-root.ant-menu-inline.side-menu,
+.ant-menu-inline-collapsed {
+    border-inline-end: none !important;
+}
+
+.menu-logo {
+    width: 55px;
+    cursor: pointer;
+    background-color: #202d4b;
+    border-radius: 25px;
+}
+
+.ant-layout-sider-zero-width-trigger {
+    background: none !important;
+    position: absolute;
+}
+
