@@ -12,13 +12,13 @@ export default function AppHeader({onInStockButtonClick}) {
         <Header className='header'>
             <div className='logo-align'>
                 <a href="/" className='logo-align'>
-                    <img src={logo} alt="Logo" className='logo-size' />
-                    <span className='logo'>
+                    <img src={logo} alt="Logo" className='logo-size'/>
+                    <span className='logo-text'>
                         ЦИФРО ХАБ
                     </span>
                 </a>
             </div>
-             {/*<InStockButton onClick={onInStockButtonClick}/>*/}
+            {/*<InStockButton onClick={onInStockButtonClick}/>*/}
         </Header>
     );
 }

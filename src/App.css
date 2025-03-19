@@ -1,11 +1,5 @@
 #root {
-    max-width: 1366px;
+    width: clamp(320px, 90vw, 1416px);
     margin: 0 auto;
-    width: 100%;
     position: relative;
-}
-
-@media (min-width: 1920px) {
-    #root {max-width: 80%;
-    }
 }

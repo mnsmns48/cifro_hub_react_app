@@ -5,18 +5,22 @@
     font-style: normal;
 }
 
+
 .header {
     background: linear-gradient(to right, #202d4b, #293b62);
     display: flex;
     justify-content: space-between;
+    align-items: center;
     height: 75px;
     position: fixed;
-    width: 98%;
-    max-width: 1340px;
+    padding: 0 clamp(20px, 0vw, 20px);
+    width: clamp(375px, 86%, 1416px);
     z-index: 1000;
-    padding: 0 20px 0 10px;
+    margin: 0 auto;
     border-radius: 25px;
+
 }
+
 .logo-align {
     display: flex;
     align-items: center
@@ -27,8 +31,15 @@
     padding-right: 8px;
 }
 
-.logo {
+.logo-text {
     color: white;
     font-family: 'Urfa Regular', sans-serif;
     font-size: clamp(10px, 3vw, 30px);
 }
+
+@media (max-width: 768px) {
+    .logo-text {
+        display: none;
+    }
+}
+

@@ -112,5 +112,7 @@
     .short-smart-phone-specification {
         font-size: calc(100% - 50%);
     }
+    .ant-layout {
+        padding: 40px 15px;
+    }
 }
-

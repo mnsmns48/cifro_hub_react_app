@@ -1,10 +1,10 @@
 import './App.css';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import {Layout, theme} from 'antd';
+import {useState} from "react";
 import AppHeader from "./components/AppHeader.jsx";
 import AppFooter from "./components/AppFooter.jsx";
 import AppContent from "./components/AppContent.jsx";
-import {useState} from "react";
 import InStockMenu from "./components/instock/InStockMenu.jsx";
 import HubMenu from "./components/hub/HubMenu.jsx";
 import AppCarousel from "./components/AppCarousel.jsx";
@@ -46,8 +46,8 @@ export default function App() {
 
     return (
         <Router>
+            <AppHeader onMainSwitchBtnClick={handleMainSwitchBtnClick} toggleButtonText={currentMenu.text}/>
             <Layout style={WhiteStyle}>
-                <AppHeader onMainSwitchBtnClick={handleMainSwitchBtnClick} toggleButtonText={currentMenu.text}/>
                 <AppCarousel/>
                 <Layout style={WhiteStyle}>
                     <Sider breakpoint="md"
