@@ -23,10 +23,17 @@ export default function App() {
     const [contentDataId, setContentDataId] = useState('');
     const [collapsed, setCollapsed] = useState(window.innerWidth <= 768);
 
+
     const handleMainSwitchBtnClick = () => {
         setCurrentMenu(current =>
             current === MENU_TYPE.HUB ? MENU_TYPE.IN_STOCK : MENU_TYPE.HUB
         );
+    };
+
+    const WhiteStyle = {
+        backgroundColor: 'white',
+        background: colorBgContainer,
+        borderRadius: borderRadiusLG,
     };
 
     const handleContentCatalogId = (contentDataId) => {
@@ -35,12 +42,6 @@ export default function App() {
             setCollapsed(true);
         }
     }
-
-    const WhiteStyle = {
-        backgroundColor: 'white',
-        background: colorBgContainer,
-        borderRadius: borderRadiusLG,
-    };
 
     const CurrentMenuComponent = currentMenu.component;
 
@@ -65,7 +66,7 @@ export default function App() {
                             <Route
                                 path="/:endpoint/:id"
                                 element={<AppContent contentDataId={contentDataId} endpoint={currentMenu.endpoint}/>}/>
-                            <Route path="/product/:productId" element={<ProductDetail />} />
+                            <Route path="/product/:productId" element={<ProductDetail/>}/>
                         </Routes>
                     </Content>
                 </Layout>
