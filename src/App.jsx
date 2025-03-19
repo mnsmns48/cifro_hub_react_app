@@ -9,7 +9,7 @@ import InStockMenu from "./components/instock/InStockMenu.jsx";
 import HubMenu from "./components/hub/HubMenu.jsx";
 import AppCarousel from "./components/AppCarousel.jsx";
 import ProductDetail from "./components/ProductDetail.jsx";
-
+import LogoButtonMenu from "./components/LogoButtonMenu.jsx";
 
 const {Content, Sider} = Layout;
 
@@ -24,12 +24,12 @@ export default function App() {
 
     const [currentMenu, setCurrentMenu] = useState(MENU_TYPE.IN_STOCK);
     const [contentDataId, setContentDataId] = useState('');
-    const [collapsed, setCollapsed] = useState(window.innerWidth <= 768);
-    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 480);
+    const [collapsed, setCollapsed] = useState(window.innerWidth < 768);
+    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
 
     useEffect(() => {
         const handleResize = () => {
-            setIsSmallScreen(window.innerWidth < 480);
+            setIsSmallScreen(window.innerWidth < 768);
             if (window.innerWidth > 768) {
                 setCollapsed(false);
             }
@@ -47,7 +47,7 @@ export default function App() {
 
     const handleContentCatalogId = (contentDataId) => {
         setContentDataId(contentDataId);
-        if (window.innerWidth <= 768) {
+        if (window.innerWidth < 768) {
             setCollapsed(true);
         }
     };
@@ -78,7 +78,7 @@ export default function App() {
                         collapsed={collapsed}
                         onCollapse={setCollapsed}
                         style={{textAlign: "left", background: "white"}}
-                        trigger={<img src="/logo-cifro-hub.svg" alt="Menu Logo" className='menu-logo'/>}
+                        trigger={<LogoButtonMenu className='menu-logo'/>}
                         width={270}>
                         <CurrentMenuComponent
                             onClick={handleContentCatalogId}

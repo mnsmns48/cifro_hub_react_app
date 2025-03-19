@@ -94,7 +94,7 @@
 
 @media (max-width: 768px) {
     .product-card {
-        width: calc(100% - 20px);
+        width: calc(50% - 20px);
     }
 
     .short-smart-phone-specification {
@@ -103,14 +103,18 @@
 }
 
 @media (max-width: 480px) {
+    .product-list-container {
+        width: calc(100% + 10%);
+
+    }
     .product-card {
         width: calc(100%);
     }
     .product-title {
-        font-size: 10px;
+        font-size: 18px;
     }
     .short-smart-phone-specification {
-        font-size: calc(100% - 50%);
+        font-size: calc(100% - 20%);
     }
     .ant-layout {
         padding: 40px 15px;
