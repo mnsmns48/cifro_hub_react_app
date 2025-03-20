@@ -87,7 +87,7 @@ export const RenderShortSpecs = ({features_array, shortSpecificationFn}) => {
                             title=""
                             specs={[
                                 {value: shortSpecs.cpu},
-                                {value: shortSpecs.cpuMaxClock, label: '⚕︎'},
+                                {value: shortSpecs.cpuMaxClock, label: ' Мгц'},
                                 {value: shortSpecs.cpuLithographyProcess, label: ' нм'},
                             ]}
                         />

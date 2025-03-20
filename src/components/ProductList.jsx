@@ -13,7 +13,7 @@ const ProductList = ({content, endpoint}) => {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPage = parseInt(searchParams.get('page')) || 1;
-    const pageSize = import.meta.env.VITE_PAGINATION_SIZE;
+    const pageSize = parseInt(import.meta.env.VITE_PAGINATION_SIZE);
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const currentProducts = Array.isArray(content) ? content.slice(startIndex, endIndex) : [];
@@ -24,7 +24,6 @@ const ProductList = ({content, endpoint}) => {
     const handlePageChange = (page) => {
         setSearchParams({...Object.fromEntries(searchParams), page: page});
     };
-
     return (
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <div className="product-list-container">
