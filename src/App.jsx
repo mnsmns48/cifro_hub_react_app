@@ -9,7 +9,8 @@ import InStockMenu from "./components/instock/InStockMenu.jsx";
 import HubMenu from "./components/hub/HubMenu.jsx";
 import AppCarousel from "./components/AppCarousel.jsx";
 import ProductDetail from "./components/ProductDetail.jsx";
-import LogoButtonMenu from "./components/LogoButtonMenu.jsx";
+import LogoIconButtonSVG from "./components/svg_jsx/LogoIconButtonSVG.jsx";
+import LogoMenuButtonSVG from "./components/svg_jsx/LogoMenuButtonSVG.jsx";
 
 const {Content, Sider} = Layout;
 
@@ -78,9 +79,12 @@ export default function App() {
                         collapsed={collapsed}
                         onCollapse={(collapsed) => setCollapsed(collapsed)}
                         style={{textAlign: 'left', background: "white"}}
-                        trigger={<LogoButtonMenu className='menu-logo'/>}
-                        width={270}
-                        >
+                        trigger={
+                            <div className="menu-logo">
+                                <LogoIconButtonSVG/> <LogoMenuButtonSVG />
+                            </div>
+                        }
+                        width={270}>
                         <CurrentMenuComponent
                             onClick={handleContentCatalogId}
                             endpoint={currentMenu.endpoint}

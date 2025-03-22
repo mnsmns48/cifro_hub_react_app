@@ -1,9 +1,9 @@
-const LogoButtonMenu = () => (
+const LogoIconButtonSVG = () => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="10 10 140 100"
-        width="60"
-        height="60"
+        width="70"
+        height="70"
     >
         {
             <g id="Page-1" stroke="none" stroke-width="1">
@@ -24,4 +24,4 @@ const LogoButtonMenu = () => (
 );
 
 
-export default LogoButtonMenu;
+export default LogoIconButtonSVG;

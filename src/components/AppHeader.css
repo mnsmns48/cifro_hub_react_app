@@ -34,16 +34,22 @@
 .logo-text {
     color: white;
     font-family: 'Urfa Regular', sans-serif;
-    font-size: clamp(10px, 3vw, 30px);
+    font-size: clamp(10px, 5vw, 35px);
 }
+
+
+
 
 
 @media (max-width: 991px) {
     .logo-size {
         display: none;
     }
+    .header {
+        justify-content: center;
+    }
     .logo-text {
-        padding-left: 75px;
+        margin-top: 5px;
     }
 }
 
