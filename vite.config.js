@@ -4,8 +4,6 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
     plugins: [react()],
     server: {
-        host: '0.0.0.0',
-        port: 5175,
         proxy: {
             '/api2/': {
                 target: 'http://127.0.0.1:5000',
@@ -13,5 +11,13 @@ export default defineConfig({
                 secure: false,
             },
         },
+    },
+    build: {
+        outDir: '/scr/cifro_hub_react_app/build',
+        sourcemap: false,
+        cssCodeSplit: true,
+    },
+    define: {
+        'process.env.NODE_ENV': '"production"',
     },
 });
