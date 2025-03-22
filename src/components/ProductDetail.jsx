@@ -1,9 +1,9 @@
-import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import {useParams} from 'react-router-dom';
+import {useEffect, useState} from 'react';
 import axios from 'axios';
 
 export default function ProductDetail() {
-    const { productId } = useParams();
+    const {productId} = useParams();
     const [product, setProduct] = useState(null);
 
     useEffect(() => {
@@ -15,18 +15,14 @@ export default function ProductDetail() {
                 console.error("Error fetching product:", error);
             }
         };
-
         if (productId) {
             fetchProduct();
         }
     }, [productId]);
-
     if (!product) return <div>Загрузка...</div>;
-
     return (
         <div>
             <h2>{product.name}</h2>
-            {/* Добавьте остальные детали товара */}
         </div>
     );
 } 

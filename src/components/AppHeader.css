@@ -5,7 +5,6 @@
     font-style: normal;
 }
 
-
 .header {
     background: linear-gradient(to right, #202d4b, #293b62);
     display: flex;
@@ -38,26 +37,19 @@
 }
 
 
-
-
-
 @media (max-width: 991px) {
     .logo-size {
         display: none;
     }
+
     .header {
         justify-content: center;
     }
+
     .logo-text {
         margin-top: 5px;
     }
 }
 
-/*@media (max-width: 480px) {*/
-/*    .logo-size,*/
-/*    .logo-text {*/
-/*        display: none;*/
-/*    }*/
 
-/*}*/
 

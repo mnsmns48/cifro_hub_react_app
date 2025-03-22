@@ -6,16 +6,15 @@ import './AppContent.css'
 import {useParams} from "react-router-dom";
 
 const {Content} = Layout;
-export default function AppContent({contentDataId, endpoint}) {
+export default function AppContent({contentDataId, endpoint, collapsed}) {
     const [contentData, setContentData] = useState({});
     const params = useParams();
     const categoryId = params.id || contentDataId;
-
     const fetchContentData = () => {
-        const apiEndpoint = categoryId 
+        const apiEndpoint = categoryId
             ? `/api2/${categoryId}` //${import.meta.env.VITE_BACKEND}
             : `/api2/root`; //${import.meta.env.VITE_BACKEND}
-        
+
         axios.get(apiEndpoint)
             .then((response) => {
                 let data = response.data;
@@ -44,13 +43,19 @@ export default function AppContent({contentDataId, endpoint}) {
             });
     };
 
+    const productProps = {
+        content: contentData,
+        endpoint,
+        collapsed
+    };
+
     useEffect(() => {
         fetchContentData();
     }, [categoryId]);
 
     return (
         <Content>
-            <ProductList content={contentData} endpoint={endpoint}/>
+            <ProductList {...productProps} />
         </Content>
     );
 }

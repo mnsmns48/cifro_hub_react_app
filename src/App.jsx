@@ -1,7 +1,7 @@
 import './App.css';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import {Layout, theme} from 'antd';
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import AppHeader from "./components/AppHeader.jsx";
 import AppFooter from "./components/AppFooter.jsx";
 import AppContent from "./components/AppContent.jsx";
@@ -19,26 +19,17 @@ const MENU_TYPE = {
     HUB: {text: "ХАБ ДОСТАВКИ", endpoint: 'hub', component: HubMenu}
 };
 
-
 export default function App() {
     const {token: {colorBgContainer, borderRadiusLG}} = theme.useToken();
 
     const [currentMenu, setCurrentMenu] = useState(MENU_TYPE.IN_STOCK);
     const [contentDataId, setContentDataId] = useState(false);
-    const [collapsed, setCollapsed] = useState(window.innerWidth < 992);
-    // const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 820);
+    const [collapsed, setCollapsed] = useState(false);
 
-    // useEffect(() => {
-    //     const handleResize = () => {
-    //         setIsSmallScreen(window.innerWidth <= 820);
-    //         if (window.innerWidth >= 820) {
-    //             setCollapsed(false);
-    //         }
-    //     };
-    //
-    //     window.addEventListener("resize", handleResize);
-    //     return () => window.removeEventListener("resize", handleResize);
-    // }, []);
+
+    const handleCollapse = (collapsed) => {
+        setCollapsed(collapsed);
+    };
 
     const handleMainSwitchBtnClick = () => {
         setCurrentMenu((current) =>
@@ -48,9 +39,6 @@ export default function App() {
 
     const handleContentCatalogId = (contentDataId) => {
         setContentDataId(contentDataId);
-        // if (window.innerWidth <= 992) {
-        //     setCollapsed(true);
-        // }
     };
 
     const WhiteStyle = {
@@ -60,16 +48,16 @@ export default function App() {
 
     const CurrentMenuComponent = currentMenu.component;
 
-    // Логика видимости контента
-    // const contentVisible = !isSmallScreen || (isSmallScreen && collapsed);
     const contentVisible = true
 
+    const contentProps = {
+        contentDataId,
+        endpoint: currentMenu.endpoint,
+        collapsed
+    };
     return (
         <Router>
-            <AppHeader
-                onMainSwitchBtnClick={handleMainSwitchBtnClick}
-                toggleButtonText={currentMenu.text}
-            />
+            <AppHeader onMainSwitchBtnClick={handleMainSwitchBtnClick}  toggleButtonText={currentMenu.text}/>
             <Layout style={WhiteStyle}>
                 <AppCarousel/>
                 <Layout style={WhiteStyle}>
@@ -77,47 +65,28 @@ export default function App() {
                         breakpoint="lg"
                         collapsedWidth="0"
                         collapsed={collapsed}
-                        onCollapse={(collapsed) => setCollapsed(collapsed)}
-                        style={{textAlign: 'left', background: "white"}}
+                        onCollapse={handleCollapse}
+                        style={{ textAlign: 'left', background: "white" }}
                         trigger={
                             <div className="menu-logo">
-                                <LogoIconButtonSVG/> <LogoMenuButtonSVG />
+                                <LogoIconButtonSVG/> <LogoMenuButtonSVG/>
                             </div>
                         }
                         width={270}>
-                        <CurrentMenuComponent
-                            onClick={handleContentCatalogId}
-                            endpoint={currentMenu.endpoint}
-                        />
+                        <CurrentMenuComponent onClick={handleContentCatalogId} endpoint={currentMenu.endpoint}/>
                     </Sider>
                     {contentVisible && (
                         <Content>
                             <Routes>
-                                <Route
-                                    path="/"
-                                    element={<AppContent contentDataId={contentDataId}/>}
-                                />
-                                <Route
-                                    path="/:endpoint/:id"
-                                    element={
-                                        <AppContent
-                                            contentDataId={contentDataId}
-                                            endpoint={currentMenu.endpoint}
-                                        />
-                                    }
-                                />
-                                <Route
-                                    path="/product/:productId"
-                                    element={<ProductDetail/>}
-                                />
+                                <Route path="/" element={<AppContent contentDataId={contentDataId}/>}/>
+                                <Route path="/:endpoint/:id" element={<AppContent {...contentProps} />}/>
+                                <Route path="/product/:productId" element={<ProductDetail/>}/>
                             </Routes>
                         </Content>
                     )}
                 </Layout>
             </Layout>
-            {/*{!isSmallScreen && <AppFooter/>}*/}
             <AppFooter/>
         </Router>
-    )
-        ;
+    );
 }

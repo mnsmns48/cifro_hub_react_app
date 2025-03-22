@@ -78,62 +78,45 @@
 }
 
 
-
-/*@media (max-width: 480px) {*/
-/*    .product-list-container {*/
-/*        width: calc(100% + 10%);*/
-
-/*    }*/
-/*    .product-card {*/
-/*        width: calc(100%);*/
-/*    }*/
-/*    .product-title {*/
-/*        font-size: 18px;*/
-/*    }*/
-/*    .short-smart-phone-specification {*/
-/*        font-size: calc(100% - 20%);*/
-/*    }*/
-/*    .ant-layout {*/
-/*        padding: 40px 15px;*/
-/*    }*/
-/*}*/
-
-/*@media (max-width: 768px) {*/
-/*    .product-card {*/
-/*        width: calc(50% - 20px);*/
-/*    }*/
-/*    .short-smart-phone-specification {*/
-/*        font-size: calc(100% - 38%);*/
-/*    }*/
-/*}*/
-
-
 @media (max-width: 991px) {
     .product-list-container {
         justify-content: center;
-    }
-    .product-card {
-        width: calc(50% - 5%);
     }
     .short-smart-phone-specification {
         font-size: calc(100% - 18%);
     }
 }
 
+
+@media (max-width: 480px) {
+    .product-card {
+        width: 100%;
+    }
+    .product-list-container {
+        justify-content: center;
+        padding-top: 85px;
+    }
+    .short-smart-phone-specification {
+        font-size: calc(100% - 18%);
+    }
+}
+
+
 @media (min-width: 992px) {
     .product-card {
         width: calc(50% - 5%);
     }
+
     .short-smart-phone-specification {
         font-size: calc(100% - 25%);
     }
 }
 
-
 @media (min-width: 1280px) {
     .product-card {
         width: calc(33.33% - 20px);
     }
+
     .short-smart-phone-specification {
         font-size: calc(100% - 27%);
     }
@@ -143,6 +126,7 @@
     .product-card {
         width: calc(33.33% - 3%);
     }
+
     .short-smart-phone-specification {
         font-size: calc(100% - 14%);
     }
@@ -152,6 +136,7 @@
     .product-card {
         width: calc(33.33% - 2%);
     }
+
     .short-smart-phone-specification {
         font-size: calc(100% + 3%);
     }
@@ -161,6 +146,7 @@
     .product-card {
         width: calc(25% - 2%);
     }
+
     .short-smart-phone-specification {
         font-size: calc(100% - 29%);
     }

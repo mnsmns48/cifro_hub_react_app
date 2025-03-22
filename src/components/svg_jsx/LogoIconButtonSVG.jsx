@@ -1,7 +1,7 @@
 const LogoIconButtonSVG = () => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="10 10 140 100"
+        viewBox="10 20 140 100"
         width="70"
         height="70"
     >
