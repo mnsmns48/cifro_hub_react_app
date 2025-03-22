@@ -23,21 +23,21 @@ export default function App() {
     const {token: {colorBgContainer, borderRadiusLG}} = theme.useToken();
 
     const [currentMenu, setCurrentMenu] = useState(MENU_TYPE.IN_STOCK);
-    const [contentDataId, setContentDataId] = useState('');
-    const [collapsed, setCollapsed] = useState(window.innerWidth < 768);
-    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
+    const [contentDataId, setContentDataId] = useState(false);
+    const [collapsed, setCollapsed] = useState(window.innerWidth < 992);
+    // const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 820);
 
-    useEffect(() => {
-        const handleResize = () => {
-            setIsSmallScreen(window.innerWidth < 768);
-            if (window.innerWidth > 768) {
-                setCollapsed(false);
-            }
-        };
-
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
+    // useEffect(() => {
+    //     const handleResize = () => {
+    //         setIsSmallScreen(window.innerWidth <= 820);
+    //         if (window.innerWidth >= 820) {
+    //             setCollapsed(false);
+    //         }
+    //     };
+    //
+    //     window.addEventListener("resize", handleResize);
+    //     return () => window.removeEventListener("resize", handleResize);
+    // }, []);
 
     const handleMainSwitchBtnClick = () => {
         setCurrentMenu((current) =>
@@ -47,9 +47,9 @@ export default function App() {
 
     const handleContentCatalogId = (contentDataId) => {
         setContentDataId(contentDataId);
-        if (window.innerWidth < 768) {
-            setCollapsed(true);
-        }
+        // if (window.innerWidth <= 992) {
+        //     setCollapsed(true);
+        // }
     };
 
     const WhiteStyle = {
@@ -60,8 +60,8 @@ export default function App() {
     const CurrentMenuComponent = currentMenu.component;
 
     // Логика видимости контента
-    const contentVisible = !isSmallScreen || (isSmallScreen && collapsed);
-
+    // const contentVisible = !isSmallScreen || (isSmallScreen && collapsed);
+    const contentVisible = true
 
     return (
         <Router>
@@ -73,13 +73,14 @@ export default function App() {
                 <AppCarousel/>
                 <Layout style={WhiteStyle}>
                     <Sider
-                        breakpoint="md"
+                        breakpoint="lg"
                         collapsedWidth="0"
                         collapsed={collapsed}
-                        onCollapse={setCollapsed}
-                        style={{textAlign: "left", background: "white"}}
+                        onCollapse={(collapsed) => setCollapsed(collapsed)}
+                        style={{textAlign: 'left', background: "white"}}
                         trigger={<LogoButtonMenu className='menu-logo'/>}
-                        width={270}>
+                        width={270}
+                        >
                         <CurrentMenuComponent
                             onClick={handleContentCatalogId}
                             endpoint={currentMenu.endpoint}
@@ -110,7 +111,8 @@ export default function App() {
                     )}
                 </Layout>
             </Layout>
-            {!isSmallScreen && <AppFooter/>}
+            {/*{!isSmallScreen && <AppFooter/>}*/}
+            <AppFooter/>
         </Router>
     )
         ;

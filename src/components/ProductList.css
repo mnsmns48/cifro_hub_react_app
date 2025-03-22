@@ -108,23 +108,19 @@
 /*}*/
 
 
-@media (min-width: 769px) {
-    .ant-menu {
-        width: calc(100% - 5%);
-    }
+@media (max-width: 991px) {
     .product-list-container {
         justify-content: center;
     }
     .product-card {
-        width: calc(100% - 20%);
-
+        width: calc(100% - 30%);
     }
     .short-smart-phone-specification {
         font-size: calc(100% - 18%);
     }
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 992px) {
     .product-card {
         width: calc(50% - 5%);
     }

@@ -20,7 +20,7 @@
 }
 
 
-@media (max-width: 768px) {
+@media (max-width: 991px) {
     .ant-layout-sider-zero-width-trigger {
         top: -204px !important;
         left: 26px !important;
@@ -28,11 +28,11 @@
 }
 
 
-@media (max-width: 480px) {
-    .ant-layout-sider-zero-width-trigger {
-        top: -75px !important;
-        left: -5px !important;
-    }
-}
+/*@media (max-width: 480px) {*/
+/*    .ant-layout-sider-zero-width-trigger {*/
+/*        top: -75px !important;*/
+/*        left: -5px !important;*/
+/*    }*/
+/*}*/
 
 

@@ -38,21 +38,20 @@
 }
 
 
-@media (max-width: 768px) {
+@media (max-width: 991px) {
     .logo-size {
         display: none;
     }
-
     .logo-text {
         padding-left: 75px;
     }
 }
 
-@media (max-width: 480px) {
-    .logo-size,
-    .logo-text {
-        display: none;
-    }
+/*@media (max-width: 480px) {*/
+/*    .logo-size,*/
+/*    .logo-text {*/
+/*        display: none;*/
+/*    }*/
 
-}
+/*}*/
 
