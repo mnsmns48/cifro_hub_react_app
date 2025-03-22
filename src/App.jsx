@@ -1,7 +1,7 @@
 import './App.css';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import {Layout, theme} from 'antd';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import AppHeader from "./components/AppHeader.jsx";
 import AppFooter from "./components/AppFooter.jsx";
 import AppContent from "./components/AppContent.jsx";
@@ -25,11 +25,15 @@ export default function App() {
     const [currentMenu, setCurrentMenu] = useState(MENU_TYPE.IN_STOCK);
     const [contentDataId, setContentDataId] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
-
-
     const handleCollapse = (collapsed) => {
         setCollapsed(collapsed);
     };
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize); // Cleanup on unmount
+    }, []);
 
     const handleMainSwitchBtnClick = () => {
         setCurrentMenu((current) =>
@@ -39,6 +43,13 @@ export default function App() {
 
     const handleContentCatalogId = (contentDataId) => {
         setContentDataId(contentDataId);
+        if (window.innerWidth <= 480) {
+            handleMenuButtonClick()
+        }
+    };
+
+    const handleMenuButtonClick = () => {
+        setCollapsed(true);
     };
 
     const WhiteStyle = {
@@ -48,7 +59,7 @@ export default function App() {
 
     const CurrentMenuComponent = currentMenu.component;
 
-    const contentVisible = true
+    const contentVisible = !(collapsed === false && windowWidth <= 480);
 
     const contentProps = {
         contentDataId,
@@ -57,7 +68,7 @@ export default function App() {
     };
     return (
         <Router>
-            <AppHeader onMainSwitchBtnClick={handleMainSwitchBtnClick}  toggleButtonText={currentMenu.text}/>
+            <AppHeader onMainSwitchBtnClick={handleMainSwitchBtnClick} toggleButtonText={currentMenu.text}/>
             <Layout style={WhiteStyle}>
                 <AppCarousel/>
                 <Layout style={WhiteStyle}>
@@ -66,7 +77,7 @@ export default function App() {
                         collapsedWidth="0"
                         collapsed={collapsed}
                         onCollapse={handleCollapse}
-                        style={{ textAlign: 'left', background: "white" }}
+                        style={{textAlign: 'left', background: "white"}}
                         trigger={
                             <div className="menu-logo">
                                 <LogoIconButtonSVG/> <LogoMenuButtonSVG/>
