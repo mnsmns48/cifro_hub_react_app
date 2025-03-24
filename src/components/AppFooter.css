@@ -6,3 +6,9 @@
     background: white;
     border-radius: 25px;
 }
+
+.footer-link {
+    color: #272933;
+    cursor: default;
+}
+

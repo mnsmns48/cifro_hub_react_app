@@ -11,6 +11,7 @@ import AppCarousel from "./components/AppCarousel.jsx";
 import ProductDetail from "./components/ProductDetail.jsx";
 import LogoIconButtonSVG from "./components/svg_jsx/LogoIconButtonSVG.jsx";
 import LogoMenuButtonSVG from "./components/svg_jsx/LogoMenuButtonSVG.jsx";
+import Address from "./components/Address.jsx";
 
 const {Content, Sider} = Layout;
 
@@ -92,6 +93,7 @@ export default function App() {
                                 <Route path="/" element={<AppContent contentDataId={contentDataId}/>}/>
                                 <Route path="/:endpoint/:id" element={<AppContent {...contentProps} />}/>
                                 <Route path="/product/:productId" element={<ProductDetail/>}/>
+                                <Route path="/address" element={<Address/>}/>
                             </Routes>
                         </Content>
                     )}

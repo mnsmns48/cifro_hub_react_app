@@ -1,0 +1,29 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px;
+}
+
+.responsive-image {
+    width: 100%;
+    max-width: 850px;
+    height: auto;
+}
+
+.responsive-iframe {
+    margin: 30px 0;
+    width: 850px;
+    height: 720px;
+}
+
+.contacts {
+    font-size: 1.2rem;
+    margin: 30px 0;
+    justify-content: center;
+    text-align: center;
+    font-family: 'Roboto', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
