@@ -1,6 +1,5 @@
-import React from 'react';
-import {FaTelegram, FaPhoneAlt} from 'react-icons/fa'; // Import Telegram icon
-import './Address.css'; // Optional, for styling
+import {FaTelegram, FaPhoneAlt} from 'react-icons/fa';
+import './Address.css';
 
 export default function Address() {
     return (
