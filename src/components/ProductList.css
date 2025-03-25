@@ -47,8 +47,10 @@
 }
 
 .product-image {
-    width: 100%;
-    max-width: 300px;
+    width: 50%;
+    height: 50%;
+    /*max-width: 250px;*/
+    /*max-height: auto;*/
     margin: 10px auto;
     padding: 1px;
     display: block;

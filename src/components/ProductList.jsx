@@ -49,9 +49,13 @@ const ProductList = ({content, endpoint, collapsed}) => {
                                     src={`/api2/images/${item.code}.jpg`} //${import.meta.env.VITE_BACKEND}
                                     alt={item.name}
                                     className="product-image"
+                                    width={608}
+                                    height={332}
                                     onError={(e) => {
-                                        console.error("Image load error:", e);
-                                    }}/>}>
+                                        e.target.src = "/api2/images/10000.jpg";
+                                        e.target.alt = "not_image";
+                                    }}
+                                />}>
                             <div className="product-title">{cleanTitle(item.name)}</div>
                             <div className="additional">
                                 <p className="price">{`${item.price} ₽`}</p>

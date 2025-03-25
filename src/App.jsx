@@ -79,11 +79,7 @@ export default function App() {
                         collapsed={collapsed}
                         onCollapse={handleCollapse}
                         style={{textAlign: 'left', background: "white"}}
-                        trigger={
-                            <div className="menu-logo">
-                                <LogoIconButtonSVG/> <LogoMenuButtonSVG/>
-                            </div>
-                        }
+                        trigger={<div className="menu-logo"><LogoIconButtonSVG/><LogoMenuButtonSVG/></div>}
                         width={270}>
                         <CurrentMenuComponent onClick={handleContentCatalogId} endpoint={currentMenu.endpoint}/>
                     </Sider>
