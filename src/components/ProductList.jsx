@@ -1,9 +1,9 @@
-import {Card, Image, Pagination} from "antd";
+import {Card, Pagination} from "antd";
 import Meta from "antd/es/card/Meta";
 import './ProductList.css';
 import ProductFeatures from "./ProductFeatures.jsx";
 import {useNavigate, useSearchParams} from 'react-router-dom';
-
+import ProductImage from './ProductImage.jsx'
 
 function cleanTitle(title) {
     return title.replace(/смартфон/gi, '').trim();
@@ -44,18 +44,7 @@ const ProductList = ({content, endpoint, collapsed}) => {
                                     }
                                     : undefined
                             }
-                            cover={
-                                <Image
-                                    src={`/api2/images/${item.code}.jpg`} //${import.meta.env.VITE_BACKEND}
-                                    alt={item.name}
-                                    className="product-image"
-                                    width={608}
-                                    height={332}
-                                    onError={(e) => {
-                                        e.target.src = "/api2/images/10000.jpg";
-                                        e.target.alt = "not_image";
-                                    }}
-                                />}>
+                            cover={<ProductImage id={item.code} title={item.name}/>}>
                             <div className="product-title">{cleanTitle(item.name)}</div>
                             <div className="additional">
                                 <p className="price">{`${item.price} ₽`}</p>
@@ -67,7 +56,7 @@ const ProductList = ({content, endpoint, collapsed}) => {
                         </Card>
                     ))
                 ) : (
-                    <p>Здесь пусто</p>
+                    <p>Ремонтные работы</p>
                 )}
             </div>
             {Array.isArray(content) && content.length > pageSize && (

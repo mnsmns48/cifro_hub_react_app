@@ -47,13 +47,13 @@
 }
 
 .product-image {
-    width: 50%;
-    height: 50%;
-    /*max-width: 250px;*/
-    /*max-height: auto;*/
+    width: 100%;
+    max-width: 300px;
+    max-height: 163px;
     margin: 10px auto;
     padding: 1px;
     display: block;
+    object-fit: scale-down;
 }
 
 .short-smart-phone-specification {
