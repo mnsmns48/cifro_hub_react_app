@@ -12,12 +12,12 @@ export default defineConfig({
             },
         },
     },
-    // build: {
-    //     outDir: '/scr/cifro_hub_react_app/build',
-    //     sourcemap: false,
-    //     cssCodeSplit: true,
-    // },
-    // define: {
-    //     'process.env.NODE_ENV': '"production"',
-    // },
+    build: {
+        outDir: '/scr/cifro_hub_react_app/build',
+        sourcemap: false,
+        cssCodeSplit: true,
+    },
+    define: {
+        'process.env.NODE_ENV': '"production"',
+    },
 });
