@@ -4,6 +4,7 @@ import './ProductList.css';
 import ProductFeatures from "./ProductFeatures.jsx";
 import {useNavigate, useSearchParams} from 'react-router-dom';
 import ProductImage from './ProductImage.jsx'
+import Spinner from "./Spinner.jsx";
 
 function cleanTitle(title) {
     return title.replace(/смартфон/gi, '').trim();
@@ -56,7 +57,7 @@ const ProductList = ({content, endpoint, collapsed}) => {
                         </Card>
                     ))
                 ) : (
-                    <p>Ремонтные работы</p>
+                    <Spinner/>
                 )}
             </div>
             {Array.isArray(content) && content.length > pageSize && (
