@@ -10,7 +10,7 @@ export default function AppContent({contentDataId, endpoint, collapsed}) {
     const [contentData, setContentData] = useState({});
     const params = useParams();
     const categoryId = params.id || contentDataId;
-    const fetchContentData = () => {
+    const fetchContentData = async () => {
         const apiEndpoint = categoryId
             ? `/api2/${categoryId}` //${import.meta.env.VITE_BACKEND}
             : `/api2/root`; //${import.meta.env.VITE_BACKEND}
