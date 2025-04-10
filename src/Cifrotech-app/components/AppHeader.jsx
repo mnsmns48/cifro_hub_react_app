@@ -11,7 +11,7 @@ export default function AppHeader({onInStockButtonClick}) {
     return (
         <Header className='header'>
             <div className='logo-align'>
-                <a href="/" className='logo-align'>
+                <a href="/public" className='logo-align'>
                     <img src={logo} alt="Logo" className='logo-size'/>
                     <span className='logo-text'>
                         ЦИФРО ХАБ

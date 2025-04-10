@@ -1,17 +1,17 @@
-import './App.css';
+import './CifrotechMainApp.css';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import {Layout, theme} from 'antd';
 import {useEffect, useState} from "react";
-import AppHeader from "./components/AppHeader.jsx";
-import AppFooter from "./components/AppFooter.jsx";
-import AppContent from "./components/AppContent.jsx";
-import InStockMenu from "./components/instock/InStockMenu.jsx";
-import HubMenu from "./components/hub/HubMenu.jsx";
-import AppCarousel from "./components/AppCarousel.jsx";
-import ProductDetail from "./components/ProductDetail.jsx";
-import LogoIconButtonSVG from "./components/svg_jsx/LogoIconButtonSVG.jsx";
-import LogoMenuButtonSVG from "./components/svg_jsx/LogoMenuButtonSVG.jsx";
-import Address from "./components/Address.jsx";
+import AppHeader from "./Cifrotech-app/components/AppHeader.jsx";
+import AppFooter from "./Cifrotech-app/components/AppFooter.jsx";
+import AppContent from "./Cifrotech-app/components/AppContent.jsx";
+import InStockMenu from "./Cifrotech-app/components/instock/InStockMenu.jsx";
+import HubMenu from "./Cifrotech-app/components/hub/HubMenu.jsx";
+import AppCarousel from "./Cifrotech-app/components/AppCarousel.jsx";
+import ProductDetail from "./Cifrotech-app/components/ProductDetail.jsx";
+import LogoIconButtonSVG from "./Cifrotech-app/components/svg_jsx/LogoIconButtonSVG.jsx";
+import LogoMenuButtonSVG from "./Cifrotech-app/components/svg_jsx/LogoMenuButtonSVG.jsx";
+import Address from "./Cifrotech-app/components/Address.jsx";
 
 const {Content, Sider} = Layout;
 
@@ -20,7 +20,7 @@ const MENU_TYPE = {
     HUB: {text: "ХАБ ДОСТАВКИ", endpoint: 'hub', component: HubMenu}
 };
 
-export default function App() {
+export default function CifrotechMainApp() {
     const {token: {colorBgContainer, borderRadiusLG}} = theme.useToken();
 
     const [currentMenu, setCurrentMenu] = useState(MENU_TYPE.IN_STOCK);
@@ -68,7 +68,7 @@ export default function App() {
         collapsed
     };
     return (
-        <Router>
+        <>
             <AppHeader onMainSwitchBtnClick={handleMainSwitchBtnClick} toggleButtonText={currentMenu.text}/>
             <Layout style={WhiteStyle}>
                 <AppCarousel/>
@@ -96,6 +96,6 @@ export default function App() {
                 </Layout>
             </Layout>
             <AppFooter/>
-        </Router>
+        </>
     );
 }

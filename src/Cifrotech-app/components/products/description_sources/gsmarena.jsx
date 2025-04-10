@@ -1,4 +1,4 @@
-import {createShortSmartPhoneSpecification, monthsMap, sanitizeInputNumber} from "../../../../utils.js";
+import {createShortSmartPhoneSpecification, monthsMap, sanitizeInputNumber} from "../../../../../utils.js";
 import {RenderShortSpecs} from "../smartPhone.jsx";
 
 const processCameraSpecs = (item) => {
