@@ -1,7 +1,7 @@
 export default function ServiceApp() {
     return (
         <div>
-            <h1>Hello Test</h1>
+            <h1>Авторизирован</h1>
         </div>
     );
 }

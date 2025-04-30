@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
+import Authorization from "./Authorization.jsx";
+import ServiceApp from "../ServiceApp.jsx";
 
 export default function CheckAccess() {
     const [isSuperUser, setIsSuperUser] = useState(false);
@@ -12,10 +14,8 @@ export default function CheckAccess() {
                 }
             })
             .catch(error => {
-
-                console.error('Ошибка запроса:', error);
+                console.error('Ошибка запроса проверки пользователя:', error);
             });
     }, []);
-
-    return isSuperUser ? <div>У вас есть доступ.</div> : <div>Доступ запрещён.</div>;
+    return isSuperUser ? <ServiceApp/> : <Authorization/>;
 }
