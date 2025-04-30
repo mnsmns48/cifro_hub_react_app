@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import axios from 'axios';
 import Authorization from "./Authorization.jsx";
 import ServiceApp from "../ServiceApp.jsx";
