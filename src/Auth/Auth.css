@@ -1,14 +1,6 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
 .wrapper {
+    font-family: Arial, sans-serif;
+    margin-top: 100px;
     height: 100%;
     display: flex;
     justify-content: center;
@@ -56,4 +48,17 @@ body {
 .form-container input:focus {
     outline: none;
     border-color: #426df1;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.service-logo {
+    background: black;
+    border-radius: 30px;
+    margin-bottom: 20px;
+    width: 100px;
 }

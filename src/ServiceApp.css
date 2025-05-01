@@ -1,0 +1,14 @@
+.ant-tabs-content-holder {
+    align-content: center !important;
+}
+
+.bill-wrapper {
+    font-family: Arial, sans-serif;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.bill-wrapper .form-container {
+    width: 100%;
+}

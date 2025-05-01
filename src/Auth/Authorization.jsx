@@ -2,7 +2,7 @@ import './Auth.css';
 import {Modal, Button} from "antd";
 import axios from "axios";
 import {useState} from "react";
-
+import logo from '/logo-cifro-hub.png'
 
 export default function Authorization() {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -36,6 +36,9 @@ export default function Authorization() {
     return (
         <div className="wrapper">
             <div className="form-container">
+                <div className="logo-container">
+                    <img src={logo} alt="Logo" className="service-logo"/>
+                </div>
                 <form onSubmit={handleSubmit}>
                     <label htmlFor="username">Логин</label>
                     <input type="text" id="username" name="username"/><br/>
@@ -44,7 +47,7 @@ export default function Authorization() {
                     <input type="submit" value="Войти" className="button"/>
                 </form>
             </div>
-            <Modal title="Ошибка" open={isModalVisible}
+            <Modal title="Ошибка" open={isModalVisible} centered={true}
                    footer={[<Button key="ok" type="primary" onClick={handleOk}>Закрыть</Button>]}>
                 <p>{modalContent}</p>
             </Modal>
