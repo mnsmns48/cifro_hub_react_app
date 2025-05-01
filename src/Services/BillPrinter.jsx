@@ -5,36 +5,43 @@ export default function BillPrinter() {
         today.getFullYear();
     const randomNumber = Math.floor(Math.random() * (60000 - 50000 + 1)) + 50000;
 
-
-    const billSubmit = async (event) => {
+    const billRender = async (event) => {
         event.preventDefault();
-        try {
-            const response = await fetch("/service/billsubmit", {
-                method: "POST",
-                body: new FormData(event.target),
-            });
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = "receipt.xlsx";
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-                window.URL.revokeObjectURL(url);
-            } else {
-                console.error("Ошибка при отправке данных:", response.statusText);
-            }
-        } catch (error) {
-            console.error("Произошла ошибка:", error);
+        const data = new FormData(event.target);
+        const formDataObj = Object.fromEntries(data.entries());
+        if (formDataObj.receipt_date &&
+            formDataObj.receipt_number &&
+            formDataObj.receipt_qty &&
+            formDataObj.receipt_product &&
+            formDataObj.receipt_price) {
+            try {
+                const response = await fetch("/service/billrender",
+                    {method: "POST", body: data});
+                if (response.status === 200 || response.status === 204) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "receipt.xlsx";
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    console.error("Ошибка при отправке данных:", response.statusText);
+                }
+            } catch (error) {console.error("Произошла ошибка:", error)}
         }
-    };
+        else {
+            alert('Все поля должны быть заполнены')
+        }
+
+    }
 
     return (
         <div className="bill-wrapper">
             <div className="form-container">
-                <form onSubmit={billSubmit} method="POST">
+                <form onSubmit={billRender} method="POST">
                     <label htmlFor="receipt_date">Дата чека:</label>
                     <input type="text" id="receipt_date" name="receipt_date" defaultValue={formattedDate}/><br/>
                     <label htmlFor="receipt_number">Номер чека:</label>
@@ -45,7 +52,7 @@ export default function BillPrinter() {
                     <input type="number" id="receipt_qty" name="receipt_qty"/><br/>
                     <label htmlFor="receipt_price">Цена:</label>
                     <input type="number" id="receipt_price" name="receipt_price"/><br/>
-                    <input type="submit" value="Генерация"/>
+                    <input type="submit" value="Скачать"/>
                 </form>
             </div>
         </div>
