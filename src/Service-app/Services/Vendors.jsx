@@ -6,6 +6,7 @@ import '../Service-utils/Vendors.css'
 import MyModal from "../../Ui/MyModal.jsx";
 
 const Vendors = () => {
+    const [vendorFields, setVendorFields] = useState([]);
     const [vendors, setVendors] = useState([]);
     const [editingKey, setEditingKey] = useState(null);
     const [editedValues, setEditedValues] = useState({});
@@ -16,7 +17,11 @@ const Vendors = () => {
 
     useEffect(() => {
         axios.get('/service/vendors')
-            .then(response => setVendors(response.data.vendors || []))
+            .then(response => {
+                setVendors(response.data.vendors || []);
+                const keys = response.data.vendors?.[0] ? Object.keys(response.data.vendors[0]).filter(k => k !== "id") : [];
+                setVendorFields(keys);
+            })
             .catch(error => console.error('Ошибка загрузки данных:', error));
     }, []);
 
@@ -24,6 +29,7 @@ const Vendors = () => {
         setEditingKey(record.id);
         setEditedValues(record);
     };
+
 
     const handleSave = (id) => {
         axios.put(`/service/vendors/${id}`, editedValues)
@@ -40,7 +46,7 @@ const Vendors = () => {
     };
 
     const handleAdd = () => {
-        setNewVendor(prev => (prev ? null : {id: 0, name: '', source: '', telegram_id: ''}));
+        setNewVendor(prev => prev ? null : Object.fromEntries([['id', 0], ...vendorFields.map(key => [key, ''])]));
     };
 
     const handleSaveNewVendor = () => {
@@ -52,15 +58,12 @@ const Vendors = () => {
         axios.post('/service/vendors', newVendor)
             .then(response => {
                 console.log('Добавлено:', response.data);
-                setVendors(prevVendors => [...prevVendors, response.data.vendor]);
+                setVendors(prevVendors => [...prevVendors, response.data['vendor']]);
                 setNewVendor(null);
             })
             .catch(error => console.error('Ошибка добавления:', error));
     };
 
-    const handleChangeNew = (e, key) => {
-        setNewVendor(prev => ({...prev, [key]: e.target.value}));
-    };
 
     const showDeleteModal = (vendor) => {
         setSelectedVendor(vendor);
@@ -84,36 +87,37 @@ const Vendors = () => {
 
     const columns = [
         ...Object.keys(vendors[0] || {}).filter(key => key !== "id").map(key => ({
-            title: key.charAt(0).toUpperCase() + key.slice(1),
+            title: key,
             dataIndex: key,
             key,
             render: (text, record) =>
                 editingKey === record.id ? (
-                    <Input value={editedValues[key] || ''} onChange={(e) =>
-                        setEditedValues(prev => ({...prev, [key]: e.target.value}))}/>
-                ) : (
-                    text
-                ),
+                    <Input value={editedValues[key] || ''}
+                           onChange={(e) => setEditedValues(prev => ({...prev, [key]: e.target.value}))}/>
+                ) : text
         })),
         {
             key: 'actions',
-            render: (_, record) => (
-                <>
-                    {editingKey === record.id ? (
-                        <Button icon={<SaveOutlined/>} type="link" onClick={() => handleSave(record.id)}/>
-                    ) : (
-                        <Button icon={<EditOutlined/>} type="link" onClick={() => handleEdit(record)}/>
-                    )}
-                    <Button icon={<DeleteOutlined/>} type="link" danger onClick={() => showDeleteModal(record)}/>
-                </>
-            ),
-        },
+            render: (_, record) => {
+                let actionButton;
+                if (editingKey === record.id) {
+                    actionButton = <Button icon={<SaveOutlined/>} type="link" onClick={() => handleSave(record.id)}/>
+                } else {
+                    actionButton = <Button icon={<EditOutlined/>} type="link" onClick={() => handleEdit(record)}/>
+                }
+                return (
+                    <>
+                        {actionButton}
+                        <Button icon={<DeleteOutlined/>} type="link" danger onClick={() => showDeleteModal(record)}/>
+                    </>)
+            }
+        }
     ];
 
     return (
-        <div className="vendors">
-            <div style={{display: 'flex', alignItems: 'center', gap: 20}}>
-                <h1 style={{marginBottom: 0}}>Vendors</h1>
+        <>
+            <div className='vendor-main'>
+                <h1>Vendors</h1>
                 <Button
                     icon={<PlusOutlined/>}
                     type="primary"
@@ -123,17 +127,18 @@ const Vendors = () => {
                 />
             </div>
             {newVendor && (
-                <div style={{display: 'flex', gap: 8, marginTop: 10, marginBottom: 10}}>
-                    <Input placeholder="Имя" value={newVendor.name} onChange={(e) => handleChangeNew(e, 'name')}/>
-                    <Input placeholder="Источник" value={newVendor.source}
-                           onChange={(e) => handleChangeNew(e, 'source')}/>
-                    <Input placeholder="Telegram ID" value={newVendor.telegram_id}
-                           onChange={(e) => handleChangeNew(e, 'telegram_id')}/>
+                <div className="new-vendor-line">
+                    {vendorFields.map(key => (
+                            <Input key={key}
+                                   placeholder={key}
+                                   value={newVendor[key] || ''}
+                                   onChange={(e) => setNewVendor(prev => ({...prev, [key]: e.target.value}))}/>
+                        )
+                    )
+                    }
                     <Button icon={<SaveOutlined/>} type="primary" onClick={handleSaveNewVendor}>Сохранить</Button>
-                </div>
-            )}
+                </div>)}
             <Table columns={columns} dataSource={vendors} rowKey="id"/>
-
             <MyModal
                 isOpen={isModalOpen}
                 onConfirm={handleDeleteConfirm}
@@ -141,9 +146,7 @@ const Vendors = () => {
                 content={`Вы уверены, что хотите удалить ${selectedVendor?.name}?`}
                 danger={true}
                 footer={<>
-                    <Button type="primary" danger onClick={handleDeleteConfirm}>
-                        Удалить
-                    </Button>
+                    <Button type="primary" danger onClick={handleDeleteConfirm}>Удалить</Button>
                     <Button onClick={() => setIsModalOpen(false)}>Отмена</Button>
                 </>}
             />
@@ -154,7 +157,7 @@ const Vendors = () => {
                 danger={true}
                 footer={<Button type="primary" danger onClick={() => setIsErrorModalOpen(false)}>ОК</Button>}
             />
-        </div>
+        </>
     );
 };
 

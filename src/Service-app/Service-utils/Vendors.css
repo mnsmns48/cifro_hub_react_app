@@ -1,3 +1,15 @@
+.vendor-main {
+    display: flex;
+    align-items: center;
+    gap: 20px
+}
+
 .add_vendor_button {
-    margin-top: 20px;
+    margin-top: 5px;
+}
+
+.new-vendor-line {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0;
 }
