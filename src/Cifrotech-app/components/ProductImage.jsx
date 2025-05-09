@@ -5,7 +5,7 @@ export default function ProductImage({id, title}) {
     return (
     <>
         <Image
-            src={`/api2/images/${id}.jpg`} //${import.meta.env.VITE_BACKEND}
+            src={`/api2/images/${id}.jpg`}
             alt={title}
             className="product-image"
             onError={(e) => {

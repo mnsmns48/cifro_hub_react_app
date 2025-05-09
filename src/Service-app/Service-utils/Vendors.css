@@ -1,7 +1,8 @@
 .vendor-main {
     display: flex;
     align-items: center;
-    gap: 20px
+    gap: 20px;
+    font-family: Arial, sans-serif;
 }
 
 .add_vendor_button {
