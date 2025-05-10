@@ -141,7 +141,6 @@ const Vendors = () => {
             <Table columns={columns} dataSource={vendors} rowKey="id"/>
             <MyModal
                 isOpen={isModalOpen}
-                onConfirm={handleDeleteConfirm}
                 onCancel={() => setIsModalOpen(false)}
                 content={`Вы уверены, что хотите удалить ${selectedVendor?.name}?`}
                 danger={true}
@@ -152,7 +151,6 @@ const Vendors = () => {
             />
             <MyModal
                 isOpen={isErrorModalOpen}
-                onConfirm={() => setIsErrorModalOpen(false)}
                 content="Имя поставщика не может быть пустым."
                 danger={true}
                 footer={<Button type="primary" danger onClick={() => setIsErrorModalOpen(false)}>ОК</Button>}

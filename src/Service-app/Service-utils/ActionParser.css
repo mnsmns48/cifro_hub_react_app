@@ -17,8 +17,15 @@
 
 .left_col {
     padding-top: 15px;
+    flex-direction: column;
 }
 
 .table_url {
     font-size: 10px;
+}
+
+.parser_footer {
+    padding-top: 50px;
+    display: flex;
+    justify-content: center;
 }
