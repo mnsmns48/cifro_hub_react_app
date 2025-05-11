@@ -2,7 +2,7 @@ import '../Service-utils/ActionParser.css';
 import {Button, Select, Row, Col, Table, Input, Flex} from 'antd';
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {DeleteOutlined, EditOutlined, PlusOutlined, SaveOutlined} from "@ant-design/icons";
+import {DeleteOutlined, EditOutlined, PlusOutlined, SaveOutlined, SettingOutlined} from "@ant-design/icons";
 import MyModal from "../../Ui/MyModal.jsx";
 
 
@@ -51,7 +51,6 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
     const handleRowSelection = (selectedKeys, selectedRows) => {
         setSelectedRowKeys(selectedKeys);
         setSelectedRow(selectedRows[0] || null);
-
     };
 
     const handleEdit = (record) => {
@@ -174,7 +173,10 @@ const ActionParser = () => {
     useEffect(() => {
         if (selectedSource) {
             fetchTableData(selectedSource).then(setTableData);
+            setSelectedRow(null);
+            setSelectedRowKeys(null);
         }
+
     }, [selectedSource]);
 
     const refreshTableData = async (newRec = null) => {
@@ -242,13 +244,13 @@ const ActionParser = () => {
                             </div>)
                         }
                         <div className='parser_footer'>
-                            <Button type="primary" onClick={() => {
-                                if (selectedRow) {
-                                    console.log(`Парсим URL: ${selectedRow.url}`);
-                                } else {
-                                    console.log("Не выбрана ни одна запись!");
-                                }
-                            }}> Процесс </Button>
+                            {selectedRow && (
+                                <Button
+                                    icon={<SettingOutlined/>}
+                                    type="primary"
+                                    onClick={() => {
+                                        console.log(`Парсим URL: ${selectedRow.url}`)
+                                    }}>Парсинг</Button>)}
                         </div>
                     </Flex>
                 </Col>
