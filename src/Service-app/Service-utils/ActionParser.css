@@ -18,6 +18,7 @@
 .left_col {
     padding-top: 15px;
     flex-direction: column;
+    margin-right: 50px;
 }
 
 .table_url {
@@ -28,4 +29,24 @@
     padding-top: 50px;
     display: flex;
     justify-content: center;
+}
+
+.search_table_action_buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.input_link_container {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 8px;
+    gap: 16px;
+}
+
+
+.input_link {
+    display: flex;
+    background-color: #52c41a;
+    border-color: #52c41a;
 }
