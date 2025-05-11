@@ -4,6 +4,19 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {DeleteOutlined, EditOutlined, PlusOutlined, SaveOutlined, SettingOutlined} from "@ant-design/icons";
 import MyModal from "../../Ui/MyModal.jsx";
+import ProgressComponent from "../Service-utils/ProgressComponent.jsx";
+
+const ParsingData = async (url) => {
+    try {
+        const response = await axios.post('/service/pars_me', {url}, {
+            headers: {'Content-Type': 'application/json'}
+        });
+        return response.data.result || {};
+    } catch (error) {
+        console.error("Ошибка запроса:", error);
+        return {error: "Ошибка получения данных"};
+    }
+}
 
 
 const fetchVendors = async () => {
@@ -165,6 +178,7 @@ const ActionParser = () => {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [isParsing, setIsParsing] = useState(false);
 
     useEffect(() => {
         fetchVendors().then(setOptions);
@@ -223,6 +237,15 @@ const ActionParser = () => {
         }
     };
 
+    const startParsing = async () => {
+        if (!selectedRow?.url) return;
+        else {
+            await ParsingData(selectedRow.url);
+            setIsParsing(true);
+        }
+        ;
+    }
+
     return (
         <>
             <div className='action_parser_main'>
@@ -248,10 +271,10 @@ const ActionParser = () => {
                                 <Button
                                     icon={<SettingOutlined/>}
                                     type="primary"
-                                    onClick={() => {
-                                        console.log(`Парсим URL: ${selectedRow.url}`)
-                                    }}>Парсинг</Button>)}
+                                    onClick={startParsing}>Парсинг</Button>)}
+
                         </div>
+                        {isParsing && <ProgressComponent/>}
                     </Flex>
                 </Col>
                 <Col span={15} className='right_col'>
@@ -263,6 +286,7 @@ const ActionParser = () => {
                         setSelectedRowKeys={setSelectedRowKeys}/>
                 </Col>
             </Row>
+
             <MyModal
                 isOpen={isErrorModalOpen}
                 onCancel={() => setIsErrorModalOpen(false)}
