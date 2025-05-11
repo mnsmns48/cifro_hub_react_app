@@ -14,7 +14,7 @@ const fetchVendors = async () => {
             label: vendor.name
         })) || [];
     } catch (error) {
-        console.error('Ошибка загрузки /service/vendors:', error);
+        console.error('Ошибка загрузки данных', error);
         return [];
     }
 };
@@ -117,7 +117,6 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
                     </div>)
             }
         }
-
     ];
 
     return (
@@ -201,7 +200,6 @@ const ActionParser = () => {
 
     const addVSL = async (vendorId, newVSLData) => {
         if (!vendorId) {
-            console.error("Ошибка: vendorId не передан!");
             return;
         }
         try {
@@ -217,7 +215,7 @@ const ActionParser = () => {
             if (error.response?.status === 409) {
                 setErrorMessage("Ошибка: такая ссылка или название уже существует!");
             } else {
-                setErrorMessage("Ошибка добавления. Попробуйте снова.");
+                setErrorMessage(`Ошибка добавления, проблема с сервером`);
             }
             setIsErrorModalOpen(true);
         }
