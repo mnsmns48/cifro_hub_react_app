@@ -1,5 +1,5 @@
 import '../Service-utils/ActionParser.css';
-import {Button, Select, Row, Col, Table, Input} from 'antd';
+import {Button, Select, Row, Col, Table, Input, Flex} from 'antd';
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {DeleteOutlined, EditOutlined, PlusOutlined, SaveOutlined} from "@ant-design/icons";
@@ -21,9 +21,7 @@ const fetchVendors = async () => {
 
 const fetchTableData = async (vendorId) => {
     try {
-        console.log(vendorId)
         const response = await axios.get(`/service/get_vsl/${vendorId}`);
-        console.log(response.data)
         return response.data.vsl || [];
     } catch (error) {
         console.error('Ошибка загрузки /get_vsl/${vendorId}:', error);
@@ -44,35 +42,31 @@ const SourceSelector = ({list, onChange}) => {
     );
 };
 
-
-const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow}) => {
-
+const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selectedRowKeys, setSelectedRowKeys}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedVSL, setSelectedVSL] = useState(null);
     const [editingKey, setEditingKey] = useState(null);
     const [editedValues, setEditedValues] = useState({});
 
     const handleRowSelection = (selectedKeys, selectedRows) => {
-        setSelectedRow(selectedRows[0] || null); // 🔥 Устанавливаем выбранную строку
-    };
+        setSelectedRowKeys(selectedKeys);
+        setSelectedRow(selectedRows[0] || null);
 
+    };
 
     const handleEdit = (record) => {
         setEditingKey(record.id);
         setEditedValues(record);
     };
 
-
     const handleSave = (id) => {
         axios.put(`/service/update_vsl/${id}`, editedValues)
-            .then(response => {
-                console.log('Обновлено:', response.data);
+            .then(() => {
                 refreshTableData();
                 setEditingKey(null);
             })
             .catch(error => console.error('Ошибка обновления:', error));
     };
-
 
     const showDeleteModal = (vendor) => {
         setSelectedVSL(vendor);
@@ -82,8 +76,7 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow}) => {
     const handleDeleteConfirm = () => {
         if (selectedVSL) {
             axios.delete(`/service/delete_vsl/${selectedVSL.id}`)
-                .then(response => {
-                    console.log('Удалено:', response.data);
+                .then(() => {
                     refreshTableData();
                 })
                 .catch(error => console.error('Ошибка удаления:', error))
@@ -129,7 +122,23 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow}) => {
 
     return (
         <div>
-            <Table rowSelection={{type: 'radio', onChange: handleRowSelection}} columns={columns}
+            <Table rowSelection={{
+                type: 'radio',
+                onChange: handleRowSelection,
+                selectedRowKeys: selectedRowKeys
+            }}
+                   onRow={(record) => ({
+                       onClick: () => {
+                           if (selectedRowKeys.includes(record.id)) {
+                               setSelectedRowKeys([]);
+                               setSelectedRow(null);
+                           } else {
+                               setSelectedRowKeys([record.id]);
+                               setSelectedRow(record);
+                           }
+                       }
+                   })}
+                   columns={columns}
                    dataSource={tableData}
                    rowKey="id"/>
             <MyModal
@@ -155,6 +164,9 @@ const ActionParser = () => {
     const [inputTitle, setInputTitle] = useState("");
     const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
     useEffect(() => {
         fetchVendors().then(setOptions);
@@ -166,31 +178,49 @@ const ActionParser = () => {
         }
     }, [selectedSource]);
 
-    const refreshTableData = () => {
-        if (selectedSource) {
-            fetchTableData(selectedSource).then(setTableData);
+    const refreshTableData = async (newRec = null) => {
+        if (!selectedSource) return;
+
+        try {
+            const updatedData = await fetchTableData(selectedSource);
+            setTableData(updatedData);
+            if (newRec) {
+                setTimeout(() => {
+                    const selectedEntry = updatedData.find(item => item.id === newRec.id);
+                    if (selectedEntry) {
+                        setSelectedRow(selectedEntry);
+                        setSelectedRowKeys([selectedEntry.id]);
+                    }
+                }, 300);
+            }
+        } catch (error) {
+            console.error("Ошибка при обновлении таблицы:", error);
         }
     };
 
-    const addVSL = (vendorId, newVSLData) => {
+
+    const addVSL = async (vendorId, newVSLData) => {
         if (!vendorId) {
             console.error("Ошибка: vendorId не передан!");
             return;
         }
-        console.log("Отправляем данные:", newVSLData);
-        axios.post(`/service/create_vsl/${vendorId}`, newVSLData)
-            .then(response => {
-                console.log('Добавлено:', response.data);
-                refreshTableData();
-            })
-            .catch(error => {
-                if (error.response?.status === 409) {
-                    setErrorMessage("Ошибка: такая ссылка или название уже существует!");
-                } else {
-                    setErrorMessage("Ошибка добавления. Попробуйте снова.");
-                }
-                setIsErrorModalOpen(true);
-            });
+        try {
+            const response = await axios.post(`/service/create_vsl/${vendorId}`,
+                {id: 0, vendor_id: Number(vendorId), ...newVSLData});
+            const newVsl = response.data.vsl;
+            await refreshTableData(newVsl);
+            setInputVSLink("");
+            setInputTitle("");
+            setSuccessMessage(`Ссылка "${newVsl.title}" успешно добавлена!`);
+            setIsSuccessModalOpen(true);
+        } catch (error) {
+            if (error.response?.status === 409) {
+                setErrorMessage("Ошибка: такая ссылка или название уже существует!");
+            } else {
+                setErrorMessage("Ошибка добавления. Попробуйте снова.");
+            }
+            setIsErrorModalOpen(true);
+        }
     };
 
     return (
@@ -200,24 +230,37 @@ const ActionParser = () => {
             </div>
             <Row style={{alignItems: 'flex-start'}}>
                 <Col span={7} className='left_col'>
-                    <SourceSelector list={options} onChange={setSelectedSource}/>
-                    {!selectedRow && (<Input style={{marginTop: 8}} placeholder="Ссылка"
-                                             onChange={(e) => setInputVSLink(e.target.value)}/>)}
-                    {inputVSLink && (
-                        <div className='input_link_container'>
-                            <Button type="primary" icon={<PlusOutlined/>} className='input_link'
-                                    onClick={() => addVSL(selectedSource, {title: inputTitle, url: inputVSLink})}/>
-                            <Input className='input_link_title' placeholder="Наименование ссылки"
-                                   onChange={(e) => setInputTitle(e.target.value)}/>
-                        </div>)
-                    }
-                    <div className='parser_footer'>
-                        <Button type="primary" onClick={() => alert(`Парсинг!!!`)}> Процесс </Button>
-                    </div>
+                    <Flex vertical style={{'width': 300}}>
+                        <SourceSelector list={options} onChange={setSelectedSource}/>
+                        {!selectedRow && (<Input style={{marginTop: 8}} placeholder="Ссылка"
+                                                 onChange={(e) => setInputVSLink(e.target.value)}
+                                                 value={inputVSLink}/>)}
+                        {inputVSLink && (
+                            <div className='input_link_container'>
+                                <Button type="primary" icon={<PlusOutlined/>} className='input_link'
+                                        onClick={() => addVSL(selectedSource, {title: inputTitle, url: inputVSLink})}/>
+                                <Input className='input_link_title' placeholder="Наименование ссылки"
+                                       onChange={(e) => setInputTitle(e.target.value)}/>
+                            </div>)
+                        }
+                        <div className='parser_footer'>
+                            <Button type="primary" onClick={() => {
+                                if (selectedRow) {
+                                    console.log(`Парсим URL: ${selectedRow.url}`);
+                                } else {
+                                    console.log("Не выбрана ни одна запись!");
+                                }
+                            }}> Процесс </Button>
+                        </div>
+                    </Flex>
                 </Col>
                 <Col span={15} className='right_col'>
-                    <SearchTableSelector tableData={tableData} refreshTableData={refreshTableData}
-                                         setSelectedRow={setSelectedRow}/>
+                    <SearchTableSelector
+                        tableData={tableData}
+                        refreshTableData={refreshTableData}
+                        setSelectedRow={setSelectedRow}
+                        selectedRowKeys={selectedRowKeys}
+                        setSelectedRowKeys={setSelectedRowKeys}/>
                 </Col>
             </Row>
             <MyModal
@@ -226,6 +269,13 @@ const ActionParser = () => {
                 content={errorMessage}
                 danger={true}
                 footer={<Button type="primary" danger onClick={() => setIsErrorModalOpen(false)}>ОК</Button>}
+            />
+            <MyModal
+                isOpen={isSuccessModalOpen}
+                onConfirm={() => setIsSuccessModalOpen(false)}
+                onCancel={() => setIsSuccessModalOpen(false)}
+                content={successMessage}
+                footer={<button onClick={() => setIsSuccessModalOpen(false)}>OK</button>}
             />
         </>
     );

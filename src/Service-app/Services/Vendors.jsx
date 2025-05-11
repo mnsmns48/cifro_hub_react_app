@@ -54,7 +54,6 @@ const Vendors = () => {
             setIsErrorModalOpen(true);
             return;
         }
-
         axios.post('/service/vendors', newVendor)
             .then(response => {
                 console.log('Добавлено:', response.data);
@@ -63,7 +62,6 @@ const Vendors = () => {
             })
             .catch(error => console.error('Ошибка добавления:', error));
     };
-
 
     const showDeleteModal = (vendor) => {
         setSelectedVendor(vendor);
