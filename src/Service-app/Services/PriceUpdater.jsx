@@ -6,6 +6,7 @@ import axios from "axios";
 import VendorSourceSelector from "./PriceUpdater/VendorSourceSelector.jsx";
 import SearchTableSelector from "./PriceUpdater/SearchTableSelector.jsx";
 import './PriceUpdater/PriceUpdater.css'
+import Parsing from "./PriceUpdater/Parsing.jsx";
 
 const fetchVendors = async () => {
     try {
@@ -123,15 +124,7 @@ const PriceUpdater = () => {
                                        onChange={(e) => setInputTitle(e.target.value)}/>
                             </div>)
                         }
-                        <div className='parser_footer'>
-                            {selectedVSLRow && (
-                                <Button
-                                    icon={<SettingOutlined/>}
-                                    type="primary"
-                                >Парсинг</Button>)}
-
-                        </div>
-                        {/*{isParsing && <ProgressComponent/>}*/}
+                        {selectedVSLRow !== null && <Parsing link={selectedVSLRow}/>}
                     </Flex>
                 </Col>
                 <Col span={15} className='right_col'>
