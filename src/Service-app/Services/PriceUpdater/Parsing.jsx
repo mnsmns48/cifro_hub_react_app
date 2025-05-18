@@ -17,12 +17,9 @@ const Parsing = ({link}) => {
         setLoading(true);
         try {
             const response = await axios.post("/service/give_parsing_id", { url: link.url });
-            console.log("Ответ /service/give_parsing_id", response.data);
-
-            setParsingId(response.data.parsing_id);  // Обновляем состояние
-
+            setParsingId(response.data.parsing_id);
         } catch (error) {
-            console.error("Ошибка запроса parsing_id:", error);
+            console.error("Ошибка запроса parsing id", error);
         } finally {
             setLoading(false);
         }
@@ -30,9 +27,12 @@ const Parsing = ({link}) => {
 
     useEffect(() => {
         if (parsingId) {
-            handleStartParsing(parsingId);
+            (async () => {
+                await handleStartParsing(parsingId);
+            })();
         }
     }, [parsingId]);
+
 
     const handleStartParsing = async (parsingId) => {
         if (!parsingId) {
@@ -40,9 +40,7 @@ const Parsing = ({link}) => {
             return;
         }
         try {
-            console.log("Отправка:", { parsing_id: parsingId, url: link.url });
             const response = await axios.post("/service/start_parsing", { parsing_id: parsingId, url: link.url });
-            console.log("Результат из /service/start_parsing", response.data);
         } catch (error) {
             console.error("Ошибка запуска парсинга:", error);
         }

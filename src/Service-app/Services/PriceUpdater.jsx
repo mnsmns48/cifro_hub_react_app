@@ -1,5 +1,5 @@
 import {Button, Col, Flex, Input, Row} from "antd";
-import {PlusOutlined, SettingOutlined} from "@ant-design/icons";
+import {PlusOutlined} from "@ant-design/icons";
 import MyModal from "../../Ui/MyModal.jsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
