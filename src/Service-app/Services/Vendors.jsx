@@ -46,6 +46,9 @@ const Vendors = () => {
     };
 
     const handleAdd = () => {
+        if (vendorFields.length === 0) {
+            setVendorFields(['name', 'source', 'telegram_id']);
+        }
         setNewVendor(prev => prev ? null : Object.fromEntries([['id', 0], ...vendorFields.map(key => [key, ''])]));
     };
 
