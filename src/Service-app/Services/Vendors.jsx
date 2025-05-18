@@ -2,7 +2,7 @@ import {Button, Table, Input} from 'antd';
 import {EditOutlined, DeleteOutlined, SaveOutlined, PlusOutlined} from '@ant-design/icons';
 import {useEffect, useState} from 'react';
 import axios from 'axios';
-import '../Service-utils/Vendors.css'
+import './Css/Vendors.css'
 import MyModal from "../../Ui/MyModal.jsx";
 
 const Vendors = () => {
