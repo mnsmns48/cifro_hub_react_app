@@ -16,7 +16,6 @@ const ProgressComponent = () => {
                 return;
             }
 
-            // Обновляем количество сообщений и сразу же показываем новое сообщение
             setMessagesCount(prev => {
                 const newCount = prev + 1;
                 setMessage(event.data); // Показываем текущее сообщение
@@ -33,7 +32,7 @@ const ProgressComponent = () => {
         };
 
         return () => eventSource.close();
-    }, [totalTasks]); // Следим за изменением `totalTasks`
+    }, [totalTasks]);
 
     return (
         <div>
@@ -42,5 +41,3 @@ const ProgressComponent = () => {
         </div>
     );
 };
-
-export default ProgressComponent;
