@@ -102,7 +102,6 @@ const PriceUpdater = () => {
             setIsErrorModalOpen(true);
         }
     };
-
     return (
         <>
             <div className='action_parser_main'>
