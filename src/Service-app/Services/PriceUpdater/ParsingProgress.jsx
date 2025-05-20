@@ -4,17 +4,19 @@ import { useEffect, useState } from "react";
 const ParsingProgress = ({ progress_obj }) => {
     const [progress, setProgress] = useState(0);
     const [message, setMessage] = useState("");
-    const [totalTasks, setTotalTasks] = useState(null);
+    const [totalTasks, setTotalTasks] = useState(0);
     const [messagesCount, setMessagesCount] = useState(0);
 
     useEffect(() => {
         const eventSource = new EventSource(`/progress/${progress_obj}`);
 
         eventSource.onmessage = (event) => {
+            console.log('totalTasks', totalTasks)
             const data = event.data.trim();
 
             if (data.startsWith("data: COUNT=")) {
                 const count = parseInt(data.split("=")[1], 10);
+                console.log('count!!', count);
                 setTotalTasks(count);
                 return;
             }
@@ -36,6 +38,13 @@ const ParsingProgress = ({ progress_obj }) => {
 
         return () => eventSource.close();
     }, [progress_obj, totalTasks]);
+
+    useEffect(() => {
+        console.log('messagesCount, totalTasks, progress', messagesCount, totalTasks, progress)
+        if (totalTasks) {
+            setProgress(Math.min(Math.round((messagesCount / totalTasks) * 100), 100));
+        }
+    }, [messagesCount, totalTasks]);
 
     return (
         <div>

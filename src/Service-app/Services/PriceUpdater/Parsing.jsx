@@ -27,6 +27,7 @@ const Parsing = ({url}) => {
     const [isParsingStarted, setIsParsingStarted] = useState(false);
     const [progressLineObj, setProgressLineObj] = useState('');
 
+
     const clickParsingStartButton = async () => {
         const progress_line_response = await getProgressLine()
         if (progress_line_response.result) {
@@ -39,6 +40,11 @@ const Parsing = ({url}) => {
         }
     }
 
+    useEffect(() => {
+        if (!isParsingStarted) {
+            setProgressLineObj(""); // Очищаем объект прогресса
+        }
+    }, [isParsingStarted]);
 
     return (
         <div className='parser_footer' style={{display: "flex", flexDirection: "column"}}>
@@ -53,3 +59,4 @@ const Parsing = ({url}) => {
 };
 
 export default Parsing;
+
