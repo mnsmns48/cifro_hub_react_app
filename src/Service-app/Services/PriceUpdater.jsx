@@ -123,7 +123,7 @@ const PriceUpdater = () => {
                                        onChange={(e) => setInputTitle(e.target.value)}/>
                             </div>)
                         }
-                        {selectedVSLRow !== null && <Parsing link={selectedVSLRow}/>}
+                        {selectedVSLRow !== null && <Parsing url={selectedVSLRow.url}/>}
                     </Flex>
                 </Col>
                 <Col span={15} className='right_col'>
