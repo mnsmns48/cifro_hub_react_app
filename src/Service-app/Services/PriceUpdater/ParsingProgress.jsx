@@ -37,7 +37,7 @@ const ParsingProgress = ({ progress_obj }) => {
         };
 
         return () => eventSource.close();
-    }, [progress_obj, totalTasks]);
+    }, [progress_obj]);
 
     useEffect(() => {
         console.log('messagesCount, totalTasks, progress', messagesCount, totalTasks, progress)
