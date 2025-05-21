@@ -1,4 +1,4 @@
-import {Button, Table, Input} from 'antd';
+import {Button, Table, Input, Select} from 'antd';
 import {EditOutlined, DeleteOutlined, SaveOutlined, PlusOutlined} from '@ant-design/icons';
 import {useEffect, useState} from 'react';
 import axios from 'axios';
@@ -14,6 +14,14 @@ const Vendors = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedVendor, setSelectedVendor] = useState(null);
     const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+    const [functionList, setFunctionList] = useState([]);
+
+
+    useEffect(() => {
+        axios.get("service/vendors/functions")
+            .then(response => setFunctionList(response.data.functions))
+            .catch(error => console.error("Ошибка при загрузке функций:", error));
+    }, []);
 
     useEffect(() => {
         axios.get('/service/vendors')
@@ -47,10 +55,14 @@ const Vendors = () => {
 
     const handleAdd = () => {
         if (vendorFields.length === 0) {
-            setVendorFields(['name', 'source', 'telegram_id']);
+            setVendorFields(['name', 'source', 'telegram_id', 'login', 'password', 'function']);
         }
-        setNewVendor(prev => prev ? null : Object.fromEntries([['id', 0], ...vendorFields.map(key => [key, ''])]));
+        setNewVendor(prev => prev ? null : Object.fromEntries([
+            ['id', 0],
+            ...vendorFields.map(key => [key, key === "function" ? functionList[0] || '' : ''])
+        ]));
     };
+
 
     const handleSaveNewVendor = () => {
         if (!newVendor.name.trim()) {
@@ -86,34 +98,44 @@ const Vendors = () => {
         }
     };
 
-    const columns = [
+    const columns = vendors.length > 0 ? [
         ...Object.keys(vendors[0] || {}).filter(key => key !== "id").map(key => ({
             title: key,
             dataIndex: key,
             key,
             render: (text, record) =>
                 editingKey === record.id ? (
-                    <Input value={editedValues[key] || ''}
-                           onChange={(e) => setEditedValues(prev => ({...prev, [key]: e.target.value}))}/>
+                    key === "function" ? (
+                        <Select
+                            value={editedValues[key] || ''}
+                            onChange={(value) => setEditedValues(prev => ({ ...prev, [key]: value }))}
+                            options={functionList?.length ? functionList.map(fn => ({ label: fn, value: fn })) : []}
+                            style={{ width: "100%" }}
+                        />
+                    ) : (
+                        <Input
+                            value={editedValues[key] || ''}
+                            onChange={(e) => setEditedValues(prev => ({ ...prev, [key]: e.target.value }))}
+                        />
+                    )
                 ) : text
         })),
         {
-            key: 'actions',
-            render: (_, record) => {
-                let actionButton;
-                if (editingKey === record.id) {
-                    actionButton = <Button icon={<SaveOutlined/>} type="link" onClick={() => handleSave(record.id)}/>
-                } else {
-                    actionButton = <Button icon={<EditOutlined/>} type="link" onClick={() => handleEdit(record)}/>
-                }
-                return (
-                    <>
-                        {actionButton}
-                        <Button icon={<DeleteOutlined/>} type="link" danger onClick={() => showDeleteModal(record)}/>
-                    </>)
-            }
+            key: "actions",
+            render: (_, record) => (
+                <>
+                    {editingKey === record.id ? (
+                        <Button icon={<SaveOutlined />} type="link" onClick={() => handleSave(record.id)} />
+                    ) : (
+                        <Button icon={<EditOutlined />} type="link" onClick={() => handleEdit(record)} />
+                    )}
+                    <Button icon={<DeleteOutlined />} type="link" danger onClick={() => showDeleteModal(record)} />
+                </>
+            )
         }
-    ];
+    ] : [];
+
+
 
     return (
         <>
@@ -130,13 +152,24 @@ const Vendors = () => {
             {newVendor && (
                 <div className="new-vendor-line">
                     {vendorFields.map(key => (
-                            <Input key={key}
-                                   placeholder={key}
-                                   value={newVendor[key] || ''}
-                                   onChange={(e) => setNewVendor(prev => ({...prev, [key]: e.target.value}))}/>
+                        key === "function" ? (
+                            <Select
+                                key={key}
+                                placeholder={key}
+                                value={newVendor[key] || ''}
+                                onChange={(value) => setNewVendor(prev => ({ ...prev, [key]: value }))}
+                                options={functionList.map(fn => ({ label: fn, value: fn }))}
+                                style={{ width: "100%" }}
+                            />
+                        ) : (
+                            <Input
+                                key={key}
+                                placeholder={key}
+                                value={newVendor[key] || ''}
+                                onChange={(e) => setNewVendor(prev => ({ ...prev, [key]: e.target.value }))}
+                            />
                         )
-                    )
-                    }
+                    ))}
                     <Button icon={<SaveOutlined/>} type="primary" onClick={handleSaveNewVendor}>Сохранить</Button>
                 </div>)}
             <Table columns={columns} dataSource={vendors} rowKey="id"/>
