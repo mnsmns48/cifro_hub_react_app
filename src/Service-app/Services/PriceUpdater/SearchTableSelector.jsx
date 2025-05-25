@@ -83,7 +83,7 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
 
     return (
         <div>
-            <Table rowSelection={{
+            <Table pagination={{pageSize: 5}} rowSelection={{
                 type: 'radio',
                 onChange: handleRowSelection,
                 selectedRowKeys: selectedRowKeys

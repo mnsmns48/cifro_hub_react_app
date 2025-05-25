@@ -150,7 +150,9 @@ const PriceUpdater = () => {
                 content={successMessage}
                 footer={<button onClick={() => setIsSuccessModalOpen(false)}>OK</button>}
             />
+            <div>Тут результаты</div>
         </>
+
     );
 }
 

@@ -25,6 +25,7 @@ const startParsingProcess = async ({url, progress}) => {
 
 const Parsing = ({url}) => {
     const [isParsingStarted, setIsParsingStarted] = useState(false);
+    const [isParsingFinished, setIsParsingFinished] = useState(false);
     const [progressLineObj, setProgressLineObj] = useState('');
 
 
@@ -32,6 +33,7 @@ const Parsing = ({url}) => {
         const progress_line_response = await getProgressLine()
         if (progress_line_response.result) {
             setIsParsingStarted(true)
+            setIsParsingFinished(false)
             setProgressLineObj(progress_line_response.result)
             await startParsingProcess({url: url, progress: progress_line_response.result})
         } else {
@@ -42,7 +44,7 @@ const Parsing = ({url}) => {
 
     useEffect(() => {
         if (!isParsingStarted) {
-            setProgressLineObj(""); // Очищаем объект прогресса
+            setProgressLineObj("");
         }
     }, [isParsingStarted]);
 
@@ -59,4 +61,3 @@ const Parsing = ({url}) => {
 };
 
 export default Parsing;
-
