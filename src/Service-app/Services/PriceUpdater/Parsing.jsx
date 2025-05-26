@@ -1,31 +1,12 @@
 import {Button} from "antd";
 import {SettingOutlined} from "@ant-design/icons";
 import {useEffect, useState} from "react";
-import axios from "axios";
 import ParsingProgress from "./ParsingProgress.jsx";
-
-const getProgressLine = async () => {
-    try {
-        const progress_line_response = await axios.get("/give_progress_line");
-        return progress_line_response.data
-    } catch (error) {
-        console.error("Ошибка запроса", error);
-    }
-}
-
-const startParsingProcess = async ({url, progress}) => {
-    try {
-        const parsingResult = await axios.post("/service/start_parsing", {url, progress});
-        return parsingResult.data
-    } catch (error) {
-        console.error("Ошибка в Parsing Process", error);
-    }
-}
+import {getProgressLine, startParsingProcess} from "./api.js";
 
 
-const Parsing = ({url}) => {
+const Parsing = ({url, onComplete}) => {
     const [isParsingStarted, setIsParsingStarted] = useState(false);
-    const [isParsingFinished, setIsParsingFinished] = useState(false);
     const [progressLineObj, setProgressLineObj] = useState('');
 
 
@@ -33,9 +14,9 @@ const Parsing = ({url}) => {
         const progress_line_response = await getProgressLine()
         if (progress_line_response.result) {
             setIsParsingStarted(true)
-            setIsParsingFinished(false)
             setProgressLineObj(progress_line_response.result)
-            await startParsingProcess({url: url, progress: progress_line_response.result})
+            const results = await startParsingProcess({url: url, progress: progress_line_response.result})
+            onComplete(results);
         } else {
             console.log('progress_line_response error')
             setIsParsingStarted(false)

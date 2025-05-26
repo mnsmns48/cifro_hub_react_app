@@ -1,37 +1,12 @@
-import {Button, Col, Flex, Input, Row} from "antd";
+import {Button, Col, Flex, Input, Row, Table} from "antd";
 import {PlusOutlined} from "@ant-design/icons";
 import MyModal from "../../Ui/MyModal.jsx";
 import {useEffect, useState} from "react";
-import axios from "axios";
 import VendorSourceSelector from "./PriceUpdater/VendorSourceSelector.jsx";
 import SearchTableSelector from "./PriceUpdater/SearchTableSelector.jsx";
-import './PriceUpdater/PriceUpdater.css'
+import './Css/PriceUpdater.css';
 import Parsing from "./PriceUpdater/Parsing.jsx";
-
-const fetchVendors = async () => {
-    try {
-        const response = await axios.get('/service/vendors');
-        return response.data.vendors?.map(vendor => ({
-            value: String(vendor.id),
-            label: vendor.name
-        })) || [];
-    } catch (error) {
-        console.error('Ошибка загрузки данных', error);
-        return [];
-    }
-};
-
-
-const fetchTableData = async (vendorId) => {
-    try {
-        const response = await axios.get(`/service/get_vsl/${vendorId}`);
-        return response.data.vsl || [];
-    } catch (error) {
-        console.error('Ошибка загрузки /get_vsl/${vendorId}:', error);
-        return [];
-    }
-};
-
+import {fetchVendors, fetchTableData, addVSL} from "./PriceUpdater/api.js";
 
 const PriceUpdater = () => {
     const [vendorList, setVendorList] = useState([]);
@@ -45,6 +20,8 @@ const PriceUpdater = () => {
     const [successMessage, setSuccessMessage] = useState("");
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [selectedVSLRowKeys, setSelectedVSLRowKeys] = useState([]);
+    const [parsedData, setParsedData] = useState([]);
+    const [isParsingDone, setIsParsingDone] = useState(false);
 
     useEffect(() => {
         fetchVendors().then(setVendorList);
@@ -56,13 +33,16 @@ const PriceUpdater = () => {
             setSelectedVSLRow(null);
             setSelectedVSLRowKeys(null);
         }
-
     }, [selectedVendor]);
 
+    useEffect(() => {
+        if (isParsingDone) {
+            console.log("Данные собраны");
+        }
+    }, [parsedData]);
 
     const refreshTableData = async (newRec = null) => {
         if (!selectedVendor) return;
-
         try {
             const updatedData = await fetchTableData(selectedVendor);
             setTableData(updatedData);
@@ -80,28 +60,16 @@ const PriceUpdater = () => {
         }
     };
 
-    const addVSL = async (vendorId, newVSLData) => {
-        if (!vendorId) {
-            return;
-        }
-        try {
-            const response = await axios.post(`/service/create_vsl/${vendorId}`,
-                {id: 0, vendor_id: Number(vendorId), ...newVSLData});
-            const newVsl = response.data.vsl;
-            await refreshTableData(newVsl);
-            setInputVSLink("");
-            setInputTitle("");
-            setSuccessMessage(`Ссылка "${newVsl.title}" успешно добавлена!`);
-            setIsSuccessModalOpen(true);
-        } catch (error) {
-            if (error.response?.status === 409) {
-                setErrorMessage("Ошибка: такая ссылка или название уже существует!");
-            } else {
-                setErrorMessage(`Ошибка добавления, проблема с сервером`);
-            }
-            setIsErrorModalOpen(true);
-        }
+    const closeModalAfterDelay = (setter, delay = 2000) => {
+        setTimeout(() => setter(false), delay);
     };
+
+    const handleParsingComplete = (data) => {
+        setParsedData(data);
+        setIsParsingDone(true);
+    };
+
+
     return (
         <>
             <div className='action_parser_main'>
@@ -109,30 +77,33 @@ const PriceUpdater = () => {
             </div>
             <Row style={{alignItems: 'flex-start'}}>
                 <Col span={7} className='left_col'>
-                    <Flex vertical style={{'width': 300}}>
+                    <Flex vertical style={{width: 300}}>
                         <VendorSourceSelector list={vendorList} onChange={setSelectedVendor}/>
-                        {!selectedVSLRow && (<Input style={{marginTop: 8}}
-                                                    placeholder="Ссылка"
-                                                    onChange={(e) => setInputVSLink(e.target.value)}
-                                                    value={inputVSLink}/>)}
+                        {!selectedVSLRow && (
+                            <Input style={{marginTop: 8}} placeholder="Ссылка"
+                                   onChange={(e) => setInputVSLink(e.target.value)} value={inputVSLink}/>
+                        )}
                         {inputVSLink && (
                             <div className='input_link_container'>
                                 <Button type="primary" icon={<PlusOutlined/>} className='input_link'
-                                        onClick={() => addVSL(selectedVendor, {title: inputTitle, url: inputVSLink})}/>
+                                        onClick={() => addVSL(selectedVendor, {
+                                                title: inputTitle,
+                                                url: inputVSLink
+                                            }, refreshTableData,
+                                            setInputVSLink, setInputTitle, setSuccessMessage, setIsSuccessModalOpen,
+                                            setErrorMessage, setIsErrorModalOpen)}/>
                                 <Input className='input_link_title' placeholder="Наименование ссылки"
                                        onChange={(e) => setInputTitle(e.target.value)}/>
-                            </div>)
-                        }
-                        {selectedVSLRow !== null && <Parsing url={selectedVSLRow.url}/>}
+                            </div>
+                        )}
+                        {selectedVSLRow !== null &&
+                            <Parsing url={selectedVSLRow.url} onComplete={handleParsingComplete}/>}
                     </Flex>
                 </Col>
                 <Col span={15} className='right_col'>
-                    <SearchTableSelector
-                        tableData={tableData}
-                        refreshTableData={refreshTableData}
-                        setSelectedRow={setSelectedVSLRow}
-                        selectedRowKeys={selectedVSLRowKeys}
-                        setSelectedRowKeys={setSelectedVSLRowKeys}/>
+                    <SearchTableSelector tableData={tableData} refreshTableData={refreshTableData}
+                                         setSelectedRow={setSelectedVSLRow} selectedRowKeys={selectedVSLRowKeys}
+                                         setSelectedRowKeys={setSelectedVSLRowKeys}/>
                 </Col>
             </Row>
 
@@ -141,20 +112,57 @@ const PriceUpdater = () => {
                 onCancel={() => setIsErrorModalOpen(false)}
                 content={errorMessage}
                 danger={true}
-                footer={<Button type="primary" danger onClick={() => setIsErrorModalOpen(false)}>ОК</Button>}
+                footer={<Button type="primary" danger onClick={() => {
+                    setIsErrorModalOpen(false);
+                    closeModalAfterDelay(setIsErrorModalOpen);
+                }}>ОК</Button>}
             />
+
             <MyModal
                 isOpen={isSuccessModalOpen}
-                onConfirm={() => setIsSuccessModalOpen(false)}
-                onCancel={() => setIsSuccessModalOpen(false)}
+                onConfirm={() => {
+                    setIsSuccessModalOpen(false);
+                    closeModalAfterDelay(setIsSuccessModalOpen);
+                }}
+                onCancel={() => {
+                    setIsSuccessModalOpen(false);
+                    closeModalAfterDelay(setIsSuccessModalOpen);
+                }}
                 content={successMessage}
-                footer={<button onClick={() => setIsSuccessModalOpen(false)}>OK</button>}
+                footer={<Button type="primary" onClick={() => {
+                    setIsSuccessModalOpen(false);
+                    closeModalAfterDelay(setIsSuccessModalOpen);
+                }}>OK</Button>}
             />
-            <div>Тут результаты</div>
+            {isParsingDone && parsedData && (
+                <>
+                    <div>
+                        <p><strong>Категория:</strong> {parsedData.category}</p>
+                        <p><strong>Дата и время:</strong> {parsedData.datetime_now}</p>
+                        <p><strong>Статус:</strong> {parsedData.is_ok ? "Успешно" : "Ошибка"}</p>
+                    </div>
+                    <Table
+                        dataSource={parsedData.data}
+                        columns={[
+                            {title: "Название", dataIndex: "title", key: "title"},
+                            {title: "Доставка", dataIndex: "shipment", key: "shipment"},
+                            {title: "Гарантия", dataIndex: "warranty", key: "warranty"},
+                            {title: "Цена", dataIndex: "input_price", key: "input_price"},
+                            {
+                                title: "Изображение",
+                                dataIndex: "pic",
+                                key: "pic",
+                                render: (text, record) => <img src={text} alt={record.title} width="100"/>
+                            },
+                            {title: "Дополнительно", dataIndex: "optional", key: "optional"}
+                        ]}
+                        rowKey="title"
+                        pagination={{pageSize: 25}}
+                    />
+                </>
+            )}
         </>
-
     );
-}
-
+};
 
 export default PriceUpdater;

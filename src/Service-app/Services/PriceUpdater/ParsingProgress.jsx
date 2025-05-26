@@ -11,12 +11,10 @@ const ParsingProgress = ({ progress_obj }) => {
         const eventSource = new EventSource(`/progress/${progress_obj}`);
 
         eventSource.onmessage = (event) => {
-            console.log('totalTasks', totalTasks)
             const data = event.data.trim();
 
             if (data.startsWith("data: COUNT=")) {
                 const count = parseInt(data.split("=")[1], 10);
-                console.log('count!!', count);
                 setTotalTasks(count);
                 return;
             }
@@ -40,7 +38,6 @@ const ParsingProgress = ({ progress_obj }) => {
     }, [progress_obj]);
 
     useEffect(() => {
-        console.log('messagesCount, totalTasks, progress', messagesCount, totalTasks, progress)
         if (totalTasks) {
             setProgress(Math.min(Math.round((messagesCount / totalTasks) * 100), 100));
         }
@@ -48,8 +45,7 @@ const ParsingProgress = ({ progress_obj }) => {
 
     return (
         <div>
-            <Progress percent={progress}
-                      status={progress < 100 ? "active" : "success"}
+            <Progress percent={progress} status={progress < 100 ? "active" : "success"}
                       strokeColor={progress < 100 ? "#FFD700" : undefined} />
             <div style={{ marginTop: "10px", minHeight: "20px" }}>{message}</div>
         </div>
