@@ -7,6 +7,7 @@ import SearchTableSelector from "./PriceUpdater/SearchTableSelector.jsx";
 import './Css/PriceUpdater.css';
 import Parsing from "./PriceUpdater/Parsing.jsx";
 import {fetchVendors, fetchTableData, addVSL} from "./PriceUpdater/api.js";
+import ParsingResults from "./PriceUpdater/ParsingResults.jsx";
 
 const PriceUpdater = () => {
     const [vendorList, setVendorList] = useState([]);
@@ -135,31 +136,7 @@ const PriceUpdater = () => {
                 }}>OK</Button>}
             />
             {isParsingDone && parsedData && (
-                <>
-                    <div>
-                        <p><strong>Категория:</strong> {parsedData.category}</p>
-                        <p><strong>Дата и время:</strong> {parsedData.datetime_now}</p>
-                        <p><strong>Статус:</strong> {parsedData.is_ok ? "Успешно" : "Ошибка"}</p>
-                    </div>
-                    <Table
-                        dataSource={parsedData.data}
-                        columns={[
-                            {title: "Название", dataIndex: "title", key: "title"},
-                            {title: "Доставка", dataIndex: "shipment", key: "shipment"},
-                            {title: "Гарантия", dataIndex: "warranty", key: "warranty"},
-                            {title: "Цена", dataIndex: "input_price", key: "input_price"},
-                            {
-                                title: "Изображение",
-                                dataIndex: "pic",
-                                key: "pic",
-                                render: (text, record) => <img src={text} alt={record.title} width="100"/>
-                            },
-                            {title: "Дополнительно", dataIndex: "optional", key: "optional"}
-                        ]}
-                        rowKey="title"
-                        pagination={{pageSize: 25}}
-                    />
-                </>
+                <ParsingResults result={parsedData}/>
             )}
         </>
     );
