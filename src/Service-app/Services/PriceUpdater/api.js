@@ -76,3 +76,4 @@ export const startParsingProcess = async ({url, progress}) => {
         console.error("Ошибка в Parsing Process", error);
     }
 }
+

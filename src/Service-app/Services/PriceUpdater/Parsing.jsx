@@ -31,7 +31,7 @@ const Parsing = ({url, onComplete}) => {
 
     return (
         <div className='parser_footer' style={{display: "flex", flexDirection: "column"}}>
-            <Button icon={<SettingOutlined/>} type="primary" onClick={clickParsingStartButton}>парсинг</Button>
+            <Button icon={<SettingOutlined/>} type="primary" onClick={clickParsingStartButton}>Старт</Button>
             {isParsingStarted && (
                 <div style={{marginTop: "15px", width: "100%"}}>
                     <ParsingProgress progress_obj={progressLineObj}/>
