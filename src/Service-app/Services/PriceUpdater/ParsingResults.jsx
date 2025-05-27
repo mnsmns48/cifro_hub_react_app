@@ -51,7 +51,7 @@ const ParsingResults = ({result}) => {
                             <Image
                                 width={50}
                                 src={text || "/10000.png"}
-                                preview={{scale: 2}}
+                                // preview={{scale: 2}}
                                 alt={record.title}
                             />
                         )
