@@ -2,6 +2,7 @@ import {Button, Input, Select} from "antd";
 import {useEffect, useState} from "react";
 import {fetchRangeRewardsProfiles, addRangeRewardProfile} from "./RewardRangeSettings/api.js";
 import {PlusOutlined} from "@ant-design/icons";
+import RewardRangeTable from "./RewardRangeSettings/RewardRangeTable.jsx";
 
 
 const RewardRangeSettings = () => {
@@ -11,17 +12,17 @@ const RewardRangeSettings = () => {
 
 
     useEffect(() => {
-        const loadRewards = async () => {
-            const rewards = await fetchRangeRewardsProfiles();
+        fetchRangeRewardsProfiles().then(rewards => {
             setDataProfile(rewards);
-        };
-        loadRewards();
+        }).catch(error => {
+            console.error("Ошибка загрузки профиля:", error);
+        });
     }, []);
 
 
     const handleChangeProfile = (selected) => {
         if (!selected || !selected.value) {
-            setIsSelectedProfile(null); // ✅ Сбрасываем профиль
+            setIsSelectedProfile(null);
             return;
         }
         const profile = dataProfile.find(item => item.id === selected.value);
@@ -58,6 +59,10 @@ const RewardRangeSettings = () => {
                            onChange={(e) => setNewProfileName(e.target.value)}/>
                 </>
             )}
+            {isSelectedProfile && (
+                <RewardRangeTable selectedProfile={isSelectedProfile}/>
+            )}
+
         </div>
     </div>);
 }

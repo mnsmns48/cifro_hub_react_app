@@ -18,11 +18,21 @@ export const addRangeRewardProfile = async (newProfileName, setDataProfile, setI
         const newProfile = response.data;
         setDataProfile(prev => {
             const updatedProfiles = [...prev, newProfile];
-            setIsSelectedProfile(newProfile);  // ✅ Выбираем новый профиль
+            setIsSelectedProfile(newProfile);
             return updatedProfiles;
         });
         setNewProfileName("");
     } catch (error) {
         console.error("Ошибка добавления:", error.response ? error.response.data : error.message);
+    }
+};
+
+export const fetchRangeRewardLines = async (range_id) => {
+    try {
+        const response = await axios.get(`/service/get_reward_line/${range_id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Проблема с бэкендом", error);
+        return [];
     }
 };
