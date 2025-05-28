@@ -77,14 +77,4 @@ export const startParsingProcess = async ({url, progress}) => {
     }
 }
 
-export const fetchRewards = async (setOptions) => {
-    try {
-        const response = await axios.get("/service/rewards");
-        setOptions(response.data.map(reward => ({
-            value: reward.id,
-            label: reward.title
-        })));
-    } catch (error) {
-        console.error("Ошибка загрузки данных:", error);
-    }
-};
+
