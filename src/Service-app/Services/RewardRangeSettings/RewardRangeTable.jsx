@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {fetchRangeRewardLines} from "./api.js";
-import {Switch, Table} from "antd";
+import {Button, Space, Switch, Table} from "antd";
+import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
 
 const RewardRangeTable = ({selectedProfile}) => {
     const [rangeData, setRangeData] = useState([]);
@@ -15,13 +16,24 @@ const RewardRangeTable = ({selectedProfile}) => {
 
 
     const columns = [
-        {title: "От", dataIndex: "line_from", key: "line_from", width: 250},
-        {title: "До", dataIndex: "line_to", key: "line_to", width: 250},
+        {title: "От", dataIndex: "line_from", key: "line_from", width: 180},
+        {title: "До", dataIndex: "line_to", key: "line_to", width: 180},
         {
-            title: "Процент?", dataIndex: "is_percent", key: "is_percent", width: 250,
+            title: "Процент?", dataIndex: "is_percent", key: "is_percent", width: 180,
             render: (val) => <Switch checked={val} disabled />,
         },
-        {title: "Вознаграждение / Процент", dataIndex: "reward", key: "reward", width: 250},
+        {title: "Вознаграждение / Процент", dataIndex: "reward", key: "reward", width: 180},
+        {
+            title: "Действия",
+            key: "actions",
+            width: 120,
+            render: (_, record) => (
+                <Space>
+                    <Button type="text" icon={<EditOutlined />} />
+                    <Button type="text" icon={<DeleteOutlined />}/>
+                </Space>
+            ),
+        },
     ];
 
     return (

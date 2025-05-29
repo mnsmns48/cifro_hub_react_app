@@ -1,4 +1,4 @@
-import {Button, Col, Flex, Input, Row, Table} from "antd";
+import {Button, Col, Flex, Input, Row} from "antd";
 import {PlusOutlined} from "@ant-design/icons";
 import MyModal from "../../Ui/MyModal.jsx";
 import {useEffect, useState} from "react";
@@ -8,6 +8,7 @@ import './Css/PriceUpdater.css';
 import Parsing from "./PriceUpdater/Parsing.jsx";
 import {fetchVendors, fetchTableData, addVSL} from "./PriceUpdater/api.js";
 import ParsingResults from "./PriceUpdater/ParsingResults.jsx";
+
 
 const PriceUpdater = () => {
     const [vendorList, setVendorList] = useState([]);
@@ -74,7 +75,7 @@ const PriceUpdater = () => {
     return (
         <>
             <div className='action_parser_main'>
-                <h1>Price Updater</h1>
+                <h1>Обновление цен</h1>
             </div>
             <Row style={{alignItems: 'flex-start'}}>
                 <Col span={7} className='left_col'>
@@ -142,4 +143,6 @@ const PriceUpdater = () => {
     );
 };
 
+PriceUpdater.componentTitle = "Обновления цен"
+PriceUpdater.componentIcon = <img src="/ui/prices.png" alt="icon" width="30" height="30" />
 export default PriceUpdater;

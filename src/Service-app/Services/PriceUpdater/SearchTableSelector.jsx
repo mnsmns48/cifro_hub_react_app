@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import {Button, Input, Table} from "antd";
 import {DeleteOutlined, EditOutlined, SaveOutlined} from "@ant-design/icons";
@@ -49,37 +49,43 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
         }
     };
 
-    const columns = [
-        ...Object.keys(tableData[0] || {}).filter(key => key !== "id" && key !== "vendor_id").map(key => ({
-            title: key,
-            dataIndex: key,
-            key,
-            render: (text, record) =>
-                editingKey === record.id ? (
-                    <Input
-                        value={editedValues[key] || ''}
-                        onChange={(e) => setEditedValues(prev => ({...prev, [key]: e.target.value}))}
-                    />
-                ) : text
-        })),
-        {
-            title: 'Действия',
-            key: 'actions',
-            render: (_, record) => {
-                let actionButton;
-                if (editingKey === record.id) {
-                    actionButton = <Button icon={<SaveOutlined/>} type="link" onClick={() => handleSave(record.id)}/>
-                } else {
-                    actionButton = <Button icon={<EditOutlined/>} type="link" onClick={() => handleEdit(record)}/>
-                }
-                return (
+    const [columns, setColumns] = useState([]);
+
+    useEffect(() => {
+        if (!tableData.length) return;
+
+        const newColumns = [
+            ...Object.keys(tableData[0]).filter(key => key !== "id" && key !== "vendor_id").map(key => ({
+                title: key,
+                dataIndex: key,
+                key,
+                render: (text, record) =>
+                    editingKey === record.id ? (
+                        <Input
+                            value={editedValues[key] || ''}
+                            onChange={(e) => setEditedValues(prev => ({ ...prev, [key]: e.target.value }))}
+                        />
+                    ) : text
+            })),
+            {
+                title: 'Действия',
+                key: 'actions',
+                render: (_, record) => (
                     <div className='search_table_action_buttons'>
-                        {actionButton}
-                        <Button icon={<DeleteOutlined/>} type="link" danger onClick={() => showDeleteModal(record)}/>
-                    </div>)
+                        {editingKey === record.id ? (
+                            <Button icon={<SaveOutlined />} type="link" onClick={() => handleSave(record.id)} />
+                        ) : (
+                            <Button icon={<EditOutlined />} type="link" onClick={() => handleEdit(record)} />
+                        )}
+                        <Button icon={<DeleteOutlined />} type="link" danger onClick={() => showDeleteModal(record)} />
+                    </div>
+                )
             }
-        }
-    ];
+        ];
+
+        setColumns(newColumns); // Обновляем `columns` после загрузки данных
+    }, [tableData, editingKey, editedValues]);
+
 
     return (
         <div>

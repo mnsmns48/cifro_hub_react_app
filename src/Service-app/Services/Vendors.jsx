@@ -108,14 +108,14 @@ const Vendors = () => {
                     key === "function" ? (
                         <Select
                             value={editedValues[key] || ''}
-                            onChange={(value) => setEditedValues(prev => ({ ...prev, [key]: value }))}
-                            options={functionList?.length ? functionList.map(fn => ({ label: fn, value: fn })) : []}
-                            style={{ width: "100%" }}
+                            onChange={(value) => setEditedValues(prev => ({...prev, [key]: value}))}
+                            options={functionList?.length ? functionList.map(fn => ({label: fn, value: fn})) : []}
+                            style={{width: "100%"}}
                         />
                     ) : (
                         <Input
                             value={editedValues[key] || ''}
-                            onChange={(e) => setEditedValues(prev => ({ ...prev, [key]: e.target.value }))}
+                            onChange={(e) => setEditedValues(prev => ({...prev, [key]: e.target.value}))}
                         />
                     )
                 ) : text
@@ -125,22 +125,21 @@ const Vendors = () => {
             render: (_, record) => (
                 <>
                     {editingKey === record.id ? (
-                        <Button icon={<SaveOutlined />} type="link" onClick={() => handleSave(record.id)} />
+                        <Button icon={<SaveOutlined/>} type="link" onClick={() => handleSave(record.id)}/>
                     ) : (
-                        <Button icon={<EditOutlined />} type="link" onClick={() => handleEdit(record)} />
+                        <Button icon={<EditOutlined/>} type="link" onClick={() => handleEdit(record)}/>
                     )}
-                    <Button icon={<DeleteOutlined />} type="link" danger onClick={() => showDeleteModal(record)} />
+                    <Button icon={<DeleteOutlined/>} type="link" danger onClick={() => showDeleteModal(record)}/>
                 </>
             )
         }
     ] : [];
 
 
-
     return (
         <>
             <div className='vendor-main'>
-                <h1>Vendors</h1>
+                <h1>Поставщики</h1>
                 <Button
                     icon={<PlusOutlined/>}
                     type="primary"
@@ -157,16 +156,16 @@ const Vendors = () => {
                                 key={key}
                                 placeholder={key}
                                 value={newVendor[key] || ''}
-                                onChange={(value) => setNewVendor(prev => ({ ...prev, [key]: value }))}
-                                options={functionList.map(fn => ({ label: fn, value: fn }))}
-                                style={{ width: "100%" }}
+                                onChange={(value) => setNewVendor(prev => ({...prev, [key]: value}))}
+                                options={functionList.map(fn => ({label: fn, value: fn}))}
+                                style={{width: "100%"}}
                             />
                         ) : (
                             <Input
                                 key={key}
                                 placeholder={key}
                                 value={newVendor[key] || ''}
-                                onChange={(e) => setNewVendor(prev => ({ ...prev, [key]: e.target.value }))}
+                                onChange={(e) => setNewVendor(prev => ({...prev, [key]: e.target.value}))}
                             />
                         )
                     ))}
@@ -193,4 +192,6 @@ const Vendors = () => {
     );
 };
 
+Vendors.componentTitle = "Поставщики"
+Vendors.componentIcon = <img src="/ui/shipper.png" alt="icon" width="30" height="30" />
 export default Vendors;

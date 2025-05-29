@@ -53,7 +53,7 @@ const RewardRangeSettings = () => {
 
     return (<div>
         <div className='action_parser_main'>
-            <h1>Reward Range Settings</h1>
+            <h1>Настройка профилей вознаграждения</h1>
         </div>
         <div style={{display: "flex", alignItems: "center", gap: "20px"}}>
             <Select
@@ -84,7 +84,17 @@ const RewardRangeSettings = () => {
                     </Collapse.Panel>
                 </Collapse>
             )}
+            {isSelectedProfile && (
+                <Button
+                    type="primary"
+                    icon={<PlusOutlined/>}
+                    // onClick={handleAddRewardRangeLine}
+                >Добавить строку</Button>
+            )
+            }
         </div>
+
+
         <div style={{padding: "10px 0px 10px"}}>
             {!isSelectedProfile && (
                 <>
@@ -121,5 +131,6 @@ const RewardRangeSettings = () => {
         </div>
     </div>);
 }
-
+RewardRangeSettings.componentTitle = "Настройка профилей вознаграждения"
+RewardRangeSettings.componentIcon = <img src="/ui/rubli-6.png" alt="icon" width="30" height="30"/>
 export default RewardRangeSettings;

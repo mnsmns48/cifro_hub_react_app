@@ -1,4 +1,4 @@
-export default function Printer() {
+const BillPrinter = () => {
     const today = new Date();
     const formattedDate = String(today.getDate()).padStart(2, '0') + '.' +
         String(today.getMonth() + 1).padStart(2, '0') + '.' +
@@ -30,9 +30,10 @@ export default function Printer() {
                 } else {
                     console.error("Ошибка при отправке данных:", response.statusText);
                 }
-            } catch (error) {console.error("Произошла ошибка:", error)}
-        }
-        else {
+            } catch (error) {
+                console.error("Произошла ошибка:", error)
+            }
+        } else {
             alert('Все поля должны быть заполнены')
         }
 
@@ -58,3 +59,7 @@ export default function Printer() {
         </div>
     );
 }
+
+BillPrinter.componentTitle = "Напечатать товарный чек"
+BillPrinter.componentIcon = <img src="/ui/913printer2.png" alt="icon" width="30" height="30" />
+export default BillPrinter;

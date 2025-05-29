@@ -1,22 +1,53 @@
-import React, {useState} from 'react';
-import {Spin, Tabs} from 'antd';
+import React, {useState, useEffect} from "react";
+import {Spin, Tabs} from "antd";
 import './ServiceApp.css'
 
-const modules = import.meta.glob('./Service-app/Services/*.jsx');
+const loadServices = async () => {
+    const modules = import.meta.glob("./Service-app/Services/*.jsx");
 
-const services = Object.keys(modules).map((path, index) => {
-    const ComponentName = path.split('/').pop().replace('.jsx', '')
-    const Component = React.lazy(modules[path]);
-    return {
-        label: ComponentName,
-        key: String(index + 1),
-        children: <React.Suspense fallback={<div><Spin/></div>}><Component/></React.Suspense>
-    };
-});
+    return Promise.all(
+        Object.entries(modules).map(async ([path, importer], index) => {
+            const module = await importer();
+            const Component = module.default;
+            const componentTitle = Component.componentTitle || path.split("/").pop().replace(".jsx", "");
+            const componentIcon = Component.componentIcon || null;
 
+            return {
+                label: (
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        {componentIcon && <span>{componentIcon}</span>}
+                        <span>{componentTitle}</span>
+                    </div>
+                ),
+                key: String(index + 1),
+                children: (
+                    <React.Suspense fallback={<Spin/>}>
+                        <Component/>
+                    </React.Suspense>
+                )
+            };
+        })
+    );
+};
 
 const ServiceApp = () => {
-    const [tabPosition] = useState('left');
-    return <Tabs tabPosition={tabPosition} items={services}/>
+    const [services, setServices] = useState([]);
+    const [activeKey, setActiveKey] = useState(localStorage.getItem("activeTab") || "1");
+
+    useEffect(() => {
+        loadServices().then(setServices);
+    }, []);
+
+    const handleTabChange = (key) => {
+        setActiveKey(key);
+        localStorage.setItem("activeTab", key);
+    };
+
+    return services.length ? (
+        <Tabs tabPosition="left" items={services} activeKey={activeKey} onChange={handleTabChange}/>
+    ) : (
+        <Spin/>
+    );
 };
+
 export default ServiceApp;
