@@ -1,15 +1,22 @@
-import {Button, Input, Select} from "antd";
+import {Button, Collapse, Input, Select} from "antd";
 import {useEffect, useState} from "react";
-import {fetchRangeRewardsProfiles, addRangeRewardProfile} from "./RewardRangeSettings/api.js";
-import {PlusOutlined} from "@ant-design/icons";
+import {
+    fetchRangeRewardsProfiles,
+    addRangeRewardProfile,
+    deleteRangeRewardProfile,
+    updateRewardRangeProfile
+} from "./RewardRangeSettings/api.js";
+import {DeleteOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons";
 import RewardRangeTable from "./RewardRangeSettings/RewardRangeTable.jsx";
+import MyModal from "../../Ui/MyModal.jsx";
 
 
 const RewardRangeSettings = () => {
     const [dataProfile, setDataProfile] = useState([]);
     const [isSelectedProfile, setIsSelectedProfile] = useState(null);
     const [newProfileName, setNewProfileName] = useState("");
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newTitle, setNewTitle] = useState("")
 
     useEffect(() => {
         fetchRangeRewardsProfiles().then(rewards => {
@@ -33,28 +40,63 @@ const RewardRangeSettings = () => {
         setIsSelectedProfile(profile);
     };
 
+    const handleOpenModal = () => {
+        setNewTitle(isSelectedProfile.title);
+        setIsModalOpen(true);
+    };
+
+    const handleConfirmRename = async () => {
+        await updateRewardRangeProfile(isSelectedProfile.id, newTitle, setDataProfile, setIsSelectedProfile);
+        setIsModalOpen(false);
+    };
+
 
     return (<div>
         <div className='action_parser_main'>
             <h1>Reward Range Settings</h1>
         </div>
-        <Select
-            labelInValue
-            allowClear
-            style={{width: 250}}
-            placeholder="Выберите профиль"
-            value={isSelectedProfile ? {value: isSelectedProfile.id, label: isSelectedProfile.title} : undefined}
-            onChange={handleChangeProfile}
-            options={[...dataProfile.map(item => ({value: item.id, label: item.title}))]}
-        />
+        <div style={{display: "flex", alignItems: "center", gap: "20px"}}>
+            <Select
+                labelInValue
+                allowClear
+                style={{width: 250, height: 50}}
+                placeholder="Выберите профиль"
+                value={isSelectedProfile ? {value: isSelectedProfile.id, label: isSelectedProfile.title} : undefined}
+                onChange={handleChangeProfile}
+                options={[...dataProfile.map(item => ({value: item.id, label: item.title}))]}
+            />
+
+            {isSelectedProfile && (
+                <Collapse style={{width: 500}}>
+                    <Collapse.Panel header={`Управление профилем "${isSelectedProfile.title}"`} key="1">
+                        <div style={{display: "flex", justifyContent: "center", gap: "10px"}}>
+                            <Button icon={<EditOutlined/>} type="default" style={{margin: 10}}
+                                    onClick={handleOpenModal}>
+                                Изменить название
+                            </Button>
+                            <Button icon={<DeleteOutlined/>}
+                                    type="primary" style={{margin: 10}}
+                                    onClick={() => deleteRangeRewardProfile(
+                                        isSelectedProfile, setDataProfile, setIsSelectedProfile)}>
+                                Удалить
+                            </Button>
+                        </div>
+                    </Collapse.Panel>
+                </Collapse>
+            )}
+        </div>
         <div style={{padding: "10px 0px 10px"}}>
             {!isSelectedProfile && (
                 <>
                     <Button icon={<PlusOutlined/>}
                             disabled={!newProfileName.trim()}
-                            onClick={() => addRangeRewardProfile(newProfileName, setDataProfile, setIsSelectedProfile, setNewProfileName)}
+                            onClick={() => addRangeRewardProfile(
+                                newProfileName,
+                                setDataProfile,
+                                setIsSelectedProfile,
+                                setNewProfileName)}
                     />
-                    <Input placeholder="Название нового"
+                    <Input placeholder="Название нового профиля"
                            style={{width: "200px", margin: "10px 20px 10px"}}
                            onChange={(e) => setNewProfileName(e.target.value)}/>
                 </>
@@ -62,7 +104,20 @@ const RewardRangeSettings = () => {
             {isSelectedProfile && (
                 <RewardRangeTable selectedProfile={isSelectedProfile}/>
             )}
-
+            <MyModal
+                isOpen={isModalOpen}
+                onConfirm={handleConfirmRename}
+                onCancel={() => setIsModalOpen(false)}
+                title="Изменить название профиля"
+                footer={
+                    <>
+                        <Input placeholder="Новое название профиля" value={newTitle}
+                               onChange={(e) => setNewTitle(e.target.value)}/>
+                        <Button type="primary" onClick={handleConfirmRename}>OK</Button>
+                        <Button onClick={() => setIsModalOpen(false)}>Отмена</Button>
+                    </>
+                }
+            />
         </div>
     </div>);
 }

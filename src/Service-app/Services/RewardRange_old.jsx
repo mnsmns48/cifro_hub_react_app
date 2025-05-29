@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import RewardRangeTable_old from "./RewardRange_old/RewardRangeTable_old.jsx";
 import axios from "axios";
 import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
-import {data} from "react-router-dom";
+
 
 const RewardRange_old = () => {
     const [dataProfile, setDataProfile] = useState([]);
@@ -82,9 +82,9 @@ const RewardRange_old = () => {
                 <RewardRangeTable_old selectedProfile={selectedProfile} onDelete={handleDelete} isAdding={isAdding} onSave={handleSave} />
             )}
             <Button
-                icon={isAdding ? <MinusOutlined /> : <PlusOutlined />} // ✅ Меняем иконку в зависимости от `isAdding`
+                icon={isAdding ? <MinusOutlined /> : <PlusOutlined />}
                 style={{ padding: "20px", margin: "0 auto" }}
-                onClick={handleToggleAdd} // ✅ Обрабатываем клик
+                onClick={handleToggleAdd}
             />
         </div>
     );
