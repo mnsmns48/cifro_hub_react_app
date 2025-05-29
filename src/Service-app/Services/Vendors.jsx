@@ -103,22 +103,28 @@ const Vendors = () => {
             title: key,
             dataIndex: key,
             key,
-            render: (text, record) =>
-                editingKey === record.id ? (
+            render: (text, record) => {
+                if (["login", "password"].includes(key) && editingKey !== record.id) {
+                    return "••••••";
+                }
+
+                return editingKey === record.id ? (
                     key === "function" ? (
                         <Select
                             value={editedValues[key] || ''}
-                            onChange={(value) => setEditedValues(prev => ({...prev, [key]: value}))}
-                            options={functionList?.length ? functionList.map(fn => ({label: fn, value: fn})) : []}
-                            style={{width: "100%"}}
+                            onChange={(value) => setEditedValues(prev => ({ ...prev, [key]: value }))}
+                            options={functionList?.length ? functionList.map(fn => ({ label: fn, value: fn })) : []}
+                            style={{ width: "100%" }}
                         />
                     ) : (
                         <Input
                             value={editedValues[key] || ''}
-                            onChange={(e) => setEditedValues(prev => ({...prev, [key]: e.target.value}))}
+                            onChange={(e) => setEditedValues(prev => ({ ...prev, [key]: e.target.value }))}
+                            type={key === "password" ? "password" : "text"} // Если редактируем пароль, используем `type="password"`
                         />
                     )
-                ) : text
+                ) : text;
+            }
         })),
         {
             key: "actions",

@@ -43,10 +43,15 @@ const ServiceApp = () => {
         localStorage.setItem("activeTab", key);
     };
 
-    return services.length ? (
-        <Tabs tabPosition="left" items={services} activeKey={activeKey} onChange={handleTabChange}/>
-    ) : (
-        <Spin/>
+    return (
+        <div className="service-app-container">
+            {services.length ? (
+                <Tabs className="service-app-tabs"
+                      tabPosition="left" items={services} activeKey={activeKey} onChange={handleTabChange}/>
+            ) : (
+                <Spin/>
+            )}
+        </div>
     );
 };
 

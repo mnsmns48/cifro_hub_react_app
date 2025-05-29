@@ -29,7 +29,7 @@ export const addRangeRewardProfile = async (newProfileName, setDataProfile, setI
 
 export const deleteRangeRewardProfile = async (isSelectedProfile, setDataProfile, setIsSelectedProfile) => {
     try {
-        await axios.delete(`/service/delete_range_line/${isSelectedProfile.id}`);
+        await axios.delete(`/service/delete_range_profile/${isSelectedProfile.id}`);
 
         setDataProfile(prev => prev.filter(profile => profile.id !== isSelectedProfile.id));
         setIsSelectedProfile(null);
@@ -40,13 +40,13 @@ export const deleteRangeRewardProfile = async (isSelectedProfile, setDataProfile
 
 export const updateRewardRangeProfile = async (rangeId, updatedTitle, setDataProfile, setIsSelectedProfile) => {
     try {
-        const response = await axios.put(`/service/update_range_line/${rangeId}`, {
+        const response = await axios.put(`/service/update_range_profile/${rangeId}`, {
             title: updatedTitle
         });
         setDataProfile(prev => prev.map(profile =>
-            profile.id === rangeId ? { ...profile, title: updatedTitle } : profile
+            profile.id === rangeId ? {...profile, title: updatedTitle} : profile
         ));
-        setIsSelectedProfile(prev => ({ ...prev, title: updatedTitle }));
+        setIsSelectedProfile(prev => ({...prev, title: updatedTitle}));
 
         return response.data;
     } catch (error) {
@@ -57,7 +57,7 @@ export const updateRewardRangeProfile = async (rangeId, updatedTitle, setDataPro
 
 export const fetchRangeRewardLines = async (range_id) => {
     try {
-        const response = await axios.get(`/service/get_reward_line/${range_id}`);
+        const response = await axios.get(`/service/get_reward_lines/${range_id}`);
         return response.data;
     } catch (error) {
         console.error("Проблема с бэкендом", error);
@@ -65,3 +65,34 @@ export const fetchRangeRewardLines = async (range_id) => {
     }
 };
 
+
+export const deleteRewardRangeLine = async (lineId) => {
+    try {
+        const response = await axios.delete(`/service/delete_reward_line/${lineId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Ошибка удаления строки:", error.response?.data || error.message);
+        throw error;
+    }
+};
+
+
+export const addRewardRangeLine = async (newLineData) => {
+    try {
+        const response = await axios.post("/service/add_reward_range_line", newLineData);
+        return response.data;
+    } catch (error) {
+        console.error("Ошибка при добавлении строки:", error.response?.data || error.message);
+        throw error;
+    }
+};
+
+export const updateRewardRangeLine = async (lineId, updatedData) => {
+    try {
+        const response = await axios.put(`/service/update_reward_line/${lineId}`, updatedData);
+        return response.data;
+    } catch (error) {
+        console.error("Ошибка при обновлении строки:", error.response?.data || error.message);
+        throw error;
+    }
+};

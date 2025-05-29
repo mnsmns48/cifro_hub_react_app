@@ -1,5 +1,27 @@
+.service-app-container {
+    width: clamp(320px, 90vw, 1416px);
+    margin: 20px auto 0;
+    position: relative;
+    padding: 20px;
+    background: #f6f8f8;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.service-app-tabs .ant-tabs-nav {
+    width: 250px;
+}
+.service-app-tabs .ant-tabs-tab {
+    padding-left: 0px !important;
+}
+
+.service-app-tabs .ant-tabs-tab-btn {
+    text-align: left !important;
+    padding-left: 0px !important;
+}
+
+
 .bill-wrapper {
-    margin-top: 20px;
     font-family: Arial, sans-serif;
     height: 100%;
     display: flex;
@@ -8,5 +30,5 @@
 }
 
 .bill-wrapper .form-container {
-    width: 400px;
+    width: 330px;
 }

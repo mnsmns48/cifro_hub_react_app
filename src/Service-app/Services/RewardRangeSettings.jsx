@@ -17,6 +17,7 @@ const RewardRangeSettings = () => {
     const [newProfileName, setNewProfileName] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newTitle, setNewTitle] = useState("")
+    const [newLine, setNewLine] = useState(null);
 
     useEffect(() => {
         fetchRangeRewardsProfiles().then(rewards => {
@@ -48,6 +49,21 @@ const RewardRangeSettings = () => {
     const handleConfirmRename = async () => {
         await updateRewardRangeProfile(isSelectedProfile.id, newTitle, setDataProfile, setIsSelectedProfile);
         setIsModalOpen(false);
+    };
+
+    const handleAddRewardRangeLine = () => {
+        if (!isSelectedProfile) return;
+
+        const newEntry = {
+            id: `new_${Date.now()}`,
+            range_id: isSelectedProfile.id,
+            line_from: 0,
+            line_to: 0,
+            is_percent: false,
+            reward: 0
+        };
+
+        setNewLine(newEntry);
     };
 
 
@@ -85,15 +101,11 @@ const RewardRangeSettings = () => {
                 </Collapse>
             )}
             {isSelectedProfile && (
-                <Button
-                    type="primary"
-                    icon={<PlusOutlined/>}
-                    // onClick={handleAddRewardRangeLine}
-                >Добавить строку</Button>
+                <Button type="primary" icon={<PlusOutlined/>} onClick={handleAddRewardRangeLine}>
+                    Добавить строку</Button>
             )
             }
         </div>
-
 
         <div style={{padding: "10px 0px 10px"}}>
             {!isSelectedProfile && (
@@ -112,7 +124,7 @@ const RewardRangeSettings = () => {
                 </>
             )}
             {isSelectedProfile && (
-                <RewardRangeTable selectedProfile={isSelectedProfile}/>
+                <RewardRangeTable selectedProfile={isSelectedProfile} newLine={newLine} setNewLine={setNewLine}/>
             )}
             <MyModal
                 isOpen={isModalOpen}
@@ -131,6 +143,6 @@ const RewardRangeSettings = () => {
         </div>
     </div>);
 }
-RewardRangeSettings.componentTitle = "Настройка профилей вознаграждения"
+RewardRangeSettings.componentTitle = "Настройка вознаграждения"
 RewardRangeSettings.componentIcon = <img src="/ui/rubli-6.png" alt="icon" width="30" height="30"/>
 export default RewardRangeSettings;
