@@ -17,11 +17,14 @@ const RewardRangeSettings = () => {
     const [newProfileName, setNewProfileName] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newTitle, setNewTitle] = useState("")
-    const [newLine, setNewLine] = useState(null);
+    const [isAddingNewLine, setIsAddingNewLine] = useState(false);
 
     useEffect(() => {
         fetchRangeRewardsProfiles().then(rewards => {
             setDataProfile(rewards);
+            if (rewards.length > 0) {
+                setIsSelectedProfile(rewards[0]);
+            }
         }).catch(error => {
             console.error("Ошибка загрузки профиля:", error);
         });
@@ -49,21 +52,6 @@ const RewardRangeSettings = () => {
     const handleConfirmRename = async () => {
         await updateRewardRangeProfile(isSelectedProfile.id, newTitle, setDataProfile, setIsSelectedProfile);
         setIsModalOpen(false);
-    };
-
-    const handleAddRewardRangeLine = () => {
-        if (!isSelectedProfile) return;
-
-        const newEntry = {
-            id: `new_${Date.now()}`,
-            range_id: isSelectedProfile.id,
-            line_from: 0,
-            line_to: 0,
-            is_percent: false,
-            reward: 0
-        };
-
-        setNewLine(newEntry);
     };
 
 
@@ -100,11 +88,11 @@ const RewardRangeSettings = () => {
                     </Collapse.Panel>
                 </Collapse>
             )}
-            {isSelectedProfile && (
-                <Button type="primary" icon={<PlusOutlined/>} onClick={handleAddRewardRangeLine}>
-                    Добавить строку</Button>
-            )
-            }
+            {/*{isSelectedProfile && (*/}
+            {/*    <Button type="primary" icon={<PlusOutlined/>} onClick={handleAddRewardRangeLine}>*/}
+            {/*        Добавить строку</Button>*/}
+            {/*)*/}
+            {/*}*/}
         </div>
 
         <div style={{padding: "10px 0px 10px"}}>
@@ -124,7 +112,9 @@ const RewardRangeSettings = () => {
                 </>
             )}
             {isSelectedProfile && (
-                <RewardRangeTable selectedProfile={isSelectedProfile} newLine={newLine} setNewLine={setNewLine}/>
+                <RewardRangeTable selectedProfile={isSelectedProfile}
+                                  isAddingNewLine={isAddingNewLine}
+                                  setIsAddingNewLine={setIsAddingNewLine}/>
             )}
             <MyModal
                 isOpen={isModalOpen}

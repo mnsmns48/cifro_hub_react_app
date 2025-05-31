@@ -1,12 +1,15 @@
 import {useEffect, useState} from "react";
 import {addRewardRangeLine, deleteRewardRangeLine, fetchRangeRewardLines, updateRewardRangeLine} from "./api.js";
 import {Button, Input, Space, Switch, Table} from "antd";
-import {DeleteOutlined, EditOutlined, RedoOutlined, SaveOutlined} from "@ant-design/icons";
+import {DeleteOutlined, EditOutlined, PlusOutlined, RedoOutlined, SaveOutlined} from "@ant-design/icons";
+import '../Css/RewardRangeSettings.css'
 
-const RewardRangeTable = ({selectedProfile, newLine, setNewLine}) => {
+
+const RewardRangeTable = ({selectedProfile, isAddingNewLine, setIsAddingNewLine}) => {
     const [rangeData, setRangeData] = useState([]);
     const [editingKey, setEditingKey] = useState(null);
     const [editedValues, setEditedValues] = useState({});
+    const [newLine, setNewLine] = useState(null);
 
 
     useEffect(() => {
@@ -20,14 +23,29 @@ const RewardRangeTable = ({selectedProfile, newLine, setNewLine}) => {
 
 
     useEffect(() => {
-        if (newLine) setEditingKey(newLine.id);
-    }, [newLine]);
+        if (isAddingNewLine) {
+            const newEntry = {
+                id: `new_${Date.now()}`,
+                range_id: selectedProfile.id,
+                line_from: "",
+                line_to: "",
+                is_percent: false,
+                reward: ""
+            };
+
+            setNewLine(newEntry);
+            setEditingKey(newEntry.id);
+            setEditedValues(newEntry);
+            setIsAddingNewLine(false);
+        }
+    }, [isAddingNewLine]);
 
     const handleSaveNewLine = async () => {
         if (!newLine) return;
         try {
-            const savedLine = await addRewardRangeLine(newLine);
-            setRangeData(prevData => [...prevData, savedLine]);
+            await addRewardRangeLine(newLine);
+            const updatedData = await fetchRangeRewardLines(selectedProfile.id);
+            setRangeData(updatedData);
             setNewLine(null);
             setEditingKey(null);
         } catch (error) {
@@ -59,7 +77,6 @@ const RewardRangeTable = ({selectedProfile, newLine, setNewLine}) => {
 
 
     const handleCancelNewLine = () => {
-        setNewLine(null);
         setEditingKey(null);
     };
 
@@ -160,8 +177,18 @@ const RewardRangeTable = ({selectedProfile, newLine, setNewLine}) => {
                 <Space>
                     {record === newLine ? (
                         <>
-                            <Button icon={<SaveOutlined/>} type="link" onClick={handleSaveNewLine}/>
-                            <Button icon={<RedoOutlined/>} type="text" danger onClick={handleCancelNewLine}/>
+                            <Button
+                                icon={<SaveOutlined/>}
+                                type="link"
+                                onClick={handleSaveNewLine}
+                                disabled={!newLine.line_from || !newLine.line_to || !newLine.reward}
+                            />
+                            <Button
+                                icon={<RedoOutlined/>}
+                                type="text"
+                                danger
+                                onClick={handleCancelNewLine}
+                            />
                         </>
                     ) : editingKey === record.id ? (
                         <>
@@ -182,12 +209,17 @@ const RewardRangeTable = ({selectedProfile, newLine, setNewLine}) => {
 
 
     return (
-        <Table
-            dataSource={[...rangeData, ...(newLine ? [{ ...newLine, id: `new_${Date.now()}` }] : [])]}
-            columns={columns}
-            rowKey="id"
-        />
-    )
+        <div>
+            <Table
+                dataSource={newLine ? [...rangeData, newLine] : rangeData}
+                columns={columns}
+                rowKey="id"
+            />
+            <Button icon={<PlusOutlined/>} onClick={() => setIsAddingNewLine(true)}>
+                Добавить
+            </Button>
+        </div>
+    );
 }
 
 export default RewardRangeTable;
