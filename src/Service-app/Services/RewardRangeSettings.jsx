@@ -88,11 +88,6 @@ const RewardRangeSettings = () => {
                     </Collapse.Panel>
                 </Collapse>
             )}
-            {/*{isSelectedProfile && (*/}
-            {/*    <Button type="primary" icon={<PlusOutlined/>} onClick={handleAddRewardRangeLine}>*/}
-            {/*        Добавить строку</Button>*/}
-            {/*)*/}
-            {/*}*/}
         </div>
 
         <div style={{padding: "10px 0px 10px"}}>

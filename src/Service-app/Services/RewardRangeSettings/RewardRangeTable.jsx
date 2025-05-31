@@ -66,14 +66,22 @@ const RewardRangeTable = ({selectedProfile, isAddingNewLine, setIsAddingNewLine}
     const handleSaveEdit = async (record) => {
         try {
             const updatedLine = await updateRewardRangeLine(record.id, editedValues);
+            const finalLine = {
+                ...record,
+                ...editedValues,
+                ...updatedLine
+            };
+
             setRangeData(prevData =>
-                prevData.map(item => item.id === record.id ? updatedLine : item)
+                prevData.map(item => item.id === record.id ? finalLine : item)
             );
+
             setEditingKey(null);
         } catch (error) {
             console.error("Ошибка при обновлении строки", error);
         }
     };
+
 
 
     const handleCancelNewLine = () => {
