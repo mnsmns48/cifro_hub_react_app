@@ -23,22 +23,22 @@ const RewardRangeTable = ({selectedProfile, isAddingNewLine, setIsAddingNewLine}
 
 
     useEffect(() => {
-        if (isAddingNewLine) {
-            const newEntry = {
-                id: `new_${Date.now()}`,
-                range_id: selectedProfile.id,
-                line_from: "",
-                line_to: "",
-                is_percent: false,
-                reward: ""
-            };
+        if (!isAddingNewLine || !selectedProfile) return;
 
-            setNewLine(newEntry);
-            setEditingKey(newEntry.id);
-            setEditedValues(newEntry);
-            setIsAddingNewLine(false);
-        }
-    }, [isAddingNewLine]);
+        const newEntry = {
+            id: `new_${Date.now()}`,
+            range_id: selectedProfile.id,
+            line_from: "",
+            line_to: "",
+            is_percent: false,
+            reward: ""
+        };
+        setNewLine(newEntry);
+        setEditingKey(newEntry.id);
+        setEditedValues(newEntry);
+        setIsAddingNewLine(false);
+    }, [isAddingNewLine, selectedProfile, setIsAddingNewLine]);
+
 
     const handleSaveNewLine = async () => {
         if (!newLine) return;
