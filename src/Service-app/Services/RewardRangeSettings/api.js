@@ -14,7 +14,8 @@ export const fetchRangeRewardsProfiles = async () => {
 
 export const addRangeRewardProfile = async (newProfileName, setDataProfile, setIsSelectedProfile, setNewProfileName) => {
     try {
-        const response = await axios.post("/service/add_reward", {title: newProfileName});
+        const response = await axios.post("/service/add_reward",
+            {title: newProfileName, is_default: false});
         const newProfile = response.data;
         setDataProfile(prev => {
             const updatedProfiles = [...prev, newProfile];

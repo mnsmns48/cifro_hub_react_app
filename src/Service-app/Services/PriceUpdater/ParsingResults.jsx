@@ -39,32 +39,31 @@ const ParsingResults = ({result}) => {
                 {selectedRowKeys.length > 0 ? "Снять выделение" : "Выбрать все"}
             </Button>
             <Table
+                className="parsing-result-table"
                 rowSelection={rowSelection}
                 dataSource={result.data}
+                tableLayout="fixed"
                 rowKey="origin"
                 columns={[
                     {
                         title: "Изображение",
-                        dataIndex: "pic",
-                        key: "pic",
+                        dataIndex: "preview",
+                        align: "center",
+                        key: "preview",
                         render: (text, record) => (
                             <Image
-                                width={50}
+                                width={60}
                                 src={text || "/10000.png"}
-                                // preview={{scale: 2}}
                                 alt={record.title}
                             />
                         )
                     },
-                    {
-                        title: "Название",
-                        dataIndex: "title",
-                        key: "title",
-                        render: (text) => <span style={{fontSize: "10px"}}>{text}</span>
-                    },
-                    {title: "Цена", dataIndex: "input_price", key: "input_price"},
-                    {title: "Доставка", dataIndex: "shipment", key: "shipment"},
-                    {title: "Гарантия", dataIndex: "warranty", key: "warranty"},
+                    {title: "Название", dataIndex: "title", key: "title", width: 200},
+                    {title: "+", dataIndex: "input_price", key: "input_price", align: "center",
+                        render: (text) => <span style={{color: "grey"}}>{text}</span>},
+                    {title: "Цена"},
+                    {title: "Доставка", dataIndex: "shipment", key: "shipment", align: "center"},
+                    {title: "Гарантия", dataIndex: "warranty", key: "warranty", align: "center"},
                     {title: "Дополнительно", dataIndex: "optional", key: "optional"}
                 ]}
             />

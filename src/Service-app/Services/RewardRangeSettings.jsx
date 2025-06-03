@@ -6,7 +6,14 @@ import {
     deleteRangeRewardProfile,
     updateRewardRangeProfile
 } from "./RewardRangeSettings/api.js";
-import {DeleteOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons";
+import {
+    DeleteOutlined,
+    EditOutlined,
+    PlusOutlined,
+    SafetyCertificateOutlined,
+    SelectOutlined,
+
+} from "@ant-design/icons";
 import RewardRangeTable from "./RewardRangeSettings/RewardRangeTable.jsx";
 import MyModal from "../../Ui/MyModal.jsx";
 
@@ -49,6 +56,7 @@ const RewardRangeSettings = () => {
         setIsModalOpen(true);
     };
 
+
     const handleConfirmRename = async () => {
         await updateRewardRangeProfile(isSelectedProfile.id, newTitle, setDataProfile, setIsSelectedProfile);
         setIsModalOpen(false);
@@ -65,15 +73,31 @@ const RewardRangeSettings = () => {
                 allowClear
                 style={{width: 250, height: 50}}
                 placeholder="Выберите профиль"
-                value={isSelectedProfile ? {value: isSelectedProfile.id, label: isSelectedProfile.title} : undefined}
+                value={isSelectedProfile ? {
+                    value: isSelectedProfile.id,
+                    label: isSelectedProfile.is_default ? <>{isSelectedProfile.title} </> : isSelectedProfile.title
+                } : undefined}
                 onChange={handleChangeProfile}
-                options={[...dataProfile.map(item => ({value: item.id, label: item.title}))]}
+                options={dataProfile.map(item => ({
+                    value: item.id,
+                    label: item.is_default ? <>{item.title} <SafetyCertificateOutlined/></> : item.title
+                }))}
             />
 
             {isSelectedProfile && (
-                <Collapse style={{width: 500}}>
-                    <Collapse.Panel header={`Управление профилем "${isSelectedProfile.title}"`} key="1">
-                        <div style={{display: "flex", justifyContent: "center", gap: "10px"}}>
+                <Collapse style={{width: 600}}>
+                    <Collapse.Panel header={"Управление профилем"} key="1">
+                        <div style={{display: "flex", justifyContent: "center"}}>
+                            {isSelectedProfile.is_default ? (
+                                <Button icon={<SafetyCertificateOutlined/>} type="primary" style={{margin: 10}}
+                                        disabled>
+                                    Выбран по-умолчанию
+                                </Button>
+                            ) : (
+                                <Button icon={<SelectOutlined/>} type="default" style={{margin: 10}}>
+                                    Установить по-умолчанию
+                                </Button>
+                            )}
                             <Button icon={<EditOutlined/>} type="default" style={{margin: 10}}
                                     onClick={handleOpenModal}>
                                 Изменить название

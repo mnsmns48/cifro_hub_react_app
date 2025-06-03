@@ -83,13 +83,13 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
             }
         ];
 
-        setColumns(newColumns); // Обновляем `columns` после загрузки данных
+        setColumns(newColumns);
     }, [tableData, editingKey, editedValues]);
 
 
     return (
         <div>
-            <Table pagination={{pageSize: 5}} rowSelection={{
+            <Table rowSelection={{
                 type: 'radio',
                 onChange: handleRowSelection,
                 selectedRowKeys: selectedRowKeys
