@@ -4,6 +4,7 @@ import "../Css/ParsingResults.css";
 import {useState} from "react";
 import Search from "antd/es/input/Search.js";
 
+
 const formatDate = (isoString) => {
     const date = new Date(isoString);
     date.setHours(date.getHours() + 3);
@@ -15,7 +16,7 @@ const ParsingResults = ({result}) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [expandedRows, setExpandedRows] = useState(null);
     const [pageSize, setPageSize] = useState(100);
-    const [showInputPrice, setShowInputPrice] = useState(true);
+    const [showInputPrice, setShowInputPrice] = useState(false);
     const [searchText, setSearchText] = useState("");
 
     const rowSelection = {
@@ -44,7 +45,7 @@ const ParsingResults = ({result}) => {
                 onClick={() => setShowInputPrice(!showInputPrice)}
                 style={{marginBottom: 10}}
             >
-                {showInputPrice ? "On" : "Off"}
+                {showInputPrice ? "Off" : "On"}
             </Button>
             <Search
                 placeholder="Что ищем"
@@ -78,7 +79,6 @@ const ParsingResults = ({result}) => {
                     },
                     {title: "Название", dataIndex: "title", key: "title", width: 250},
                     {
-                        title: "Вход",
                         dataIndex: "input_price",
                         key: "input_price",
                         width: 100,
@@ -92,22 +92,21 @@ const ParsingResults = ({result}) => {
                                 )
                     },
                     {
+                        key: "details",
+                        width: 40,
+                        align: "center",
+                        render: (_, record) => (
+                            <Button type="text" icon={<RightCircleOutlined/>}
+                                    onClick={() => toggleExpand(record.origin)}/>
+                        )
+                    },
+                    {
                         title: "Цена",
                         dataIndex: "output_price",
                         key: "output_price",
                         width: 200,
                         align: "center",
                         render: (text) => <b style={{fontSize: "16px"}}>{text}</b>
-                    },
-                    {
-                        title: "Детали",
-                        key: "details",
-                        width: 100,
-                        align: "center",
-                        render: (_, record) => (
-                            <Button type="text" icon={<RightCircleOutlined/>}
-                                    onClick={() => toggleExpand(record.origin)}/>
-                        )
                     },
                     {title: "Гарантия", dataIndex: "warranty", key: "warranty", align: "center", width: 70},
                     {title: "Доставка", dataIndex: "shipment", key: "shipment", align: "center"},

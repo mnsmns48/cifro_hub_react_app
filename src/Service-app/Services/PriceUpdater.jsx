@@ -111,11 +111,13 @@ const PriceUpdater = () => {
                         }
                         {selectedVSLRow !== null &&
                             <Parsing url={selectedVSLRow.url} onComplete={handleParsingComplete}/>}
-                        <div className='input_link_container'>
-                            <Button onClick={handleFetchPreviousResults} type="default" style={{ marginBottom: 10 }}>
-                                Предыдущие результаты
-                            </Button>
-                        </div>
+                        {!selectedVSLRow && (
+                            <div className='parser_footer' style={{display: "flex", flexDirection: "column"}}>
+                                <Button onClick={handleFetchPreviousResults} type="primary" style={{marginBottom: 10}}>
+                                    Предыдущие результаты
+                                </Button>
+                            </div>
+                        )}
                     </Flex>
                 </Col>
                 <Col span={15} className='right_col'>
