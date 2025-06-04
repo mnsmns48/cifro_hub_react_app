@@ -4,27 +4,23 @@ import {
     fetchRangeRewardsProfiles,
     addRangeRewardProfile,
     deleteRangeRewardProfile,
-    updateRewardRangeProfile
+    updateRewardRangeProfile,
+    updateDefaultProfile
 } from "./RewardRangeSettings/api.js";
-import {
-    DeleteOutlined,
-    EditOutlined,
-    PlusOutlined,
-    SafetyCertificateOutlined,
-    SelectOutlined,
-
-} from "@ant-design/icons";
+import {DeleteOutlined, EditOutlined, PlusOutlined, CheckCircleOutlined, SelectOutlined} from "@ant-design/icons";
 import RewardRangeTable from "./RewardRangeSettings/RewardRangeTable.jsx";
 import MyModal from "../../Ui/MyModal.jsx";
 
 
 const RewardRangeSettings = () => {
+    const [isLoading, setIsLoading] = useState(false);
     const [dataProfile, setDataProfile] = useState([]);
     const [isSelectedProfile, setIsSelectedProfile] = useState(null);
     const [newProfileName, setNewProfileName] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newTitle, setNewTitle] = useState("")
     const [isAddingNewLine, setIsAddingNewLine] = useState(false);
+
 
     useEffect(() => {
         fetchRangeRewardsProfiles().then(rewards => {
@@ -37,6 +33,8 @@ const RewardRangeSettings = () => {
         });
     }, []);
 
+    useEffect(() => {
+    }, [dataProfile]);
 
     const handleChangeProfile = (selected) => {
         if (!selected || !selected.value) {
@@ -50,6 +48,26 @@ const RewardRangeSettings = () => {
         }
         setIsSelectedProfile(profile);
     };
+
+    const handleSetDefaultProfile = async () => {
+        if (!isSelectedProfile) return;
+        setIsLoading(true);
+        try {
+            const updatedId = await updateDefaultProfile(isSelectedProfile.id);
+            const updatedProfiles = dataProfile.map(profile => ({
+                ...profile,
+                is_default: profile.id === updatedId
+            }));
+            setDataProfile([...updatedProfiles]);
+            const updatedSelected = updatedProfiles.find(profile => profile.id === isSelectedProfile.id);
+            setIsSelectedProfile(updatedSelected);
+        } catch (error) {
+            console.error("Ошибка:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
 
     const handleOpenModal = () => {
         setNewTitle(isSelectedProfile.title);
@@ -72,29 +90,41 @@ const RewardRangeSettings = () => {
                 labelInValue
                 allowClear
                 style={{width: 250, height: 50}}
-                placeholder="Выберите профиль"
-                value={isSelectedProfile ? {
-                    value: isSelectedProfile.id,
-                    label: isSelectedProfile.is_default ? <>{isSelectedProfile.title} </> : isSelectedProfile.title
-                } : undefined}
+                placeholder="Выбрать профиль"
+                value={
+                    isSelectedProfile
+                        ? {
+                            value: isSelectedProfile.id,
+                            label: (
+                                <>{isSelectedProfile.title} {isSelectedProfile.is_default && <CheckCircleOutlined/>}</>
+                            ),
+                        }
+                        : undefined
+                }
                 onChange={handleChangeProfile}
-                options={dataProfile.map(item => ({
+                options={dataProfile.map((item) => ({
                     value: item.id,
-                    label: item.is_default ? <>{item.title} <SafetyCertificateOutlined/></> : item.title
+                    label: (
+                        <> {item.title} {item.is_default && <CheckCircleOutlined/>}</>
+                    ),
                 }))}
             />
+
 
             {isSelectedProfile && (
                 <Collapse style={{width: 600}}>
                     <Collapse.Panel header={"Управление профилем"} key="1">
                         <div style={{display: "flex", justifyContent: "center"}}>
                             {isSelectedProfile.is_default ? (
-                                <Button icon={<SafetyCertificateOutlined/>} type="primary" style={{margin: 10}}
+                                <Button icon={<CheckCircleOutlined/>} type="primary" style={{margin: 10}}
                                         disabled>
                                     Выбран по-умолчанию
                                 </Button>
                             ) : (
-                                <Button icon={<SelectOutlined/>} type="default" style={{margin: 10}}>
+                                <Button icon={<SelectOutlined/>}
+                                        type="default" style={{margin: 10}} onClick={handleSetDefaultProfile}
+                                        loading={isLoading}
+                                        disabled={isLoading}>
                                     Установить по-умолчанию
                                 </Button>
                             )}

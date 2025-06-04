@@ -55,6 +55,16 @@ export const updateRewardRangeProfile = async (rangeId, updatedTitle, setDataPro
     }
 };
 
+export const updateDefaultProfile = async (profileId) => {
+    try {
+        await axios.put(`/service/update_range_profile_is_default/${profileId}`);
+        return profileId;
+    } catch (error) {
+        console.error("Ошибка установки профиля:", error);
+        throw error;
+    }
+};
+
 
 export const fetchRangeRewardLines = async (range_id) => {
     try {
