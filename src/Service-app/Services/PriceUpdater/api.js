@@ -77,4 +77,12 @@ export const startParsingProcess = async ({url, progress}) => {
     }
 }
 
-
+export const fetchPreviousParsingResults = async () => {
+    try {
+        const response = await axios.get("/service/previous_parsing_results");
+        return response.data;
+    } catch (error) {
+        console.error("Ошибка при получении предыдущих результатов:", error);
+        throw error;
+    }
+};

@@ -12,7 +12,10 @@ const formatDate = (isoString) => {
 
 const ParsingResults = ({result}) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-    const [expandedRows, setExpandedRows] = useState(new Set());
+    const [expandedRows, setExpandedRows] = useState(null);
+    const [pageSize, setPageSize] = useState(100);
+    const [showInputPrice, setShowInputPrice] = useState(true);
+
 
     const rowSelection = {
         selectedRowKeys,
@@ -21,14 +24,9 @@ const ParsingResults = ({result}) => {
         }
     };
 
+
     const toggleExpand = (rowKey) => {
-        const newExpandedRows = new Set(expandedRows);
-        if (newExpandedRows.has(rowKey)) {
-            newExpandedRows.delete(rowKey);
-        } else {
-            newExpandedRows.add(rowKey);
-        }
-        setExpandedRows(newExpandedRows);
+        setExpandedRows(expandedRows === rowKey ? null : rowKey);
     };
 
     return (
@@ -38,12 +36,24 @@ const ParsingResults = ({result}) => {
                 </p>
                 <p><strong>Дата и время:</strong> {formatDate(result.datetime_now)}</p>
             </div>
+            <Button
+                onClick={() => setShowInputPrice(!showInputPrice)}
+                style={{marginBottom: 10}}
+            >
+                {showInputPrice ? "On" : "Off"}
+            </Button>
             <Table
                 className="parsing-result-table"
                 rowSelection={rowSelection}
                 dataSource={result.data}
                 tableLayout="fixed"
                 rowKey="origin"
+                pagination={{
+                    pageSize: pageSize,
+                    showSizeChanger: true,
+                    pageSizeOptions: ["10", "25", "50", "100"],
+                    onShowSizeChange: (_, newSize) => setPageSize(newSize),
+                }}
                 columns={[
                     {
                         title: "Изображение",
@@ -54,37 +64,43 @@ const ParsingResults = ({result}) => {
                             <Image width={60} src={text || "/10000.png"} alt={record.title}/>
                         )
                     },
-                    {title: "Название", dataIndex: "title", key: "title", width: 200},
+                    {title: "Название", dataIndex: "title", key: "title", width: 250},
+                    {
+                        title: "Вход",
+                        dataIndex: "input_price",
+                        key: "input_price",
+                        width: 100,
+                        align: "center",
+                        render: (text, record) =>
+                            showInputPrice ? (<span style={{color: "grey"}}>{text}</span>)
+                                : expandedRows === record.origin ? (
+                                    <span style={{color: "grey"}}>{text}</span>
+                                ) : (
+                                    ""
+                                )
+                    },
                     {
                         title: "Цена",
                         dataIndex: "output_price",
                         key: "output_price",
+                        width: 200,
                         align: "center",
-                        render: (text) => <b style={{fontSize: "13px"}}>{text}</b>
+                        render: (text) => <b style={{fontSize: "16px"}}>{text}</b>
                     },
-                    {title: "Гарантия", dataIndex: "warranty", key: "warranty", align: "center"},
                     {
-
+                        title: "Детали",
                         key: "details",
                         width: 100,
                         align: "center",
                         render: (_, record) => (
-                            <>
-                                {expandedRows.has(record.origin) && (
-                                    <span style={{marginRight: "5x"}}>{record.input_price}</span>
-                                )}
-                                <Button
-                                    type="text"
-                                    icon={<RightCircleOutlined/>}
-                                    onClick={() => toggleExpand(record.origin)}
-                                />
-                            </>
+                            <Button type="text" icon={<RightCircleOutlined/>}
+                                    onClick={() => toggleExpand(record.origin)}/>
                         )
                     },
+                    {title: "Гарантия", dataIndex: "warranty", key: "warranty", align: "center", width: 70},
                     {title: "Доставка", dataIndex: "shipment", key: "shipment", align: "center"},
                     {title: "Дополнительно", dataIndex: "optional", key: "optional"},
-
-                ]}
+                ].filter(Boolean)}
             />
         </>
     );

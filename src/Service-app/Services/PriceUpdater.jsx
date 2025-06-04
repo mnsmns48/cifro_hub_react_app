@@ -6,7 +6,7 @@ import VendorSourceSelector from "./PriceUpdater/VendorSourceSelector.jsx";
 import SearchTableSelector from "./PriceUpdater/SearchTableSelector.jsx";
 import './Css/PriceUpdater.css';
 import Parsing from "./PriceUpdater/Parsing.jsx";
-import {fetchVendors, fetchTableData, addVSL} from "./PriceUpdater/api.js";
+import {fetchVendors, fetchTableData, addVSL, fetchPreviousParsingResults} from "./PriceUpdater/api.js";
 import ParsingResults from "./PriceUpdater/ParsingResults.jsx";
 
 
@@ -71,6 +71,15 @@ const PriceUpdater = () => {
         setIsParsingDone(true);
     };
 
+    const handleFetchPreviousResults = async () => {
+        try {
+            const results = await fetchPreviousParsingResults();
+            setParsedData(results);
+            setIsParsingDone(true);
+        } catch (error) {
+            console.error("Ошибка загрузки предыдущих результатов:", error);
+        }
+    };
 
     return (
         <>
@@ -96,10 +105,17 @@ const PriceUpdater = () => {
                                             setErrorMessage, setIsErrorModalOpen)}/>
                                 <Input className='input_link_title' placeholder="Наименование ссылки"
                                        onChange={(e) => setInputTitle(e.target.value)}/>
+
                             </div>
-                        )}
+                        )
+                        }
                         {selectedVSLRow !== null &&
                             <Parsing url={selectedVSLRow.url} onComplete={handleParsingComplete}/>}
+                        <div className='input_link_container'>
+                            <Button onClick={handleFetchPreviousResults} type="default" style={{ marginBottom: 10 }}>
+                                Предыдущие результаты
+                            </Button>
+                        </div>
                     </Flex>
                 </Col>
                 <Col span={15} className='right_col'>
@@ -144,5 +160,5 @@ const PriceUpdater = () => {
 };
 
 PriceUpdater.componentTitle = "Обновления цен"
-PriceUpdater.componentIcon = <img src="/ui/prices.png" alt="icon" width="30" height="30" />
+PriceUpdater.componentIcon = <img src="/ui/prices.png" alt="icon" width="30" height="30"/>
 export default PriceUpdater;
