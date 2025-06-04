@@ -2,6 +2,7 @@ import {Table, Image, Button} from "antd";
 import {RightCircleOutlined} from "@ant-design/icons";
 import "../Css/ParsingResults.css";
 import {useState} from "react";
+import Search from "antd/es/input/Search.js";
 
 const formatDate = (isoString) => {
     const date = new Date(isoString);
@@ -15,7 +16,7 @@ const ParsingResults = ({result}) => {
     const [expandedRows, setExpandedRows] = useState(null);
     const [pageSize, setPageSize] = useState(100);
     const [showInputPrice, setShowInputPrice] = useState(true);
-
+    const [searchText, setSearchText] = useState("");
 
     const rowSelection = {
         selectedRowKeys,
@@ -24,10 +25,13 @@ const ParsingResults = ({result}) => {
         }
     };
 
-
     const toggleExpand = (rowKey) => {
         setExpandedRows(expandedRows === rowKey ? null : rowKey);
     };
+
+    const filteredData = result.data.filter((item) =>
+        item.title.toLowerCase().includes(searchText.toLowerCase())
+    );
 
     return (
         <>
@@ -42,11 +46,19 @@ const ParsingResults = ({result}) => {
             >
                 {showInputPrice ? "On" : "Off"}
             </Button>
+            <Search
+                placeholder="Что ищем"
+                allowClear
+                onSearch={(value) => setSearchText(value)}
+                onChange={(e) => setSearchText(e.target.value)}
+                style={{maxWidth: 500, marginLeft: 10}}
+            />
             <Table
                 className="parsing-result-table"
                 rowSelection={rowSelection}
-                dataSource={result.data}
+                dataSource={filteredData}
                 tableLayout="fixed"
+
                 rowKey="origin"
                 pagination={{
                     pageSize: pageSize,
