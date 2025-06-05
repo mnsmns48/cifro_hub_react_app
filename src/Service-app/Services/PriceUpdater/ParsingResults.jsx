@@ -104,7 +104,8 @@ const ParsingResults = ({result}) => {
                         title: "Цена",
                         dataIndex: "output_price",
                         key: "output_price",
-                        width: 200,
+                        sorter: (a, b) => parseFloat(a.output_price) - parseFloat(b.output_price),
+                        width: 120,
                         align: "center",
                         render: (text) => <b style={{fontSize: "16px"}}>{text}</b>
                     },

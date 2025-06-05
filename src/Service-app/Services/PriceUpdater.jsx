@@ -121,9 +121,11 @@ const PriceUpdater = () => {
                     </Flex>
                 </Col>
                 <Col span={15} className='right_col'>
-                    <SearchTableSelector tableData={tableData} refreshTableData={refreshTableData}
-                                         setSelectedRow={setSelectedVSLRow} selectedRowKeys={selectedVSLRowKeys}
-                                         setSelectedRowKeys={setSelectedVSLRowKeys}/>
+                    {selectedVendor && (
+                        <SearchTableSelector tableData={tableData} refreshTableData={refreshTableData}
+                                             setSelectedRow={setSelectedVSLRow} selectedRowKeys={selectedVSLRowKeys}
+                                             setSelectedRowKeys={setSelectedVSLRowKeys}/>
+                    )}
                 </Col>
             </Row>
 
