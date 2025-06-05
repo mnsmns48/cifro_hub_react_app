@@ -30,12 +30,13 @@ const PriceUpdater = () => {
     }, []);
 
     useEffect(() => {
-        if (selectedVendor) {
+        if (selectedVendor && !isParsingDone) {
             fetchTableData(selectedVendor).then(setTableData);
             setSelectedVSLRow(null);
             setSelectedVSLRowKeys(null);
         }
-    }, [selectedVendor]);
+    }, [selectedVendor, isParsingDone]);
+
 
     useEffect(() => {
         if (isParsingDone) {
@@ -81,53 +82,68 @@ const PriceUpdater = () => {
         }
     };
 
+    const handleNewSearch = async () => {
+        setIsParsingDone(false);
+        setParsedData([]);
+        setSelectedVSLRow(null);
+        setSelectedVSLRowKeys([]);
+        setInputVSLink("");
+        setInputTitle("");
+        if (selectedVendor) {
+            const updatedData = await fetchTableData(selectedVendor);
+            setTableData(updatedData);
+        }
+    };
+
     return (
         <>
             <div className='action_parser_main'>
                 <h1>Обновление цен</h1>
             </div>
-            <Row style={{alignItems: 'flex-start'}}>
-                <Col span={7} className='left_col'>
-                    <Flex vertical style={{width: 300}}>
-                        <VendorSourceSelector list={vendorList} onChange={setSelectedVendor}/>
-                        {!selectedVSLRow && (
-                            <Input style={{marginTop: 8}} placeholder="Ссылка"
-                                   onChange={(e) => setInputVSLink(e.target.value)} value={inputVSLink}/>
-                        )}
-                        {inputVSLink && (
-                            <div className='input_link_container'>
-                                <Button type="primary" icon={<PlusOutlined/>} className='input_link'
-                                        onClick={() => addVSL(selectedVendor, {
-                                                title: inputTitle,
-                                                url: inputVSLink
-                                            }, refreshTableData,
-                                            setInputVSLink, setInputTitle, setSuccessMessage, setIsSuccessModalOpen,
-                                            setErrorMessage, setIsErrorModalOpen)}/>
-                                <Input className='input_link_title' placeholder="Наименование ссылки"
-                                       onChange={(e) => setInputTitle(e.target.value)}/>
+            {!isParsingDone && (
+                <Row style={{alignItems: 'flex-start'}}>
+                    <Col span={7} className='left_col'>
+                        <Flex vertical style={{width: 300}}>
+                            <VendorSourceSelector list={vendorList} onChange={setSelectedVendor}/>
+                            {!selectedVSLRow && (
+                                <Input style={{marginTop: 8}} placeholder="Ссылка"
+                                       onChange={(e) => setInputVSLink(e.target.value)} value={inputVSLink}/>
+                            )}
+                            {inputVSLink && (
+                                <div className='input_link_container'>
+                                    <Button type="primary" icon={<PlusOutlined/>} className='input_link'
+                                            onClick={() => addVSL(selectedVendor, {
+                                                    title: inputTitle,
+                                                    url: inputVSLink
+                                                }, refreshTableData,
+                                                setInputVSLink, setInputTitle, setSuccessMessage, setIsSuccessModalOpen,
+                                                setErrorMessage, setIsErrorModalOpen)}/>
+                                    <Input className='input_link_title' placeholder="Наименование ссылки"
+                                           onChange={(e) => setInputTitle(e.target.value)}/>
 
-                            </div>
-                        )
-                        }
-                        {selectedVSLRow !== null &&
-                            <Parsing url={selectedVSLRow.url} onComplete={handleParsingComplete}/>}
-                        {!selectedVSLRow && (
-                            <div className='parser_footer' style={{display: "flex", flexDirection: "column"}}>
-                                <Button onClick={handleFetchPreviousResults} type="primary" style={{marginBottom: 10}}>
-                                    Предыдущие результаты
-                                </Button>
-                            </div>
+                                </div>
+                            )
+                            }
+                            {selectedVSLRow !== null &&
+                                <Parsing url={selectedVSLRow.url} onComplete={handleParsingComplete}/>}
+                            {!selectedVSLRow && (
+                                <div className='parser_footer' style={{display: "flex", flexDirection: "column"}}>
+                                    <Button onClick={handleFetchPreviousResults} type="primary"
+                                            style={{marginBottom: 10}}>
+                                        Предыдущие результаты
+                                    </Button>
+                                </div>
+                            )}
+                        </Flex>
+                    </Col>
+                    <Col span={15} className='right_col'>
+                        {selectedVendor && (
+                            <SearchTableSelector tableData={tableData} refreshTableData={refreshTableData}
+                                                 setSelectedRow={setSelectedVSLRow} selectedRowKeys={selectedVSLRowKeys}
+                                                 setSelectedRowKeys={setSelectedVSLRowKeys}/>
                         )}
-                    </Flex>
-                </Col>
-                <Col span={15} className='right_col'>
-                    {selectedVendor && (
-                        <SearchTableSelector tableData={tableData} refreshTableData={refreshTableData}
-                                             setSelectedRow={setSelectedVSLRow} selectedRowKeys={selectedVSLRowKeys}
-                                             setSelectedRowKeys={setSelectedVSLRowKeys}/>
-                    )}
-                </Col>
-            </Row>
+                    </Col>
+                </Row>)}
 
             <MyModal
                 isOpen={isErrorModalOpen}
@@ -157,7 +173,10 @@ const PriceUpdater = () => {
                 }}>OK</Button>}
             />
             {isParsingDone && parsedData && (
-                <ParsingResults result={parsedData}/>
+                <>
+                    <Button onClick={handleNewSearch}>Новый поиск</Button>
+                    <ParsingResults result={parsedData}/>
+                </>
             )}
         </>
     );
