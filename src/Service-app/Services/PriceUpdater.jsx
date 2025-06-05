@@ -41,7 +41,7 @@ const PriceUpdater = () => {
         if (isParsingDone) {
             console.log("Данные собраны");
         }
-    }, [parsedData]);
+    }, [isParsingDone, parsedData]);
 
     const refreshTableData = async (newRec = null) => {
         if (!selectedVendor) return;
