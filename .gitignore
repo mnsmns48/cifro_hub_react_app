@@ -26,3 +26,4 @@ dist-ssr
 /README.md
 /.env
 /vite.config.js
+/public/hub/
