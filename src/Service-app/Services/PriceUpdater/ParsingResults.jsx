@@ -2,7 +2,7 @@ import {Table, Image, Button} from "antd";
 import {RightCircleOutlined} from "@ant-design/icons";
 import "../Css/ParsingResults.css";
 import {useState} from "react";
-import Search from "antd/es/input/Search.js";
+import {Input} from "antd";
 
 
 const formatDate = (isoString) => {
@@ -13,6 +13,7 @@ const formatDate = (isoString) => {
 
 
 const ParsingResults = ({result}) => {
+    const {Search} = Input;
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [expandedRows, setExpandedRows] = useState(null);
     const [pageSize, setPageSize] = useState(100);
