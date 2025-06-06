@@ -18,13 +18,13 @@ const Vendors = () => {
 
 
     useEffect(() => {
-        axios.get("service/vendors/functions")
+        axios.get("/service/vendors/functions")
             .then(response => setFunctionList(response.data.functions))
             .catch(error => console.error("Ошибка при загрузке функций:", error));
     }, []);
 
     useEffect(() => {
-        axios.get('service/vendors')
+        axios.get('http://127.0.0.1:5000/service/vendors')
             .then(response => {
                 setVendors(response.data.vendors || []);
                 const keys = response.data.vendors?.[0] ? Object.keys(response.data.vendors[0]).filter(k => k !== "id") : [];
@@ -40,7 +40,7 @@ const Vendors = () => {
 
 
     const handleSave = (id) => {
-        axios.put(`service/vendors/${id}`, editedValues)
+        axios.put(`/service/vendors/${id}`, editedValues)
             .then(response => {
                 console.log('Обновлено:', response.data);
                 setVendors(prevVendors =>
@@ -69,7 +69,7 @@ const Vendors = () => {
             setIsErrorModalOpen(true);
             return;
         }
-        axios.post('service/vendors', newVendor)
+        axios.post('/service/vendors', newVendor)
             .then(response => {
                 console.log('Добавлено:', response.data);
                 setVendors(prevVendors => [...prevVendors, response.data['vendor']]);
@@ -85,7 +85,7 @@ const Vendors = () => {
 
     const handleDeleteConfirm = () => {
         if (selectedVendor) {
-            axios.delete(`service/vendors/${selectedVendor.id}`)
+            axios.delete(`/service/vendors/${selectedVendor.id}`)
                 .then(response => {
                     console.log('Удалено:', response.data);
                     setVendors(prevVendors => prevVendors.filter(vendor => vendor.id !== selectedVendor.id));
