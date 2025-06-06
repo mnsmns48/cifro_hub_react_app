@@ -10,7 +10,7 @@ root.render(
     <Router>
         <Routes>
             <Route path="/*" element={<CifrotechMainApp/>}/>
-            <Route path="/service" element={<CheckAccess/>}/>
+            <Route path="/service8" element={<CheckAccess/>}/>
         </Routes>
     </Router>
 );
