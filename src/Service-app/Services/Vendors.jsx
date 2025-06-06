@@ -18,13 +18,13 @@ const Vendors = () => {
 
 
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_BACKEND}/service/vendors/functions`)
+        axios.get(`/service/vendors/functions`)
             .then(response => setFunctionList(response.data.functions))
             .catch(error => console.error("Ошибка при загрузке функций:", error));
     }, []);
 
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_BACKEND}/service/vendors`)
+        axios.get(`/service/vendors`)
             .then(response => {
                 setVendors(response.data.vendors || []);
                 const keys = response.data.vendors?.[0] ? Object.keys(response.data.vendors[0]).filter(k => k !== "id") : [];
