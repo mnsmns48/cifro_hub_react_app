@@ -25,10 +25,11 @@
     font-size: 10px;
 }
 
-.parser_footer {
-    padding-top: 50px;
+.parser_buttons {
+    padding-top: 30px;
     display: flex;
-    justify-content: center;
+    margin: 15px;
+    flex-direction: column;
 }
 
 .search_table_action_buttons {
@@ -43,7 +44,6 @@
     margin-top: 8px;
     gap: 16px;
 }
-
 
 .input_link {
     display: flex;

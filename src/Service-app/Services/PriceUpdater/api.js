@@ -68,18 +68,19 @@ export const getProgressLine = async () => {
     }
 }
 
-export const startParsingProcess = async ({url, progress}) => {
+export const startParsingProcess = async ({selectedRow, progress}) => {
     try {
-        const parsingResult = await axios.post("/service/start_parsing", {url, progress});
+        const parsingResult = await axios.post("/service/start_parsing",
+            {vsl_id: selectedRow.id, vsl_url: selectedRow.url, progress});
         return parsingResult.data
     } catch (error) {
         console.error("Ошибка в Parsing Process", error);
     }
 }
 
-export const fetchPreviousParsingResults = async () => {
+export const fetchPreviousParsingResults = async (id) => {
     try {
-        const response = await axios.get("/service/previous_parsing_results");
+        const response = await axios.get(`/service/previous_parsing_results${id}`);
         return response.data;
     } catch (error) {
         console.error("Ошибка при получении предыдущих результатов:", error);

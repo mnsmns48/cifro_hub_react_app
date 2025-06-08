@@ -5,7 +5,7 @@ import ParsingProgress from "./ParsingProgress.jsx";
 import {getProgressLine, startParsingProcess} from "./api.js";
 
 
-const Parsing = ({url, onComplete}) => {
+const Parsing = ({selectedRow, onComplete}) => {
     const [isParsingStarted, setIsParsingStarted] = useState(false);
     const [progressLineObj, setProgressLineObj] = useState('');
 
@@ -15,7 +15,7 @@ const Parsing = ({url, onComplete}) => {
         if (progress_line_response.result) {
             setIsParsingStarted(true)
             setProgressLineObj(progress_line_response.result)
-            const results = await startParsingProcess({url: url, progress: progress_line_response.result})
+            const results = await startParsingProcess({selectedRow, progress: progress_line_response.result})
             onComplete(results);
         } else {
             console.log('progress_line_response error')
@@ -30,14 +30,14 @@ const Parsing = ({url, onComplete}) => {
     }, [isParsingStarted]);
 
     return (
-        <div className='parser_footer' style={{display: "flex", flexDirection: "column"}}>
+        <>
             <Button icon={<SettingOutlined/>} type="primary" onClick={clickParsingStartButton}>Старт</Button>
             {isParsingStarted && (
                 <div style={{marginTop: "15px", width: "100%"}}>
                     <ParsingProgress progress_obj={progressLineObj}/>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 
