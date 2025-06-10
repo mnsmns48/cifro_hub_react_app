@@ -40,7 +40,7 @@ const ParsingResults = ({result}) => {
             <div>
                 <p><strong>Категория:</strong> {result.category.map((item, index) => <span key={index}>{item} </span>)}
                 </p>
-                <p><strong>Дата и время:</strong> {formatDate(result.datetime_now)}</p>
+                <p><strong>Дата и время:</strong> {formatDate(result.datestamp)}</p>
             </div>
             <Button
                 onClick={() => setShowInputPrice(!showInputPrice)}
