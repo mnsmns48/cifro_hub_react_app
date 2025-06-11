@@ -75,8 +75,15 @@ const PriceUpdater = () => {
     const handleFetchPreviousResults = async (id) => {
         try {
             const results = await fetchPreviousParsingResults(id);
-            setParsedData(results);
-            setIsParsingDone(true);
+            console.log(results)
+            if (results.is_ok) {
+                setParsedData(results);
+                setIsParsingDone(true);
+            }
+            else {
+                setErrorMessage(results.message || "Ошибка получения данных");
+                setIsErrorModalOpen(true);
+            }
         } catch (error) {
             console.error("Ошибка загрузки предыдущих результатов:", error);
         }
@@ -128,9 +135,7 @@ const PriceUpdater = () => {
                                 <div className='parser_buttons'>
                                     <Parsing selectedRow={selectedVSLRow} onComplete={handleParsingComplete}/>
                                     <Button onClick={() => handleFetchPreviousResults(selectedVSLRow.id)}
-                                            type="primary"
-                                    style={{marginTop: 8}}>
-                                        Предыдущие результаты</Button>
+                                            type="primary" style={{marginTop: 8}}>Предыдущие результаты</Button>
                                 </div>
                             )}
                         </Flex>

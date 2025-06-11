@@ -113,6 +113,8 @@ const ParsingResults = ({result}) => {
                     {title: "Гарантия", dataIndex: "warranty", key: "warranty", align: "center", width: 70},
                     {title: "Доставка", dataIndex: "shipment", key: "shipment", align: "center"},
                     {title: "Дополнительно", dataIndex: "optional", key: "optional"},
+                    {title: "Описание", dataIndex: "info", key: "info"},
+                    {title: "", dataIndex: "None", key: "None"},
                 ].filter(Boolean)}
             />
         </>

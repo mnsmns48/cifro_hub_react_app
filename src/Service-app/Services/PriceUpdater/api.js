@@ -80,7 +80,7 @@ export const startParsingProcess = async ({selectedRow, progress}) => {
 
 export const fetchPreviousParsingResults = async (id) => {
     try {
-        const response = await axios.get(`/service/previous_parsing_results${id}`);
+        const response = await axios.get(`/service/previous_parsing_results/${id}`);
         return response.data;
     } catch (error) {
         console.error("Ошибка при получении предыдущих результатов:", error);
