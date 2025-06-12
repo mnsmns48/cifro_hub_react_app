@@ -62,16 +62,12 @@ const ParsingResults = ({ result }) => {
                     style={{ cursor: "text" }}
                     onBlur={async e => {
                         const newVal = e.target.innerText.trim();
-                        if (!newVal || newVal === text) return; // ничего не изменилось
-
-                        /* локальное обновление */
+                        if (!newVal || newVal === text) return;
                         setRows(prev => {
                             const copy = [...prev];
                             copy[index] = { ...copy[index], title: newVal };
                             return copy;
                         });
-
-                        /* запрос к серверу */
                         const res = await updateParsingItem(record.origin, {
                             new_title: newVal,
                         });
