@@ -87,3 +87,13 @@ export const fetchPreviousParsingResults = async (id) => {
         throw error;
     }
 };
+
+export const updateParsingItem = async (origin, data) => {
+    try {
+        const response = await axios.put(`/service/update_parsing_item/${origin}`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Ошибка обновления:", error);
+        return { is_ok: false, message: "Ошибка запроса" };
+    }
+};
