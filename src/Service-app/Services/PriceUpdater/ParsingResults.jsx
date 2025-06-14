@@ -131,8 +131,8 @@ const ParsingResults = ({ result }) => {
             dataIndex: "info",
             key: "info",
             width: 205,
-            render: info => <InfoSelect info={info} />,
-        },
+            render: (info, record) => <InfoSelect info={info} record={record} setRows={setRows} />,
+        }
     ];
 
     return (
