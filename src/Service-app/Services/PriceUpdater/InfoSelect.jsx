@@ -3,14 +3,16 @@ import axios from "axios";
 
 const InfoSelect = ({ info, record, setRows }) => {
     if (!info || typeof info !== "object" || !info.result) {
-        return "Нет данных";
+        return <span style={{ color: "red", fontWeight: "bold" }}>Нет данных</span>;
     }
+
     const { result } = info;
     const selectedItem = Array.isArray(result)
         ? record?.info?.result
             ? result.find(item => item.title === record.info.result.title)
             : null
-        : result; //
+        : result;
+
     const handleChange = async (newValue) => {
         const newSelectedItem = Array.isArray(result)
             ? result.find(item => item.title === newValue)
@@ -19,14 +21,13 @@ const InfoSelect = ({ info, record, setRows }) => {
             console.error("Объект не найден!");
             return;
         }
-        setRows(prev => {
-            const copy = prev.map(item =>
+        setRows(prev =>
+            prev.map(item =>
                 item.origin === record.origin
                     ? { ...item, info: { result: newSelectedItem } }
                     : item
-            );
-            return copy;
-        });
+            )
+        );
         try {
             const res = await axios.put(`/service/update_parsing_item/${record.origin}`, {
                 info: { result: newSelectedItem },
@@ -41,6 +42,15 @@ const InfoSelect = ({ info, record, setRows }) => {
         }
     };
 
+    // Если result — это массив и в нем только один элемент, рендерим div
+    if (Array.isArray(result) && result.length === 1) {
+        return <div>{result[0]?.title || "Нет заголовка"}</div>;
+    }
+
+    // Если result — не массив, проверяем его наличие
+    if (!Array.isArray(result)) {
+        return <div>{result?.title || "Нет заголовка"}</div>;
+    }
 
     return (
         <Select
@@ -49,15 +59,11 @@ const InfoSelect = ({ info, record, setRows }) => {
             value={selectedItem?.title || undefined}
             onChange={handleChange}
         >
-            {Array.isArray(result) ? (
-                result.map((item, index) => (
-                    <Select.Option key={index} value={item.title}>
-                        {item.title || "Нет заголовка"}
-                    </Select.Option>
-                ))
-            ) : (
-                <Select.Option value={result.title}>{result.title || "Нет заголовка"}</Select.Option>
-            )}
+            {result.map((item, index) => (
+                <Select.Option key={index} value={item.title}>
+                    {item.title || "Нет заголовка"}
+                </Select.Option>
+            ))}
         </Select>
     );
 };
