@@ -69,7 +69,7 @@ const ParsingResults = ({ result }) => {
                             return copy;
                         });
                         const res = await updateParsingItem(record.origin, {
-                            new_title: newVal,
+                            title: newVal,
                         });
                         if (!res.is_ok) console.error("Ошибка:", res.message);
                     }}
