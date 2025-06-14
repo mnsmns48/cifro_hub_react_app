@@ -29,7 +29,12 @@ const ParsingResults = ({ result }) => {
 
     const filteredData = useMemo(() => {
         const q = searchText.toLowerCase();
-        return rows.filter(item => item.title.toLowerCase().includes(q));
+
+        return rows.filter(item => {
+            const title = item.title ?? "";
+            return title.toLowerCase().includes(q);
+        });
+
     }, [rows, searchText]);
 
     const toggleExpand = rowKey =>
