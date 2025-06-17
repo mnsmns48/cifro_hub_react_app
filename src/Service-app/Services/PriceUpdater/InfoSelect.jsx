@@ -68,7 +68,7 @@
 // };
 
 
-import axios from "axios";
+
 import {Select, Typography} from "antd";
 
 
@@ -80,15 +80,13 @@ const InfoSelect = ({ titles, record, setRows }) => {
     if (!Array.isArray(titles) || titles.length === 0) {
         return (
             <Text type="danger" strong>
-                Нет данных
+                Данные не загружены
             </Text>
         );
     }
 
-    // 2. текущее выбранное значение
     const selected = record.feature_selected ?? undefined;
 
-    // 3. колбэк изменения
     const onChange = value => {
         setRows(prev => {
             const copy = [...prev];
@@ -99,6 +97,9 @@ const InfoSelect = ({ titles, record, setRows }) => {
             return copy;
         });
     };
+    if (titles.length === 1) {
+        return <Text>{titles[0]}</Text>;
+    }
 
     return (
         <Select
@@ -110,7 +111,6 @@ const InfoSelect = ({ titles, record, setRows }) => {
             onChange={onChange}
         >
             {titles.map(title => (
-
                 <Option key={title} value={title}>
                     {title}
                 </Option>
