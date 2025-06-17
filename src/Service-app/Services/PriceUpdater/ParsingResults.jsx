@@ -127,11 +127,15 @@ const ParsingResults = ({ result }) => {
         { title: "Доставка", dataIndex: "shipment", key: "shipment", align: "center" },
         { title: "Дополнительно", dataIndex: "optional", key: "optional" },
         {
-            title: "Описание",
-            dataIndex: "info",
-            key: "info",
+            title: "Зависимость",
+            dataIndex: "features_title",
+            key: "features_title",
             width: 205,
-            render: (info, record) => <InfoSelect info={info} record={record} setRows={setRows} />,
+            render: (features_title, record) => <InfoSelect
+                titles={record.features_title}
+                record={record}
+                setRows={setRows}
+            />,
         }
     ];
 
