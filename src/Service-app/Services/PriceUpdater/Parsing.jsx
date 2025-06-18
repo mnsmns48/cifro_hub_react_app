@@ -33,7 +33,7 @@ const Parsing = ({selectedRow, onComplete}) => {
         <>
             <Button icon={<SettingOutlined/>} type="primary" onClick={clickParsingStartButton}>Старт</Button>
             {isParsingStarted && (
-                <div style={{marginTop: "15px", width: "100%"}}>
+                <div style={{marginBottom: "15px", marginTop: "15px", width: "100%"}}>
                     <ParsingProgress progress_obj={progressLineObj}/>
                 </div>
             )}

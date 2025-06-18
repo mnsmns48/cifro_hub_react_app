@@ -1,12 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
-import { Table, Image, Button, Input } from "antd";
-import { RightCircleOutlined } from "@ant-design/icons";
-import InfoSelect from "./InfoSelect.jsx";
-import { updateParsingItem } from "./api.js";
+import {useState, useEffect, useMemo, useCallback} from "react";
+import {Table, Button, Input} from "antd";
 import "../Css/ParsingResults.css";
+import {createParsingColumns} from "./parsingColumns.jsx";
+import {deleteParsingItems} from "./api.js";
 
-const { Search } = Input;
-
+const {Search} = Input;
 
 const formatDate = isoString => {
     const date = new Date(isoString);
@@ -15,129 +13,54 @@ const formatDate = isoString => {
 };
 
 
-const ParsingResults = ({ result }) => {
+const ParsingResults = ({result}) => {
     const [rows, setRows] = useState(result.data ?? []);
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-    const [expandedRows, setExpandedRows] = useState(null);
+    const [selectedRowKeys, setSelected] = useState([]);
+    const [expandedRows, setExpanded] = useState(null);
     const [pageSize, setPageSize] = useState(100);
-    const [showInputPrice, setShowInputPrice] = useState(false);
-    const [searchText, setSearchText] = useState("");
+    const [showInputPrice, setShow] = useState(false);
+    const [searchText, setSearch] = useState("");
 
-    useEffect(() => {
-        setRows(result.data ?? []);
-    }, [result.data]);
+
+    useEffect(() => setRows(result.data ?? []), [result.data]);
+
+
+    const toggleExpand = useCallback(
+        key => setExpanded(prev => (prev === key ? null : key)),
+        []
+    );
 
     const filteredData = useMemo(() => {
         const q = searchText.toLowerCase();
-
-        return rows.filter(item => {
-            const title = item.title ?? "";
-            return title.toLowerCase().includes(q);
-        });
-
+        return rows.filter(r => (r.title ?? "").toLowerCase().includes(q));
     }, [rows, searchText]);
-
-    const toggleExpand = rowKey =>
-        setExpandedRows(expandedRows === rowKey ? null : rowKey);
 
     const rowSelection = {
         selectedRowKeys,
-        onChange: setSelectedRowKeys,
+        onChange: setSelected,
     };
 
-    const columns = [
-        {
-            title: "Изображение",
-            dataIndex: "preview",
-            key: "preview",
-            align: "center",
-            render: (src, record) => (
-                <Image width={60} src={src || "/10000.png"} alt={record.title} />
-            ),
-        },
-        {
-            title: "Название",
-            dataIndex: "title",
-            key: "title",
-            width: 250,
-            render: (text, record, index) => (
-                <div
-                    contentEditable
-                    suppressContentEditableWarning
-                    style={{ cursor: "text" }}
-                    onBlur={async e => {
-                        const newVal = e.target.innerText.trim();
-                        if (!newVal || newVal === text) return;
-                        setRows(prev => {
-                            const copy = [...prev];
-                            copy[index] = { ...copy[index], title: newVal };
-                            return copy;
-                        });
-                        const res = await updateParsingItem(record.origin, {
-                            title: newVal,
-                        });
-                        if (!res.is_ok) console.error("Ошибка:", res.message);
-                    }}
-                >
-                    {text}
-                </div>
-            ),
-        },
-        {
-            dataIndex: "input_price",
-            key: "input_price",
-            width: 100,
-            align: "center",
-            render: (text, record) =>
-                showInputPrice || expandedRows === record.origin ? (
-                    <span style={{ color: "grey" }}>{text}</span>
-                ) : (
-                    ""
-                ),
-        },
-        {
-            key: "details",
-            width: 40,
-            align: "center",
-            render: (_, record) => (
-                <Button
-                    type="text"
-                    icon={<RightCircleOutlined />}
-                    onClick={() => toggleExpand(record.origin)}
-                />
-            ),
-        },
-        {
-            title: "Цена",
-            dataIndex: "output_price",
-            key: "output_price",
-            sorter: (a, b) => parseFloat(a.output_price) - parseFloat(b.output_price),
-            sortOrder: "ascend",
-            width: 120,
-            align: "center",
-            render: text => <b style={{ fontSize: 16 }}>{text}</b>,
-        },
-        {
-            title: "Гарантия",
-            dataIndex: "warranty",
-            key: "warranty",
-            align: "center",
-            width: 70,
-        },
-        { title: "Доставка", dataIndex: "shipment", key: "shipment", align: "center" },
-        { title: "Дополнительно", dataIndex: "optional", key: "optional" },
-        {
-            title: "Зависимость",
-            dataIndex: "features_title",
-            key: "features_title",
-            width: 205,
-            render: (features_title, record) => <InfoSelect
-                titles={record.features_title}
-                record={record}
-                setRows={setRows}
-            />,
-        }
-    ];
+    const handleDelete = async () => {
+        if (!selectedRowKeys.length) return;
+        await deleteParsingItems(selectedRowKeys);
+        setRows(prev => prev.filter(row => !selectedRowKeys.includes(row.origin)));
+        setSelected([]);
+    };
+
+
+    const columnsObj = useMemo(
+        () =>
+            createParsingColumns({
+                setRows,
+                showInputPrice,
+                expandedRows,
+                toggleExpand,
+            }),
+        [setRows, showInputPrice, expandedRows, toggleExpand]
+    );
+
+    const hasSelection = selectedRowKeys.length > 0;
+
 
     return (
         <>
@@ -152,23 +75,35 @@ const ParsingResults = ({ result }) => {
                     <strong>Дата и время:</strong> {formatDate(result.datestamp)}
                 </p>
             </div>
-
-            <Button onClick={() => setShowInputPrice(!showInputPrice)} style={{ marginBottom: 10 }}>
-                {showInputPrice ? "Off" : "On"}
+            <Button onClick={() => setShow(!showInputPrice)} style={{marginBottom: 10}}>
+                {showInputPrice ? "Off" : " ₽ "}
             </Button>
 
             <Search
-                placeholder="Что ищем"
+                placeholder="Пиши что ищешь"
                 allowClear
-                style={{ maxWidth: 500, marginLeft: 10 }}
+                style={{maxWidth: 500, marginLeft: 10}}
                 value={searchText}
-                onChange={e => setSearchText(e.target.value)}
+                onChange={e => setSearch(e.target.value)}
             />
 
+            {hasSelection && (
+                <Button danger style={{marginBottom: 10, marginLeft: 10}} onClick={handleDelete}>
+                    Удалить ({selectedRowKeys.length})
+                </Button>
+            )}
+
             <Table
+                rowClassName={record => {
+                    const noFeatures = Array.isArray(record.features_title) && record.features_title.length === 0;
+                    const noPreview = !record.preview;
+                    if (noFeatures) return "row-no-features";
+                    if (noPreview) return "row-no-image";
+                    return "";
+                }}
                 className="parsing-result-table"
                 dataSource={filteredData}
-                columns={columns}
+                columns={columnsObj}
                 rowKey="origin"
                 tableLayout="fixed"
                 rowSelection={rowSelection}

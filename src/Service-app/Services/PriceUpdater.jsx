@@ -133,9 +133,10 @@ const PriceUpdater = () => {
                             }
                             {selectedVSLRow !== null && (
                                 <div className='parser_buttons'>
-                                    <Parsing selectedRow={selectedVSLRow} onComplete={handleParsingComplete}/>
                                     <Button onClick={() => handleFetchPreviousResults(selectedVSLRow.id)}
-                                            type="primary" style={{marginTop: 8}}>Предыдущие результаты</Button>
+                                            type="primary" style={{marginBottom: 8}}>Предыдущие результаты</Button>
+                                    <Parsing selectedRow={selectedVSLRow} onComplete={handleParsingComplete}/>
+
                                 </div>
                             )}
                         </Flex>

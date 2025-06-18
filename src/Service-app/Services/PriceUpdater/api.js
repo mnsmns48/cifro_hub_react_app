@@ -94,6 +94,20 @@ export const updateParsingItem = async (origin, data) => {
         return response.data;
     } catch (error) {
         console.error("Ошибка обновления:", error);
-        return { is_ok: false, message: "Ошибка запроса" };
+        return {is_ok: false, message: "Ошибка запроса"};
     }
 };
+
+
+export async function deleteParsingItems(origins) {
+    const res = await fetch("/service/delete_parsing_items/", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(origins),
+    });
+
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Ошибка удаления");
+    }
+}

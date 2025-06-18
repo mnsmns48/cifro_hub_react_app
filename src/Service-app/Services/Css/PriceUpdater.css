@@ -57,3 +57,11 @@
 
 
 }
+
+.row-no-features {
+    background-color: #ffe4e4 !important;
+}
+
+.row-no-image {
+    background-color: #fdfcf2 !important;
+}
