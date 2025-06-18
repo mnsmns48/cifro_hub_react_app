@@ -1,4 +1,4 @@
-import {Button} from "antd";
+import {Button, Popconfirm} from "antd";
 import {SettingOutlined} from "@ant-design/icons";
 import {useEffect, useState} from "react";
 import ParsingProgress from "./ParsingProgress.jsx";
@@ -18,7 +18,6 @@ const Parsing = ({selectedRow, onComplete}) => {
             const results = await startParsingProcess({selectedRow, progress: progress_line_response.result})
             onComplete(results);
         } else {
-            console.log('progress_line_response error')
             setIsParsingStarted(false)
         }
     }
@@ -30,8 +29,11 @@ const Parsing = ({selectedRow, onComplete}) => {
     }, [isParsingStarted]);
 
     return (
-        <>
-            <Button icon={<SettingOutlined/>} type="primary" onClick={clickParsingStartButton}>Старт</Button>
+        <><Popconfirm title="Вы уверены, что хотите запустить парсинг?" onConfirm={clickParsingStartButton}
+                      okText="Да" cancelText="Нет">
+            <Button icon={<SettingOutlined/>} type="primary" style={{marginTop: "15px", width: "100%"}}> Старт</Button>
+        </Popconfirm>
+
             {isParsingStarted && (
                 <div style={{marginBottom: "15px", marginTop: "15px", width: "100%"}}>
                     <ParsingProgress progress_obj={progressLineObj}/>

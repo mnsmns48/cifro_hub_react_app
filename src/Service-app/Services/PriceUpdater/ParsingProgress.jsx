@@ -47,7 +47,7 @@ const ParsingProgress = ({ progress_obj }) => {
         <div>
             <Progress percent={progress} status={progress < 100 ? "active" : "success"}
                       strokeColor={progress < 100 ? "#FFD700" : undefined} />
-            <div style={{ marginTop: "10px", minHeight: "20px" }}>{message}</div>
+            <div style={{ marginTop: "50px", minHeight: "20px" }}>{message}</div>
         </div>
     );
 };

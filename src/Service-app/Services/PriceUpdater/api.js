@@ -111,3 +111,16 @@ export async function deleteParsingItems(origins) {
         throw new Error(err.detail || "Ошибка удаления");
     }
 }
+
+export async function fetchItemDependencies(origin) {
+    try {
+        const res = await axios.get(`/service/update_parsing_item_dependency/${origin}`);
+        return res.data.items ?? [];
+    } catch (err) {
+        const msg =
+            err.response?.data?.detail ||
+            err.message ||
+            "Ошибка при получении зависимостей";
+        throw new Error(msg);
+    }
+}

@@ -91,11 +91,7 @@ export const createParsingColumns = ({setRows, showInputPrice, expandedRows, tog
         align: "center",
         width: 215,
         render: (_, record) => (
-            <InfoSelect
-                titles={record.features_title}
-                record={record}
-                setRows={setRows}
-            />
+            <InfoSelect titles={record.features_title} record={record} setRows={setRows} origin={record.origin}/>
         ),
-    },
+    }
 ];
