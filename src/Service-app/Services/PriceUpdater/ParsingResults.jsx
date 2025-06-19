@@ -20,7 +20,11 @@ const ParsingResults = ({result}) => {
     const [pageSize, setPageSize] = useState(100);
     const [showInputPrice, setShow] = useState(false);
     const [searchText, setSearch] = useState("");
+    const [activeFilter, setActiveFilter] = useState("all");
 
+    const showAllItems = () => setActiveFilter("all");
+    const showNoPreviewItems = () => setActiveFilter("noPreview");
+    const showNoFeaturesItems = () => setActiveFilter("noFeatures");
 
     useEffect(() => setRows(result.data ?? []), [result.data]);
 
@@ -31,9 +35,19 @@ const ParsingResults = ({result}) => {
     );
 
     const filteredData = useMemo(() => {
+        let data = rows;
+        if (activeFilter === "noPreview") {
+            data = data.filter(record => !record.preview);
+        } else if (activeFilter === "noFeatures") {
+            data = data.filter(
+                record =>
+                    Array.isArray(record.features_title) &&
+                    record.features_title.length === 0
+            );
+        }
         const q = searchText.toLowerCase();
-        return rows.filter(r => (r.title ?? "").toLowerCase().includes(q));
-    }, [rows, searchText]);
+        return data.filter(r => (r.title ?? "").toLowerCase().includes(q));
+    }, [rows, activeFilter, searchText]);
 
     const rowSelection = {
         selectedRowKeys,
@@ -75,17 +89,14 @@ const ParsingResults = ({result}) => {
                     <strong>Дата и время:</strong> {formatDate(result.datestamp)}
                 </p>
             </div>
-            <Button onClick={() => setShow(!showInputPrice)} style={{marginBottom: 10}}>
-                {showInputPrice ? "Off" : " ₽ "}
-            </Button>
-
-            <Search
-                placeholder="Пиши что ищешь"
-                allowClear
-                style={{maxWidth: 500, marginLeft: 10}}
-                value={searchText}
-                onChange={e => setSearch(e.target.value)}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 15, padding: '15px 0' }}>
+                <Button onClick={() => setShow(!showInputPrice)}>{showInputPrice ? "Off" : " ₽ "}</Button>
+                <Button onClick={showAllItems} style={{backgroundColor: 'yellowgreen', borderRadius: '25%', width: 30, height: 30}}/>
+                <Button onClick={showNoPreviewItems} style={{backgroundColor: 'yellow', borderRadius: '25%', width: 30, height: 30}}/>
+                <Button onClick={showNoFeaturesItems} style={{backgroundColor: 'red', borderRadius: '25%', width: 30, height: 30}}/>
+                <Search placeholder="Пиши что ищешь" allowClear style={{ maxWidth: 500 }}
+                    value={searchText} onChange={e => setSearch(e.target.value)}/>
+            </div>
 
             {hasSelection && (
                 <Button danger style={{marginBottom: 10, marginLeft: 10}} onClick={handleDelete}>
@@ -95,7 +106,9 @@ const ParsingResults = ({result}) => {
 
             <Table
                 rowClassName={record => {
-                    const noFeatures = Array.isArray(record.features_title) && record.features_title.length === 0;
+                    const noFeatures =
+                        Array.isArray(record.features_title) &&
+                        record.features_title.length === 0;
                     const noPreview = !record.preview;
                     if (noFeatures) return "row-no-features";
                     if (noPreview) return "row-no-image";

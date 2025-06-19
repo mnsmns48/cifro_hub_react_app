@@ -120,7 +120,7 @@ const InfoSelect = ({titles, origin, record, setRows}) => {
       <span style={{display: "flex", alignItems: "center", gap: 6}}>
         <Button icon={<SelectOutlined/>} size="small" type="text" onClick={openModal}/>
           {titles?.length ? (
-              <Text>{titles.length === 1 ? titles[0] : "Выбор доступен"}</Text>
+              <Text>{titles.length === 1 ? titles[0] : "Ошибка"}</Text>
           ) : (
               <Text type="danger" strong>??</Text>
           )}
