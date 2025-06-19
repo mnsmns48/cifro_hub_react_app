@@ -114,13 +114,25 @@ export async function deleteParsingItems(origins) {
 
 export async function fetchItemDependencies(origin) {
     try {
-        const res = await axios.get(`/service/update_parsing_item_dependency/${origin}`);
+        const res = await axios.get(`/service/get_parsing_items_dependency_list/${origin}`);
         return res.data.items ?? [];
     } catch (err) {
         const msg =
             err.response?.data?.detail ||
             err.message ||
             "Ошибка при получении зависимостей";
+        throw new Error(msg);
+    }
+}
+
+export async function postDependencyUpdate(data) {
+    try {
+        await axios.post(
+            "/service/update_parsing_item_dependency/",
+            data, {headers: {"Content-Type": "application/json"}}
+        );
+    } catch (err) {
+        const msg = err.response?.data?.detail || err.message;
         throw new Error(msg);
     }
 }

@@ -2,12 +2,12 @@ import {useState} from "react";
 import {Button, Typography, Spin, Input} from "antd";
 import {SelectOutlined} from "@ant-design/icons";
 import MyModal from "../../../Ui/MyModal.jsx";
-import {fetchItemDependencies} from "./api.js";
+import {fetchItemDependencies, postDependencyUpdate} from "./api.js";
 
 const {Text} = Typography;
 const {Search} = Input;
 
-const InfoSelect = ({titles, origin, record}) => {
+const InfoSelect = ({titles, origin, record, setRows}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [fetched, setFetched] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -40,8 +40,57 @@ const InfoSelect = ({titles, origin, record}) => {
         return text.toLowerCase().includes(searchQuery.toLowerCase());
     });
 
+
+    const isChooseModalContent = async (item) => {
+        try {
+            if (
+                !item || typeof item.title !== "string" || typeof item.brand !== "string" || typeof item.product_type !== "string"
+            ) {
+                throw new Error("Отсутствуют обязательные данные продукта.");
+            }
+            if (!origin || typeof origin !== "number") {
+                throw new Error("Некорректное значение origin.");
+            }
+            let info = item.info;
+            if (typeof info === "string") {
+                try {
+                    info = JSON.parse(info);
+                } catch (e) {
+                    info = [];
+                }
+            }
+            let pros_cons = item.pros_cons;
+            if (typeof pros_cons === "string") {
+                try {
+                    pros_cons = JSON.parse(pros_cons);
+                } catch (e) {
+                    pros_cons = {};
+                }
+            } else if (pros_cons === null) {
+                pros_cons = {};
+            }
+            const data = {
+                origin, title: item.title, brand: item.brand, product_type: item.product_type,
+                info, pros_cons
+            };
+            await postDependencyUpdate(data);
+
+            setRows((prevRows) =>
+                prevRows.map((row) =>
+                    row.origin === origin
+                        ? { ...row, features_title: [item.title] }
+                        : row
+                )
+            );
+
+            closeModal();
+        } catch (err) {
+            alert(`Ошибка: ${err.message}`);
+        }
+    };
+
     const modalContent = loading ? (
-        <Spin />
+        <Spin/>
     ) : error ? (
         <Text type="danger">{error}</Text>
     ) : (
@@ -55,8 +104,8 @@ const InfoSelect = ({titles, origin, record}) => {
             />
             {filtered?.length ? (
                 filtered.map((item, i) => (
-                    <Button key={i} block type="default" size="small"
-                            style={{marginBottom: 8}} onClick={() => console.log("Выбрано:", item)}>
+                    <Button key={i} block type="default" size="small" style={{marginBottom: 8}}
+                            onClick={() => isChooseModalContent(item)}>
                         {typeof item === "string" ? item : item.title || "Без названия"}
                     </Button>
                 ))
@@ -69,7 +118,7 @@ const InfoSelect = ({titles, origin, record}) => {
     return (
         <>
       <span style={{display: "flex", alignItems: "center", gap: 6}}>
-        <Button icon={<SelectOutlined />} size="small" type="text" onClick={openModal} />
+        <Button icon={<SelectOutlined/>} size="small" type="text" onClick={openModal}/>
           {titles?.length ? (
               <Text>{titles.length === 1 ? titles[0] : "Выбор доступен"}</Text>
           ) : (

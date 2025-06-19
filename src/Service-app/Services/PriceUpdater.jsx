@@ -38,12 +38,6 @@ const PriceUpdater = () => {
     }, [selectedVendor, isParsingDone]);
 
 
-    useEffect(() => {
-        if (isParsingDone) {
-            console.log("Данные собраны");
-        }
-    }, [isParsingDone, parsedData]);
-
     const refreshTableData = async (newRec = null) => {
         if (!selectedVendor) return;
         try {
@@ -79,8 +73,7 @@ const PriceUpdater = () => {
             if (results.is_ok) {
                 setParsedData(results);
                 setIsParsingDone(true);
-            }
-            else {
+            } else {
                 setErrorMessage(results.message || "Ошибка получения данных");
                 setIsErrorModalOpen(true);
             }
