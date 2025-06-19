@@ -136,3 +136,14 @@ export async function postDependencyUpdate(data) {
         throw new Error(msg);
     }
 }
+
+export async function fetchDependencyDetails(origin) {
+    try {
+        return await fetch(`/service/load_dependency_details/${origin}`, {
+            method: "GET",
+            headers: { Accept: "application/json" },
+        }).then(res => res.json());
+    } catch (error) {
+        console.error("Ошибка запроса:", error);
+    }
+}

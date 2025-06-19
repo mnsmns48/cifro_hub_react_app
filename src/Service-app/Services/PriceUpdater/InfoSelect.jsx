@@ -2,7 +2,8 @@ import {useState} from "react";
 import {Button, Typography, Spin, Input} from "antd";
 import {SelectOutlined} from "@ant-design/icons";
 import MyModal from "../../../Ui/MyModal.jsx";
-import {fetchItemDependencies, postDependencyUpdate} from "./api.js";
+import {fetchDependencyDetails, fetchItemDependencies, postDependencyUpdate} from "./api.js";
+import DependencyModal from "./DetailDependencyModal.jsx";
 
 const {Text} = Typography;
 const {Search} = Input;
@@ -13,6 +14,8 @@ const InfoSelect = ({titles, origin, record, setRows}) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [dependencyResult, setDependencyResult] = useState(null);
+    const [isDependencyModalOpen, setIsDependencyModalOpen] = useState(false);
 
     const openModal = async () => {
         setIsOpen(true);
@@ -78,7 +81,7 @@ const InfoSelect = ({titles, origin, record, setRows}) => {
             setRows((prevRows) =>
                 prevRows.map((row) =>
                     row.origin === origin
-                        ? { ...row, features_title: [item.title] }
+                        ? {...row, features_title: [item.title]}
                         : row
                 )
             );
@@ -115,28 +118,42 @@ const InfoSelect = ({titles, origin, record, setRows}) => {
         </>
     );
 
+
+    const openDependencyDescription = async (title) => {
+        const result = await fetchDependencyDetails(title);
+        console.log(result);
+        setDependencyResult(result);
+        setIsDependencyModalOpen(true);
+    };
+
+    const closeDependencyModal = () => {
+        setIsDependencyModalOpen(false);
+        setDependencyResult(null);
+    };
+
     return (
         <>
       <span style={{display: "flex", alignItems: "center", gap: 6}}>
         <Button icon={<SelectOutlined/>} size="small" type="text" onClick={openModal}/>
           {titles?.length ? (
-              <Text>{titles.length === 1 ? titles[0] : "Ошибка"}</Text>
+              <Button onClick={() => openDependencyDescription(titles[0])} size="small"
+                      style={{
+                          borderColor: "#999", color: "#333", fontWeight: 300, padding: "2px 8px",
+                          borderRadius: 6, background: "transparent", height: "auto", lineHeight: 1.4
+                      }}>
+                  {titles.length === 1 ? titles[0] : "Ошибка"}
+              </Button>
           ) : (
               <Text type="danger" strong>??</Text>
           )}
       </span>
 
-            <MyModal
-                isOpen={isOpen}
-                onConfirm={closeModal}
-                onCancel={closeModal}
-                title={
-                    <div style={{textAlign: "center"}}>
-                        {record?.title ?? "неизвестно"}
-                    </div>
-                }
-                content={modalContent}
-                footer={null}
+            <MyModal isOpen={isOpen} onConfirm={closeModal} onCancel={closeModal}
+                     title={<div style={{textAlign: "center"}}>
+                         {record?.title ?? "неизвестно"}
+                     </div>} content={modalContent} footer={null}/>
+
+            <DependencyModal open={isDependencyModalOpen} onClose={closeDependencyModal} data={dependencyResult}
             />
         </>
     );

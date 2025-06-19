@@ -17,7 +17,7 @@ export const createParsingColumns = ({setRows, showInputPrice, expandedRows, tog
         title: "Название",
         dataIndex: "title",
         key: "title",
-        width: 250,
+        width: 220,
         render: (text, record, index) => (
             <div
                 contentEditable

@@ -1,7 +1,7 @@
 import {useState, useEffect, useMemo, useCallback} from "react";
 import {Table, Button, Input} from "antd";
 import "../Css/ParsingResults.css";
-import {createParsingColumns} from "./parsingColumns.jsx";
+import {createParsingColumns} from "./ParsingColumns.jsx";
 import {deleteParsingItems} from "./api.js";
 
 const {Search} = Input;

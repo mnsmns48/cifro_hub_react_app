@@ -69,7 +69,6 @@ const PriceUpdater = () => {
     const handleFetchPreviousResults = async (id) => {
         try {
             const results = await fetchPreviousParsingResults(id);
-            console.log(results)
             if (results.is_ok) {
                 setParsedData(results);
                 setIsParsingDone(true);
