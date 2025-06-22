@@ -3,25 +3,30 @@ import {RenderShortSpecs} from "../smartPhone.jsx";
 
 const nanoreviewReleaseDate = (features_array) => {
     let releaseDate;
+
     for (const item of features_array) {
-        switch (true) {
-            case !!item['Другое']?.['Дата выхода']:
-                releaseDate = item['Другое']['Дата выхода'];
-                break;
-            case !!item['Other']?.['Release date']:
-                releaseDate = item['Other']['Release date'];
-                break;
+        if (item?.['Другое']?.['Дата выхода']) {
+            releaseDate = item['Другое']['Дата выхода'];
+            break;
+        }
+        if (item?.['Other']?.['Release date']) {
+            releaseDate = item['Other']['Release date'];
+            break;
         }
     }
+
+    if (typeof releaseDate !== 'string') return null;
+
     const regex = /(?:([а-яА-Я]+)\s(\d{4})|([a-zA-Z]+)\s(\d{4}))/;
     const match = releaseDate.match(regex);
-    if (match) {
-        const russianMonth = match[1];
-        const year = match[2] || match[4];
-        const normalizedMonth = russianMonth ? monthsMap[russianMonth] : monthsMap[match[3]];
-        return releaseDate ? {month: normalizedMonth, year: year} : null;
-    }
-}
+    if (!match) return null;
+
+    const russianMonth = match[1];
+    const year = match[2] || match[4];
+    const normalizedMonth = russianMonth ? monthsMap[russianMonth] : monthsMap[match[3]];
+
+    return { month: normalizedMonth, year };
+};
 
 
 const nanoreviewDisplay = (features_array) => {

@@ -117,17 +117,12 @@ export const RenderShortSpecs = ({features_array, shortSpecificationFn}) => {
 };
 
 
-export default function SmartPhone({info}) {
-    let features_array;
-    try {
-        features_array = JSON.parse(info.info || '[]');
-    } catch (error) {
-        console.error("Ошибка при парсинге JSON:", error);
-        features_array = [];
-    }
+export default function SmartPhone({ info }) {
+    const features_array = Array.isArray(info.info) ? info.info : [];
+
     return (
         <>
             {shortSmartPhoneSpecification(features_array, info.source)}
         </>
-    )
+    );
 }
