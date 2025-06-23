@@ -10,7 +10,7 @@ root.render(
     <Router>
         <Routes>
             <Route path="/*" element={<CifrotechMainApp/>}/>
-            <Route path="/service8" element={<CheckAccess/>}/>
+            <Route path={import.meta.env.VITE_SERVICE_POINT} element={<CheckAccess/>}/>
         </Routes>
     </Router>
 );

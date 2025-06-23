@@ -5,7 +5,6 @@ import InfoSelect from "./InfoSelect.jsx";
 
 export const createParsingColumns = ({setRows, showInputPrice, expandedRows, toggleExpand}) => [
     {
-        title: "Изображение",
         dataIndex: "preview",
         key: "preview",
         align: "center",
@@ -17,7 +16,7 @@ export const createParsingColumns = ({setRows, showInputPrice, expandedRows, tog
         title: "Название",
         dataIndex: "title",
         key: "title",
-        width: 220,
+        width: 230,
         render: (text, record, index) => (
             <div
                 contentEditable
@@ -42,16 +41,11 @@ export const createParsingColumns = ({setRows, showInputPrice, expandedRows, tog
         ),
     },
     {
-        dataIndex: "input_price",
-        key: "input_price",
-        width: 100,
+        title: "origin",
+        dataIndex: "origin",
+        key: "origin",
         align: "center",
-        render: (val, record) =>
-            showInputPrice || expandedRows === record.origin ? (
-                <span style={{color: "grey"}}>{val}</span>
-            ) : (
-                ""
-            ),
+        width: 80,
     },
     {
         key: "details",
@@ -71,10 +65,31 @@ export const createParsingColumns = ({setRows, showInputPrice, expandedRows, tog
         key: "output_price",
         sorter: (a, b) => parseFloat(a.output_price) - parseFloat(b.output_price),
         sortOrder: "ascend",
-        width: 120,
+        width: 90,
         align: "center",
-        render: v => <b style={{fontSize: 16}}>{v}</b>,
+        render: (value, record) => {
+            const input = parseFloat(record.input_price);
+            const output = parseFloat(value);
+            const diff = !isNaN(input) ? Math.round(output - input) : null;
+
+            return (
+                <div>
+                    <b style={{fontSize: 16}}>{value}</b>
+                    {(showInputPrice || expandedRows === record.origin) && (
+                        <div style={{fontSize: 10, color: "gray"}}>
+                            {record.input_price}
+                            {diff !== null && (
+                                <div style={{fontSize: 9, color: diff >= 0 ? "green" : "red"}}>
+                                    {diff}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        },
     },
+
     {
         title: "Гарантия",
         dataIndex: "warranty",
