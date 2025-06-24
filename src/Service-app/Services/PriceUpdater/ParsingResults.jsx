@@ -3,6 +3,7 @@ import {Table, Button, Input} from "antd";
 import "../Css/ParsingResults.css";
 import {createParsingColumns} from "./ParsingColumns.jsx";
 import {deleteParsingItems} from "./api.js";
+import UploadImagesModal from "./UploadImagesModal.jsx";
 
 const {Search} = Input;
 
@@ -26,8 +27,16 @@ const ParsingResults = ({result}) => {
     const showNoPreviewItems = () => setActiveFilter("noPreview");
     const showNoFeaturesItems = () => setActiveFilter("noFeatures");
 
+    const [uploadModalOpen, setUploadModalOpen] = useState(false);
+    const [currentOrigin, setCurrentOrigin] = useState(null);
+
     useEffect(() => setRows(result.data ?? []), [result.data]);
 
+
+    const openUploadModal = (originCode) => {
+        setCurrentOrigin(originCode);
+        setUploadModalOpen(true);
+    };
 
     const toggleExpand = useCallback(
         key => setExpanded(prev => (prev === key ? null : key)),
@@ -69,6 +78,7 @@ const ParsingResults = ({result}) => {
                 showInputPrice,
                 expandedRows,
                 toggleExpand,
+                openUploadModal,
             }),
         [setRows, showInputPrice, expandedRows, toggleExpand]
     );
@@ -125,6 +135,14 @@ const ParsingResults = ({result}) => {
                     showSizeChanger: true,
                     pageSizeOptions: ["10", "25", "50", "100"],
                     onShowSizeChange: (_, size) => setPageSize(size),
+                }}
+            />
+            <UploadImagesModal
+                isOpen={uploadModalOpen}
+                originCode={currentOrigin}
+                onClose={() => setUploadModalOpen(false)}
+                onUploaded={() => {
+                    setUploadModalOpen(false);
                 }}
             />
         </>

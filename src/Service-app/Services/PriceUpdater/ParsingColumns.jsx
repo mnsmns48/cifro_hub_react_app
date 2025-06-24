@@ -1,15 +1,36 @@
 import {Image, Button} from "antd";
-import {RightCircleOutlined} from "@ant-design/icons";
+import {PlusOutlined, RightCircleOutlined, UpCircleOutlined} from "@ant-design/icons";
 import {updateParsingItem} from "./api.js";
 import InfoSelect from "./InfoSelect.jsx";
 
-export const createParsingColumns = ({setRows, showInputPrice, expandedRows, toggleExpand}) => [
+
+export const createParsingColumns = ({setRows, showInputPrice, expandedRows, toggleExpand, openUploadModal}) => [
     {
         dataIndex: "preview",
         key: "preview",
         align: "center",
         render: (src, record) => (
-            <Image width={60} src={src || "/10000.png"} alt={record.title}/>
+            <div style={{
+                width: 128, height: 71,
+                position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+                {src ? (
+                    <>
+                        <Image width={60} src={src} alt={record.title} style={{borderRadius: 4}}/>
+                        <Button type="text" icon={<UpCircleOutlined style={{fontSize: 18, color: '#1677ff'}}/>}
+                                style={{
+                                    position: 'absolute', bottom: 4, right: 4, padding: 0, border: 'none',
+                                    boxShadow: 'none', background: 'transparent'
+                                }} onClick={() => openUploadModal(record.origin)}/>
+                    </>
+                ) : (
+                    <Button type="dashed" icon={<PlusOutlined/>}
+                            style={{
+                                width: 60, height: 60, padding: 0, display: 'flex', alignItems: 'center',
+                                justifyContent: 'center', borderRadius: '25%'
+                            }} onClick={() => openUploadModal(record.origin)}/>
+                )}
+            </div>
         ),
     },
     {

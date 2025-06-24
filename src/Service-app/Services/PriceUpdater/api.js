@@ -147,3 +147,8 @@ export async function fetchDependencyDetails(origin) {
         console.error("Ошибка запроса:", error);
     }
 }
+
+export const getUploadedImages = async (originCode) => {
+    const response = await axios.get(`/service/fetch_images_62701/${originCode}`);
+    return response.data;
+};
