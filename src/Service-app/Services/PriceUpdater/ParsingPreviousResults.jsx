@@ -1,16 +1,13 @@
-import {Button, Popconfirm} from "antd";
-import {SettingOutlined} from "@ant-design/icons";
-import {useEffect, useState} from "react";
 import ParsingProgress from "./ParsingProgress.jsx";
 import {getProgressLine, startDataCollection} from "./api.js";
+import {Button} from "antd";
+import {useEffect, useState} from "react";
 
-
-const Parsing = ({selectedRow, onComplete}) => {
+const ParsingPreviousResults = ({selectedRow, onComplete}) => {
     const [isParsingStarted, setIsParsingStarted] = useState(false);
     const [progressLineObj, setProgressLineObj] = useState('');
 
-
-    const clickParsingStartButton = async () => {
+    const handleFetchPreviousResults = async () => {
         const progress_line_response = await getProgressLine()
         if (progress_line_response.result) {
             setIsParsingStarted(true)
@@ -19,7 +16,7 @@ const Parsing = ({selectedRow, onComplete}) => {
                 {
                     selectedRow,
                     progress: progress_line_response.result,
-                    api_url: "/service/start_parsing"
+                    api_url: "/service/previous_parsing_results"
                 }
             )
             onComplete(results);
@@ -35,11 +32,9 @@ const Parsing = ({selectedRow, onComplete}) => {
     }, [isParsingStarted]);
 
     return (
-        <><Popconfirm title="Вы уверены, что хотите запустить парсинг?" onConfirm={clickParsingStartButton}
-                      okText="Да" cancelText="Нет">
-            <Button icon={<SettingOutlined/>} type="primary" style={{marginTop: "15px", width: "100%"}}> Старт</Button>
-        </Popconfirm>
-
+        <>
+            <Button type="primary" style={{marginBottom: 8}} onClick={handleFetchPreviousResults}>Предыдущие
+                результаты</Button>
             {isParsingStarted && (
                 <div style={{marginBottom: "15px", marginTop: "15px", width: "100%"}}>
                     <ParsingProgress progress_obj={progressLineObj}/>
@@ -49,4 +44,4 @@ const Parsing = ({selectedRow, onComplete}) => {
     );
 };
 
-export default Parsing;
+export default ParsingPreviousResults;

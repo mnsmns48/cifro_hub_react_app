@@ -6,8 +6,9 @@ import VendorSourceSelector from "./PriceUpdater/VendorSourceSelector.jsx";
 import SearchTableSelector from "./PriceUpdater/SearchTableSelector.jsx";
 import './Css/PriceUpdater.css';
 import Parsing from "./PriceUpdater/Parsing.jsx";
-import {fetchVendors, fetchTableData, addVSL, fetchPreviousParsingResults} from "./PriceUpdater/api.js";
+import {fetchVendors, fetchTableData, addVSL} from "./PriceUpdater/api.js";
 import ParsingResults from "./PriceUpdater/ParsingResults.jsx";
+import ParsingPreviousResults from "./PriceUpdater/ParsingPreviousResults.jsx";
 
 
 const PriceUpdater = () => {
@@ -24,6 +25,7 @@ const PriceUpdater = () => {
     const [selectedVSLRowKeys, setSelectedVSLRowKeys] = useState([]);
     const [parsedData, setParsedData] = useState([]);
     const [isParsingDone, setIsParsingDone] = useState(false);
+
 
     useEffect(() => {
         fetchVendors().then(setVendorList);
@@ -66,20 +68,6 @@ const PriceUpdater = () => {
         setIsParsingDone(true);
     };
 
-    const handleFetchPreviousResults = async (id) => {
-        try {
-            const results = await fetchPreviousParsingResults(id);
-            if (results.is_ok) {
-                setParsedData(results);
-                setIsParsingDone(true);
-            } else {
-                setErrorMessage(results.message || "Ошибка получения данных");
-                setIsErrorModalOpen(true);
-            }
-        } catch (error) {
-            console.error("Ошибка загрузки предыдущих результатов:", error);
-        }
-    };
 
     const handleNewSearch = async () => {
         setIsParsingDone(false);
@@ -93,6 +81,7 @@ const PriceUpdater = () => {
             setTableData(updatedData);
         }
     };
+
 
     return (
         <>
@@ -125,8 +114,9 @@ const PriceUpdater = () => {
                             }
                             {selectedVSLRow !== null && (
                                 <div className='parser_buttons'>
-                                    <Button onClick={() => handleFetchPreviousResults(selectedVSLRow.id)}
-                                            type="primary" style={{marginBottom: 8}}>Предыдущие результаты</Button>
+
+                                    <ParsingPreviousResults selectedRow={selectedVSLRow}
+                                                            onComplete={handleParsingComplete}/>
                                     <Parsing selectedRow={selectedVSLRow} onComplete={handleParsingComplete}/>
 
                                 </div>

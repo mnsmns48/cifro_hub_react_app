@@ -68,9 +68,9 @@ export const getProgressLine = async () => {
     }
 }
 
-export const startParsingProcess = async ({selectedRow, progress}) => {
+export const startDataCollection = async ({selectedRow, progress, api_url}) => {
     try {
-        const parsingResult = await axios.post("/service/start_parsing",
+        const parsingResult = await axios.post(api_url,
             {vsl_id: selectedRow.id, vsl_url: selectedRow.url, progress});
         return parsingResult.data
     } catch (error) {
@@ -78,15 +78,6 @@ export const startParsingProcess = async ({selectedRow, progress}) => {
     }
 }
 
-export const fetchPreviousParsingResults = async (id) => {
-    try {
-        const response = await axios.get(`/service/previous_parsing_results/${id}`);
-        return response.data;
-    } catch (error) {
-        console.error("Ошибка при получении предыдущих результатов:", error);
-        throw error;
-    }
-};
 
 export const updateParsingItem = async (origin, data) => {
     try {
@@ -141,7 +132,7 @@ export async function fetchDependencyDetails(origin) {
     try {
         return await fetch(`/service/load_dependency_details/${origin}`, {
             method: "GET",
-            headers: { Accept: "application/json" },
+            headers: {Accept: "application/json"},
         }).then(res => res.json());
     } catch (error) {
         console.error("Ошибка запроса:", error);

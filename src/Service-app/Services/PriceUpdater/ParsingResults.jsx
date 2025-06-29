@@ -1,7 +1,7 @@
 import {useState, useEffect, useMemo, useCallback} from "react";
 import {Table, Button, Input} from "antd";
 import "../Css/ParsingResults.css";
-import {createParsingColumns} from "./ParsingColumns.jsx";
+import {createParsingColumns} from "./ParsingResultsColumns.jsx";
 import {deleteParsingItems} from "./api.js";
 import UploadImagesModal from "./UploadImagesModal.jsx";
 
