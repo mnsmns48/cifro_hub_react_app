@@ -33,7 +33,7 @@ const ParsingButtonsCommonComponent = ({
                 sync_features: syncFeatures
             });
         } catch (e) {
-            setErrorMessage("Сервер недоступен");
+            setErrorMessage(`Проблема с получением данных с сервера: ${e}`);
             setErrorOpen(true);
             setIsParsingStarted(false);
             setProgressLineObj("");
