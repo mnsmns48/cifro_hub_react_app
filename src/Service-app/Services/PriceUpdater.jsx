@@ -9,6 +9,7 @@ import {fetchVendors, fetchTableData, addVSL} from "./PriceUpdater/api.js";
 import ParsingResults from "./PriceUpdater/ParsingResults.jsx";
 import ParsingButtonsCommonComponent from "./PriceUpdater/ParsingButtonsCommonComponent.jsx";
 import ParsingProgress from "./PriceUpdater/ParsingProgress.jsx";
+import Spinner from "../../Cifrotech-app/components/Spinner.jsx";
 
 
 const PriceUpdater = () => {
@@ -142,6 +143,7 @@ const PriceUpdater = () => {
                             {isParsingStarted && (
                                 <div style={{margin: "15px 0", width: "100%"}}>
                                     <ParsingProgress progress_obj={progressLineObj}/>
+                                    <Spinner/>
                                 </div>
                             )}
                         </Flex>

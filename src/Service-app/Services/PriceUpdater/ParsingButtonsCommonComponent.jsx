@@ -54,11 +54,9 @@ const ParsingButtonsCommonComponent = ({
         <>
             <Button type="primary" icon={icon} style={{marginBottom: 8, marginTop: 15, width: "100%"}}
                     onClick={() => setConfirmOpen(true)}>{label}</Button>
-            <MyModal isOpen={confirmOpen} title={confirmText} onConfirm={handleConfirm}
-                     onCancel={() => {
-                         setConfirmOpen(false);
-                         setSyncFeatures(false);
-                     }}
+            <MyModal isOpen={confirmOpen}
+                     title={confirmText}
+                     onCancel={() => {setConfirmOpen(false); setSyncFeatures(true);}}
                      content={
                          <Checkbox checked={syncFeatures} onChange={e => setSyncFeatures(e.target.checked)}>
                              Синхронизировать характеристики устройств
@@ -66,15 +64,8 @@ const ParsingButtonsCommonComponent = ({
                      }
                      footer={
                          <>
-                             <Button key="no" onClick={() => {
-                                 setConfirmOpen(false);
-                                 setSyncFeatures(false)
-                             }}>
-                                 Нет
-                             </Button>
-                             <Button key="yes" type="primary" onClick={handleConfirm}>
-                                 Да
-                             </Button>
+                             <Button onClick={() => setConfirmOpen(false)}>Нет</Button>
+                             <Button type="primary" onClick={handleConfirm}>Да</Button>
                          </>
                      }
             />

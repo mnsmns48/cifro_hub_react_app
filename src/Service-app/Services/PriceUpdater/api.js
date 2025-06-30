@@ -68,10 +68,10 @@ export const getProgressLine = async () => {
     }
 }
 
-export const startDataCollection = async ({selectedRow, progress, api_url}) => {
+export const startDataCollection = async ({selectedRow, progress, api_url, sync_features}) => {
     try {
         const parsingResult = await axios.post(api_url,
-            {vsl_id: selectedRow.id, vsl_url: selectedRow.url, progress});
+            {vsl_id: selectedRow.id, vsl_url: selectedRow.url, progress, sync_features: sync_features});
         return parsingResult.data
     } catch (error) {
         console.error("Ошибка в Parsing Process", error);
