@@ -4,10 +4,7 @@ import {Spin} from "antd";
 
 const DependencyModal = ({open, onClose, data}) => {
     return (
-        <MyModal
-            isOpen={open}
-            onConfirm={onClose}
-            onCancel={onClose}
+        <MyModal isOpen={open} onConfirm={onClose} onCancel={onClose}
             title={
                 <div style={{textAlign: "center"}}>
                     {data?.title || "Детали"}

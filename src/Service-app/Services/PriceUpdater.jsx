@@ -157,20 +157,15 @@ const PriceUpdater = () => {
                     </Col>
                 </Row>)}
 
-            <MyModal
-                isOpen={isErrorModalOpen}
-                onCancel={() => setIsErrorModalOpen(false)}
-                content={errorMessage}
-                danger={true}
+            <MyModal isOpen={isErrorModalOpen} onCancel={() => setIsErrorModalOpen(false)}
+                content={errorMessage} danger={true}
                 footer={<Button type="primary" danger onClick={() => {
                     setIsErrorModalOpen(false);
                     closeModalAfterDelay(setIsErrorModalOpen);
                 }}>ОК</Button>}
             />
 
-            <MyModal
-                isOpen={isSuccessModalOpen}
-                onConfirm={() => {
+            <MyModal isOpen={isSuccessModalOpen} onConfirm={() => {
                     setIsSuccessModalOpen(false);
                     closeModalAfterDelay(setIsSuccessModalOpen);
                 }}

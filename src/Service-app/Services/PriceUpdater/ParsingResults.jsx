@@ -1,5 +1,5 @@
 import {useState, useEffect, useMemo, useCallback} from "react";
-import {Table, Button, Input} from "antd";
+import {Table, Button, Input, Select} from "antd";
 import "../Css/ParsingResults.css";
 import {createParsingColumns} from "./ParsingResultsColumns.jsx";
 import {deleteParsingItems} from "./api.js";
@@ -106,6 +106,8 @@ const ParsingResults = ({result}) => {
                 <Button onClick={showNoFeaturesItems} style={{backgroundColor: 'red', borderRadius: '25%', width: 30, height: 30}}/>
                 <Search placeholder="Пиши что ищешь" allowClear style={{ maxWidth: 500 }}
                     value={searchText} onChange={e => setSearch(e.target.value)}/>
+                <Select placeholder="Профиль" style={{ minWidth: 180 }} allowClear></Select>
+
             </div>
 
             {hasSelection && (
