@@ -1,14 +1,14 @@
 import {Button, Col, Flex, Input, Row} from "antd";
-import {PlusOutlined} from "@ant-design/icons";
+import {PlusOutlined, SettingOutlined} from "@ant-design/icons";
 import MyModal from "../../Ui/MyModal.jsx";
 import {useEffect, useState} from "react";
 import VendorSourceSelector from "./PriceUpdater/VendorSourceSelector.jsx";
 import SearchTableSelector from "./PriceUpdater/SearchTableSelector.jsx";
 import './Css/PriceUpdater.css';
-import Parsing from "./PriceUpdater/Parsing.jsx";
 import {fetchVendors, fetchTableData, addVSL} from "./PriceUpdater/api.js";
 import ParsingResults from "./PriceUpdater/ParsingResults.jsx";
-import ParsingPreviousResults from "./PriceUpdater/ParsingPreviousResults.jsx";
+import ParsingButtonsCommonComponent from "./PriceUpdater/ParsingButtonsCommonComponent.jsx";
+import ParsingProgress from "./PriceUpdater/ParsingProgress.jsx";
 
 
 const PriceUpdater = () => {
@@ -25,7 +25,8 @@ const PriceUpdater = () => {
     const [selectedVSLRowKeys, setSelectedVSLRowKeys] = useState([]);
     const [parsedData, setParsedData] = useState([]);
     const [isParsingDone, setIsParsingDone] = useState(false);
-
+    const [progressLineObj, setProgressLineObj] = useState("");
+    const [isParsingStarted, setIsParsingStarted] = useState(false);
 
     useEffect(() => {
         fetchVendors().then(setVendorList);
@@ -38,6 +39,13 @@ const PriceUpdater = () => {
             setSelectedVSLRowKeys(null);
         }
     }, [selectedVendor, isParsingDone]);
+
+    useEffect(() => {
+        if (!selectedVSLRow || !isParsingDone) {
+            setIsParsingStarted(false);
+            setProgressLineObj("");
+        }
+    }, [selectedVSLRow, isParsingDone]);
 
 
     const refreshTableData = async (newRec = null) => {
@@ -114,11 +122,26 @@ const PriceUpdater = () => {
                             }
                             {selectedVSLRow !== null && (
                                 <div className='parser_buttons'>
-
-                                    <ParsingPreviousResults selectedRow={selectedVSLRow}
-                                                            onComplete={handleParsingComplete}/>
-                                    <Parsing selectedRow={selectedVSLRow} onComplete={handleParsingComplete}/>
-
+                                    <ParsingButtonsCommonComponent label="Предыдущие результаты"
+                                                                   confirmText="Предыдущие результаты?"
+                                                                   apiUrl="/service/previous_parsing_results"
+                                                                   selectedRow={selectedVSLRow}
+                                                                   onComplete={handleParsingComplete}
+                                                                   setProgressLineObj={setProgressLineObj}
+                                                                   setIsParsingStarted={setIsParsingStarted}/>
+                                    <ParsingButtonsCommonComponent label="Старт"
+                                                                   confirmText="Запустить парсинг?"
+                                                                   icon={<SettingOutlined/>}
+                                                                   apiUrl="/service/start_parsing"
+                                                                   selectedRow={selectedVSLRow}
+                                                                   onComplete={handleParsingComplete}
+                                                                   setProgressLineObj={setProgressLineObj}
+                                                                   setIsParsingStarted={setIsParsingStarted}/>
+                                </div>
+                            )}
+                            {isParsingStarted && (
+                                <div style={{margin: "15px 0", width: "100%"}}>
+                                    <ParsingProgress progress_obj={progressLineObj}/>
                                 </div>
                             )}
                         </Flex>

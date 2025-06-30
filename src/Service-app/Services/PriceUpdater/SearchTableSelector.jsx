@@ -61,8 +61,7 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
                 key,
                 render: (text, record) =>
                     editingKey === record.id ? (
-                        <Input
-                            value={editedValues[key] || ''}
+                        <Input value={editedValues[key] || ''}
                             onChange={(e) => setEditedValues(prev => ({ ...prev, [key]: e.target.value }))}
                         />
                     ) : text
