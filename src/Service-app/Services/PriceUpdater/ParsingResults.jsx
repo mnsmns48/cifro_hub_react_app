@@ -82,10 +82,10 @@ const ParsingResults = ({result}) => {
             }),
         [setRows, showInputPrice, expandedRows, toggleExpand]
     );
-
+    const { Option } = Select;
     const hasSelection = selectedRowKeys.length > 0;
 
-
+    const rangeReward = result.range_reward
     return (
         <>
             <div>
@@ -106,8 +106,13 @@ const ParsingResults = ({result}) => {
                 <Button onClick={showNoFeaturesItems} style={{backgroundColor: 'red', borderRadius: '25%', width: 30, height: 30}}/>
                 <Search placeholder="Пиши что ищешь" allowClear style={{ maxWidth: 500 }}
                     value={searchText} onChange={e => setSearch(e.target.value)}/>
-                <Select placeholder="Профиль" style={{ minWidth: 180 }} allowClear></Select>
-
+                <Select
+                    placeholder="Профиль вознаграждения"
+                    style={{ minWidth: 200 }}
+                    value={rangeReward.id}
+                >
+                    <Option value={rangeReward.id}>{rangeReward.title}</Option>
+                </Select>
             </div>
 
             {hasSelection && (
