@@ -143,3 +143,9 @@ export const getUploadedImages = async (originCode) => {
     const response = await axios.get(`/service/fetch_images_62701/${originCode}`);
     return response.data;
 };
+
+export const reCalcOutputPrices = async (vsl_id, range_id) => {
+    console.log(vsl_id, range_id);
+    const response = await axios.post("/service/recalculate_output_prices", {vsl_id, range_id});
+    return response.data;
+};
