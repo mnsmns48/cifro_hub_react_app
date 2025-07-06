@@ -5,7 +5,7 @@ import {useEffect, useState} from "react";
 import VendorSourceSelector from "./PriceUpdater/VendorSourceSelector.jsx";
 import SearchTableSelector from "./PriceUpdater/SearchTableSelector.jsx";
 import './Css/PriceUpdater.css';
-import {fetchVendors, fetchTableData, addVSL} from "./PriceUpdater/api.js";
+import {fetchVendors, fetchTableData, addVSL, reCalcOutputPrices} from "./PriceUpdater/api.js";
 import ParsingResults from "./PriceUpdater/ParsingResults.jsx";
 import ParsingButtonsCommonComponent from "./PriceUpdater/ParsingButtonsCommonComponent.jsx";
 import ParsingProgress from "./PriceUpdater/ParsingProgress.jsx";
@@ -88,6 +88,19 @@ const PriceUpdater = () => {
         if (selectedVendor) {
             const updatedData = await fetchTableData(selectedVendor);
             setTableData(updatedData);
+        }
+    };
+
+    const handleRangeChange = async (vslId, rangeId) => {
+        try {
+            const resp = await reCalcOutputPrices(vslId, rangeId);
+            setParsedData(prev => ({
+                ...prev,
+                data: resp.data,
+                range_reward: resp.range_reward,
+            }));
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -182,7 +195,7 @@ const PriceUpdater = () => {
             {isParsingDone && parsedData && (
                 <>
                     <Button onClick={handleNewSearch}>Новый поиск</Button>
-                    <ParsingResults result={parsedData}/>
+                    <ParsingResults result={parsedData} vslId={selectedVSLRow?.id} onRangeChange={handleRangeChange}/>
                 </>
             )}
         </>
