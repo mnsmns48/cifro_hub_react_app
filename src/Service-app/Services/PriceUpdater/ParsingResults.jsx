@@ -1,17 +1,12 @@
-import React, {
-    useState,
-    useMemo,
-    useCallback,
-    useEffect
-} from "react";
-import { Table, Button, Input, Select, message } from "antd";
+import {useState, useMemo, useCallback, useEffect} from "react";
+import {Table, Button, Input, Select, message} from "antd";
 import "../Css/ParsingResults.css";
-import { createParsingColumns } from "./ParsingResultsColumns.jsx";
-import { deleteParsingItems } from "./api.js";
+import {createParsingColumns} from "./ParsingResultsColumns.jsx";
+import {deleteParsingItems} from "./api.js";
 import UploadImagesModal from "./UploadImagesModal.jsx";
-import { fetchRangeRewardsProfiles } from "../RewardRangeSettings/api.js";
+import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
 
-const { Search } = Input;
+const {Search} = Input;
 
 const formatDate = isoString => {
     const date = new Date(isoString);
@@ -19,8 +14,7 @@ const formatDate = isoString => {
     return date.toISOString().slice(0, 16).replace("T", " ");
 };
 
-const ParsingResults = ({ result, vslId, onRangeChange }) => {
-    // Локальный стейт строк
+const ParsingResults = ({result, vslId, onRangeChange}) => {
     const [rows, setRows] = useState(result.data ?? []);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [expandedRows, setExpandedRows] = useState(null);
@@ -33,43 +27,30 @@ const ParsingResults = ({ result, vslId, onRangeChange }) => {
     const [currentOrigin, setCurrentOrigin] = useState(null);
 
     const [rewardOptions, setRewardOptions] = useState([]);
-    const [loadingOptions, setLoadingOptions] = useState(false);
 
-    const [selectedReward, setSelectedReward] = useState(
-        result.range_reward?.id ?? null
-    );
-
-    // 1) Сбрасываем rows и фильтры при каждом новом result.data
     useEffect(() => {
         setRows(Array.isArray(result.data) ? result.data : []);
         setSelectedRowKeys([]);
         setSearchText("");
         setActiveFilter("all");
         setExpandedRows(null);
-        setSelectedReward(result.range_reward?.id ?? null);
     }, [result.data, result.range_reward]);
 
-    // 2) Подгружаем профили вознаграждений один раз
     useEffect(() => {
         (async () => {
-            setLoadingOptions(true);
             try {
                 const resp = await fetchRangeRewardsProfiles();
                 const list = Array.isArray(resp) ? resp : resp.data;
                 setRewardOptions(
-                    list.map(o => ({ label: o.title, value: o.id }))
+                    list.map(o => ({label: o.title, value: o.id}))
                 );
             } catch {
                 message.error("Ошибка загрузки профилей");
-            } finally {
-                setLoadingOptions(false);
             }
         })();
     }, []);
 
-    // 3) При смене профиля вызываем колбэк и ждем обновления по эффекту выше
     const handleSelectRange = async rangeId => {
-        setSelectedReward(rangeId);
         await onRangeChange(vslId, rangeId);
     };
 
@@ -83,18 +64,12 @@ const ParsingResults = ({ result, vslId, onRangeChange }) => {
         []
     );
 
-    // 4) Фильтрация + поиск
     const filteredData = useMemo(() => {
         let data = rows;
-
         if (activeFilter === "noPreview") {
             data = data.filter(r => !r.preview);
         } else if (activeFilter === "noFeatures") {
-            data = data.filter(
-                r =>
-                    Array.isArray(r.features_title) &&
-                    r.features_title.length === 0
-            );
+            data = data.filter(r => Array.isArray(r.features_title) && r.features_title.length === 0);
         }
 
         const q = searchText.toLowerCase();
@@ -103,7 +78,6 @@ const ParsingResults = ({ result, vslId, onRangeChange }) => {
         );
     }, [rows, activeFilter, searchText]);
 
-    // 5) Колонки
     const columns = useMemo(
         () =>
             createParsingColumns({
@@ -116,7 +90,6 @@ const ParsingResults = ({ result, vslId, onRangeChange }) => {
         [setRows, showInputPrice, expandedRows, toggleExpand]
     );
 
-    // 6) Удаление
     const handleDelete = async () => {
         if (!selectedRowKeys.length) return;
         try {
@@ -146,93 +119,57 @@ const ParsingResults = ({ result, vslId, onRangeChange }) => {
                 </p>
             </div>
 
-            <div
-                style={{
-                    display: "flex",
-                    gap: 15,
-                    flexWrap: "wrap",
-                    padding: "15px 0"
-                }}
-            >
-                <Button onClick={() => setShowInputPrice(v => !v)}>
-                    {showInputPrice ? "Off" : "₽"}
-                </Button>
-
-                <Button
-                    onClick={() => setActiveFilter("all")}
-                    style={{ background: "yellowgreen" }}
-                />
-                <Button
-                    onClick={() => setActiveFilter("noPreview")}
-                    style={{ background: "yellow" }}
-                />
-                <Button
-                    onClick={() => setActiveFilter("noFeatures")}
-                    style={{ background: "red" }}
-                />
-
-                <Search
-                    placeholder="Пиши что ищешь"
-                    allowClear
-                    style={{ maxWidth: 500 }}
-                    value={searchText}
-                    onChange={e => setSearchText(e.target.value)}
-                />
-
-                <Select
-                    placeholder="Профиль вознаграждения"
-                    style={{ minWidth: 200 }}
-                    options={rewardOptions}
-                    defaultValue={result.range_reward.id}
-                    loading={loadingOptions}
-                    onChange={handleSelectRange}
-                />
+            <div style={{
+                display: "flex",
+                gap: 15,
+                flexWrap: "wrap",
+                padding: "15px 0"
+            }}>
+                <Button onClick={() => setShowInputPrice(v => !v)}>{showInputPrice ? "Off" : "₽"}</Button>
+                <Button onClick={() => setActiveFilter("all")} style={{background: "yellowgreen"}}/>
+                <Button onClick={() => setActiveFilter("noPreview")} style={{background: "yellow"}}/>
+                <Button onClick={() => setActiveFilter("noFeatures")} style={{background: "red"}}/>
+                <Search placeholder="Пиши что ищешь" allowClear style={{maxWidth: 500}}
+                        value={searchText} onChange={e => setSearchText(e.target.value)}/>
+                <Select placeholder="Профиль вознаграждения" style={{minWidth: 200}}
+                        options={rewardOptions} defaultValue={result.range_reward.id}
+                        onChange={handleSelectRange}/>
             </div>
 
             {selectedRowKeys.length > 0 && (
-                <Button
-                    danger
-                    style={{ margin: "0 0 10px 10px" }}
-                    onClick={handleDelete}
-                >
+                <Button danger style={{margin: "0 0 10px 10px"}} onClick={handleDelete}>
                     Удалить ({selectedRowKeys.length})
                 </Button>
             )}
 
-            <Table
-                className="parsing-result-table"
-                dataSource={filteredData}
-                columns={columns}
-                // 7) rowKey — композит из origin + индекс, чтобы ключ всегда был уникален
-                rowKey={(rec, idx) => `${rec.origin}-${idx}`}
-                tableLayout="fixed"
-                rowSelection={{
-                    selectedRowKeys,
-                    onChange: setSelectedRowKeys
-                }}
-                pagination={{
-                    pageSize,
-                    showSizeChanger: true,
-                    pageSizeOptions: ["10", "25", "50", "100"],
-                    onShowSizeChange: (_, size) => setPageSize(size)
-                }}
-                rowClassName={rec => {
-                    const noF =
-                        Array.isArray(rec.features_title) &&
-                        rec.features_title.length === 0;
-                    const noP = !rec.preview;
-                    if (noF) return "row-no-features";
-                    if (noP) return "row-no-image";
-                    return "";
-                }}
+            <Table className="parsing-result-table" dataSource={filteredData}
+                   columns={columns}
+                // rowKey={(rec, idx) => `${rec.origin}-${idx}`}
+                   rowKey={result.origin} tableLayout="fixed"
+                   rowSelection={{
+                       selectedRowKeys,
+                       onChange: setSelectedRowKeys
+                   }}
+                   pagination={{
+                       pageSize,
+                       showSizeChanger: true,
+                       pageSizeOptions: ["10", "25", "50", "100"],
+                       onShowSizeChange: (_, size) => setPageSize(size)
+                   }}
+                   rowClassName={rec => {
+                       const noF =
+                           Array.isArray(rec.features_title) &&
+                           rec.features_title.length === 0;
+                       const noP = !rec.preview;
+                       if (noF) return "row-no-features";
+                       if (noP) return "row-no-image";
+                       return "";
+                   }}
             />
 
-            <UploadImagesModal
-                isOpen={uploadModalOpen}
-                originCode={currentOrigin}
-                onClose={() => setUploadModalOpen(false)}
-                onUploaded={() => setUploadModalOpen(false)}
-            />
+            <UploadImagesModal isOpen={uploadModalOpen} originCode={currentOrigin}
+                               onClose={() => setUploadModalOpen(false)}
+                               onUploaded={() => setUploadModalOpen(false)}/>
         </>
     );
 };
