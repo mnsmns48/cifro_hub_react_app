@@ -183,7 +183,7 @@ const ParsingResults = ({ result, vslId, onRangeChange }) => {
                     placeholder="Профиль вознаграждения"
                     style={{ minWidth: 200 }}
                     options={rewardOptions}
-                    value={selectedReward}
+                    defaultValue={result.range_reward.id}
                     loading={loadingOptions}
                     onChange={handleSelectRange}
                 />
