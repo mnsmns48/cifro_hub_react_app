@@ -119,21 +119,15 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                 </p>
             </div>
 
-            <div style={{
-                display: "flex",
-                gap: 15,
-                flexWrap: "wrap",
-                padding: "15px 0"
-            }}>
+            <div style={{display: "flex", gap: 15, flexWrap: "wrap", padding: "15px 0"}}>
                 <Button onClick={() => setShowInputPrice(v => !v)}>{showInputPrice ? "Off" : "₽"}</Button>
                 <Button onClick={() => setActiveFilter("all")} style={{background: "yellowgreen"}}/>
                 <Button onClick={() => setActiveFilter("noPreview")} style={{background: "yellow"}}/>
                 <Button onClick={() => setActiveFilter("noFeatures")} style={{background: "red"}}/>
                 <Search placeholder="Пиши что ищешь" allowClear style={{maxWidth: 500}}
                         value={searchText} onChange={e => setSearchText(e.target.value)}/>
-                <Select placeholder="Профиль вознаграждения" style={{minWidth: 200}}
-                        options={rewardOptions} defaultValue={result.range_reward.id}
-                        onChange={handleSelectRange}/>
+                <Select style={{minWidth: 200}}
+                        options={rewardOptions} defaultValue={result.range_reward.id} onChange={handleSelectRange}/>
             </div>
 
             {selectedRowKeys.length > 0 && (

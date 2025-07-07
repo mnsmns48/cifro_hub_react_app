@@ -104,7 +104,6 @@ const PriceUpdater = () => {
         }
     };
 
-
     return (
         <>
             <div className='action_parser_main'>
@@ -171,26 +170,26 @@ const PriceUpdater = () => {
                 </Row>)}
 
             <MyModal isOpen={isErrorModalOpen} onCancel={() => setIsErrorModalOpen(false)}
-                content={errorMessage} danger={true}
-                footer={<Button type="primary" danger onClick={() => {
-                    setIsErrorModalOpen(false);
-                    closeModalAfterDelay(setIsErrorModalOpen);
-                }}>ОК</Button>}
+                     content={errorMessage} danger={true}
+                     footer={<Button type="primary" danger onClick={() => {
+                         setIsErrorModalOpen(false);
+                         closeModalAfterDelay(setIsErrorModalOpen);
+                     }}>ОК</Button>}
             />
 
             <MyModal isOpen={isSuccessModalOpen} onConfirm={() => {
-                    setIsSuccessModalOpen(false);
-                    closeModalAfterDelay(setIsSuccessModalOpen);
-                }}
-                onCancel={() => {
-                    setIsSuccessModalOpen(false);
-                    closeModalAfterDelay(setIsSuccessModalOpen);
-                }}
-                content={successMessage}
-                footer={<Button type="primary" onClick={() => {
-                    setIsSuccessModalOpen(false);
-                    closeModalAfterDelay(setIsSuccessModalOpen);
-                }}>OK</Button>}
+                setIsSuccessModalOpen(false);
+                closeModalAfterDelay(setIsSuccessModalOpen);
+            }}
+                     onCancel={() => {
+                         setIsSuccessModalOpen(false);
+                         closeModalAfterDelay(setIsSuccessModalOpen);
+                     }}
+                     content={successMessage}
+                     footer={<Button type="primary" onClick={() => {
+                         setIsSuccessModalOpen(false);
+                         closeModalAfterDelay(setIsSuccessModalOpen);
+                     }}>OK</Button>}
             />
             {isParsingDone && parsedData && (
                 <>
