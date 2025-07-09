@@ -2,7 +2,7 @@ import {useState, useMemo, useCallback, useEffect} from "react";
 import {Table, Button, Input, Select, message} from "antd";
 import "../Css/ParsingResults.css";
 import {createParsingColumns} from "./ParsingResultsColumns.jsx";
-import {deleteParsingItems} from "./api.js";
+import {deleteParsingItems, getUploadedImages} from "./api.js";
 import UploadImagesModal from "./UploadImagesModal.jsx";
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
 
@@ -103,6 +103,20 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
         }
     };
 
+    const handleImageUploaded = useCallback(
+        ({ images, preview }, origin) => {
+            setRows(prev =>
+                prev.map(r =>
+                    r.origin !== origin
+                        ? r
+                        : { ...r, images, preview }
+                )
+            )
+            setUploadModalOpen(false)
+        },
+        [setRows]
+    )
+
     return (
         <>
             <div>
@@ -161,9 +175,12 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                    }}
             />
 
-            <UploadImagesModal isOpen={uploadModalOpen} originCode={currentOrigin}
-                               onClose={() => setUploadModalOpen(false)}
-                               onUploaded={() => setUploadModalOpen(false)}/>
+            <UploadImagesModal
+                isOpen={uploadModalOpen}
+                originCode={currentOrigin}
+                onClose={() => setUploadModalOpen(false)}
+                onUploaded={(data) => handleImageUploaded(data, currentOrigin)}
+            />
         </>
     );
 };

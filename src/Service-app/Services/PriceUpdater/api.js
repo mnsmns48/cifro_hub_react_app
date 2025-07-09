@@ -139,13 +139,23 @@ export async function fetchDependencyDetails(origin) {
     }
 }
 
+
+export const reCalcOutputPrices = async (vslId, rangeId) => {
+    const response = await axios.post("/service/recalculate_output_prices",
+        {vsl_id: vslId, range_id: rangeId});
+    return response.data;
+};
+
 export const getUploadedImages = async (originCode) => {
     const response = await axios.get(`/service/fetch_images_62701/${originCode}`);
     return response.data;
 };
 
-export const reCalcOutputPrices = async (vslId, rangeId) => {
-    const response = await axios.post("/service/recalculate_output_prices",
-        {vsl_id: vslId, range_id: rangeId});
+
+
+export const uploadImageToS3 = async (originCode, file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await axios.post(`/service/upload_image/${originCode}`, formData);
     return response.data;
 };

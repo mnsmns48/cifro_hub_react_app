@@ -1,30 +1,33 @@
-import {useEffect, useState} from "react";
-import {Upload, Image, message, Space, Spin} from "antd";
-import {CloseCircleFilled, InboxOutlined} from "@ant-design/icons";
+import { useEffect, useState } from "react";
+import { Upload, Image, message, Space, Spin } from "antd";
+import { CloseCircleFilled, InboxOutlined } from "@ant-design/icons";
 import MyModal from "../../../Ui/MyModal.jsx";
-import {getUploadedImages} from "./api.js";
+import { getUploadedImages, uploadImageToS3 } from "./api.js";
 
-
-const UploadImagesModal = ({isOpen, onClose, originCode, onUploaded}) => {
+const UploadImagesModal = ({ isOpen, onClose, originCode, onUploaded }) => {
     const [existingFiles, setExistingFiles] = useState([]);
     const [loading, setLoading] = useState(false);
-    const uploadUrl = `/api/upload/${originCode}`;
+
+
+    const fetchImages = async () => {
+        setLoading(true);
+        try {
+            const data = await getUploadedImages(originCode);
+            const available = data.images || [];
+            setExistingFiles(available);
+        } catch (err) {
+            message.error(err?.message || "Ошибка при получении изображений");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        if (!isOpen || !originCode) return;
-
-        (async () => {
-            setLoading(true);
-            try {
-                const data = await getUploadedImages(originCode);
-                setExistingFiles(data.available || []);
-            } catch (err) {
-                message.error(err?.message || "Ошибка при получении изображений");
-            } finally {
-                setLoading(false);
-            }
-        })();
+        if (isOpen && originCode) {
+            fetchImages();
+        }
     }, [isOpen, originCode]);
+
 
     return (
         <MyModal
@@ -35,58 +38,48 @@ const UploadImagesModal = ({isOpen, onClose, originCode, onUploaded}) => {
             footer={null}
             content={
                 <Spin spinning={loading}>
-                    <div style={{display: "flex", flexDirection: "column", gap: 16}}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                         {existingFiles.length > 0 && (
-                            <Space wrap>
-                                {existingFiles.map((file) => (
-                                    <div
-                                        key={file}
-                                        style={{
-                                            position: "relative",
-                                            display: "inline-block",
-                                            width: 80,
-                                            height: 80,
-                                        }}
-                                    >
-                                        <Image
-                                            src={`/hub/${originCode}/${file}`}
-                                            alt={file}
-                                            width={80}
-                                            height={80}
-                                            style={{objectFit: "cover", borderRadius: 4}}
-                                        />
-                                        <CloseCircleFilled
-                                            // onClick={() => handleDelete(file)}
-                                            style={{
-                                                position: "absolute",
-                                                top: -6,
-                                                right: -6,
-                                                fontSize: 16,
-                                                color: "#ff4d4f",
-                                                cursor: "pointer",
-                                                backgroundColor: "#fff",
-                                                borderRadius: "50%",
-                                            }}
-                                        />
-                                    </div>
-                                ))}
-                            </Space>
+                            <Image.PreviewGroup>
+                                <Space wrap size={[12, 12]}>
+                                    {existingFiles.map(({ filename, url }) => (
+                                        <div key={filename} style={{ position: 'relative', width: 80,
+                                                height: 80, overflow: 'hidden', borderRadius: 4}}>
+                                            <Image src={url} alt={filename} width={80} height={80}
+                                                   style={{ objectFit: 'cover' }}/>
+                                            <CloseCircleFilled
+                                                // onClick={() => /* удаление */}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: -6,
+                                                    right: -6,
+                                                    fontSize: 16,
+                                                    color: '#ff4d4f',
+                                                    backgroundColor: '#fff',
+                                                    borderRadius: '50%',
+                                                    cursor: 'pointer',
+                                                }}
+                                            />
+                                        </div>
+                                    ))}
+                                </Space>
+                            </Image.PreviewGroup>
                         )}
 
-                        <Upload.Dragger
-                            name="file"
-                            multiple
-                            listType="picture-card"
-                            showUploadList={true}
-                            action={uploadUrl}
-                            onSuccess={() => {
-                                message.success("Файл загружен");
-                                onUploaded?.();
-                            }}
-                            onError={() => message.error("Ошибка загрузки")}
-                        >
+                        <Upload.Dragger name="file" multiple={false} listType="picture-card"
+                            showUploadList={false} customRequest={async (opts) => {
+                            try {
+                                const { images, preview } = await uploadImageToS3(originCode, opts.file)
+                                message.success('Файл загружен')
+                                onUploaded({ images, preview })
+                                opts.onSuccess('ok')
+                            } catch (err) {
+                                message.error('Ошибка загрузки')
+                                opts.onError(err)
+                            }
+                        }}>
                             <p className="ant-upload-drag-icon">
-                                <InboxOutlined/>
+                                <InboxOutlined />
                             </p>
                             <p>Перетащи файлы сюда или кликни для выбора</p>
                         </Upload.Dragger>
