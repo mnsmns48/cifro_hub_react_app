@@ -10,23 +10,28 @@ export const createParsingColumns = ({setRows, showInputPrice, expandedRows, tog
         key: "preview",
         align: "center",
         render: (url, record) => (
-            <div style={{ width: 128, height: 71, position: 'relative', overflow: "hidden"}}>
+            <div
+                style={{
+                    width: 128,
+                    height: 71,
+                    position: "relative",
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "rgba(255,255,255,0)",
+                    borderRadius: 4,
+                }}
+            >
                 {url ? (
-                    <>
-                        <Image width={60} src={url} alt={record.title} style={{ borderRadius: 4 }} />
-                        <Button
-                            type="text"
-                            icon={<UpCircleOutlined style={{ fontSize: 18, color: '#1677ff' }} />}
-                            style={{
-                                position: 'absolute',
-                                bottom: 4,
-                                right: 4,
-                                padding: 0,
-                                background: 'transparent',
-                            }}
-                            onClick={() => openUploadModal(record.origin)}
-                        />
-                    </>
+                    <Image
+                        width={60}
+                        height={60}
+                        src={url}
+                        alt={record.title}
+                        style={{ objectFit: "cover", borderRadius: 4 }}
+                        preview={true}
+                    />
                 ) : (
                     <Button
                         type="dashed"
@@ -35,10 +40,25 @@ export const createParsingColumns = ({setRows, showInputPrice, expandedRows, tog
                             width: 60,
                             height: 60,
                             padding: 0,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderRadius: '25%',
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderRadius: "25%",
+                        }}
+                        onClick={() => openUploadModal(record.origin)}
+                    />
+                )}
+
+                {url && (
+                    <Button
+                        type="text"
+                        icon={<UpCircleOutlined style={{ fontSize: 18, color: "#1677ff" }} />}
+                        style={{
+                            position: "absolute",
+                            bottom: 4,
+                            right: 4,
+                            padding: 0,
+                            background: "transparent",
                         }}
                         onClick={() => openUploadModal(record.origin)}
                     />

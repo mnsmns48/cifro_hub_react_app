@@ -1,22 +1,18 @@
-import { useEffect, useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 import { Upload, Image, message, Space, Spin } from "antd";
 import { CloseCircleFilled, InboxOutlined } from "@ant-design/icons";
 import MyModal from "../../../Ui/MyModal.jsx";
-import { getUploadedImages, uploadImageToS3 } from "./api.js";
+import { getUploadedImages, uploadImageToS3, deleteImageFromS3 } from "./api.js";
 
 const UploadImagesModal = ({ isOpen, onClose, originCode, onUploaded }) => {
     const [existingFiles, setExistingFiles] = useState([]);
     const [loading, setLoading] = useState(false);
 
-
     const fetchImages = async () => {
         setLoading(true);
         try {
-            const data = await getUploadedImages(originCode);
-            const available = data.images || [];
-            setExistingFiles(available);
-        } catch (err) {
-            message.error(err?.message || "Ошибка при получении изображений");
+            const { images } = await getUploadedImages(originCode);
+            setExistingFiles(images || []);
         } finally {
             setLoading(false);
         }
@@ -28,6 +24,17 @@ const UploadImagesModal = ({ isOpen, onClose, originCode, onUploaded }) => {
         }
     }, [isOpen, originCode]);
 
+    const deleteImage = useCallback(
+        async (filename) => {
+            try {
+                const { data: { images } } = await deleteImageFromS3(originCode, filename);
+                setExistingFiles(images);
+            } catch (err) {
+                console.error(err);
+            }
+        },
+        [originCode]
+    );
 
     return (
         <MyModal
@@ -48,11 +55,11 @@ const UploadImagesModal = ({ isOpen, onClose, originCode, onUploaded }) => {
                                             <Image src={url} alt={filename} width={80} height={80}
                                                    style={{ objectFit: 'cover' }}/>
                                             <CloseCircleFilled
-                                                // onClick={() => /* удаление */}
+                                                onClick={() => deleteImage(filename)}
                                                 style={{
                                                     position: 'absolute',
-                                                    top: -6,
-                                                    right: -6,
+                                                    top: 2,
+                                                    right: 2,
                                                     fontSize: 16,
                                                     color: '#ff4d4f',
                                                     backgroundColor: '#fff',
@@ -75,7 +82,6 @@ const UploadImagesModal = ({ isOpen, onClose, originCode, onUploaded }) => {
                                 opts.onSuccess('ok')
                             } catch (err) {
                                 message.error('Ошибка загрузки')
-                                opts.onError(err)
                             }
                         }}>
                             <p className="ant-upload-drag-icon">

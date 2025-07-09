@@ -159,3 +159,6 @@ export const uploadImageToS3 = async (originCode, file) => {
     const response = await axios.post(`/service/upload_image/${originCode}`, formData);
     return response.data;
 };
+
+export const deleteImageFromS3 = (origin, filename) =>
+    axios.delete(`/service/delete_images/${origin}/${filename}`);

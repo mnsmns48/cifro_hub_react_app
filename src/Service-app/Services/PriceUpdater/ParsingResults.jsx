@@ -153,7 +153,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
             <Table className="parsing-result-table" dataSource={filteredData}
                    columns={columns}
                 // rowKey={(rec, idx) => `${rec.origin}-${idx}`}
-                   rowKey={result.origin} tableLayout="fixed"
+                   rowKey="origin" tableLayout="fixed"
                    rowSelection={{
                        selectedRowKeys,
                        onChange: setSelectedRowKeys
