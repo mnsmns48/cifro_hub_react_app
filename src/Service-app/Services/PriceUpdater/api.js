@@ -159,6 +159,7 @@ export const uploadImageToS3 = async (originCode, file) => {
     return response.data;
 };
 
-export const deleteImageFromS3 = (origin, filename) =>
-    axios.delete(`/service/delete_images/${origin}/${filename}`);
-
+export async function deleteImageFromS3(origin, filename) {
+    const res = await axios.delete(`/service/delete_images/${origin}/${filename}`);
+    return res.data;
+}
