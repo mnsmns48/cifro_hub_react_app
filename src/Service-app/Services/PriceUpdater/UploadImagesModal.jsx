@@ -1,25 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { Upload, Image, message, Space, Spin } from "antd";
-import {
-    CloseCircleFilled,
-    InboxOutlined,
-    StarFilled,
-    StarOutlined,
-} from "@ant-design/icons";
+import {CloseCircleFilled, InboxOutlined, StarFilled, StarOutlined} from "@ant-design/icons";
 
 import MyModal from "../../../Ui/MyModal.jsx";
-import {
-    getUploadedImages,
-    uploadImageToS3,
-    deleteImageFromS3,
-} from "./api.js";
+import {getUploadedImages, uploadImageToS3, deleteImageFromS3} from "./api.js";
 
 const UploadImagesModal = ({ isOpen, onClose, originCode }) => {
     const [existingFiles, setExistingFiles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [makePreview, setMakePreview] = useState(false);
 
-    // загрузка изображений
     const fetchImages = useCallback(async () => {
         setLoading(true);
         try {
@@ -36,7 +26,6 @@ const UploadImagesModal = ({ isOpen, onClose, originCode }) => {
         if (isOpen) fetchImages();
     }, [isOpen, fetchImages]);
 
-    // удаление изображения
     const deleteImage = useCallback(
         async (filename) => {
             try {
@@ -49,19 +38,12 @@ const UploadImagesModal = ({ isOpen, onClose, originCode }) => {
         [originCode]
     );
 
-    // кастомный upload
     const customUpload = useCallback(
         async (opts) => {
             try {
-                const { images, preview } = await uploadImageToS3(
-                    originCode,
-                    opts.file,
-                    makePreview
-                );
+                const { images } = await uploadImageToS3(originCode, opts.file, makePreview);
                 setExistingFiles(images);
-                message.success("Файл успешно загружен");
                 if (makePreview) setMakePreview(false);
-                opts.onSuccess("ok");
             } catch {
                 message.error("Ошибка загрузки");
                 opts.onError();
@@ -93,7 +75,7 @@ const UploadImagesModal = ({ isOpen, onClose, originCode }) => {
                                                 overflow: "hidden",
                                                 borderRadius: 4,
                                                 border: is_preview
-                                                    ? "2px solid #1890ff"
+                                                    ? "3px solid #1890ff"
                                                     : "1px solid #ddd",
                                             }}
                                         >
@@ -122,7 +104,7 @@ const UploadImagesModal = ({ isOpen, onClose, originCode }) => {
                                                         position: "absolute",
                                                         bottom: 2,
                                                         right: 2,
-                                                        color: "#faad14",
+                                                        color: "#ebfa14",
                                                         fontSize: 18,
                                                     }}
                                                 />
