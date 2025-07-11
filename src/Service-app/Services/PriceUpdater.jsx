@@ -201,6 +201,6 @@ const PriceUpdater = () => {
     );
 };
 
-PriceUpdater.componentTitle = "Обновления цен"
+PriceUpdater.componentTitle = "Сбор данных"
 PriceUpdater.componentIcon = <img src="/ui/prices.png" alt="icon" width="30" height="30"/>
 export default PriceUpdater;

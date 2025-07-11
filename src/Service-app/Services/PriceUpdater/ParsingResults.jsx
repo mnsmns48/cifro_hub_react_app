@@ -2,9 +2,10 @@ import {useState, useMemo, useCallback, useEffect} from "react";
 import {Table, Button, Input, Select, message} from "antd";
 import "../Css/ParsingResults.css";
 import {createParsingColumns} from "./ParsingResultsColumns.jsx";
-import {deleteParsingItems, getUploadedImages} from "./api.js";
+import {deleteParsingItems} from "./api.js";
 import UploadImagesModal from "./UploadImagesModal.jsx";
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
+import { FileExcelOutlined } from "@ant-design/icons";
 
 const {Search} = Input;
 
@@ -117,6 +118,14 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
         [setRows]
     )
 
+    const downloadExcel = async () => {
+        try {
+            window.open(`/service/get_price_excel/${vslId}`, "_blank");
+        } catch (err) {
+            message.error(`Не сохранить данные в Excel файл ${err}`);
+        }
+    };
+
     return (
         <>
             <div>
@@ -142,6 +151,12 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                         value={searchText} onChange={e => setSearchText(e.target.value)}/>
                 <Select style={{minWidth: 200}}
                         options={rewardOptions} defaultValue={result.range_reward.id} onChange={handleSelectRange}/>
+                <Button
+                    type="text"
+                    icon={<FileExcelOutlined style={{ fontSize: 20, color: "#52c41a" }} />}
+                    onClick={downloadExcel}
+                    title="Скачать Excel"
+                />
             </div>
 
             {selectedRowKeys.length > 0 && (
@@ -174,7 +189,6 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                        return "";
                    }}
             />
-
             <UploadImagesModal
                 isOpen={uploadModalOpen}
                 originCode={currentOrigin}

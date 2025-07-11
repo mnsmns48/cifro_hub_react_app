@@ -20,7 +20,7 @@ export const fetchTableData = async (vendorId) => {
         const response = await axios.get(`/service/get_vsl/${vendorId}`);
         return response.data.vsl || [];
     } catch (error) {
-        console.error('Ошибка загрузки /get_vsl/${vendorId}:', error);
+        console.error('Ошибка загрузки fetchTableData', error);
         return [];
     }
 };
@@ -146,11 +146,10 @@ export const reCalcOutputPrices = async (vslId, rangeId) => {
     return response.data;
 };
 
-export const getUploadedImages = async (originCode) => {
+export async function getUploadedImages(originCode) {
     const response = await axios.get(`/service/fetch_images_62701/${originCode}`);
-    return response.data;
-};
-
+    return response.data.images || [];
+}
 
 
 export const uploadImageToS3 = async (originCode, file) => {
@@ -162,3 +161,4 @@ export const uploadImageToS3 = async (originCode, file) => {
 
 export const deleteImageFromS3 = (origin, filename) =>
     axios.delete(`/service/delete_images/${origin}/${filename}`);
+
