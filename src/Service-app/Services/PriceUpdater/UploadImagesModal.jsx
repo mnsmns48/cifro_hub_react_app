@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { Upload, Image, message, Space, Spin } from "antd";
-import {CloseCircleFilled, InboxOutlined, StarFilled, StarOutlined} from "@ant-design/icons";
+import InboxOutlined from "@ant-design/icons";
 
 import MyModal from "../../../Ui/MyModal.jsx";
 import {getUploadedImages, uploadImageToS3, deleteImageFromS3} from "./api.js";
+import UploadedImageItem from "./UploadImagesElement.jsx";
 
 const UploadImagesModal = ({ isOpen, onClose, originCode }) => {
     const [existingFiles, setExistingFiles] = useState([]);
@@ -66,63 +67,13 @@ const UploadImagesModal = ({ isOpen, onClose, originCode }) => {
                             <Image.PreviewGroup>
                                 <Space wrap size={[12, 12]}>
                                     {existingFiles.map(({ filename, url, is_preview }) => (
-                                        <div
+                                        <UploadedImageItem
                                             key={filename}
-                                            style={{
-                                                position: "relative",
-                                                width: 80,
-                                                height: 80,
-                                                overflow: "hidden",
-                                                borderRadius: 4,
-                                                border: is_preview
-                                                    ? "3px solid #1890ff"
-                                                    : "1px solid #ddd",
-                                            }}
-                                        >
-                                            <Image
-                                                src={url}
-                                                alt={filename}
-                                                width={80}
-                                                height={80}
-                                                style={{ objectFit: "cover" }}
-                                            />
-                                            {!is_preview ? (
-                                                <StarOutlined
-                                                    style={{
-                                                        position: "absolute",
-                                                        bottom: 2,
-                                                        right: 2,
-                                                        color: "#fff",
-                                                        fontSize: 18,
-                                                        textShadow: "0 0 2px rgba(0,0,0,0.5)",
-                                                        cursor: "pointer",
-                                                    }}
-                                                />
-                                            ) : (
-                                                <StarFilled
-                                                    style={{
-                                                        position: "absolute",
-                                                        bottom: 2,
-                                                        right: 2,
-                                                        color: "#ebfa14",
-                                                        fontSize: 18,
-                                                    }}
-                                                />
-                                            )}
-                                            <CloseCircleFilled
-                                                onClick={() => deleteImage(filename)}
-                                                style={{
-                                                    position: "absolute",
-                                                    top: 2,
-                                                    right: 2,
-                                                    fontSize: 16,
-                                                    color: "#ff4d4f",
-                                                    backgroundColor: "#fff",
-                                                    borderRadius: "50%",
-                                                    cursor: "pointer",
-                                                }}
-                                            />
-                                        </div>
+                                            filename={filename}
+                                            url={url}
+                                            isPreview={is_preview}
+                                            onDelete={deleteImage}
+                                        />
                                     ))}
                                 </Space>
                             </Image.PreviewGroup>
