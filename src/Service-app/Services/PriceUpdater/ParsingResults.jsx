@@ -112,11 +112,10 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                         ? r
                         : { ...r, images, preview }
                 )
-            )
-            setUploadModalOpen(false)
+            );
         },
         [setRows]
-    )
+    );
 
     const downloadExcel = async () => {
         try {

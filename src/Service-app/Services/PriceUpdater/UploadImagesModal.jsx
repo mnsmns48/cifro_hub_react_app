@@ -3,13 +3,12 @@ import { Upload, Image, message, Space, Spin } from "antd";
 import InboxOutlined from "@ant-design/icons";
 
 import MyModal from "../../../Ui/MyModal.jsx";
-import {getUploadedImages, uploadImageToS3, deleteImageFromS3} from "./api.js";
+import {getUploadedImages, uploadImageToS3, deleteImageFromS3, markImageAsPreview} from "./api.js";
 import UploadedImageItem from "./UploadImagesElement.jsx";
 
-const UploadImagesModal = ({ isOpen, onClose, originCode }) => {
+const UploadImagesModal = ({ isOpen, onClose, originCode, onUploaded  }) => {
     const [existingFiles, setExistingFiles] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [makePreview, setMakePreview] = useState(false);
 
     const fetchImages = useCallback(async () => {
         setLoading(true);
@@ -30,7 +29,8 @@ const UploadImagesModal = ({ isOpen, onClose, originCode }) => {
     const deleteImage = useCallback(
         async (filename) => {
             try {
-                const { images } = await deleteImageFromS3(originCode, filename);
+                const { images, preview } = await deleteImageFromS3(originCode, filename);
+                onUploaded({ images, preview });
                 setExistingFiles(images);
             } catch {
                 message.error("Ошибка при удалении");
@@ -39,19 +39,29 @@ const UploadImagesModal = ({ isOpen, onClose, originCode }) => {
         [originCode]
     );
 
-    const customUpload = useCallback(
-        async (opts) => {
-            try {
-                const { images } = await uploadImageToS3(originCode, opts.file, makePreview);
-                setExistingFiles(images);
-                if (makePreview) setMakePreview(false);
-            } catch {
-                message.error("Ошибка загрузки");
-                opts.onError();
-            }
-        },
-        [originCode, makePreview]
-    );
+    const customUpload = useCallback(async (opts) => {
+        try {
+            const { images, preview } = await uploadImageToS3(originCode, opts.file);
+            setExistingFiles(images);
+            onUploaded({ images, preview });
+            opts.onSuccess();
+        } catch {
+            message.error("Ошибка загрузки");
+            opts.onError();
+        }
+    }, [originCode]);
+
+    const markAsPreview = useCallback(async (filename) => {
+        try {
+            const { images, preview } = await markImageAsPreview(originCode, filename);
+            setExistingFiles(images);
+            onUploaded({ images, preview });
+        } catch {
+            message.error("Не удалось установить изображение как превью");
+        }
+    }, [originCode, onUploaded]);
+
+
 
     return (
         <MyModal
@@ -73,22 +83,16 @@ const UploadImagesModal = ({ isOpen, onClose, originCode }) => {
                                             url={url}
                                             isPreview={is_preview}
                                             onDelete={deleteImage}
-                                        />
+                                            onMakePreview={markAsPreview}/>
                                     ))}
                                 </Space>
                             </Image.PreviewGroup>
                         )}
-                        <Upload.Dragger
-                            name="file"
-                            multiple={false}
-                            listType="picture-card"
-                            showUploadList={false}
-                            customRequest={customUpload}
-                        >
-                            <p className="ant-upload-drag-icon">
+                        <Upload.Dragger name="file" multiple={false} listType="picture-card"
+                                        customRequest={customUpload} showUploadList={false}>
+                            <div className="ant-upload-drag-icon">
                                 <InboxOutlined />
-                            </p>
-                            <p>Перетащи файл сюда или кликни для выбора</p>
+                            </div> Перетащи файл сюда или кликни для выбора
                         </Upload.Dragger>
                     </div>
                 </Spin>

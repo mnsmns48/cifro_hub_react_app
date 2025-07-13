@@ -163,3 +163,11 @@ export async function deleteImageFromS3(origin, filename) {
     const res = await axios.delete(`/service/delete_images/${origin}/${filename}`);
     return res.data;
 }
+
+export const markImageAsPreview = async (origin, filename) => {
+    const response = await fetch(`/service/set_is_preview_image/${origin}/${filename}`, {
+        method: "PATCH"
+    });
+    if (!response.ok) throw new Error("Ошибка при установке превью");
+    return await response.json();
+};

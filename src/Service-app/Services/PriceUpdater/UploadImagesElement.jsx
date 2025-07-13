@@ -1,7 +1,7 @@
 import { Image } from "antd";
 import { CloseCircleFilled, StarFilled, StarOutlined } from "@ant-design/icons";
 
-const UploadedImageItem = ({ filename, url, isPreview, onDelete }) => (
+const UploadedImageItem = ({ filename, url, isPreview, onDelete, onMakePreview  }) => (
     <div
         style={{
             position: "relative",
@@ -31,6 +31,7 @@ const UploadedImageItem = ({ filename, url, isPreview, onDelete }) => (
             />
         ) : (
             <StarOutlined
+                onClick={() => onMakePreview(filename)}
                 style={{
                     position: "absolute",
                     bottom: 2,
