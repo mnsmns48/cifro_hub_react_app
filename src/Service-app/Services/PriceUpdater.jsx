@@ -107,7 +107,7 @@ const PriceUpdater = () => {
     return (
         <>
             <div className='action_parser_main'>
-                <h1>Обновление цен</h1>
+                <h1>Сбор данных</h1>
             </div>
             {!isParsingDone && (
                 <Row style={{alignItems: 'flex-start'}}>
