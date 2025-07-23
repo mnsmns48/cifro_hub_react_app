@@ -23,3 +23,18 @@ export const renameHubLevel = async (id, newLabel) => {
         return { status: "error", message: "Не удалось переименовать узел" };
     }
 };
+
+
+export const updateHubItemPosition = async (id, parentId, afterId = null) => {
+    try {
+        const response = await axios.patch("/service/change_hub_item_position", {
+            id,
+            parent_id: parentId,
+            after_id: afterId
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Ошибка при изменении позиции узла:", error);
+        return { status: "error", message: "Не удалось обновить позицию" };
+    }
+};
