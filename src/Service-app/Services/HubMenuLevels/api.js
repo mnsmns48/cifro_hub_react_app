@@ -63,3 +63,14 @@ export async function deleteHubLevel(id) {
         };
     }
 }
+
+export async function fetchStockHubItems(pathId) {
+    try {
+        const response = await axios.get(`/service/fetch_stock_hub_items/${pathId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Ошибка при загрузке stock hub items:", error);
+        return [];
+    }
+}
+

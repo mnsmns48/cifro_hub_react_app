@@ -29,3 +29,8 @@
 .treeIcon:hover {
     opacity: 0.8;
 }
+
+.stockHubTable .ant-table-cell {
+    font-size: 11px;
+    padding: 4px 8px;
+}

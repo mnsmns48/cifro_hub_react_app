@@ -163,6 +163,11 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                     Удалить ({selectedRowKeys.length})
                 </Button>
             )}
+            {selectedRowKeys.length > 0 && (
+                <Button type="primary" style={{margin: "0 0 10px 10px"}}>
+                    Добавить в Хаб ({selectedRowKeys.length})
+                </Button>
+            )}
 
             <Table className="parsing-result-table" dataSource={filteredData}
                    columns={columns}

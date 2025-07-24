@@ -1,6 +1,6 @@
-import { Input } from "antd";
+import {Input, Popconfirm} from "antd";
 import { buildTreeData } from "./utils.js";
-import { ArrowDownOutlined, CloseOutlined } from "@ant-design/icons";
+import {ArrowDownOutlined, ArrowUpOutlined, CloseOutlined, PlusOutlined} from "@ant-design/icons";
 import "./Css/Tree.css";
 
 const renderTreeTitle = (
@@ -11,9 +11,12 @@ const renderTreeTitle = (
     setTempLabel,
     handleSubmitLabel,
     onDelete,
-    onAddLevel
+    onAddLevel,
+    onToggleStock,
+    activeStockPath
 ) => {
     const isEditing = node.id === editingKey;
+    const isOpen = activeStockPath === node.id;
 
     if (isEditing) {
         return (
@@ -48,16 +51,32 @@ const renderTreeTitle = (
 
       <span className="treeIcons">
         {!node.isRoot && (
-            <CloseOutlined
-                className="treeIcon"
-                onClick={() => onDelete(node.id)}
-            />
+            <Popconfirm
+                title="Вы уверены, что хотите удалить уровень?"
+                okText="Да"
+                cancelText="Нет"
+                onConfirm={() => onDelete(node.id)}
+            >
+                <CloseOutlined className="treeIcon" />
+            </Popconfirm>
         )}
 
-          <ArrowDownOutlined
+          <PlusOutlined
               className="treeIcon"
               onClick={() => onAddLevel(node)}
           />
+
+          {isOpen ? (
+              <ArrowUpOutlined
+                  className="treeIcon"
+                  onClick={() => onToggleStock(node)}
+              />
+          ) : (
+              <ArrowDownOutlined
+                  className="treeIcon"
+                  onClick={() => onToggleStock(node)}
+              />
+          )}
       </span>
     </span>
     );
@@ -71,7 +90,9 @@ const TreeRender = (
     setTempLabel,
     handleSubmitLabel,
     handleDeleteNode,
-    handleAddLevelUI
+    handleAddLevelUI,
+    handleToggleStock,
+    activeStockPath
 ) => {
     const rawTree = buildTreeData(menuData);
 
@@ -86,7 +107,9 @@ const TreeRender = (
                 setTempLabel,
                 handleSubmitLabel,
                 handleDeleteNode,
-                handleAddLevelUI
+                handleAddLevelUI,
+                handleToggleStock,
+                activeStockPath
             ),
             disableDrag: node.isRoot,
             disableDrop: node.isRoot,

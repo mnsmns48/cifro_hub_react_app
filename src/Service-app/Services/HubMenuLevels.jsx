@@ -8,6 +8,7 @@ import {
     updateHubItemPosition
 } from "./HubMenuLevels/api.js";
 import TreeRender from "./HubMenuLevels/TreeRender.jsx";
+import StockHubItemsTable from "./HubMenuLevels/StockHubItemsTable.jsx";
 
 
 const HubMenuLevels = () => {
@@ -16,6 +17,8 @@ const HubMenuLevels = () => {
     const [editingKey, setEditingKey] = useState(null);
     const [tempLabel, setTempLabel] = useState("");
     const [expandedKeys, setExpandedKeys] = useState([]);
+    const [activeStockPath, setActiveStockPath] = useState(null);
+
 
     useEffect(() => {
         loadLevels();
@@ -30,6 +33,15 @@ const HubMenuLevels = () => {
             }))
         );
         setLoading(false);
+    };
+
+    const handleToggleStockTable = node => {
+        setActiveStockPath(prev =>
+            prev === node.id ? null : node.id
+        );
+        setExpandedKeys(prev =>
+            Array.from(new Set([...prev, node.id.toString()]))
+        );
     };
 
     const handleSubmitLabel = async (key, newLabel) => {
@@ -128,13 +140,12 @@ const HubMenuLevels = () => {
     };
 
     const handleDeleteNode = async id => {
-        const { status} = await deleteHubLevel(id);
+        const { status } = await deleteHubLevel(id);
         if (status === "deleted") {
             const fresh = await fetchHubLevels();
-            setMenuData(fresh.map(item => ({
-                ...item,
-                parentId: item.parent_id ?? 0
-            })));
+            setMenuData(
+                fresh.map(item => ({ ...item, parentId: item.parent_id ?? 0 }))
+            );
         }
     };
 
@@ -143,26 +154,33 @@ const HubMenuLevels = () => {
             <Spin tip="Загрузка уровней" size="large" />
         </div>
     ) : (
-        <Tree
-            draggable
-            blockNode
-            expandedKeys={expandedKeys}
-            onExpand={keys => setExpandedKeys(keys)}
-            treeData={TreeRender(
-                menuData,
-                editingKey,
-                tempLabel,
-                setEditingKey,
-                setTempLabel,
-                handleSubmitLabel,
-                handleDeleteNode,
-                handleAddLevelUI
+        <>
+            <Tree
+                draggable
+                blockNode
+                expandedKeys={expandedKeys}
+                onExpand={keys => setExpandedKeys(keys)}
+                treeData={TreeRender(
+                    menuData,
+                    editingKey,
+                    tempLabel,
+                    setEditingKey,
+                    setTempLabel,
+                    handleSubmitLabel,
+                    handleDeleteNode,
+                    handleAddLevelUI,
+                    handleToggleStockTable,
+                    activeStockPath
+                )}
+                onDrop={onDrop}
+            />
+            {activeStockPath && (
+                <StockHubItemsTable pathId={activeStockPath} />
             )}
-            onDrop={onDrop}
-        />
+        </>
     );
 };
 
-HubMenuLevels.componentTitle = "Уровни Хаба";
+HubMenuLevels.componentTitle = "Хаб";
 HubMenuLevels.componentIcon = <img src="/ui/levels.png" alt="icon" width="30" height="30" />;
 export default HubMenuLevels;
