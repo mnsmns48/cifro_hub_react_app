@@ -1,19 +1,17 @@
 import {useState, useMemo, useCallback, useEffect} from "react";
-import {Table, Button, Input, Select, message} from "antd";
+import {Table, Button, Input, Select, message, List} from "antd";
 import "../Css/ParsingResults.css";
 import {createParsingColumns} from "./ParsingResultsColumns.jsx";
 import {deleteParsingItems} from "./api.js";
 import UploadImagesModal from "./UploadImagesModal.jsx";
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
 import { FileExcelOutlined } from "@ant-design/icons";
+import MyModal from "../../../Ui/MyModal.jsx";
+import {formatDate} from "../../../../utils.js";
+import InHubDownloader from "./InHubDownloader.jsx";
 
 const {Search} = Input;
 
-const formatDate = isoString => {
-    const date = new Date(isoString);
-    date.setHours(date.getHours() + 3);
-    return date.toISOString().slice(0, 16).replace("T", " ");
-};
 
 const ParsingResults = ({result, vslId, onRangeChange}) => {
     const [rows, setRows] = useState(result.data ?? []);
@@ -23,11 +21,11 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
     const [showInputPrice, setShowInputPrice] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [activeFilter, setActiveFilter] = useState("all");
-
     const [uploadModalOpen, setUploadModalOpen] = useState(false);
     const [currentOrigin, setCurrentOrigin] = useState(null);
-
     const [rewardOptions, setRewardOptions] = useState([]);
+    const [addToHubModalVisible, setAddToHubModalVisible] = useState(false);
+
 
     useEffect(() => {
         setRows(Array.isArray(result.data) ? result.data : []);
@@ -125,6 +123,18 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
         }
     };
 
+    const selectedItems = rows.filter(r => selectedRowKeys.includes(r.origin) );
+
+    const handleAddToHub = async () => {
+        try {
+            message.success("Элементы добавлены в Хаб");
+        } catch {
+            message.error("Не удалось добавить в Хаб");
+        } finally {
+            setAddToHubModalVisible(false);
+        }
+    };
+
     return (
         <>
             <div>
@@ -164,7 +174,11 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                 </Button>
             )}
             {selectedRowKeys.length > 0 && (
-                <Button type="primary" style={{margin: "0 0 10px 10px"}}>
+                <Button
+                    type="primary"
+                    style={{ margin: "0 0 10px 10px" }}
+                    onClick={() => setAddToHubModalVisible(true)}
+                >
                     Добавить в Хаб ({selectedRowKeys.length})
                 </Button>
             )}
@@ -193,6 +207,15 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                        return "";
                    }}
             />
+
+            <InHubDownloader
+                dtObj={result.datestamp}
+                isOpen={addToHubModalVisible}
+                items={selectedItems}
+                onCancel={() => setAddToHubModalVisible(false)}
+                onConfirm={handleAddToHub}
+            />
+
             <UploadImagesModal
                 isOpen={uploadModalOpen}
                 originCode={currentOrigin}
