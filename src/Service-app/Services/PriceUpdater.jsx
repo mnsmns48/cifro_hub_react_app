@@ -107,7 +107,7 @@ const PriceUpdater = () => {
     return (
         <>
             <div className='action_parser_main'>
-                <h1>Сбор данных</h1>
+                <h1>Информация</h1>
             </div>
             {!isParsingDone && (
                 <Row style={{alignItems: 'flex-start'}}>
@@ -201,6 +201,6 @@ const PriceUpdater = () => {
     );
 };
 
-PriceUpdater.componentTitle = "Сбор данных"
+PriceUpdater.componentTitle = "Информация"
 PriceUpdater.componentIcon = <img src="/ui/prices.png" alt="icon" width="30" height="30"/>
 export default PriceUpdater;

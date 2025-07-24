@@ -163,6 +163,6 @@ const HubMenuLevels = () => {
     );
 };
 
-HubMenuLevels.componentTitle = "Структура Хаба";
+HubMenuLevels.componentTitle = "Уровни Хаба";
 HubMenuLevels.componentIcon = <img src="/ui/levels.png" alt="icon" width="30" height="30" />;
 export default HubMenuLevels;
