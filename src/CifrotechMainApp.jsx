@@ -1,5 +1,5 @@
 import './CifrotechMainApp.css';
-import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import {Routes, Route} from 'react-router-dom';
 import {Layout, theme} from 'antd';
 import {useEffect, useState} from "react";
 import AppHeader from "./Cifrotech-app/components/AppHeader.jsx";

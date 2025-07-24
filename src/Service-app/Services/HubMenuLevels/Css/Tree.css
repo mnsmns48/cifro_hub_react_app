@@ -1,0 +1,31 @@
+.treeNodeRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.treeNodeLabel {
+    cursor: text;
+    flex: 1;
+}
+
+.treeNodeLabel.root {
+    cursor: default;
+}
+
+.treeIcons {
+    display: flex;
+    align-items: center;
+}
+
+.treeIcon {
+    font-size: 12px;
+    margin: 0 10px;
+    opacity: 0.4;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.treeIcon:hover {
+    opacity: 0.8;
+}
