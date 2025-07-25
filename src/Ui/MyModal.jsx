@@ -19,7 +19,7 @@ const MyModal = ({
                okButtonProps={{danger}}
                closable={closable}
                footer={<div className="button-footer">{footer}</div>}>
-            <p className='modal'>{content}</p>
+            <div className='modal'>{content}</div>
         </Modal>
     );
 };

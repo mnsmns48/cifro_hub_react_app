@@ -1,21 +1,26 @@
-import { List, Button } from "antd";
+import {List, Button, Spin} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
 import {formatDate} from "../../../../utils.js";
+import HubMenuLevels from "../HubMenuLevels.jsx";
+import {Suspense, useState} from "react";
 
 const InHubDownloader = ({
-                             dtObj,
+                             rowId,
+                             resultObj,
                              isOpen,
                              items,
                              onCancel,
                              onConfirm
                          }) => {
+    const [selectedPathId, setSelectedPathId] = useState(null);
+
     return (
         <MyModal
             isOpen={isOpen}
             onCancel={onCancel}
             onConfirm={onConfirm}
             title="Добавить в Хаб"
-            content={
+            content={<>
                 <List
                     size="small"
                     bordered
@@ -29,18 +34,31 @@ const InHubDownloader = ({
                                 fontSize: 12
                             }}
                         >
-                            <strong>{item.origin}</strong>
+                            <div>{item.origin}</div>
                             <span>{item.title}</span>
-                            <strong>{item.output_price}</strong>
-                            <span>{formatDate(dtObj)}</span>
+                            <b>{item.output_price}</b>
+                            <span>{formatDate(resultObj.datestamp)}</span>
                         </List.Item>
                     )}
                 />
+                <div style={{marginTop: 20}}>
+                    <Suspense fallback={<Spin tip="Загрузка хаба..." />}>
+                        <HubMenuLevels onAddToHub={setSelectedPathId} />
+                    </Suspense>
+                </div>
+            </>
             }
             footer={
                 <>
                     <Button onClick={onCancel}>Отмена</Button>
-                    <Button type="primary" onClick={onConfirm}>
+                    <Button
+                        type="primary"
+                        onClick={() => {
+                            console.log("Выбранный ID:", selectedPathId);
+                            onConfirm(selectedPathId);
+                        }}
+                        disabled={!selectedPathId || typeof selectedPathId !== "number"}
+                    >
                         Добавить
                     </Button>
                 </>

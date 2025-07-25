@@ -1,20 +1,21 @@
-import {Input, Popconfirm} from "antd";
+import { Input, Popconfirm } from "antd";
+import { ArrowDownOutlined, ArrowUpOutlined, CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import { buildTreeData } from "./utils.js";
-import {ArrowDownOutlined, ArrowUpOutlined, CloseOutlined, PlusOutlined} from "@ant-design/icons";
 import "./Css/Tree.css";
 
-const renderTreeTitle = (
-    node,
-    editingKey,
-    tempLabel,
-    setEditingKey,
-    setTempLabel,
-    handleSubmitLabel,
-    onDelete,
-    onAddLevel,
-    onToggleStock,
-    activeStockPath
-) => {
+const renderTreeTitle = (node, ctx = {}) => {
+    const {
+        editingKey,
+        tempLabel,
+        setEditingKey,
+        setTempLabel,
+        handleSubmitLabel,
+        handleDeleteNode,
+        handleAddLevelUI,
+        handleToggleStockTable,
+        activeStockPath
+    } = ctx;
+
     const isEditing = node.id === editingKey;
     const isOpen = activeStockPath === node.id;
 
@@ -37,86 +38,61 @@ const renderTreeTitle = (
 
     return (
         <span className="treeNodeRow">
-      <span
-          className={node.isRoot ? "treeNodeLabel root" : "treeNodeLabel"}
-          onDoubleClick={() => {
-              if (!node.isRoot) {
-                  setEditingKey(node.id);
-                  setTempLabel(node.label);
-              }
-          }}
-      >
-        {node.label}
-      </span>
-
-      <span className="treeIcons">
-        {!node.isRoot && (
-            <Popconfirm
-                title="Вы уверены, что хотите удалить уровень?"
-                okText="Да"
-                cancelText="Нет"
-                onConfirm={() => onDelete(node.id)}
+            <span
+                className={node.isRoot ? "treeNodeLabel root" : "treeNodeLabel"}
+                onDoubleClick={() => {
+                    if (!node.isRoot) {
+                        setEditingKey(node.id);
+                        setTempLabel(node.label);
+                    }
+                }}
             >
-                <CloseOutlined className="treeIcon" />
-            </Popconfirm>
-        )}
+                {node.label}
+            </span>
 
-          <PlusOutlined
-              className="treeIcon"
-              onClick={() => onAddLevel(node)}
-          />
-
-          {isOpen ? (
-              <ArrowUpOutlined
-                  className="treeIcon"
-                  onClick={() => onToggleStock(node)}
-              />
-          ) : (
-              <ArrowDownOutlined
-                  className="treeIcon"
-                  onClick={() => onToggleStock(node)}
-              />
-          )}
-      </span>
-    </span>
+            <span className="treeIcons">
+                {!node.isRoot && (
+                    <Popconfirm
+                        title="Вы уверены, что хотите удалить уровень?"
+                        okText="Да"
+                        cancelText="Нет"
+                        onConfirm={() => handleDeleteNode(node.id)}
+                    >
+                        <CloseOutlined className="treeIcon" />
+                    </Popconfirm>
+                )}
+                <PlusOutlined className="treeIcon" onClick={() => handleAddLevelUI(node)} />
+                {isOpen ? (
+                    <ArrowUpOutlined className="treeIcon" onClick={() => handleToggleStockTable(node)} />
+                ) : (
+                    <ArrowDownOutlined className="treeIcon" onClick={() => handleToggleStockTable(node)} />
+                )}
+            </span>
+        </span>
     );
 };
 
-const TreeRender = (
-    menuData,
-    editingKey,
-    tempLabel,
-    setEditingKey,
-    setTempLabel,
-    handleSubmitLabel,
-    handleDeleteNode,
-    handleAddLevelUI,
-    handleToggleStock,
-    activeStockPath
-) => {
+const TreeRender = ({ menuData, treeContext }) => {
+    if (!treeContext) return [];
+
     const rawTree = buildTreeData(menuData);
 
-    const recurse = nodes =>
-        nodes.map(node => ({
+    const buildNodes = nodes => {
+        if (!Array.isArray(nodes)) return [];
+
+        return nodes.map(node => ({
             ...node,
-            title: renderTreeTitle(
-                node,
-                editingKey,
-                tempLabel,
-                setEditingKey,
-                setTempLabel,
-                handleSubmitLabel,
-                handleDeleteNode,
-                handleAddLevelUI,
-                handleToggleStock,
-                activeStockPath
-            ),
+            key: node.id.toString(),
+            title: renderTreeTitle(node, treeContext),
             disableDrag: node.isRoot,
             disableDrop: node.isRoot,
-            children: node.children ? recurse(node.children) : []
+            children: Array.isArray(node.children)
+                ? buildNodes(node.children)
+                : []
         }));
+    };
 
-    return recurse(rawTree);
+    return buildNodes(rawTree);
 };
 
 export default TreeRender;

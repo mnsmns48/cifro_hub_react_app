@@ -1,12 +1,11 @@
 import {useState, useMemo, useCallback, useEffect} from "react";
-import {Table, Button, Input, Select, message, List} from "antd";
+import {Table, Button, Input, Select, message} from "antd";
 import "../Css/ParsingResults.css";
 import {createParsingColumns} from "./ParsingResultsColumns.jsx";
 import {deleteParsingItems} from "./api.js";
 import UploadImagesModal from "./UploadImagesModal.jsx";
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
 import { FileExcelOutlined } from "@ant-design/icons";
-import MyModal from "../../../Ui/MyModal.jsx";
 import {formatDate} from "../../../../utils.js";
 import InHubDownloader from "./InHubDownloader.jsx";
 
@@ -209,7 +208,8 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
             />
 
             <InHubDownloader
-                dtObj={result.datestamp}
+                rowId={vslId}
+                resultObj={result}
                 isOpen={addToHubModalVisible}
                 items={selectedItems}
                 onCancel={() => setAddToHubModalVisible(false)}
