@@ -7,17 +7,18 @@
         renameHubLevel,
         updateHubItemPosition
     } from "./HubMenuLevels/api.js";
-    import TreeRender from "./HubMenuLevels/TreeRender.jsx";
     import StockHubItemsTable from "./HubMenuLevels/StockHubItemsTable.jsx";
+    import TreeDataRender from "./HubMenuLevels/TreeRender.jsx";
 
 
-    const HubMenuLevels = () => {
+    const HubMenuLevels = ({ onSelectPath }) => {
         const [menuData, setMenuData] = useState([]);
         const [loading, setLoading] = useState(true);
         const [editingKey, setEditingKey] = useState(null);
         const [tempLabel, setTempLabel] = useState("");
         const [expandedKeys, setExpandedKeys] = useState([]);
-        const [activeStockPath, setActiveStockPath] = useState(null);
+        const [fetchStockByPath, setFetchStockByPath] = useState(null);
+        const [chooseStockPath, setChooseStockPath] = useState(null);
 
 
         useEffect(() => {
@@ -36,14 +37,28 @@
             setLoading(false);
         };
 
+        const handleSelect = (selectedKeys) => {
+            if (!selectedKeys.length) {
+                setChooseStockPath(null);
+                onSelectPath(null);
+                return;
+            }
+            const key = parseInt(selectedKeys[0], 10);
+            setChooseStockPath(key);
+            onSelectPath(key);
+        };
+
         const handleToggleStockTable = node => {
-            console.log("Нажат узел:", node);
-            setActiveStockPath(prev =>
+            const newPathId = fetchStockByPath === node.id ? null : node.id;
+            setFetchStockByPath(prev =>
                 prev === node.id ? null : node.id
             );
             setExpandedKeys(prev =>
                 Array.from(new Set([...prev, node.id.toString()]))
             );
+            if (onSelectPath) {
+                onSelectPath(newPathId);
+            }
         };
 
         const handleSubmitLabel = async (key, newLabel) => {
@@ -160,10 +175,10 @@
             handleDeleteNode,
             handleAddLevelUI,
             handleToggleStockTable,
-            activeStockPath
+            fetchStockByPath
         };
 
-        const treeData = TreeRender({ menuData, treeContext });
+        const treeData = TreeDataRender({ menuData, treeContext });
 
         return loading ? (
             <div style={{ padding: 24, textAlign: "center" }}>
@@ -178,9 +193,11 @@
                     onExpand={keys => setExpandedKeys(keys)}
                     treeData={treeData}
                     onDrop={onDrop}
+                    onSelect={handleSelect}
+
                 />
-                {activeStockPath && (
-                    <StockHubItemsTable pathId={activeStockPath} />
+                {fetchStockByPath && (
+                    <StockHubItemsTable pathId={chooseStockPath} />
                 )}
             </>
         );

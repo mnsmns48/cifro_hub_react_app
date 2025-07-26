@@ -1,5 +1,10 @@
 import { Input, Popconfirm } from "antd";
-import { ArrowDownOutlined, ArrowUpOutlined, CloseOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+    ArrowDownOutlined,
+    ArrowUpOutlined,
+    CloseOutlined,
+    PlusOutlined
+} from "@ant-design/icons";
 import { buildTreeData } from "./utils.js";
 import "./Css/Tree.css";
 
@@ -13,23 +18,23 @@ const renderTreeTitle = (node, ctx = {}) => {
         handleDeleteNode,
         handleAddLevelUI,
         handleToggleStockTable,
-        activeStockPath
+        fetchStockByPath
     } = ctx;
 
     const isEditing = node.id === editingKey;
-    const isOpen = activeStockPath === node.id;
+    const isOpen    = fetchStockByPath === node.id;
 
     if (isEditing) {
         return (
             <Input
                 value={tempLabel}
                 autoFocus
-                size="small"
+                size="large"
                 onChange={e => setTempLabel(e.target.value)}
                 onBlur={() => handleSubmitLabel(node.id, tempLabel)}
                 onKeyDown={e => {
                     if (e.key === "Escape") setEditingKey(null);
-                    if (e.key === "Enter") handleSubmitLabel(node.id, tempLabel);
+                    if (e.key === "Enter")   handleSubmitLabel(node.id, tempLabel);
                 }}
                 style={{ width: "100%" }}
             />
@@ -38,41 +43,51 @@ const renderTreeTitle = (node, ctx = {}) => {
 
     return (
         <span className="treeNodeRow">
-            <span
-                className={node.isRoot ? "treeNodeLabel root" : "treeNodeLabel"}
-                onDoubleClick={() => {
-                    if (!node.isRoot) {
-                        setEditingKey(node.id);
-                        setTempLabel(node.label);
-                    }
-                }}
-            >
-                {node.label}
-            </span>
+      <span
+          className={node.isRoot ? "treeNodeLabel root" : "treeNodeLabel"}
+          onDoubleClick={() => {
+              if (!node.isRoot) {
+                  setEditingKey(node.id);
+                  setTempLabel(node.label);
+              }
+          }}
+      >
+        {node.label}
+      </span>
 
-            <span className="treeIcons">
-                {!node.isRoot && (
-                    <Popconfirm
-                        title="Вы уверены, что хотите удалить уровень?"
-                        okText="Да"
-                        cancelText="Нет"
-                        onConfirm={() => handleDeleteNode(node.id)}
-                    >
-                        <CloseOutlined className="treeIcon" />
-                    </Popconfirm>
-                )}
-                <PlusOutlined className="treeIcon" onClick={() => handleAddLevelUI(node)} />
-                {isOpen ? (
-                    <ArrowUpOutlined className="treeIcon" onClick={() => handleToggleStockTable(node)} />
-                ) : (
-                    <ArrowDownOutlined className="treeIcon" onClick={() => handleToggleStockTable(node)} />
-                )}
-            </span>
-        </span>
+      <span className="treeIcons">
+        {!node.isRoot && (
+            <Popconfirm
+                title="Вы уверены, что хотите удалить уровень?"
+                okText="Да"
+                cancelText="Нет"
+                onConfirm={() => handleDeleteNode(node.id)}
+            >
+                <CloseOutlined className="treeIcon" />
+            </Popconfirm>
+        )}
+          <PlusOutlined
+              className="treeIcon"
+              onClick={() => handleAddLevelUI(node)}
+          />
+
+          {isOpen ? (
+              <ArrowUpOutlined
+                  className="treeIcon"
+                  onClick={() => handleToggleStockTable(node)}
+              />
+          ) : (
+              <ArrowDownOutlined
+                  className="treeIcon"
+                  onClick={() => handleToggleStockTable(node)}
+              />
+          )}
+      </span>
+    </span>
     );
 };
 
-const TreeRender = ({ menuData, treeContext }) => {
+const TreeDataRender = ({ menuData, treeContext }) => {
     if (!treeContext) return [];
 
     const rawTree = buildTreeData(menuData);
@@ -95,4 +110,4 @@ const TreeRender = ({ menuData, treeContext }) => {
     return buildNodes(rawTree);
 };
 
-export default TreeRender;
+export default TreeDataRender;

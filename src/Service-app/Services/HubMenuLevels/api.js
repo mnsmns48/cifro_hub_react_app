@@ -74,3 +74,28 @@ export async function fetchStockHubItems(pathId) {
     }
 }
 
+export async function createHubLoading({ vslId, datestamp, stocks }) {
+    const payload = {
+        vsl_id: vslId,
+        datestamp: datestamp instanceof Date
+            ? datestamp.toISOString()
+            : datestamp,
+        stocks: stocks.map(({ origin, pathId, warranty, outputPrice }) => ({
+            origin,
+            path_id: pathId,
+            warranty,
+            output_price: outputPrice,
+        })),
+    };
+
+    try {
+        const response = await axios.post('/service/items_to_hub_loadings', payload);
+        return response.data;
+    } catch (err) {
+        if (axios.isAxiosError(err)) {
+            const msg = err.response?.data?.detail || err.message;
+            throw new Error(`Ошибка создания загрузки: ${msg}`);
+        }
+        throw err;
+    }
+}
