@@ -74,12 +74,12 @@ export async function fetchStockHubItems(pathId) {
     }
 }
 
-export async function createHubLoading({ vslId, datestamp, stocks }) {
+export async function createHubLoading({ vslId, dt_parsed, stocks }) {
     const payload = {
         vsl_id: vslId,
-        datestamp: datestamp instanceof Date
-            ? datestamp.toISOString()
-            : datestamp,
+        dt_parsed: dt_parsed instanceof Date
+            ? dt_parsed.toISOString()
+            : dt_parsed,
         stocks: stocks.map(({ origin, pathId, warranty, outputPrice }) => ({
             origin,
             path_id: pathId,
@@ -99,3 +99,14 @@ export async function createHubLoading({ vslId, datestamp, stocks }) {
         throw err;
     }
 }
+
+
+export const renameOrChangePriceStockItem = async (payload) => {
+    try {
+        const response = await axios.patch(`/service/rename_or_change_price_stock_item`, payload);
+        return response.data;
+    } catch (error) {
+        console.error('Ошибка при обновлении товара:', error);
+        throw error;
+    }
+};

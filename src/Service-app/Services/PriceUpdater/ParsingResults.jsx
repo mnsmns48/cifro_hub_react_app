@@ -1,5 +1,5 @@
 import {useState, useMemo, useCallback, useEffect} from "react";
-import {Table, Button, Input, Select, message} from "antd";
+import {Table, Button, Input, Select} from "antd";
 import "../Css/ParsingResults.css";
 import {createParsingColumns} from "./ParsingResultsColumns.jsx";
 import {deleteParsingItems} from "./api.js";
@@ -8,6 +8,7 @@ import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
 import { FileExcelOutlined } from "@ant-design/icons";
 import {formatDate} from "../../../../utils.js";
 import InHubDownloader from "./InHubDownloader.jsx";
+import MyModal from "../../../Ui/MyModal.jsx";
 
 const {Search} = Input;
 
@@ -24,6 +25,8 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
     const [currentOrigin, setCurrentOrigin] = useState(null);
     const [rewardOptions, setRewardOptions] = useState([]);
     const [addToHubModalVisible, setAddToHubModalVisible] = useState(false);
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
 
 
     useEffect(() => {
@@ -34,6 +37,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
         setExpandedRows(null);
     }, [result.data, result.range_reward]);
 
+
     useEffect(() => {
         (async () => {
             try {
@@ -43,7 +47,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                     list.map(o => ({label: o.title, value: o.id}))
                 );
             } catch {
-                message.error("Ошибка загрузки профилей");
+                console.error("Ошибка загрузки профилей");
             }
         })();
     }, []);
@@ -97,7 +101,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
             );
             setSelectedRowKeys([]);
         } catch {
-            message.error("Ошибка при удалении");
+            console.error("Ошибка при удалении");
         }
     };
 
@@ -118,21 +122,18 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
         try {
             window.open(`/service/get_price_excel/${vslId}`, "_blank");
         } catch (err) {
-            message.error(`Не сохранить данные в Excel файл ${err}`);
+            console.error(`Не сохранить данные в Excel файл ${err}`);
         }
     };
 
     const selectedItems = rows.filter(r => selectedRowKeys.includes(r.origin) );
 
-    const handleAddToHub = async () => {
-        try {
-            message.success("Элементы добавлены в Хаб");
-        } catch {
-            message.error("Не удалось добавить в Хаб");
-        } finally {
-            setAddToHubModalVisible(false);
-        }
+    const handleAddToHub = (msg) => {
+        setAddToHubModalVisible(false);
+        setSuccessMessage(msg);
+        setIsSuccessModalOpen(true);
     };
+
 
     return (
         <>
@@ -221,6 +222,13 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                 originCode={currentOrigin}
                 onClose={() => setUploadModalOpen(false)}
                 onUploaded={(data) => handleImageUploaded(data, currentOrigin)}
+            />
+            <MyModal
+                isOpen={isSuccessModalOpen}
+                content={successMessage}
+                onConfirm={() => setIsSuccessModalOpen(false)}
+                onCancel={() => setIsSuccessModalOpen(false)}
+                footer={<button onClick={() => setIsSuccessModalOpen(false)}>Ок</button>}
             />
         </>
     );

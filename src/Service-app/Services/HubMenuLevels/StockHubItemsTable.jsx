@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
-import { Table, Spin } from "antd";
-import {fetchStockHubItems} from "./api.js";
+import {Table, Spin, Space, Button} from "antd";
+import {fetchStockHubItems, renameOrChangePriceStockItem} from "./api.js";
 import "./Css/Tree.css";
+import {EditOutlined, DeleteOutlined, SaveOutlined, RedoOutlined} from "@ant-design/icons";
+
 
 
 const StockHubItemsTable = ({ pathId, visible = true }) => {
     const [loading, setLoading] = useState(false);
     const [items, setItems] = useState([]);
+    const [editingKey, setEditingKey] = useState(null);
+    const [originalRecord, setOriginalRecord] = useState(null);
+
 
     useEffect(() => {
         if (!visible) return;
@@ -15,6 +20,67 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
             .then(data => setItems(data))
             .finally(() => setLoading(false));
     }, [pathId, visible]);
+
+
+
+
+    const handleFieldChange = (origin, field, value) => {
+        setItems(prev =>
+            prev.map(item =>
+                item.origin === origin ? { ...item, [field]: value } : item
+            )
+        );
+    };
+
+    const handleEdit = (record) => {
+        setOriginalRecord({ ...record });
+        setEditingKey(record.origin);
+    };
+
+    const handleCancelEdit = () => {
+        setItems(prev =>
+            prev.map(item =>
+                item.origin === originalRecord.origin ? originalRecord : item
+            )
+        );
+        setEditingKey(null);
+        setOriginalRecord(null);
+    };
+
+    const editingRowData = items.find(item => item.origin === editingKey);
+
+
+    const handleSaveEdit = async () => {
+        try {
+            const payload = {
+                origin: editingRowData.origin,
+                title: editingRowData.title,
+                new_price: editingRowData.output_price
+            };
+            const response = await renameOrChangePriceStockItem(payload);
+
+            setItems(prev =>
+                prev.map(item =>
+                    item.origin === response.origin
+                        ? {
+                            ...item,
+                            title: response.new_title,
+                            output_price: response.new_price,
+                            updated_at: response.updated_at ?? item.updated_at
+                        }
+                        : item
+                )
+            );
+        } catch (error) {
+            console.error("Ошибка при сохранении изменений:", error);
+        } finally {
+            setEditingKey(null);
+            setOriginalRecord(null);
+        }
+    };
+
+
+
 
     const columns = [
         {
@@ -25,7 +91,17 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
         {
             dataIndex: "title",
             key: "title",
-            width: 220
+            width: 350,
+            render: (text, record) =>
+                editingKey === record.origin ? (
+                    <input
+                        value={record.title}
+                        onChange={e => handleFieldChange(record.origin, "title", e.target.value)}
+                        style={{ width: "100%" }}
+                    />
+                ) : (
+                    text
+                )
         },
         {
             dataIndex: "warranty",
@@ -35,11 +111,22 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
         {
             dataIndex: "output_price",
             key: "output_price",
-            width: 20
+            width: 80,
+            render: (value, record) =>
+                editingKey === record.origin ? (
+                    <input
+                        type="number"
+                        value={value}
+                        onChange={e => handleFieldChange(record.origin, "output_price", Number(e.target.value))}
+                        style={{ width: "100%" }}
+                    />
+                ) : (
+                    value
+                )
         },
         {
-            dataIndex: "datestamp",
-            key: "datestamp",
+            dataIndex: "updated_at",
+            key: "updated_at",
             width: 40,
             render: val =>
                 val
@@ -53,12 +140,60 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
                     : "-",
         },
         {
-            dataIndex: "url",
-            key: "url",
-            width: 240,
-
+            dataIndex: "dt_parsed",
+            key: "dt_parsed",
+            width: 40,
+            render: val =>
+                val
+                    ? new Date(val).toLocaleString("ru-RU", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    })
+                    : "-",
+        },
+        {
+            title: "Действия",
+            key: "actions",
+            width: 30,
+            className: "actions-column",
+            render: (_, record) => (
+                <Space>
+                    {editingKey === record.origin ? (
+                        <>
+                            <Button
+                                icon={<SaveOutlined />}
+                                type="link"
+                                onClick={() => handleSaveEdit()}
+                            />
+                            <Button
+                                icon={<RedoOutlined />}
+                                type="text"
+                                danger
+                                onClick={handleCancelEdit}
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <Button
+                                icon={<EditOutlined />}
+                                type="link"
+                                onClick={() => handleEdit(record)}
+                            />
+                            <Button
+                                icon={<DeleteOutlined />}
+                                type="text"
+                            />
+                        </>
+                    )}
+                </Space>
+            )
 
         }
+
+
     ];
 
     if (!visible) return null;

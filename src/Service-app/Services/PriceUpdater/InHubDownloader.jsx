@@ -31,17 +31,22 @@ const InHubDownloader = ({
         try {
             const result = await createHubLoading({
                 vslId: VslId,
-                datestamp: resultObj.datestamp,
+                dt_parsed: resultObj.datestamp,
                 stocks: stocksPayload
             });
-            console.log("Создан HubLoading:", result);
-            onConfirm(result);
+
+            if (result?.result === "ok") {
+                onConfirm("Позиции успешно добавлены в хаб");
+            } else {
+                onConfirm("Неверный ответ от сервера");
+            }
         } catch (err) {
-            console.error("Ошибка при создании HubLoading:", err);
+            onConfirm(`Ошибка при создании HubLoading: ${err}`);
         } finally {
             setSaving(false);
         }
     };
+
 
     return (
         <MyModal

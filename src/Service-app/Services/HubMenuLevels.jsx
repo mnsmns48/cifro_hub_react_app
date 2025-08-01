@@ -9,7 +9,7 @@
     } from "./HubMenuLevels/api.js";
     import StockHubItemsTable from "./HubMenuLevels/StockHubItemsTable.jsx";
     import TreeDataRender from "./HubMenuLevels/TreeRender.jsx";
-
+    import { Typography } from "antd";
 
     const HubMenuLevels = ({ onSelectPath }) => {
         const [menuData, setMenuData] = useState([]);
@@ -180,6 +180,8 @@
 
         const treeData = TreeDataRender({ menuData, treeContext });
 
+
+
         return loading ? (
             <div style={{ padding: 24, textAlign: "center" }}>
                 <Spin tip="Загрузка уровней" size="large" />
@@ -197,12 +199,12 @@
 
                 />
                 {fetchStockByPath && (
-                    <StockHubItemsTable pathId={chooseStockPath} />
+                    <StockHubItemsTable pathId={chooseStockPath}/>
                 )}
             </>
         );
     };
 
     HubMenuLevels.componentTitle = "Хаб";
-    HubMenuLevels.componentIcon = <img src="/ui/levels.png" alt="icon" width="30" height="30" />;
+    HubMenuLevels.componentIcon = <img src="/ui/levels.png" alt="icon" width="30" height="30"/>;
     export default HubMenuLevels;
