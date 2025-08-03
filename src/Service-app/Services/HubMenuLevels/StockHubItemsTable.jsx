@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 import {Table, Spin, Space, Button} from "antd";
 import {fetchStockHubItems, renameOrChangePriceStockItem} from "./api.js";
 import "./Css/Tree.css";
-import {EditOutlined, DeleteOutlined, SaveOutlined, RedoOutlined} from "@ant-design/icons";
+import {EditOutlined, DeleteOutlined, SaveOutlined, RedoOutlined, FileJpgOutlined} from "@ant-design/icons";
+import UploadImagesModal from "../PriceUpdater/UploadImagesModal.jsx";
+import InfoSelect from "../PriceUpdater/InfoSelect.jsx";
 
 
 
@@ -11,7 +13,22 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
     const [items, setItems] = useState([]);
     const [editingKey, setEditingKey] = useState(null);
     const [originalRecord, setOriginalRecord] = useState(null);
+    const [uploadModalOpen, setUploadModalOpen] = useState(false);
+    const [currentOrigin, setCurrentOrigin] = useState(null);
 
+
+    const handleImageUploaded = useCallback(
+        ({ images, preview }, origin) => {
+            setItems(prev =>
+                prev.map(r =>
+                    r.origin !== origin
+                        ? r
+                        : { ...r, images, preview }
+                )
+            );
+        },
+        [setItems]
+    );
 
     useEffect(() => {
         if (!visible) return;
@@ -79,8 +96,10 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
         }
     };
 
-
-
+    const openImageModal = useCallback(origin => {
+        setCurrentOrigin(origin);
+        setUploadModalOpen(true);
+    }, []);
 
     const columns = [
         {
@@ -102,6 +121,15 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
                 ) : (
                     text
                 )
+        },
+        {
+            dataIndex: "features_title",
+            key: "features_title",
+            align: "center",
+            width: 200,
+            render: (_, record) => (
+                <InfoSelect titles={record.features_title} record={record} setRows={setItems} origin={record.origin}/>
+            ),
         },
         {
             dataIndex: "warranty",
@@ -177,10 +205,8 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
                         </>
                     ) : (
                         <>
-                            <Button
-                                icon={<EditOutlined />}
-                                type="link"
-                                onClick={() => handleEdit(record)}
+                            <Button type="text" icon={<FileJpgOutlined />} onClick={() => openImageModal(record.origin)} />
+                            <Button icon={<EditOutlined />} type="link" onClick={() => handleEdit(record)}
                             />
                             <Button
                                 icon={<DeleteOutlined />}
@@ -213,7 +239,14 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
                 size="small"
                 showHeader={false}
             />
+            <UploadImagesModal
+                isOpen={uploadModalOpen}
+                originCode={currentOrigin}
+                onClose={() => setUploadModalOpen(false)}
+                onUploaded={(data) => handleImageUploaded(data, currentOrigin)}
+            />
         </div>
+
     );
 }
 

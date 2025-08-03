@@ -9,7 +9,6 @@
     } from "./HubMenuLevels/api.js";
     import StockHubItemsTable from "./HubMenuLevels/StockHubItemsTable.jsx";
     import TreeDataRender from "./HubMenuLevels/TreeRender.jsx";
-    import { Typography } from "antd";
 
     const HubMenuLevels = ({ onSelectPath }) => {
         const [menuData, setMenuData] = useState([]);
