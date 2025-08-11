@@ -80,9 +80,10 @@ export async function createHubLoading({ vslId, dt_parsed, stocks }) {
         dt_parsed: dt_parsed instanceof Date
             ? dt_parsed.toISOString()
             : dt_parsed,
-        stocks: stocks.map(({ origin, pathId, warranty, outputPrice }) => ({
+        stocks: stocks.map(({ origin, pathId, warranty, inputPrice, outputPrice }) => ({
             origin,
             path_id: pathId,
+            input_price: inputPrice,
             warranty,
             output_price: outputPrice,
         })),
@@ -107,6 +108,18 @@ export const renameOrChangePriceStockItem = async (payload) => {
         return response.data;
     } catch (error) {
         console.error('Ошибка при обновлении товара:', error);
+        throw error;
+    }
+};
+
+export const deleteStockItems = async (payload) => {
+    try {
+        const response = await axios.delete(`/service/delete_stock_items`, {
+            data: payload
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Ошибка при удалении товаров:', error);
         throw error;
     }
 };

@@ -24,6 +24,7 @@ const InHubDownloader = ({
         const stocksPayload = items.map(item => ({
             origin: item.origin,
             pathId: selectedPathId,
+            inputPrice: item.input_price,
             warranty: item.warranty,
             outputPrice: item.output_price
         }));

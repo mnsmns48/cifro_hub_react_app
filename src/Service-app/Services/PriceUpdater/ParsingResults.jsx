@@ -68,17 +68,22 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
 
     const filteredData = useMemo(() => {
         let data = rows;
+
         if (activeFilter === "noPreview") {
             data = data.filter(r => !r.preview);
         } else if (activeFilter === "noFeatures") {
             data = data.filter(r => Array.isArray(r.features_title) && r.features_title.length === 0);
         }
 
-        const q = searchText.toLowerCase();
-        return data.filter(r =>
-            (r.title ?? "").toLowerCase().includes(q)
-        );
+        const q = searchText.toLowerCase().trim();
+
+        return data.filter(r => {
+            const titleMatch = (r.title ?? "").toLowerCase().includes(q);
+            const originMatch = String(r.origin).includes(q);
+            return titleMatch || originMatch;
+        });
     }, [rows, activeFilter, searchText]);
+
 
     const columns = useMemo(
         () =>
@@ -156,7 +161,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                 <Button onClick={() => setActiveFilter("all")} style={{background: "yellowgreen"}}/>
                 <Button onClick={() => setActiveFilter("noPreview")} style={{background: "yellow"}}/>
                 <Button onClick={() => setActiveFilter("noFeatures")} style={{background: "red"}}/>
-                <Search placeholder="Пиши что ищешь" allowClear style={{maxWidth: 500}}
+                <Search placeholder="Поиск по названию / коду товара" allowClear style={{maxWidth: 500}}
                         value={searchText} onChange={e => setSearchText(e.target.value)}/>
                 <Select style={{minWidth: 200}}
                         options={rewardOptions} defaultValue={result.range_reward.id} onChange={handleSelectRange}/>

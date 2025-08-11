@@ -1,14 +1,15 @@
 import {useCallback, useEffect, useState} from "react";
 import {Table, Spin, Space, Button} from "antd";
-import {fetchStockHubItems, renameOrChangePriceStockItem} from "./api.js";
+import {deleteStockItems, fetchStockHubItems, renameOrChangePriceStockItem} from "./api.js";
 import "./Css/Tree.css";
-import {EditOutlined, DeleteOutlined, SaveOutlined, RedoOutlined, FileJpgOutlined} from "@ant-design/icons";
+import {EditOutlined, SaveOutlined, RedoOutlined, FileJpgOutlined} from "@ant-design/icons";
 import UploadImagesModal from "../PriceUpdater/UploadImagesModal.jsx";
 import InfoSelect from "../PriceUpdater/InfoSelect.jsx";
 
 
 
 const StockHubItemsTable = ({ pathId, visible = true }) => {
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [loading, setLoading] = useState(false);
     const [items, setItems] = useState([]);
     const [editingKey, setEditingKey] = useState(null);
@@ -40,7 +41,6 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
 
 
 
-
     const handleFieldChange = (origin, field, value) => {
         setItems(prev =>
             prev.map(item =>
@@ -53,6 +53,7 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
         setOriginalRecord({ ...record });
         setEditingKey(record.origin);
     };
+
 
     const handleCancelEdit = () => {
         setItems(prev =>
@@ -96,6 +97,19 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
         }
     };
 
+    const handleDeleteItems = async () => {
+        if (selectedRowKeys.length === 0) return;
+
+        try {
+            await deleteStockItems({ origins: selectedRowKeys });
+            setItems(prev => prev.filter(item => !selectedRowKeys.includes(item.origin)));
+            setSelectedRowKeys([]);
+        } catch (error) {
+            console.error("Ошибка при удалении:", error);
+        }
+    };
+
+
     const openImageModal = useCallback(origin => {
         setCurrentOrigin(origin);
         setUploadModalOpen(true);
@@ -104,6 +118,7 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
     const columns = [
         {
             dataIndex: "origin",
+            title: "origin",
             key: "origin",
             width: 20
         },
@@ -124,6 +139,7 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
         },
         {
             dataIndex: "features_title",
+            title: "Зависимость",
             key: "features_title",
             align: "center",
             width: 200,
@@ -133,11 +149,19 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
         },
         {
             dataIndex: "warranty",
+            title: "Гарантия",
             key: "warranty",
             width: 40
         },
         {
+            dataIndex: "input_price",
+            title: "Вход",
+            key: "input_price",
+            width: 40
+        },
+        {
             dataIndex: "output_price",
+            title: "Цена",
             key: "output_price",
             width: 80,
             render: (value, record) =>
@@ -154,6 +178,7 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
         },
         {
             dataIndex: "updated_at",
+            title: "Обновлено вручную",
             key: "updated_at",
             width: 40,
             render: val =>
@@ -169,6 +194,7 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
         },
         {
             dataIndex: "dt_parsed",
+            title: "Получено с источника",
             key: "dt_parsed",
             width: 40,
             render: val =>
@@ -183,7 +209,6 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
                     : "-",
         },
         {
-            title: "Действия",
             key: "actions",
             width: 30,
             className: "actions-column",
@@ -206,12 +231,7 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
                     ) : (
                         <>
                             <Button type="text" icon={<FileJpgOutlined />} onClick={() => openImageModal(record.origin)} />
-                            <Button icon={<EditOutlined />} type="link" onClick={() => handleEdit(record)}
-                            />
-                            <Button
-                                icon={<DeleteOutlined />}
-                                type="text"
-                            />
+                            <Button icon={<EditOutlined />} type="link" onClick={() => handleEdit(record)} />
                         </>
                     )}
                 </Space>
@@ -230,6 +250,15 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
         </div>
     ) : (
         <div style={{ margin: "10px 0"}}>
+            {selectedRowKeys.length > 0 && (
+                <Button
+                    danger
+                    style={{ margin: "0 0 10px 10px" }}
+                    onClick={handleDeleteItems}
+                >
+                    Удалить ({selectedRowKeys.length})
+                </Button>
+            )}
             <Table
                 className="stockHubTable"
                 dataSource={items}
@@ -237,7 +266,10 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
                 rowKey="origin"
                 pagination={false}
                 size="small"
-                showHeader={false}
+                rowSelection={{
+                    selectedRowKeys,
+                    onChange: setSelectedRowKeys
+                }}
             />
             <UploadImagesModal
                 isOpen={uploadModalOpen}
