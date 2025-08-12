@@ -1,14 +1,14 @@
 import {useCallback, useEffect, useState} from "react";
-import {Table, Spin, Space, Button} from "antd";
+import {Table, Spin, Space, Button, Popconfirm} from "antd";
 import {deleteStockItems, fetchStockHubItems, renameOrChangePriceStockItem} from "./api.js";
 import "./Css/Tree.css";
-import {EditOutlined, SaveOutlined, RedoOutlined, FileJpgOutlined} from "@ant-design/icons";
+import {EditOutlined, SaveOutlined, RedoOutlined, FileJpgOutlined, DeleteOutlined} from "@ant-design/icons";
 import UploadImagesModal from "../PriceUpdater/UploadImagesModal.jsx";
 import InfoSelect from "../PriceUpdater/InfoSelect.jsx";
 
 
 
-const StockHubItemsTable = ({ pathId, visible = true }) => {
+const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [loading, setLoading] = useState(false);
     const [items, setItems] = useState([]);
@@ -16,6 +16,8 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
     const [originalRecord, setOriginalRecord] = useState(null);
     const [uploadModalOpen, setUploadModalOpen] = useState(false);
     const [currentOrigin, setCurrentOrigin] = useState(null);
+
+
 
 
     const handleImageUploaded = useCallback(
@@ -35,9 +37,12 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
         if (!visible) return;
         setLoading(true);
         fetchStockHubItems(pathId)
-            .then(data => setItems(data))
+            .then(data => {
+                setItems(data);
+            })
             .finally(() => setLoading(false));
     }, [pathId, visible]);
+
 
 
 
@@ -108,7 +113,6 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
             console.error("Ошибка при удалении:", error);
         }
     };
-
 
     const openImageModal = useCallback(origin => {
         setCurrentOrigin(origin);
@@ -216,30 +220,18 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
                 <Space>
                     {editingKey === record.origin ? (
                         <>
-                            <Button
-                                icon={<SaveOutlined />}
-                                type="link"
-                                onClick={() => handleSaveEdit()}
-                            />
-                            <Button
-                                icon={<RedoOutlined />}
-                                type="text"
-                                danger
-                                onClick={handleCancelEdit}
-                            />
+                            <Button icon={<SaveOutlined />} type="link" onClick={() => handleSaveEdit()}/>
+                            <Button icon={<RedoOutlined />} type="text" danger onClick={handleCancelEdit}/>
                         </>
                     ) : (
                         <>
-                            <Button type="text" icon={<FileJpgOutlined />} onClick={() => openImageModal(record.origin)} />
+                            <Button icon={<FileJpgOutlined />} type="text" onClick={() => openImageModal(record.origin)} />
                             <Button icon={<EditOutlined />} type="link" onClick={() => handleEdit(record)} />
                         </>
                     )}
                 </Space>
             )
-
         }
-
-
     ];
 
     if (!visible) return null;
@@ -251,13 +243,12 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
     ) : (
         <div style={{ margin: "10px 0"}}>
             {selectedRowKeys.length > 0 && (
-                <Button
-                    danger
-                    style={{ margin: "0 0 10px 10px" }}
-                    onClick={handleDeleteItems}
-                >
-                    Удалить ({selectedRowKeys.length})
-                </Button>
+                <Popconfirm title="Удаляем?" okText="Да" cancelText="Нет" onConfirm={handleDeleteItems}>
+                    <Button danger style={{ margin: "0 0 10px 10px" }} icon={<DeleteOutlined />}>
+                        Удалить ({selectedRowKeys.length})
+                    </Button>
+                </Popconfirm>
+
             )}
             <Table
                 className="stockHubTable"
@@ -268,8 +259,13 @@ const StockHubItemsTable = ({ pathId, visible = true }) => {
                 size="small"
                 rowSelection={{
                     selectedRowKeys,
-                    onChange: setSelectedRowKeys
+                    onChange: (keys) => {
+                        setSelectedRowKeys(keys);
+                        const selectedItems = items.filter(item => keys.includes(item.origin));
+                        onSelectedOrigins?.(selectedItems);
+                    }
                 }}
+
             />
             <UploadImagesModal
                 isOpen={uploadModalOpen}

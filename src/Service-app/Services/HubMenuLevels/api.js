@@ -123,3 +123,8 @@ export const deleteStockItems = async (payload) => {
         throw error;
     }
 };
+
+export const ComparisonStockItems = async (payload) => {
+    const response = await axios.post(`/service/start_comparison_process`, payload);
+    return response.data;
+};
