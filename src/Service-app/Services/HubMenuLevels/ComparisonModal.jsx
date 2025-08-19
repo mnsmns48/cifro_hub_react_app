@@ -1,22 +1,34 @@
+import { Table } from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
-import { Popconfirm } from "antd";
-import "./Css/ComparisonModal.css";
 
 const ComparisonModal = ({ isOpen, onClose, content }) => {
-    const renderContent = () => {
-        if (Array.isArray(content)) {
-            return (
-                <div className="modal-links">
-                    {content.map((url, index) => (
-                        <a key={index} href={url} target="_blank" rel="noopener noreferrer">
-                            {url}
-                        </a>
-                    ))}
-                </div>
-            );
+    const columns = [
+        {
+            dataIndex: "index",
+            key: "index",
+            width: 60,
+        },
+        {
+            dataIndex: "value",
+            key: "value",
+            render: (text) => <span style={{ wordBreak: "break-word" }}>{text}</span>,
+        },
+    ];
+
+    const dataSource = Array.isArray(content)
+        ? content.map((item, idx) => ({
+            key: idx,
+            index: idx + 1,
+            value: item,
+        }))
+        : [];
+
+    const renderTable = () => {
+        if (dataSource.length === 0) {
+            return <div style={{ padding: "16px", fontStyle: "italic", color: "#999" }}>Нет данных для отображения</div>;
         }
 
-        return <pre style={{ whiteSpace: "pre-wrap" }}>{content}</pre>;
+        return <Table columns={columns} dataSource={dataSource} pagination={false} />;
     };
 
     return (
@@ -24,15 +36,10 @@ const ComparisonModal = ({ isOpen, onClose, content }) => {
             isOpen={isOpen}
             onConfirm={onClose}
             onCancel={onClose}
-            content={renderContent()}
-            footer={
-                <Popconfirm title="Точно закрываем?" okText="Да" cancelText="Нет" onConfirm={onClose}>
-                    <button className="modal-button">Закрыть</button>
-                </Popconfirm>
-            }
+            content={renderTable()}
+            footer={null}
         />
     );
 };
-
 
 export default ComparisonModal;

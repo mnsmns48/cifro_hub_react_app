@@ -109,6 +109,7 @@ const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
             await deleteStockItems({ origins: selectedRowKeys });
             setItems(prev => prev.filter(item => !selectedRowKeys.includes(item.origin)));
             setSelectedRowKeys([]);
+            onSelectedOrigins?.([]);
         } catch (error) {
             console.error("Ошибка при удалении:", error);
         }

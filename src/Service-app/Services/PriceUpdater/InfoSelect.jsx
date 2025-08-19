@@ -148,10 +148,12 @@ const InfoSelect = ({titles, origin, record, setRows}) => {
           )}
       </span>
 
-            <MyModal isOpen={isOpen} onConfirm={closeModal} onCancel={closeModal}
-                     title={<div style={{textAlign: "center"}}>
-                         {record?.title ?? "неизвестно"}
-                     </div>} content={modalContent} footer={null}/>
+            <MyModal isOpen={isOpen}
+                     onConfirm={closeModal}
+                     onCancel={closeModal}
+                     title={<div style={{textAlign: "center"}}>{record?.title ?? "неизвестно"}</div>}
+                     content={modalContent}
+                     footer={null}/>
 
             <DependencyModal open={isDependencyModalOpen} onClose={closeDependencyModal} data={dependencyResult}
             />

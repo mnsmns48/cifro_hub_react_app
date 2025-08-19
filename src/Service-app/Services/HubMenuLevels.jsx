@@ -21,7 +21,7 @@ const HubMenuLevels = ({onSelectPath = () => {}}) => {
     const [activePathId, setActivePathId] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [comparisonResult, setComparisonResult] = useState("");
+    const [comparisonResult, setComparisonResult] = useState([]);
 
 
     const loadLevels = useCallback(async () => {
@@ -143,7 +143,7 @@ const HubMenuLevels = ({onSelectPath = () => {}}) => {
                 origins: origins
             };
             const result = await ComparisonStockItems(payload);
-            setComparisonResult(JSON.stringify(result, null, 2));
+            setComparisonResult(result);
             setModalVisible(true);
         } catch (error) {
             setComparisonResult("Ошибка при сравнении: " + error.message);
