@@ -158,12 +158,12 @@ const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
             key: "warranty",
             width: 40
         },
-        {
-            dataIndex: "input_price",
-            title: "Вход",
-            key: "input_price",
-            width: 40
-        },
+        // {
+        //     dataIndex: "input_price",
+        //     title: "Вход",
+        //     key: "input_price",
+        //     width: 40
+        // },
         {
             dataIndex: "output_price",
             title: "Цена",

@@ -1,3 +1,5 @@
+import ComparisonProgress from "./ComparisonProgress.jsx";
+
 export function buildTreeData(data, parentId = 0) {
     return data
         .filter(item => item.parentId === parentId)

@@ -9,12 +9,14 @@ const MyModal = ({
                      content,
                      danger = false,
                      closable = false,
-                     footer = undefined
+                     footer = undefined,
+                     width = 600
                  }) => {
     return (
         <Modal open={isOpen}
                onOk={onConfirm}
                onCancel={onCancel}
+               width={width}
                title={title}
                okButtonProps={{danger}}
                closable={closable}

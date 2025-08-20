@@ -1,43 +1,71 @@
-import { Table } from "antd";
+import {Button, Popconfirm, Table} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
+import {useState} from "react";
+import getComparisonTableColumns from "./ComparisonTableColumns.jsx";
+
 
 const ComparisonModal = ({ isOpen, onClose, content }) => {
-    const columns = [
-        {
-            dataIndex: "index",
-            key: "index",
-            width: 60,
-        },
-        {
-            dataIndex: "value",
-            key: "value",
-            render: (text) => <span style={{ wordBreak: "break-word" }}>{text}</span>,
-        },
-    ];
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
-    const dataSource = Array.isArray(content)
-        ? content.map((item, idx) => ({
+    const dataSource = content
+        ? Object.entries(content).map(([url, { title, dt_parsed }], idx) => ({
             key: idx,
-            index: idx + 1,
-            value: item,
+            url,
+            title,
+            dt_parsed,
         }))
         : [];
 
     const renderTable = () => {
         if (dataSource.length === 0) {
-            return <div style={{ padding: "16px", fontStyle: "italic", color: "#999" }}>Нет данных для отображения</div>;
+            return (
+                <div style={{ padding: "16px", fontStyle: "italic", color: "#999" }}>
+                    Нет данных для отображения
+                </div>
+            );
         }
 
-        return <Table columns={columns} dataSource={dataSource} pagination={false} />;
+        return (
+            <div>
+                <div style={{marginBottom: 12, textAlign: "left"}}>
+                    <Button type="primary" disabled={selectedRowKeys.length === 0} style={{ marginRight: 12 }}>Запустить обновление</Button>
+                    <Button type="primary">Сверка</Button>
+                </div>
+                {dataSource.length === 0 ? (
+                    <div style={{padding: "16px", color: "#999"}}>
+                        Нет данных для отображения
+                    </div>
+                ) : (
+                    <Table
+                        columns={getComparisonTableColumns()}
+                        dataSource={dataSource}
+                        pagination={false}
+                        rowSelection={{
+                            selectedRowKeys,
+                            onChange: setSelectedRowKeys,
+                        }}
+                    />
+                )}
+            </div>
+        );
     };
 
     return (
         <MyModal
             isOpen={isOpen}
-            onConfirm={onClose}
-            onCancel={onClose}
             content={renderTable()}
-            footer={null}
+            footer={
+                <Popconfirm
+                    title="Точно закрыть окно?"
+                    okText="Да"
+                    cancelText="Нет"
+                    onConfirm={onClose}
+                    onCancel={onClose}
+                >
+                    <Button type="primary">Закрыть</Button>
+                </Popconfirm>
+            }
+            width={1200}
         />
     );
 };

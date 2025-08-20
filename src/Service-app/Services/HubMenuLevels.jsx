@@ -40,6 +40,7 @@ const HubMenuLevels = ({onSelectPath = () => {}}) => {
     const handleSelect = useCallback((selectedKeys) => {
         const key = selectedKeys.length ? parseInt(selectedKeys[0], 10) : null;
         setActivePathId(key);
+        setSelectedItems([]);
         onSelectPath(key);
     }, [onSelectPath]);
 
@@ -146,7 +147,7 @@ const HubMenuLevels = ({onSelectPath = () => {}}) => {
             setComparisonResult(result);
             setModalVisible(true);
         } catch (error) {
-            setComparisonResult("Ошибка при сравнении: " + error.message);
+            setComparisonResult(error.message);
             setModalVisible(true);
         }
     };
