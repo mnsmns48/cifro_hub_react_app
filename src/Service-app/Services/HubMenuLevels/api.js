@@ -74,12 +74,9 @@ export async function fetchStockHubItems(pathId) {
     }
 }
 
-export async function createHubLoading({ vslId, dt_parsed, stocks }) {
+export async function createHubLoading({ harvest_id, stocks }) {
     const payload = {
-        vsl_id: vslId,
-        dt_parsed: dt_parsed instanceof Date
-            ? dt_parsed.toISOString()
-            : dt_parsed,
+        harvest_id,
         stocks: stocks.map(({ origin, pathId, warranty, inputPrice, outputPrice }) => ({
             origin,
             path_id: pathId,
@@ -90,7 +87,7 @@ export async function createHubLoading({ vslId, dt_parsed, stocks }) {
     };
 
     try {
-        const response = await axios.post('/service/items_to_hub_loadings', payload);
+        const response = await axios.post('/service/load_items_in_hub', payload);
         return response.data;
     } catch (err) {
         if (axios.isAxiosError(err)) {

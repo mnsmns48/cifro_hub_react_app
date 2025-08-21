@@ -7,8 +7,7 @@ import {createHubLoading} from "../HubMenuLevels/api.js";
 
 
 const InHubDownloader = ({
-                             VslId,
-                             resultObj,
+                             harvestId,
                              isOpen,
                              items,
                              onCancel,
@@ -28,11 +27,9 @@ const InHubDownloader = ({
             warranty: item.warranty,
             outputPrice: item.output_price
         }));
-
         try {
             const result = await createHubLoading({
-                vslId: VslId,
-                dt_parsed: resultObj.datestamp,
+                harvest_id: harvestId,
                 stocks: stocksPayload
             });
 

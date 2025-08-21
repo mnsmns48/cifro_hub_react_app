@@ -214,8 +214,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
             />
 
             <InHubDownloader
-                VslId={vslId}
-                resultObj={result}
+                harvestId
                 isOpen={addToHubModalVisible}
                 items={selectedItems}
                 onCancel={() => setAddToHubModalVisible(false)}
