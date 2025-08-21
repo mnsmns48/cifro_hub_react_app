@@ -16,6 +16,11 @@ const ComparisonModal = ({ isOpen, onClose, content }) => {
         }))
         : [];
 
+    const handleUpdateClick = async () => {
+        const selectedRows = dataSource.filter(item => selectedRowKeys.includes(item.key));
+
+    };
+
     const renderTable = () => {
         if (dataSource.length === 0) {
             return (
@@ -28,7 +33,8 @@ const ComparisonModal = ({ isOpen, onClose, content }) => {
         return (
             <div>
                 <div style={{marginBottom: 12, textAlign: "left"}}>
-                    <Button type="primary" disabled={selectedRowKeys.length === 0} style={{ marginRight: 12 }}>Запустить обновление</Button>
+                    <Button type="primary" onClick={handleUpdateClick}
+                            disabled={selectedRowKeys.length === 0} style={{ marginRight: 12 }}>Запустить обновление</Button>
                     <Button type="primary">Сверка</Button>
                 </div>
                 {dataSource.length === 0 ? (
@@ -55,14 +61,8 @@ const ComparisonModal = ({ isOpen, onClose, content }) => {
             isOpen={isOpen}
             content={renderTable()}
             footer={
-                <Popconfirm
-                    title="Точно закрыть окно?"
-                    okText="Да"
-                    cancelText="Нет"
-                    onConfirm={onClose}
-                    onCancel={onClose}
-                >
-                    <Button type="primary">Закрыть</Button>
+                <Popconfirm title="Точно закрыть окно?" okText="Да" cancelText="Нет" onConfirm={onClose} onCancel={onClose}>
+                    <Button type="primary">Выход</Button>
                 </Popconfirm>
             }
             width={1200}

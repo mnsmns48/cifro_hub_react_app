@@ -128,3 +128,14 @@ export const ComparisonStockItems = async (payload) => {
     const response = await axios.post(`/service/start_comparison_process`, payload);
     return response.data;
 };
+
+
+export const transferParsingLines = async (lines) => {
+    try {
+        const response = await axios.post("/service/transfer_parsing_lines", lines);
+        return response.data;
+    } catch (error) {
+        console.error("Ошибка при отправке данных на сервер:", error);
+        throw error;
+    }
+};

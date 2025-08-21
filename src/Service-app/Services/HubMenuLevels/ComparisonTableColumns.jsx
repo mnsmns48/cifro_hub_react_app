@@ -3,7 +3,6 @@ import ComparisonProgress from "./ComparisonProgress.jsx";
 
 const getComparisonTableColumns  = () => [
     {
-        title: "Название",
         dataIndex: "title",
         key: "title",
         render: (text) => text || <span style={{ color: "#999" }}>—</span>,
@@ -24,7 +23,6 @@ const getComparisonTableColumns  = () => [
                 : <span style={{ color: "#999" }}>—</span>,
     },
     {
-        title: "URL",
         dataIndex: "url",
         key: "url",
         render: (text) => (
@@ -34,7 +32,6 @@ const getComparisonTableColumns  = () => [
         ),
     },
     {
-        title: "Прогресс",
         dataIndex: "status",
         key: "status",
         render: (_, record) => (
