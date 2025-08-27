@@ -2,7 +2,7 @@ import {useState, useMemo, useCallback, useEffect} from "react";
 import {Table, Button, Input, Select} from "antd";
 import "../Css/ParsingResults.css";
 import {createParsingColumns} from "./ParsingResultsColumns.jsx";
-import {deleteParsingItems} from "./api.js";
+import {deleteParsingItems, exportParsingToExcel} from "./api.js";
 import UploadImagesModal from "./UploadImagesModal.jsx";
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
 import { FileExcelOutlined } from "@ant-design/icons";
@@ -28,14 +28,15 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
 
+    
 
     useEffect(() => {
-        setRows(Array.isArray(result.data) ? result.data : []);
+        setRows(Array.isArray(result.parsing_result) ? result.parsing_result : []);
         setSelectedRowKeys([]);
         setSearchText("");
         setActiveFilter("all");
         setExpandedRows(null);
-    }, [result.data, result.range_reward]);
+    }, [result.parsing_result, result.profit_range_id]);
 
 
     useEffect(() => {
@@ -125,9 +126,14 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
 
     const downloadExcel = async () => {
         try {
-            window.open(`/service/get_price_excel/${vslId}`, "_blank");
-        } catch (err) {
-            console.error(`Не сохранить данные в Excel файл ${err}`);
+            const payload = {
+                ...result,
+                dt_parsed: result.dt_parsed ? new Date(result.dt_parsed).toISOString() : null
+            };
+
+            await exportParsingToExcel(payload);
+        } catch (error) {
+            console.error("Ошибка при экспорте Excel:", error);
         }
     };
 
@@ -144,15 +150,8 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
         <>
             <div>
                 <p>
-                    <strong>Категория:</strong>{" "}
-                    {Array.isArray(result.category)
-                        ? result.category.map((c, i) => (
-                            <span key={i}>{c} </span>
-                        ))
-                        : null}
-                </p>
-                <p>
-                    <strong>Дата и время:</strong> {formatDate(result.datestamp)}
+                    <strong>Собрано:</strong> {formatDate(result.dt_parsed)}<br />
+                    <strong>Количество:</strong> {Array.isArray(result.parsing_result) ? result.parsing_result.length : 0}
                 </p>
             </div>
 
@@ -164,7 +163,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                 <Search placeholder="Поиск по названию / коду товара" allowClear style={{maxWidth: 500}}
                         value={searchText} onChange={e => setSearchText(e.target.value)}/>
                 <Select style={{minWidth: 200}}
-                        options={rewardOptions} defaultValue={result.range_reward.id} onChange={handleSelectRange}/>
+                        options={rewardOptions} defaultValue={result.profit_range_id} onChange={handleSelectRange}/>
                 <Button
                     type="text"
                     icon={<FileExcelOutlined style={{ fontSize: 20, color: "#52c41a" }} />}

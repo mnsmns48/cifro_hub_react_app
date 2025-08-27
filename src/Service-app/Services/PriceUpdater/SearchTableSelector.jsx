@@ -1,8 +1,8 @@
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import axios from "axios";
-import {Button, Input, Table} from "antd";
-import {DeleteOutlined, EditOutlined, SaveOutlined} from "@ant-design/icons";
+import {Button, Table} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
+import {UrlSelectionTableColumns} from "./UrlSelectionTable.jsx";
 
 
 const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selectedRowKeys, setSelectedRowKeys}) => {
@@ -49,43 +49,6 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
         }
     };
 
-    const [columns, setColumns] = useState([]);
-
-    useEffect(() => {
-        if (!tableData.length) return;
-
-        const newColumns = [
-            ...Object.keys(tableData[0]).filter(key => key !== "id" && key !== "vendor_id").map(key => ({
-                title: key,
-                dataIndex: key,
-                key,
-                render: (text, record) =>
-                    editingKey === record.id ? (
-                        <Input value={editedValues[key] || ''}
-                            onChange={(e) => setEditedValues(prev => ({ ...prev, [key]: e.target.value }))}
-                        />
-                    ) : text
-            })),
-            {
-                title: 'Действия',
-                key: 'actions',
-                render: (_, record) => (
-                    <div className='search_table_action_buttons'>
-                        {editingKey === record.id ? (
-                            <Button icon={<SaveOutlined />} type="link" onClick={() => handleSave(record.id)} />
-                        ) : (
-                            <Button icon={<EditOutlined />} type="link" onClick={() => handleEdit(record)} />
-                        )}
-                        <Button icon={<DeleteOutlined />} type="link" danger onClick={() => showDeleteModal(record)} />
-                    </div>
-                )
-            }
-        ];
-
-        setColumns(newColumns);
-    }, [tableData, editingKey, editedValues]);
-
-
     return (
         <div>
             <Table rowSelection={{
@@ -104,7 +67,17 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
                            }
                        }
                    })}
-                   columns={columns}
+                   columns={UrlSelectionTableColumns({
+                       editingKey,
+                       editedValues: {
+                           title: editedValues.title,
+                           url: editedValues.url,
+                           set: setEditedValues
+                       },
+                       handleEdit,
+                       handleSave,
+                       showDeleteModal
+                   })}
                    dataSource={tableData}
                    rowKey="id"/>
             <MyModal

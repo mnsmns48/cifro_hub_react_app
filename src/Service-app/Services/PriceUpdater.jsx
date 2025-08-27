@@ -24,7 +24,7 @@ const PriceUpdater = () => {
     const [successMessage, setSuccessMessage] = useState("");
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [selectedVSLRowKeys, setSelectedVSLRowKeys] = useState([]);
-    const [parsedData, setParsedData] = useState([]);
+    const [parsedData, setParsedData] = useState({});
     const [isParsingDone, setIsParsingDone] = useState(false);
     const [progressLineObj, setProgressLineObj] = useState("");
     const [isParsingStarted, setIsParsingStarted] = useState(false);
@@ -94,15 +94,12 @@ const PriceUpdater = () => {
     const handleRangeChange = async (vslId, rangeId) => {
         try {
             const resp = await reCalcOutputPrices(vslId, rangeId);
-            setParsedData(prev => ({
-                ...prev,
-                data: resp.data,
-                range_reward: resp.range_reward,
-            }));
+            setParsedData(resp);
         } catch (err) {
             console.error(err);
         }
     };
+
 
     return (
         <>

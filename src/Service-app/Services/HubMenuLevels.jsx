@@ -55,11 +55,11 @@ const HubMenuLevels = ({onSelectPath = () => {}}) => {
         const placeholder = menuData.find(item => item.id === key && item.isNew);
         if (placeholder) {
             const {status} = await addHubLevel(placeholder.parentId, trimmed);
-            if (status === "created") await loadLevels();
+            if (status === true) await loadLevels();
         } else {
             if (key === 1) return;
             const {status, new_label} = await renameHubLevel(key, trimmed);
-            if (status === "renamed") {
+            if (status === true) {
                 setMenuData(prev =>
                     prev.map(item =>
                         item.id === key ? {...item, label: new_label} : item
@@ -89,7 +89,7 @@ const HubMenuLevels = ({onSelectPath = () => {}}) => {
 
     const handleDeleteNode = async (id) => {
         const {status} = await deleteHubLevel(id);
-        if (status === "deleted") await loadLevels();
+        if (status === true) await loadLevels();
     };
 
     const onDrop = async (info) => {
@@ -117,7 +117,7 @@ const HubMenuLevels = ({onSelectPath = () => {}}) => {
         const afterId = dragIndex > 0 ? reordered[dragIndex - 1].id : null;
 
         const response = await updateHubItemPosition(dragId, dragNode.parentId, afterId);
-        if (response.status === "updated") await loadLevels();
+        if (response.status === true) await loadLevels();
     };
 
     const treeContext = {

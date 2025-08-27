@@ -165,9 +165,33 @@ export async function deleteImageFromS3(origin, filename) {
 }
 
 export const markImageAsPreview = async (origin, filename) => {
-    const response = await fetch(`/service/set_is_preview_image/${origin}/${filename}`, {
-        method: "PATCH"
+    try {
+        const response = await axios.patch(`/service/set_is_preview_image/${origin}/${filename}`);
+        return response.data;
+    } catch (error) {
+        console.error("Ошибка при установке превью", error);
+    }
+};
+
+export const exportParsingToExcel = async (payload) => {
+    const response = await axios.post("/service/get_price_excel", payload, {
+        responseType: "blob"
     });
-    if (!response.ok) throw new Error("Ошибка при установке превью");
-    return await response.json();
+
+    const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+
+    const disposition = response.headers["content-disposition"];
+    const match = disposition?.match(/filename="(.+)"/);
+    link.download = match?.[1] || "export.xlsx";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
 };
