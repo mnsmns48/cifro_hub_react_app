@@ -1,13 +1,12 @@
-import { List, Button, Spin } from "antd";
+import {List, Button, Spin} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
-import { formatDate } from "../../../../utils.js";
 import HubMenuLevels from "../HubMenuLevels.jsx";
-import { Suspense, useState } from "react";
+import {Suspense, useState} from "react";
 import {createHubLoading} from "../HubMenuLevels/api.js";
 
 
 const InHubDownloader = ({
-                             harvestId,
+                             vslId,
                              isOpen,
                              items,
                              onCancel,
@@ -19,21 +18,16 @@ const InHubDownloader = ({
     const handleAddToHub = async () => {
         if (selectedPathId == null) return;
         setSaving(true);
-
         const stocksPayload = items.map(item => ({
             origin: item.origin,
             pathId: selectedPathId,
-            inputPrice: item.input_price,
             warranty: item.warranty,
+            inputPrice: item.input_price,
             outputPrice: item.output_price
         }));
         try {
-            const result = await createHubLoading({
-                harvest_id: harvestId,
-                stocks: stocksPayload
-            });
-
-            if (result?.result === "ok") {
+            const result = await createHubLoading({vsl_id: vslId, stocks: stocksPayload});
+            if (result?.status === true) {
                 onConfirm("Позиции успешно добавлены в хаб");
             } else {
                 onConfirm("Неверный ответ от сервера");
@@ -69,14 +63,13 @@ const InHubDownloader = ({
                                 <div>{item.origin}</div>
                                 <span>{item.title}</span>
                                 <b>{item.output_price}</b>
-                                <span>{formatDate(resultObj.datestamp)}</span>
                             </List.Item>
                         )}
                     />
 
-                    <div style={{ marginTop: 20 }}>
-                        <Suspense fallback={<Spin tip="Загрузка хаба..." />}>
-                            <HubMenuLevels onSelectPath={setSelectedPathId} />
+                    <div style={{marginTop: 20}}>
+                        <Suspense fallback={<Spin tip="Загрузка хаба..."/>}>
+                            <HubMenuLevels onSelectPath={setSelectedPathId}/>
                         </Suspense>
                     </div>
                 </>

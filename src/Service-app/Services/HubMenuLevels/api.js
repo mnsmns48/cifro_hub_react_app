@@ -1,7 +1,7 @@
 import axios from "axios";
 
 
-export async function fetchHubLevels () {
+export async function fetchHubLevels() {
     try {
         const response = await axios.get("/service/initial_hub_levels");
         return response.data;
@@ -11,7 +11,7 @@ export async function fetchHubLevels () {
     }
 };
 
-export async function renameHubLevel (id, newLabel) {
+export async function renameHubLevel(id, newLabel) {
     try {
         const response = await axios.patch("/service/rename_hub_level", {
             id,
@@ -20,12 +20,12 @@ export async function renameHubLevel (id, newLabel) {
         return response.data;
     } catch (error) {
         console.error("Ошибка при переименовании узла:", error);
-        return { status: "error", message: "Не удалось переименовать узел" };
+        return {status: "error", message: "Не удалось переименовать узел"};
     }
 };
 
 
-export async function updateHubItemPosition (id, parentId, afterId = null){
+export async function updateHubItemPosition(id, parentId, afterId = null) {
     try {
         const response = await axios.patch("/service/change_hub_item_position", {
             id,
@@ -35,7 +35,7 @@ export async function updateHubItemPosition (id, parentId, afterId = null){
         return response.data;
     } catch (error) {
         console.error("Ошибка при изменении позиции узла:", error);
-        return { status: "error", message: "Не удалось обновить позицию" };
+        return {status: "error", message: "Не удалось обновить позицию"};
     }
 };
 
@@ -48,7 +48,7 @@ export async function addHubLevel(parentId, label = "Новый уровень")
         return response.data;
     } catch (error) {
         console.error("Ошибка при добавлении уровня:", error);
-        return { status: "error", error };
+        return {status: "error", error};
     }
 }
 
@@ -74,18 +74,17 @@ export async function fetchStockHubItems(pathId) {
     }
 }
 
-export async function createHubLoading({ harvest_id, stocks }) {
+export async function createHubLoading({vsl_id, stocks}) {
     const payload = {
-        harvest_id,
-        stocks: stocks.map(({ origin, pathId, warranty, inputPrice, outputPrice }) => ({
+        vsl_id,
+        stocks: stocks.map(({origin, pathId, warranty, inputPrice, outputPrice}) => ({
             origin,
             path_id: pathId,
-            input_price: inputPrice,
             warranty,
+            input_price: inputPrice,
             output_price: outputPrice,
         })),
     };
-
     try {
         const response = await axios.post('/service/load_items_in_hub', payload);
         return response.data;
@@ -124,15 +123,4 @@ export const deleteStockItems = async (payload) => {
 export const ComparisonStockItems = async (payload) => {
     const response = await axios.post(`/service/start_comparison_process`, payload);
     return response.data;
-};
-
-
-export const transferParsingLines = async (lines) => {
-    try {
-        const response = await axios.post("/service/transfer_parsing_lines", lines);
-        return response.data;
-    } catch (error) {
-        console.error("Ошибка при отправке данных на сервер:", error);
-        throw error;
-    }
 };

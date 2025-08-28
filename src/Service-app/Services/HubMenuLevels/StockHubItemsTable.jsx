@@ -183,7 +183,7 @@ const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
         },
         {
             dataIndex: "updated_at",
-            title: "Обновлено вручную",
+            title: "Обновлено",
             key: "updated_at",
             width: 40,
             render: val =>

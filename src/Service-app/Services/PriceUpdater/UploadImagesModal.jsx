@@ -14,7 +14,6 @@ const UploadImagesModal = ({ isOpen, onClose, originCode, onUploaded  }) => {
         setLoading(true);
         try {
             const images = await getUploadedImages(originCode);
-            console.log("Загруженные изображения с сервера:", images);
             setExistingFiles(images);
         } catch {
             message.error("Не удалось загрузить изображения");

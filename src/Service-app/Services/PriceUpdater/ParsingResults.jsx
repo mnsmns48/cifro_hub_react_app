@@ -178,9 +178,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                 </Button>
             )}
             {selectedRowKeys.length > 0 && (
-                <Button
-                    type="primary"
-                    style={{ margin: "0 0 10px 10px" }}
+                <Button type="primary" style={{ margin: "0 0 10px 10px" }}
                     onClick={() => setAddToHubModalVisible(true)}
                 >
                     Добавить в Хаб ({selectedRowKeys.length})
@@ -213,7 +211,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
             />
 
             <InHubDownloader
-                harvestId
+                vslId={vslId}
                 isOpen={addToHubModalVisible}
                 items={selectedItems}
                 onCancel={() => setAddToHubModalVisible(false)}
@@ -229,7 +227,10 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
             <MyModal
                 isOpen={isSuccessModalOpen}
                 content={successMessage}
-                onConfirm={() => setIsSuccessModalOpen(false)}
+                onConfirm={() => {
+                    setIsSuccessModalOpen(false);
+                    // setSelectedRowKeys([]);
+                }}
                 onCancel={() => setIsSuccessModalOpen(false)}
                 footer={<button onClick={() => setIsSuccessModalOpen(false)}>Ок</button>}
             />

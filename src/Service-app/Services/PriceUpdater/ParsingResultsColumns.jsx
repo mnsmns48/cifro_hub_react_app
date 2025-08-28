@@ -94,14 +94,7 @@ export const createParsingColumns = ({setRows, showInputPrice, expandedRows, tog
             </div>
         ),
     },
-    {
-        title: "origin",
-        dataIndex: "origin",
-        key: "origin",
-        align: "center",
-        width: 80,
-    },
-    {
+       {
         key: "details",
         width: 40,
         align: "center",
@@ -143,7 +136,13 @@ export const createParsingColumns = ({setRows, showInputPrice, expandedRows, tog
             );
         },
     },
-
+    {
+        title: "origin",
+        dataIndex: "origin",
+        key: "origin",
+        align: "center",
+        width: 80,
+    },
     {
         title: "Гарантия",
         dataIndex: "warranty",
