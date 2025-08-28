@@ -135,9 +135,7 @@ const HubMenuLevels = ({onSelectPath = () => {}}) => {
 
     const handleUpdateDateBtn = async () => {
         if (!activePathId) return;
-
         const origins = selectedItems.map(item => item.origin);
-
         try {
             const payload = {
                 path_id: activePathId,
@@ -184,9 +182,7 @@ const HubMenuLevels = ({onSelectPath = () => {}}) => {
                     </Button>
                 </div>
             )}
-            <ComparisonModal
-                isOpen={modalVisible}
-                onClose={() => setModalVisible(false)}
+            <ComparisonModal isOpen={modalVisible} onClose={() => setModalVisible(false)}
                 content={comparisonResult}
             />
 
