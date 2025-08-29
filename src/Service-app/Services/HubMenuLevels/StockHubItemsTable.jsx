@@ -43,6 +43,10 @@ const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
             .finally(() => setLoading(false));
     }, [pathId, visible]);
 
+    useEffect(() => {
+        setSelectedRowKeys([]);
+        onSelectedOrigins?.([]);
+    }, [pathId]);
 
 
 

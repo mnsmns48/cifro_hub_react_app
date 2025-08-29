@@ -1,8 +1,5 @@
 import { Progress } from "antd";
-import {
-    ClockCircleOutlined,
-    CheckCircleOutlined
-} from "@ant-design/icons";
+import {ClockCircleOutlined, CheckCircleOutlined} from "@ant-design/icons";
 
 const ComparisonProgress = ({ status, percent = 0 }) => {
     switch (status) {

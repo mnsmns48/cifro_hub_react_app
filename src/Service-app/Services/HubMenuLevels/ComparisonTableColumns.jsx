@@ -1,7 +1,27 @@
 import ComparisonProgress from "./ComparisonProgress.jsx";
+import {Checkbox} from "antd";
 
 
-const getComparisonTableColumns  = () => [
+const getComparisonTableColumns  = ( setRows ) => [
+    {
+        title: "Sync",
+        dataIndex: "sync",
+        key: "sync",
+        width: 20,
+        render: (value, record) => (
+            <Checkbox
+                checked={!!value}
+                onChange={(e) => {
+                    const checked = e.target.checked;
+                    setRows(prev =>
+                        prev.map(row =>
+                            row.id === record.id ? { ...row, sync: checked } : row
+                        )
+                    );
+                }}
+            />
+        )
+    },
     {
         dataIndex: "title",
         key: "title",

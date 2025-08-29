@@ -9,10 +9,14 @@ import {
 } from "./HubMenuLevels/api.js";
 import StockHubItemsTable from "./HubMenuLevels/StockHubItemsTable.jsx";
 import TreeDataRender from "./HubMenuLevels/TreeRender.jsx";
-import { ReloadOutlined } from "@ant-design/icons";
+import {ReloadOutlined} from "@ant-design/icons";
 import ComparisonModal from "./HubMenuLevels/ComparisonModal.jsx";
 
-const HubMenuLevels = ({onSelectPath = () => {}}) => {
+
+const HubMenuLevels = ({
+                           onSelectPath = () => {
+                           }
+                       }) => {
     const [menuData, setMenuData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editingKey, setEditingKey] = useState(null);
@@ -41,6 +45,7 @@ const HubMenuLevels = ({onSelectPath = () => {}}) => {
         const key = selectedKeys.length ? parseInt(selectedKeys[0], 10) : null;
         setActivePathId(key);
         setSelectedItems([]);
+
         onSelectPath(key);
     }, [onSelectPath]);
 
@@ -133,14 +138,11 @@ const HubMenuLevels = ({onSelectPath = () => {}}) => {
     const treeData = useMemo(() => TreeDataRender({menuData, treeContext}), [menuData, treeContext]);
 
 
-    const handleUpdateDateBtn = async () => {
+    const handleUpdateDataBtn = async () => {
         if (!activePathId) return;
         const origins = selectedItems.map(item => item.origin);
         try {
-            const payload = {
-                path_id: activePathId,
-                origins: origins
-            };
+            const payload = {path_id: activePathId, origins: origins};
             const result = await ComparisonStockItems(payload);
             setComparisonResult(result);
             setModalVisible(true);
@@ -149,8 +151,6 @@ const HubMenuLevels = ({onSelectPath = () => {}}) => {
             setModalVisible(true);
         }
     };
-
-
 
 
     return loading ? (
@@ -170,20 +170,20 @@ const HubMenuLevels = ({onSelectPath = () => {}}) => {
             />
             {activePathId != null && (
                 <StockHubItemsTable
-                    pathId={activePathId} onSelectedOrigins={setSelectedItems}
+                    pathId={activePathId} selectedRowKeys={[]} onSelectedOrigins={setSelectedItems}
                 />
             )}
             {activePathId != null && (
                 <div style={{paddingTop: 10}}>
-                    <Button icon={<ReloadOutlined />}
+                    <Button icon={<ReloadOutlined/>}
                             type="text"
-                            onClick={() => handleUpdateDateBtn()}>
+                            onClick={() => handleUpdateDataBtn()}>
                         Обновить данные
                     </Button>
                 </div>
             )}
             <ComparisonModal isOpen={modalVisible} onClose={() => setModalVisible(false)}
-                content={comparisonResult}
+                             vslList={comparisonResult}
             />
 
         </>

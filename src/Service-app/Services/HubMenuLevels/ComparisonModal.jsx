@@ -1,30 +1,32 @@
 import {Button, Popconfirm, Table} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
-import {useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import getComparisonTableColumns from "./ComparisonTableColumns.jsx";
+import {getProgressLine} from "../PriceUpdater/api.js";
 
 
-const ComparisonModal = ({ isOpen, onClose, content }) => {
+const ComparisonModal = ({isOpen, onClose, vslList}) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [rows, setRows] = useState([]);
+    const [progressLineObj, setProgressLineObj] = useState("");
 
-    const dataSource = content
-        ? Object.entries(content).map(([url, { title, dt_parsed }], idx) => ({
-            key: idx,
-            url,
-            title,
-            dt_parsed,
-        }))
-        : [];
+    useEffect(() => {
+        if (Array.isArray(vslList)) {
+            setRows(vslList.map(item => ({...item})));
+        }
+    }, [vslList]);
+
 
     const handleUpdateClick = async () => {
-        const selectedRows = dataSource.filter(item => selectedRowKeys.includes(item.key));
+        const {result: progress} = await getProgressLine();
+        setProgressLineObj(progress);
 
     };
 
     const renderTable = () => {
-        if (dataSource.length === 0) {
+        if (rows.length === 0) {
             return (
-                <div style={{ padding: "16px", fontStyle: "italic", color: "#999" }}>
+                <div style={{padding: "16px", fontStyle: "italic", color: "#999"}}>
                     Нет данных для отображения
                 </div>
             );
@@ -34,17 +36,19 @@ const ComparisonModal = ({ isOpen, onClose, content }) => {
             <div>
                 <div style={{marginBottom: 12, textAlign: "left"}}>
                     <Button type="primary" onClick={handleUpdateClick}
-                            disabled={selectedRowKeys.length === 0} style={{ marginRight: 12 }}>Запустить обновление</Button>
+                            disabled={selectedRowKeys.length === 0} style={{marginRight: 12}}>Запустить
+                        обновление</Button>
                     <Button type="primary">Сверка</Button>
                 </div>
-                {dataSource.length === 0 ? (
+                {rows.length === 0 ? (
                     <div style={{padding: "16px", color: "#999"}}>
                         Нет данных для отображения
                     </div>
                 ) : (
                     <Table
-                        columns={getComparisonTableColumns()}
-                        dataSource={dataSource}
+                        columns={getComparisonTableColumns(setRows)}
+                        rowKey="id"
+                        dataSource={rows}
                         pagination={false}
                         rowSelection={{
                             selectedRowKeys,
@@ -61,9 +65,19 @@ const ComparisonModal = ({ isOpen, onClose, content }) => {
             isOpen={isOpen}
             content={renderTable()}
             footer={
-                <Popconfirm title="Точно закрыть окно?" okText="Да" cancelText="Нет" onConfirm={onClose} onCancel={onClose}>
-                    <Button type="primary">Выход</Button>
-                </Popconfirm>
+                rows.length === 0 ? (
+                    <Button type="primary" onClick={onClose}>Выход</Button>
+                ) : (
+                    <Popconfirm
+                        title="Точно закрыть окно?"
+                        okText="Да"
+                        cancelText="Нет"
+                        onConfirm={onClose}
+                        onCancel={onClose}
+                    >
+                        <Button type="primary">Выход</Button>
+                    </Popconfirm>
+                )
             }
             width={1200}
         />
