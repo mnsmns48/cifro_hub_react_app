@@ -78,7 +78,6 @@ export const startDataCollection = async ({selectedRow, progress, api_url, sync_
     }
 }
 
-
 export const updateParsingItem = async (origin, data) => {
     try {
         const response = await axios.put(`/service/update_parsing_item/${origin}`, data);

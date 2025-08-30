@@ -9,7 +9,7 @@ export async function fetchHubLevels() {
         console.error("Проблема с бэкендом", error);
         return [];
     }
-};
+}
 
 export async function renameHubLevel(id, newLabel) {
     try {
@@ -22,7 +22,7 @@ export async function renameHubLevel(id, newLabel) {
         console.error("Ошибка при переименовании узла:", error);
         return {status: "error", message: "Не удалось переименовать узел"};
     }
-};
+}
 
 
 export async function updateHubItemPosition(id, parentId, afterId = null) {
@@ -37,7 +37,7 @@ export async function updateHubItemPosition(id, parentId, afterId = null) {
         console.error("Ошибка при изменении позиции узла:", error);
         return {status: "error", message: "Не удалось обновить позицию"};
     }
-};
+}
 
 export async function addHubLevel(parentId, label = "Новый уровень") {
     try {
@@ -122,5 +122,13 @@ export const deleteStockItems = async (payload) => {
 
 export const ComparisonStockItems = async (payload) => {
     const response = await axios.post(`/service/start_comparison_process`, payload);
+    return response.data;
+};
+
+
+export const startParsing = async (payload) => {
+    const response = await axios.post("/service/start_parsing", payload, {
+        headers: {"Content-Type": "application/json"}
+    });
     return response.data;
 };
