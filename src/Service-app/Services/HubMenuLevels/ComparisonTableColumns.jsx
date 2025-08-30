@@ -61,6 +61,7 @@ const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdat
                 progress_obj={record.progress_obj}
                 progressState={progressMap[record.id]}
                 setProgressMap={setProgressMap}
+                duration={record.duration}
             />
         ),
     },

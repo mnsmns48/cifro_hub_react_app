@@ -1,16 +1,18 @@
-import { Button, Popconfirm, Table } from "antd";
+import {Button, Popconfirm, Table} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import getComparisonTableColumns from "./ComparisonTableColumns.jsx";
-import { getProgressLine } from "../PriceUpdater/api.js";
-import { startParsing } from "./api.js";
+import {getProgressLine} from "../PriceUpdater/api.js";
+import {startParsing} from "./api.js";
 
-const ComparisonModal = ({ isOpen, onClose, vslList }) => {
+const ComparisonModal = ({isOpen, onClose, vslList}) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [rows, setRows] = useState([]);
     const [progressMap, setProgressMap] = useState({});
     const [isUpdating, setIsUpdating] = useState(false);
     const [isUpdateFinished, setIsUpdateFinished] = useState(false);
+    const [isInConsentMode, setIsInConsentMode] = useState(false);
+
 
     useEffect(() => {
         if (Array.isArray(vslList)) {
@@ -39,17 +41,17 @@ const ComparisonModal = ({ isOpen, onClose, vslList }) => {
         try {
             const queue = rows.filter(row => selectedRowKeys.includes(row.id));
             for (const row of queue) {
-                const { result: progress } = await getProgressLine();
+                const {result: progress} = await getProgressLine();
 
                 setRows(prev =>
                     prev.map(r =>
-                        r.id === row.id ? { ...r, progress_obj: progress } : r
+                        r.id === row.id ? {...r, progress_obj: progress} : r
                     )
                 );
 
                 setProgressMap(prev => ({
                     ...prev,
-                    [row.id]: { status: "pending", percent: 0 }
+                    [row.id]: {status: "pending", percent: 0}
                 }));
 
                 const result = await startParsing({
@@ -65,6 +67,7 @@ const ComparisonModal = ({ isOpen, onClose, vslList }) => {
                                 ...r,
                                 dt_parsed: result.dt_parsed,
                                 profit_range_id: result.profit_range_id,
+                                duration: result.duration,
                             }
                             : r
                     )
@@ -77,7 +80,26 @@ const ComparisonModal = ({ isOpen, onClose, vslList }) => {
         }
     };
 
+    const handleConsent = () => {
+        setIsInConsentMode(true);
+    };
+
+    const handleBack = () => {
+        setIsInConsentMode(false);
+    };
+
+
     const renderTable = () => {
+        if (isInConsentMode) {
+            return (
+                <div style={{ padding: "4px", textAlign: "center" }}>
+                    <Button type="primary" onClick={handleBack}>
+                        Назад
+                    </Button>
+                </div>
+            );
+        }
+
         if (rows.length === 0) {
             return (
                 <div style={{ padding: "16px", fontStyle: "italic", color: "#999" }}>
@@ -90,13 +112,26 @@ const ComparisonModal = ({ isOpen, onClose, vslList }) => {
             <div>
                 <div style={{ marginBottom: 12, textAlign: "left" }}>
                     {!isUpdating && !isUpdateFinished && (
-                        <Button type="primary" onClick={handleUpdateClick} disabled={selectedRowKeys.length === 0}
-                            style={{ marginRight: 12 }}>
+                        <Button
+                            type="primary"
+                            onClick={handleUpdateClick}
+                            disabled={selectedRowKeys.length === 0}
+                            style={{ marginRight: 12 }}
+                        >
                             Запустить обновление
                         </Button>
                     )}
-                    {isUpdateFinished && (
-                        <Button type="primary" onClick={() => alert("Сделано")}>
+                    {!isUpdating && (
+                        <Button
+                            type="primary"
+                            onClick={handleConsent}
+                            style={{
+                                background: "linear-gradient(90deg, #ff4d4f 0%, #ff7a45 100%)",
+                                borderColor: "#fb6d6e",
+                                boxShadow: "0 0 0 2px rgba(255, 77, 79, 0.3)",
+                                fontWeight: "bold"
+                            }}
+                        >
                             Сверка
                         </Button>
                     )}
@@ -116,6 +151,7 @@ const ComparisonModal = ({ isOpen, onClose, vslList }) => {
             </div>
         );
     };
+
 
     const renderFooter = () => {
         if (isUpdating) return null;

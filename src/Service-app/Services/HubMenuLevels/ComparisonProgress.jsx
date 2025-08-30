@@ -3,7 +3,7 @@ import {Progress} from "antd";
 import {ClockCircleOutlined, CheckCircleOutlined} from "@ant-design/icons";
 import {progressStreamManager} from "./ProgressStreamManager.js";
 
-const ComparisonProgress = ({id, progress_obj, progressState, setProgressMap}) => {
+const ComparisonProgress = ({id, progress_obj, progressState, setProgressMap, duration}) => {
     useEffect(() => {
         if (!progress_obj || progressState?.status === "done") return;
 
@@ -43,10 +43,17 @@ const ComparisonProgress = ({id, progress_obj, progressState, setProgressMap}) =
 
     if (progressState.status === "done") {
         return (
-            <span style={{color: "#52c41a", display: "flex", alignItems: "center", gap: 6}}>
-                <CheckCircleOutlined/>
-                Готово
-            </span>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <span style={{ color: "#52c41a", display: "flex", alignItems: "center", gap: 6 }}>
+                    <CheckCircleOutlined />
+                    Готово
+                </span>
+                {duration && (
+                    <span style={{ fontWeight: 600, color: "#333", fontSize: "13px" }}>
+                        {duration.toFixed(1)} сек
+                    </span>
+                )}
+            </div>
         );
     }
 
