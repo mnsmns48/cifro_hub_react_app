@@ -1,9 +1,10 @@
-import {Button, Popconfirm, Table} from "antd";
+import {Button, Popconfirm, Spin, Table} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
 import {useEffect, useState} from "react";
 import getComparisonTableColumns from "./ComparisonTableColumns.jsx";
 import {getProgressLine} from "../PriceUpdater/api.js";
-import {startParsing} from "./api.js";
+import {consentData, startParsing} from "./api.js";
+import ConsentTable from "./ConsentTable.jsx";
 
 const ComparisonModal = ({isOpen, onClose, vslList}) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -12,6 +13,8 @@ const ComparisonModal = ({isOpen, onClose, vslList}) => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [isUpdateFinished, setIsUpdateFinished] = useState(false);
     const [isInConsentMode, setIsInConsentMode] = useState(false);
+    const [consentRows, setConsentRows] = useState([]);
+    const [isConsentLoading, setIsConsentLoading] = useState(false);
 
 
     useEffect(() => {
@@ -80,9 +83,27 @@ const ComparisonModal = ({isOpen, onClose, vslList}) => {
         }
     };
 
-    const handleConsent = () => {
+    const handleConsent = async () => {
+        setIsConsentLoading(true);
         setIsInConsentMode(true);
+
+        try {
+            const payload = { path_ids: [9, 10] };
+            const result = await consentData(payload);
+            if (Array.isArray(result)) {
+                setConsentRows(result);
+            } else {
+                console.warn("Некорректный формат ответа:", result);
+                setConsentRows([]);
+            }
+        } catch (e) {
+            console.error("Ошибка загрузки данных сверки:", e);
+            setConsentRows([]);
+        } finally {
+            setIsConsentLoading(false);
+        }
     };
+
 
     const handleBack = () => {
         setIsInConsentMode(false);
@@ -92,17 +113,33 @@ const ComparisonModal = ({isOpen, onClose, vslList}) => {
     const renderTable = () => {
         if (isInConsentMode) {
             return (
-                <div style={{ padding: "4px", textAlign: "center" }}>
-                    <Button type="primary" onClick={handleBack}>
-                        Назад
-                    </Button>
+                <div>
+                    <div style={{ marginBottom: 12 }}>
+                        <Button type="primary" onClick={handleBack}>
+                            Назад
+                        </Button>
+                    </div>
+
+                    {isConsentLoading ? (
+                        <div style={{ textAlign: "center", padding: 24 }}>
+                            <Spin tip="Загрузка данных сверки..." />
+                        </div>
+                    ) : consentRows.length === 0 ? (
+                        <div style={{ padding: "16px", fontStyle: "italic", color: "#999" }}>
+                            Нет данных для сверки
+                        </div>
+                    ) : (
+
+                        <ConsentTable selectedIds={consentRows} />
+                    )}
                 </div>
             );
         }
 
+
         if (rows.length === 0) {
             return (
-                <div style={{ padding: "16px", fontStyle: "italic", color: "#999" }}>
+                <div style={{padding: "16px", fontStyle: "italic", color: "#999"}}>
                     Нет данных для отображения
                 </div>
             );
@@ -110,13 +147,13 @@ const ComparisonModal = ({isOpen, onClose, vslList}) => {
 
         return (
             <div>
-                <div style={{ marginBottom: 12, textAlign: "left" }}>
+                <div style={{marginBottom: 12, textAlign: "left"}}>
                     {!isUpdating && !isUpdateFinished && (
                         <Button
                             type="primary"
                             onClick={handleUpdateClick}
                             disabled={selectedRowKeys.length === 0}
-                            style={{ marginRight: 12 }}
+                            style={{marginRight: 12}}
                         >
                             Запустить обновление
                         </Button>
@@ -176,7 +213,9 @@ const ComparisonModal = ({isOpen, onClose, vslList}) => {
             content={renderTable()}
             footer={renderFooter()}
             width={1200}
+            key={isInConsentMode ? "consent" : "main"}
         />
+
     );
 };
 
