@@ -6,13 +6,14 @@ import {startParsing} from "./api.js";
 import getComparisonTableColumns from "./ComparisonTableColumns.jsx";
 
 
-const ComparisonModal = ({isOpen, onClose, vslList, pathIds}) => {
+const ComparisonModal = ({isOpen, onClose, comparisonObj}) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [rows, setRows] = useState([]);
     const [progressMap, setProgressMap] = useState({});
     const [isUpdating, setIsUpdating] = useState(false);
     const [isUpdateFinished, setIsUpdateFinished] = useState(false);
 
+    const {vslList, pathIds} = comparisonObj
 
     useEffect(() => {
         if (Array.isArray(vslList)) {
@@ -37,7 +38,7 @@ const ComparisonModal = ({isOpen, onClose, vslList, pathIds}) => {
         if (isUpdating) return;
         setIsUpdating(true);
         setIsUpdateFinished(false);
-
+        console.log('vslList, pathIds', vslList, pathIds);
         try {
             const queue = rows.filter(row => selectedRowKeys.includes(row.id));
             for (const row of queue) {
@@ -81,7 +82,7 @@ const ComparisonModal = ({isOpen, onClose, vslList, pathIds}) => {
     };
 
     const handleConsent = async () => {
-        alert(JSON.stringify(vslList, null, 2))
+        alert(JSON.stringify(pathIds, null, 2))
     }
 
 

@@ -183,7 +183,7 @@ const HubMenuLevels = ({
                 </div>
             )}
             <ComparisonModal isOpen={modalVisible} onClose={() => setModalVisible(false)}
-                             vslList={comparisonResult}
+                             comparisonObj={comparisonResult}
             />
 
         </>
