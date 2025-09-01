@@ -2,14 +2,14 @@ import {useEffect, useState} from "react";
 import {Table, Spin} from "antd";
 import {consentData} from "./api.js";
 
-const ConsentTable = ({selectedIds}) => {
+const ConsentTable = ({path_ids}) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchConsent = async () => {
             try {
-                const result = await consentData({ path_ids: selectedIds });
+                const result = await consentData({ path_ids: path_ids });
                 setData(result);
             } catch (e) {
                 console.error("Ошибка загрузки данных сверки:", e);
@@ -18,10 +18,10 @@ const ConsentTable = ({selectedIds}) => {
             }
         };
 
-        if (Array.isArray(selectedIds) && selectedIds.length > 0) {
+        if (Array.isArray(path_ids) && path_ids.length > 0) {
             fetchConsent();
         }
-    }, [selectedIds]);
+    }, [path_ids]);
 
     const columns = [
         { title: "ID", dataIndex: "id", key: "id" },
