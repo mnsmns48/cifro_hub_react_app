@@ -13,10 +13,7 @@ import {ReloadOutlined} from "@ant-design/icons";
 import ComparisonModal from "./HubMenuLevels/ComparisonModal.jsx";
 
 
-const HubMenuLevels = ({
-                           onSelectPath = () => {
-                           }
-                       }) => {
+const HubMenuLevels = ({onSelectPath = () => {} }) => {
     const [menuData, setMenuData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editingKey, setEditingKey] = useState(null);

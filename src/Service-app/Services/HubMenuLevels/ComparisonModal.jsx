@@ -8,7 +8,10 @@ import getComparisonTableColumns from "./ComparisonTableColumns.jsx";
 
 const ComparisonModal = ({isOpen, onClose, comparisonObj}) => {
 
-    const {vslList, pathIds} = comparisonObj;
+    const {
+        vsl_list: vslList,
+        path_ids: pathIds
+    } = comparisonObj || {};
 
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [rows, setRows] = useState([]);
@@ -167,5 +170,6 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj}) => {
 
     );
 };
+
 
 export default ComparisonModal;
