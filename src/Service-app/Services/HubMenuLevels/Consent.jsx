@@ -34,40 +34,30 @@ const Consent = ({path_ids, isOpen, onClose}) => {
             );
         }
 
-        const tabItems = Object.entries(groupedData).map(([pathId, items]) => ({
-            key: pathId,
-            label: `Path ${pathId}`,
-            children: (
-                <Table
-                    rowKey="id"
-                    dataSource={items}
-                    columns={getConsentTableColumns()}
-                    pagination={false}
-                />
-            ),
-        }));
+        const tabItems = Object.entries(groupedData).map(([pathId, items]) => {
+            const safeItems = Array.isArray(items) ? items : [];
+
+            return {
+                key: pathId,
+                label: `Path ${pathId}`,
+                children: (
+                    <Table rowKey="id" dataSource={safeItems} columns={getConsentTableColumns()} pagination={false}/>
+                ),
+            };
+        });
 
         return <Tabs items={tabItems} />;
     };
 
     const renderFooter = () => (
-        <Popconfirm
-            title="Закрываем сверку?"
-            okText="Да"
-            cancelText="Нет"
-            onConfirm={onClose}
-        >
+        <Popconfirm title="Закрываем сверку?" okText="Да" cancelText="Нет" onConfirm={onClose}>
             <Button type="primary">Закрыть</Button>
         </Popconfirm>
     );
 
     return (
-        <MyModal
-            isOpen={isOpen}
-            onClose={onClose}
-            content={renderContent()}
-            footer={renderFooter()}
-            width={1200}
+        <MyModal isOpen={isOpen} onClose={onClose} content={renderContent()}
+            footer={renderFooter()} width={1200}
         />
     );
 };
