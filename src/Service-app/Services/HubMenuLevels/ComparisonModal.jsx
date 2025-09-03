@@ -7,13 +7,14 @@ import getComparisonTableColumns from "./ComparisonTableColumns.jsx";
 
 
 const ComparisonModal = ({isOpen, onClose, comparisonObj}) => {
+
+    const {vslList, pathIds} = comparisonObj;
+
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [rows, setRows] = useState([]);
     const [progressMap, setProgressMap] = useState({});
     const [isUpdating, setIsUpdating] = useState(false);
     const [isUpdateFinished, setIsUpdateFinished] = useState(false);
-
-    const {vslList, pathIds} = comparisonObj
 
     useEffect(() => {
         if (Array.isArray(vslList)) {
@@ -38,7 +39,6 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj}) => {
         if (isUpdating) return;
         setIsUpdating(true);
         setIsUpdateFinished(false);
-        console.log('vslList, pathIds', vslList, pathIds);
         try {
             const queue = rows.filter(row => selectedRowKeys.includes(row.id));
             for (const row of queue) {
@@ -87,7 +87,6 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj}) => {
 
 
     const renderTable = () => {
-
         if (rows.length === 0) {
             return (
                 <div style={{padding: "16px", fontStyle: "italic", color: "#999"}}>

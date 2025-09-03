@@ -25,7 +25,7 @@ const HubMenuLevels = ({
     const [activePathId, setActivePathId] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [comparisonResult, setComparisonResult] = useState([]);
+    const [comparisonResult, setComparisonResult] = useState({});
 
 
     const loadLevels = useCallback(async () => {
@@ -182,9 +182,14 @@ const HubMenuLevels = ({
                     </Button>
                 </div>
             )}
-            <ComparisonModal isOpen={modalVisible} onClose={() => setModalVisible(false)}
-                             comparisonObj={comparisonResult}
-            />
+            {comparisonResult && (
+                <ComparisonModal
+                    isOpen={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                    comparisonObj={comparisonResult}
+                />
+            )}
+
 
         </>
     );
