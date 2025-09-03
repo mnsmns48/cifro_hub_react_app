@@ -133,7 +133,7 @@ export const startParsing = async (payload) => {
     return response.data;
 };
 
-export const consentData = async (payload) => {
+export const consentDataApiLoad = async (payload) => {
     const response = await axios.post(`/service/give_me_consent`, payload);
     return response.data;
 };

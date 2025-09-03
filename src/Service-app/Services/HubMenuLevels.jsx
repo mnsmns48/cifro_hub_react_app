@@ -1,5 +1,5 @@
 import {useEffect, useState, useCallback, useMemo} from "react";
-import {Tree, Spin, Button} from "antd";
+import {Tree, Spin, Button, Popconfirm} from "antd";
 import {
     addHubLevel, ComparisonStockItems,
     deleteHubLevel,
@@ -11,9 +11,14 @@ import StockHubItemsTable from "./HubMenuLevels/StockHubItemsTable.jsx";
 import TreeDataRender from "./HubMenuLevels/TreeRender.jsx";
 import {ReloadOutlined} from "@ant-design/icons";
 import ComparisonModal from "./HubMenuLevels/ComparisonModal.jsx";
+import MyModal from "../../Ui/MyModal.jsx";
+import Consent from "./HubMenuLevels/Consent.jsx";
 
 
-const HubMenuLevels = ({onSelectPath = () => {} }) => {
+const HubMenuLevels = ({
+                           onSelectPath = () => {
+                           }
+                       }) => {
     const [menuData, setMenuData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editingKey, setEditingKey] = useState(null);
@@ -23,6 +28,8 @@ const HubMenuLevels = ({onSelectPath = () => {} }) => {
     const [selectedItems, setSelectedItems] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [comparisonResult, setComparisonResult] = useState({});
+    const [consentVisible, setConsentVisible] = useState(false);
+    const [consentPathIds, setConsentPathIds] = useState([]);
 
 
     const loadLevels = useCallback(async () => {
@@ -184,9 +191,18 @@ const HubMenuLevels = ({onSelectPath = () => {} }) => {
                     isOpen={modalVisible}
                     onClose={() => setModalVisible(false)}
                     comparisonObj={comparisonResult}
+                    onConsent={(pathIds) => {
+                        setModalVisible(false);
+                        setConsentPathIds(pathIds);
+                        setConsentVisible(true);
+                    }}
                 />
             )}
-
+            {consentVisible && (
+                <Consent
+                    path_ids={consentPathIds} isOpen={consentVisible} onClose={() => setConsentVisible(false)}
+                />
+            )}
 
         </>
     );

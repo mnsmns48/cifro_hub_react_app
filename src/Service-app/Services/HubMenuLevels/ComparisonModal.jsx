@@ -6,12 +6,9 @@ import {startParsing} from "./api.js";
 import getComparisonTableColumns from "./ComparisonTableColumns.jsx";
 
 
-const ComparisonModal = ({isOpen, onClose, comparisonObj}) => {
+const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent }) => {
 
-    const {
-        vsl_list: vslList,
-        path_ids: pathIds
-    } = comparisonObj || {};
+    const {vsl_list: vslList, path_ids: pathIds} = comparisonObj || {};
 
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [rows, setRows] = useState([]);
@@ -85,8 +82,9 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj}) => {
     };
 
     const handleConsent = async () => {
-        alert(JSON.stringify(pathIds, null, 2))
-    }
+        onConsent?.(pathIds);
+    };
+
 
 
     const renderTable = () => {
