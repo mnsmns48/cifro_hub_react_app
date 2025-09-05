@@ -4,14 +4,18 @@ import MyModal from "../../../Ui/MyModal.jsx";
 import {consentDataApiLoad} from "./api.js";
 import getConsentTableColumns from "./ConsentTableColumns.jsx";
 
-const Consent = ({path_ids, isOpen, onClose}) => {
+const Consent = ({comparisonObj: { vsl_list, path_ids }, isOpen, onClose}) => {
     const [groupedData, setGroupedData] = useState({});
     const [loading, setLoading] = useState(true);
+
+    const pathIds = Array.isArray(path_ids)
+        ? path_ids.map(({ path_id }) => path_id)
+        : [];
 
     useEffect(() => {
         const fetchConsent = async () => {
             try {
-                const result = await consentDataApiLoad({ path_ids });
+                const result = await consentDataApiLoad({ pathIds });
                 setGroupedData(result);
             } catch (e) {
                 console.error("Ошибка загрузки данных:", e);
@@ -20,7 +24,7 @@ const Consent = ({path_ids, isOpen, onClose}) => {
             }
         };
 
-        if (Array.isArray(path_ids) && path_ids.length > 0) {
+        if (Array.isArray(pathIds) && pathIds.length > 0) {
             void fetchConsent();
         }
     }, [path_ids]);

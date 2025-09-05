@@ -1,5 +1,5 @@
 import {useEffect, useState, useCallback, useMemo} from "react";
-import {Tree, Spin, Button, Popconfirm} from "antd";
+import {Tree, Spin, Button} from "antd";
 import {
     addHubLevel, ComparisonStockItems,
     deleteHubLevel,
@@ -11,7 +11,6 @@ import StockHubItemsTable from "./HubMenuLevels/StockHubItemsTable.jsx";
 import TreeDataRender from "./HubMenuLevels/TreeRender.jsx";
 import {ReloadOutlined} from "@ant-design/icons";
 import ComparisonModal from "./HubMenuLevels/ComparisonModal.jsx";
-import MyModal from "../../Ui/MyModal.jsx";
 import Consent from "./HubMenuLevels/Consent.jsx";
 
 
@@ -29,7 +28,7 @@ const HubMenuLevels = ({
     const [modalVisible, setModalVisible] = useState(false);
     const [comparisonResult, setComparisonResult] = useState({});
     const [consentVisible, setConsentVisible] = useState(false);
-    const [consentPathIds, setConsentPathIds] = useState([]);
+
 
 
     const loadLevels = useCallback(async () => {
@@ -191,16 +190,12 @@ const HubMenuLevels = ({
                     isOpen={modalVisible}
                     onClose={() => setModalVisible(false)}
                     comparisonObj={comparisonResult}
-                    onConsent={(pathIds) => {
-                        setModalVisible(false);
-                        setConsentPathIds(pathIds);
-                        setConsentVisible(true);
-                    }}
+                    onConsent={() => {setModalVisible(false); setConsentVisible(true)}}
                 />
             )}
             {consentVisible && (
                 <Consent
-                    path_ids={consentPathIds} isOpen={consentVisible} onClose={() => setConsentVisible(false)}
+                    comparisonObj={comparisonResult} isOpen={consentVisible} onClose={() => setConsentVisible(false)}
                 />
             )}
 

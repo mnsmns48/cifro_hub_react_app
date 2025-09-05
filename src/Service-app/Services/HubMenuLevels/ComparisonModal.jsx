@@ -8,7 +8,7 @@ import getComparisonTableColumns from "./ComparisonTableColumns.jsx";
 
 const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent }) => {
 
-    const {vsl_list: vslList, path_ids: pathIds} = comparisonObj || {};
+    const {vsl_list: vslList} = comparisonObj || {};
 
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [rows, setRows] = useState([]);
@@ -82,7 +82,7 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent }) => {
     };
 
     const handleConsent = async () => {
-        onConsent?.(pathIds);
+        onConsent?.();
     };
 
 
