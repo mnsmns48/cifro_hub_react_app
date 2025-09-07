@@ -1,6 +1,6 @@
     import { Input, Button } from 'antd';
     import { EditOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
-    import {formatDate} from "../../../../utils.js";
+    import TimeDateBlock from "../../../Ui/TimeDateBlock.jsx";
 
     export const UrlSelectionTableColumns = ({
                                         editingKey,
@@ -28,7 +28,7 @@
             dataIndex: 'dt_parsed',
             key: 'dt_parsed',
             align: 'center',
-            render: (text) => formatDate(text)
+            render: (text) => <TimeDateBlock isoString={text} />
         },
         {
             title: 'Действия',
@@ -52,7 +52,7 @@
             width: 200,
             align: 'center',
             onCell: () => ({
-                style: {backgroundColor: '#000912'}
+                style: {backgroundColor: '#061e35'}
             }),
             render: (text, record) =>
                 editingKey === record.id ? (
@@ -64,11 +64,8 @@
                     />
                 ) : (
                     <a
-                        href={text}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ fontSize: '9px', color: '#ffffff' }}
-                    >
+                        href={text} target="_blank" rel="noopener noreferrer"
+                        style={{ fontSize: '10px', color: '#ffffff' }}>
                         {text}
                     </a>
                 )

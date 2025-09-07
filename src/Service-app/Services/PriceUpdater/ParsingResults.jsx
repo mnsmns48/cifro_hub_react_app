@@ -10,6 +10,7 @@ import {formatDate} from "../../../../utils.js";
 import InHubDownloader from "./InHubDownloader.jsx";
 import MyModal from "../../../Ui/MyModal.jsx";
 
+
 const {Search} = Input;
 
 
@@ -150,7 +151,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
         <>
             <div>
                 <p>
-                    <strong>Собрано:</strong> {formatDate(result.dt_parsed)}<br />
+                    <strong>Собрано:</strong> {formatDate(result.dt_parsed)} <br />
                     <strong>Количество:</strong> {Array.isArray(result.parsing_result) ? result.parsing_result.length : 0}
                 </p>
             </div>
@@ -185,7 +186,8 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                 </Button>
             )}
 
-            <Table className="parsing-result-table" dataSource={filteredData}
+            <Table className="parsing-result-table"
+                   dataSource={filteredData}
                    columns={columns}
                 // rowKey={(rec, idx) => `${rec.origin}-${idx}`}
                    rowKey="origin" tableLayout="fixed"

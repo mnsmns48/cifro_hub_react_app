@@ -54,6 +54,7 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
             <Table rowSelection={{
                 type: 'radio',
                 onChange: handleRowSelection,
+
                 selectedRowKeys: selectedRowKeys
             }}
                    onRow={(record) => ({
@@ -79,7 +80,8 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
                        showDeleteModal
                    })}
                    dataSource={tableData}
-                   rowKey="id"/>
+                   rowKey="id"
+                   rowClassName={() => 'compact-row'}/>
             <MyModal
                 isOpen={isModalOpen}
                 onCancel={() => setIsModalOpen(false)}

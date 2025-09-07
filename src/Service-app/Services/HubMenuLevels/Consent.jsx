@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Table, Spin, Button, Popconfirm, Tabs} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
 import {consentDataApiLoad} from "./api.js";
@@ -15,6 +15,11 @@ const Consent = ({
 
 
     const payload = {vsl_list, path_ids};
+
+    const columns = useMemo(
+        () => getConsentTableColumns(setTabsData),
+        [setTabsData]
+    );
 
     useEffect(() => {
         if (!isOpen) {
@@ -55,11 +60,11 @@ const Consent = ({
             key: String(tab.path_id),
             label: tab.label,
             children: (
-                <div style={{width: 1175, overflowX: 'auto'}}>
+                <div style={{width: 1220, overflowX: 'auto'}}>
                     <Table
                         rowKey="origin"
                         dataSource={tab.items || []}
-                        columns={getConsentTableColumns()}
+                        columns={columns}
                         pagination={false}
                         size="small"
                         tableLayout="fixed"

@@ -1,7 +1,3 @@
-/*.ant-table-thead {*/
-/*    display: none;*/
-/*}*/
-
 .action_parser_main {
     display: flex;
     align-items: self-start;
@@ -64,4 +60,9 @@
 
 .row-no-image {
     background-color: #fdfcf2 !important;
+}
+
+.compact-row > td {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
 }
