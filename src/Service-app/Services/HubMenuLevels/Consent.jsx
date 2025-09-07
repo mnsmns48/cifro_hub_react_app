@@ -4,64 +4,90 @@ import MyModal from "../../../Ui/MyModal.jsx";
 import {consentDataApiLoad} from "./api.js";
 import getConsentTableColumns from "./ConsentTableColumns.jsx";
 
-const Consent = ({comparisonObj: { vsl_list, path_ids }, isOpen, onClose}) => {
-    const [groupedData, setGroupedData] = useState({});
-    const [loading, setLoading] = useState(true);
 
-    const pathIds = Array.isArray(path_ids)
-        ? path_ids.map(({ path_id }) => path_id)
-        : [];
+const Consent = ({
+                     comparisonObj: {vsl_list, path_ids},
+                     isOpen,
+                     onClose
+                 }) => {
+    const [tabsData, setTabsData] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+
+    const payload = {vsl_list, path_ids};
 
     useEffect(() => {
-        const fetchConsent = async () => {
-            try {
-                const result = await consentDataApiLoad({ pathIds });
-                setGroupedData(result);
-            } catch (e) {
-                console.error("Ошибка загрузки данных:", e);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (Array.isArray(pathIds) && pathIds.length > 0) {
-            void fetchConsent();
+        if (!isOpen) {
+            setTabsData([]);
+            return;
         }
-    }, [path_ids]);
+
+        setLoading(true);
+        consentDataApiLoad(payload)
+            .then(data => {
+                setTabsData(Array.isArray(data) ? data : []);
+            })
+            .catch(err => {
+                console.error("Ошибка загрузки данных:", err);
+                setTabsData([]);
+            })
+            .finally(() => setLoading(false));
+    }, [isOpen, vsl_list, path_ids]);
 
     const renderContent = () => {
         if (loading) {
             return (
-                <div style={{ textAlign: "center", padding: 24 }}>
-                    <Spin tip="Загрузка данных..." />
+                <div style={{textAlign: "center", padding: 24}}>
+                    <Spin tip="Загрузка данных..."/>
                 </div>
             );
         }
 
-        const tabItems = Object.entries(groupedData).map(([pathId, items]) => {
-            const safeItems = Array.isArray(items) ? items : [];
+        if (!tabsData.length) {
+            return (
+                <div style={{textAlign: "center", color: "#999", padding: 24}}>
+                    Нет данных для отображения
+                </div>
+            );
+        }
 
-            return {
-                key: pathId,
-                label: `Path ${pathId}`,
-                children: (
-                    <Table rowKey="id" dataSource={safeItems} columns={getConsentTableColumns()} pagination={false}/>
-                ),
-            };
-        });
+        const items = tabsData.map(tab => ({
+            key: String(tab.path_id),
+            label: tab.label,
+            children: (
+                <div style={{width: 1175, overflowX: 'auto'}}>
+                    <Table
+                        rowKey="origin"
+                        dataSource={tab.items || []}
+                        columns={getConsentTableColumns()}
+                        pagination={false}
+                        size="small"
+                        tableLayout="fixed"
+                        style={{width: "100%"}}
+                    />
+                </div>
+            )
+        }));
 
-        return <Tabs items={tabItems} />;
+        return (<div>
+                <div style={{display: "flex", justifyContent: "flex-end", marginBottom: 12}}>
+                    <Popconfirm title="Закрыть просмотр результатов?" okText="Да" cancelText="Нет" onConfirm={onClose}>
+                        <Button type="primary">Закрыть</Button>
+                    </Popconfirm>
+                </div>
+                <Tabs items={items}/>
+            </div>
+        )
     };
 
-    const renderFooter = () => (
-        <Popconfirm title="Закрываем сверку?" okText="Да" cancelText="Нет" onConfirm={onClose}>
-            <Button type="primary">Закрыть</Button>
-        </Popconfirm>
-    );
 
     return (
-        <MyModal isOpen={isOpen} onClose={onClose} content={renderContent()}
-            footer={renderFooter()} width={1200}
+        <MyModal
+            isOpen={isOpen}
+            onClose={onClose}
+            content={renderContent()}
+            footer={null}
+            width={1280}
         />
     );
 };
