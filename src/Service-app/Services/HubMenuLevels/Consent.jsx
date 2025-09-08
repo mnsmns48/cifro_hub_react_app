@@ -38,7 +38,7 @@ const Consent = ({
                 setTabsData([]);
             })
             .finally(() => setLoading(false));
-    }, [isOpen, vsl_list, path_ids]);
+    }, [isOpen, payload]);
 
     const renderContent = () => {
         if (loading) {
