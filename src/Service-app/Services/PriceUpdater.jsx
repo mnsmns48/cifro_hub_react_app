@@ -136,6 +136,7 @@ const PriceUpdater = () => {
                                                                    confirmText="Предыдущие результаты?"
                                                                    apiUrl="/service/previous_parsing_results"
                                                                    selectedRow={selectedVSLRow}
+                                                                   syncOption={false}
                                                                    onComplete={handleParsingComplete}
                                                                    setProgressLineObj={setProgressLineObj}
                                                                    setIsParsingStarted={setIsParsingStarted}/>
@@ -144,6 +145,7 @@ const PriceUpdater = () => {
                                                                    icon={<SettingOutlined/>}
                                                                    apiUrl="/service/start_parsing"
                                                                    selectedRow={selectedVSLRow}
+                                                                   syncOption={true}
                                                                    onComplete={handleParsingComplete}
                                                                    setProgressLineObj={setProgressLineObj}
                                                                    setIsParsingStarted={setIsParsingStarted}/>

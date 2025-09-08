@@ -7,11 +7,12 @@ const ParsingButtonsCommonComponent = ({
                                            label,
                                            setProgressLineObj,
                                            setIsParsingStarted,
+                                           syncOption,
                                            confirmText,
                                            apiUrl,
                                            selectedRow,
                                            onComplete,
-                                           icon = null
+
                                        }) => {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [syncFeatures, setSyncFeatures] = useState(true);
@@ -52,13 +53,14 @@ const ParsingButtonsCommonComponent = ({
 
     return (
         <>
-            <Button type="primary" icon={icon} style={{marginBottom: 8, marginTop: 15, width: "100%"}}
+            <Button type="primary" style={{marginBottom: 8, marginTop: 15, width: "100%"}}
                     onClick={() => setConfirmOpen(true)}>{label}</Button>
             <MyModal isOpen={confirmOpen}
                      title={confirmText}
-                     onCancel={() => {setConfirmOpen(false); setSyncFeatures(true);}}
+                     onCancel={() => {setConfirmOpen(false)}}
                      content={
-                         <Checkbox checked={syncFeatures} onChange={e => setSyncFeatures(e.target.checked)}>
+                         <Checkbox
+                             onChange={e => setSyncFeatures(e.target.checked)} checked={syncOption}>
                              Синхронизировать характеристики устройств
                          </Checkbox>
                      }
