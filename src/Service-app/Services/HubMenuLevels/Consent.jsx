@@ -15,7 +15,7 @@ const Consent = ({
     const [isRetail, setIsRetail] = useState(false);
 
 
-    const payload = {vsl_list, path_ids};
+    const payload = useMemo(() => ({ vsl_list, path_ids }), [vsl_list, path_ids]);
 
     const columns = useMemo(
         () => getConsentTableColumns(setTabsData),
