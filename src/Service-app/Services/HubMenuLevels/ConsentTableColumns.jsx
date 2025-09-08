@@ -1,5 +1,6 @@
 import TimeDayBlock from "../../../Ui/TimeDateBlock.jsx";
 import {updateParsingItem} from "../PriceUpdater/api.js";
+import PriceBlock from "../../../Ui/PriceBlock.jsx";
 
 function getConsentTableColumns(setTabsData) {
     return [
@@ -57,6 +58,9 @@ function getConsentTableColumns(setTabsData) {
             dataIndex: "hub_input_price",
             key: "hub_input_price",
             align: "center",
+            render: (_, record) => (
+                <PriceBlock value={record.hub_input_price} status={record.status} />
+            ),
             width: 70,
         },
         {
@@ -73,14 +77,18 @@ function getConsentTableColumns(setTabsData) {
             dataIndex: "parsing_input_price",
             key: "parsing_input_price",
             align: "center",
+            render: (_, record) => (
+                <PriceBlock value={record.parsing_input_price} status={record.status} />
+            ),
             width: 70,
         },
         {
-            title: "Профиль",
+            title: "prof",
             dataIndex: "profit_range_id",
             key: "profit_range_id",
-            width: 59,
+            width: 40,
             responsive: ["md"],
+            align: "center",
         },
     ];
 }

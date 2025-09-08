@@ -12,6 +12,7 @@ const Consent = ({
                  }) => {
     const [tabsData, setTabsData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [isRetail, setIsRetail] = useState(false);
 
 
     const payload = {vsl_list, path_ids};
@@ -74,15 +75,37 @@ const Consent = ({
             )
         }));
 
-        return (<div>
-                <div style={{display: "flex", justifyContent: "flex-end", marginBottom: 12}}>
-                    <Popconfirm title="Закрыть просмотр результатов?" okText="Да" cancelText="Нет" onConfirm={onClose}>
+        return (
+            <div>
+                <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 12
+                }}>
+                    <div style={{display: "flex", alignItems: "center", gap: 12}}>
+                        <div style={{fontWeight: 500, fontSize: 16}}>
+                            {isRetail ? "Розничные цены" : "Оптовые цены"}
+                        </div>
+                        <Button onClick={() => setIsRetail(prev => !prev)}>
+                            {isRetail ? "Показать опт" : "Показать розницу"}
+                        </Button>
+                    </div>
+
+                    <Popconfirm
+                        title="Закрыть просмотр результатов?"
+                        okText="Да"
+                        cancelText="Нет"
+                        onConfirm={onClose}
+                    >
                         <Button type="primary">Закрыть</Button>
                     </Popconfirm>
                 </div>
+
+
                 <Tabs items={items}/>
             </div>
-        )
+        );
     };
 
 
