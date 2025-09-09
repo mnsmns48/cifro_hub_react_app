@@ -7,8 +7,7 @@ import UploadImagesModal from "../PriceUpdater/UploadImagesModal.jsx";
 import InfoSelect from "../PriceUpdater/InfoSelect.jsx";
 
 
-
-const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
+const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [loading, setLoading] = useState(false);
     const [items, setItems] = useState([]);
@@ -18,15 +17,13 @@ const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
     const [currentOrigin, setCurrentOrigin] = useState(null);
 
 
-
-
     const handleImageUploaded = useCallback(
-        ({ images, preview }, origin) => {
+        ({images, preview}, origin) => {
             setItems(prev =>
                 prev.map(r =>
                     r.origin !== origin
                         ? r
-                        : { ...r, images, preview }
+                        : {...r, images, preview}
                 )
             );
         },
@@ -49,17 +46,16 @@ const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
     }, [pathId]);
 
 
-
     const handleFieldChange = (origin, field, value) => {
         setItems(prev =>
             prev.map(item =>
-                item.origin === origin ? { ...item, [field]: value } : item
+                item.origin === origin ? {...item, [field]: value} : item
             )
         );
     };
 
     const handleEdit = (record) => {
-        setOriginalRecord({ ...record });
+        setOriginalRecord({...record});
         setEditingKey(record.origin);
     };
 
@@ -110,7 +106,7 @@ const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
         if (selectedRowKeys.length === 0) return;
 
         try {
-            await deleteStockItems({ origins: selectedRowKeys });
+            await deleteStockItems({origins: selectedRowKeys});
             setItems(prev => prev.filter(item => !selectedRowKeys.includes(item.origin)));
             setSelectedRowKeys([]);
             onSelectedOrigins?.([]);
@@ -127,7 +123,7 @@ const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
     const columns = [
         {
             dataIndex: "origin",
-            title: "origin",
+            title: "Код",
             key: "origin",
             width: 20
         },
@@ -140,7 +136,7 @@ const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
                     <input
                         value={record.title}
                         onChange={e => handleFieldChange(record.origin, "title", e.target.value)}
-                        style={{ width: "100%" }}
+                        style={{width: "100%"}}
                     />
                 ) : (
                     text
@@ -162,12 +158,6 @@ const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
             key: "warranty",
             width: 40
         },
-        // {
-        //     dataIndex: "input_price",
-        //     title: "Вход",
-        //     key: "input_price",
-        //     width: 40
-        // },
         {
             dataIndex: "output_price",
             title: "Цена",
@@ -179,16 +169,16 @@ const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
                         type="number"
                         value={value}
                         onChange={e => handleFieldChange(record.origin, "output_price", Number(e.target.value))}
-                        style={{ width: "100%" }}
+                        style={{width: "100%"}}
                     />
                 ) : (
                     value
                 )
         },
         {
-            dataIndex: "updated_at",
-            title: "Обновлено",
-            key: "updated_at",
+            dataIndex: "dt_parsed",
+            title: "Парсинг",
+            key: "dt_parsed",
             width: 40,
             render: val =>
                 val
@@ -202,9 +192,9 @@ const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
                     : "-",
         },
         {
-            dataIndex: "dt_parsed",
-            title: "Получено с источника",
-            key: "dt_parsed",
+            dataIndex: "updated_at",
+            title: "Запись обновлена",
+            key: "updated_at",
             width: 40,
             render: val =>
                 val
@@ -225,13 +215,14 @@ const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
                 <Space>
                     {editingKey === record.origin ? (
                         <>
-                            <Button icon={<SaveOutlined />} type="link" onClick={() => handleSaveEdit()}/>
-                            <Button icon={<RedoOutlined />} type="text" danger onClick={handleCancelEdit}/>
+                            <Button icon={<SaveOutlined/>} type="link" onClick={() => handleSaveEdit()}/>
+                            <Button icon={<RedoOutlined/>} type="text" danger onClick={handleCancelEdit}/>
                         </>
                     ) : (
                         <>
-                            <Button icon={<FileJpgOutlined />} type="text" onClick={() => openImageModal(record.origin)} />
-                            <Button icon={<EditOutlined />} type="link" onClick={() => handleEdit(record)} />
+                            <Button icon={<FileJpgOutlined/>} type="text"
+                                    onClick={() => openImageModal(record.origin)}/>
+                            <Button icon={<EditOutlined/>} type="link" onClick={() => handleEdit(record)}/>
                         </>
                     )}
                 </Space>
@@ -242,14 +233,14 @@ const StockHubItemsTable = ({ pathId, visible = true, onSelectedOrigins  }) => {
     if (!visible) return null;
 
     return loading ? (
-        <div style={{ padding: 12, textAlign: "center", fontSize: 12 }}>
-            <Spin size="small" />
+        <div style={{padding: 12, textAlign: "center", fontSize: 12}}>
+            <Spin size="small"/>
         </div>
     ) : (
-        <div style={{ margin: "10px 0"}}>
+        <div style={{margin: "10px 0"}}>
             {selectedRowKeys.length > 0 && (
                 <Popconfirm title="Удаляем?" okText="Да" cancelText="Нет" onConfirm={handleDeleteItems}>
-                    <Button danger style={{ margin: "0 0 10px 10px" }} icon={<DeleteOutlined />}>
+                    <Button danger style={{margin: "0 0 10px 10px"}} icon={<DeleteOutlined/>}>
                         Удалить ({selectedRowKeys.length})
                     </Button>
                 </Popconfirm>

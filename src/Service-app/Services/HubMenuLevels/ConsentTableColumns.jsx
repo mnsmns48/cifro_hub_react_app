@@ -2,16 +2,30 @@ import TimeDayBlock from "../../../Ui/TimeDateBlock.jsx";
 import {updateParsingItem} from "../PriceUpdater/api.js";
 import PriceBlock from "../../../Ui/PriceBlock.jsx";
 
-function getConsentTableColumns(setTabsData) {
+
+const getConsentTableColumns = (setTabsData, isRetail) => {
+
+    const getPriceFields = (record) => {
+        const hubPrice = isRetail ? record.hub_output_price : record.hub_input_price;
+        const parsingPrice = isRetail ? record.parsing_output_price : record.parsing_input_price;
+        return {hubPrice, parsingPrice};
+    };
+
     return [
         {
-            title: "origin",
+            title: "Код",
             dataIndex: "origin",
             key: "origin",
             width: 80,
             render: (text, record) => (
                 <a href={record.url} target="_blank" rel="noopener noreferrer"
-                    style={{color: "#1677ff", textDecoration: "underline"}}>
+                   style={{
+                       color: "#0c152c",
+                       boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                       borderRadius: '5px',
+                       padding: '4px 8px',
+                       fontWeight: 'bold'
+                   }}>
                     {text}
                 </a>
             )
@@ -19,7 +33,7 @@ function getConsentTableColumns(setTabsData) {
         {
             dataIndex: "title",
             key: "title",
-            width: 365,
+            width: 350,
             ellipsis: true,
             render: (text, record) => (
                 <div
@@ -50,24 +64,40 @@ function getConsentTableColumns(setTabsData) {
             ),
         },
         {
-            title: "Hub last updated",
+            title: "Склад",
+            dataIndex: "optional",
+            key: "optional",
+            width: 120,
+            render: (text) => (
+                <div style={{ fontSize: 10, color: "#141640" }}>
+                    {text}
+                </div>
+            )
+        },
+        {
+            title: "Обновлено на Хабе",
             dataIndex: "hub_updated_at",
             key: "hub_updated_at",
             width: 100,
             align: "center",
-            ellipsis: true,
             render: (value) => <TimeDayBlock isoString={value}/>,
             responsive: ["lg"],
         },
         {
-            title: "Hub Price Now",
+            title: "Цена на Хабе",
             dataIndex: "hub_input_price",
             key: "hub_input_price",
             align: "center",
-            render: (_, record) => (
-                <PriceBlock value={record.hub_input_price} referencePrice={record.parsing_input_price}
-                            status={record.status}/>
-            ),
+            render: (_, record) => {
+                const {hubPrice, parsingPrice} = getPriceFields(record);
+                return (
+                    <PriceBlock
+                        value={hubPrice}
+                        referencePrice={parsingPrice}
+                        status={record.status}
+                    />
+                );
+            },
             width: 70,
         },
         {
@@ -80,23 +110,21 @@ function getConsentTableColumns(setTabsData) {
             responsive: ["lg"]
         },
         {
-            title: "Парсинг Price Now",
+            title: "Цена при парсинге",
             dataIndex: "parsing_input_price",
             key: "parsing_input_price",
             align: "center",
-            render: (_, record) => (
-                <PriceBlock value={record.parsing_input_price} referencePrice={record.hub_input_price}
-                            status={record.status}/>
-            ),
+            render: (_, record) => {
+                const {hubPrice, parsingPrice} = getPriceFields(record);
+                return (
+                    <PriceBlock
+                        value={parsingPrice}
+                        referencePrice={hubPrice}
+                        status={record.status}
+                    />
+                );
+            },
             width: 70,
-        },
-        {
-            title: "prof",
-            dataIndex: "profit_range_id",
-            key: "profit_range_id",
-            width: 40,
-            responsive: ["md"],
-            align: "center",
         },
     ];
 }

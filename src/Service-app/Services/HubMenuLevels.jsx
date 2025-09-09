@@ -1,11 +1,7 @@
 import {useEffect, useState, useCallback, useMemo} from "react";
 import {Tree, Spin, Button} from "antd";
 import {
-    addHubLevel, ComparisonStockItems,
-    deleteHubLevel,
-    fetchHubLevels,
-    renameHubLevel,
-    updateHubItemPosition
+    addHubLevel, ComparisonStockItems, deleteHubLevel, fetchHubLevels, renameHubLevel, updateHubItemPosition
 } from "./HubMenuLevels/api.js";
 import StockHubItemsTable from "./HubMenuLevels/StockHubItemsTable.jsx";
 import TreeDataRender from "./HubMenuLevels/TreeRender.jsx";
@@ -28,7 +24,6 @@ const HubMenuLevels = ({
     const [modalVisible, setModalVisible] = useState(false);
     const [comparisonResult, setComparisonResult] = useState({});
     const [consentVisible, setConsentVisible] = useState(false);
-
 
 
     const loadLevels = useCallback(async () => {
@@ -190,7 +185,10 @@ const HubMenuLevels = ({
                     isOpen={modalVisible}
                     onClose={() => setModalVisible(false)}
                     comparisonObj={comparisonResult}
-                    onConsent={() => {setModalVisible(false); setConsentVisible(true)}}
+                    onConsent={() => {
+                        setModalVisible(false);
+                        setConsentVisible(true)
+                    }}
                 />
             )}
             {consentVisible && (

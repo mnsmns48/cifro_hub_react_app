@@ -1,0 +1,18 @@
+.price-mode-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 25px;
+    padding: 0;
+    height: auto;
+    background: none;
+}
+
+.price-mode-retail {
+    color: #337811;
+}
+
+.price-mode-wholesale {
+    color: #840ea5;
+}
