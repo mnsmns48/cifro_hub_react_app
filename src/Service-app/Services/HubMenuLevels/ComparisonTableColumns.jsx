@@ -1,5 +1,6 @@
 import ComparisonProgress from "./ComparisonProgress.jsx";
 import {Checkbox} from "antd";
+import TimeDayBlock from "../../../Ui/TimeDateBlock.jsx";
 
 
 const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdating)  => [
@@ -29,19 +30,10 @@ const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdat
         render: (text) => text || <span style={{ color: "#999" }}>—</span>,
     },
     {
-        title: "Актуально",
+        title: "Обновлено",
         dataIndex: "dt_parsed",
         key: "dt_parsed",
-        render: (val) =>
-            val
-                ? new Date(val).toLocaleString("ru-RU", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                })
-                : <span style={{ color: "#999" }}>—</span>,
+        render: (value) => <TimeDayBlock isoString={value} />
     },
     {
         dataIndex: "url",

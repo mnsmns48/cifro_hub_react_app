@@ -9,6 +9,12 @@ function getConsentTableColumns(setTabsData) {
             dataIndex: "origin",
             key: "origin",
             width: 80,
+            render: (text, record) => (
+                <a href={record.url} target="_blank" rel="noopener noreferrer"
+                    style={{color: "#1677ff", textDecoration: "underline"}}>
+                    {text}
+                </a>
+            )
         },
         {
             dataIndex: "title",
@@ -20,7 +26,7 @@ function getConsentTableColumns(setTabsData) {
                     contentEditable
                     tabIndex={0}
                     suppressContentEditableWarning
-                    style={{ cursor: "text" }}
+                    style={{cursor: "text"}}
                     onBlur={async (e) => {
                         const newVal = e.target.innerText.trim();
                         if (!newVal || newVal === text) return;
@@ -29,13 +35,13 @@ function getConsentTableColumns(setTabsData) {
                                 ...tab,
                                 items: tab.items.map((item) =>
                                     item.origin === record.origin
-                                        ? { ...item, title: newVal }
+                                        ? {...item, title: newVal}
                                         : item
                                 ),
                             }))
                         );
 
-                        const res = await updateParsingItem(record.origin, { title: newVal });
+                        const res = await updateParsingItem(record.origin, {title: newVal});
                         if (!res?.is_ok) console.error("Ошибка:", res?.message);
                     }}
                 >
@@ -50,7 +56,7 @@ function getConsentTableColumns(setTabsData) {
             width: 100,
             align: "center",
             ellipsis: true,
-            render: (value) => <TimeDayBlock isoString={value} />,
+            render: (value) => <TimeDayBlock isoString={value}/>,
             responsive: ["lg"],
         },
         {
@@ -59,7 +65,8 @@ function getConsentTableColumns(setTabsData) {
             key: "hub_input_price",
             align: "center",
             render: (_, record) => (
-                <PriceBlock value={record.hub_input_price} status={record.status} />
+                <PriceBlock value={record.hub_input_price} referencePrice={record.parsing_input_price}
+                            status={record.status}/>
             ),
             width: 70,
         },
@@ -69,7 +76,7 @@ function getConsentTableColumns(setTabsData) {
             key: "dt_parsed",
             width: 100,
             align: "center",
-            render: (value) => <TimeDayBlock isoString={value} />,
+            render: (value) => <TimeDayBlock isoString={value}/>,
             responsive: ["lg"]
         },
         {
@@ -78,7 +85,8 @@ function getConsentTableColumns(setTabsData) {
             key: "parsing_input_price",
             align: "center",
             render: (_, record) => (
-                <PriceBlock value={record.parsing_input_price} status={record.status} />
+                <PriceBlock value={record.parsing_input_price} referencePrice={record.hub_input_price}
+                            status={record.status}/>
             ),
             width: 70,
         },

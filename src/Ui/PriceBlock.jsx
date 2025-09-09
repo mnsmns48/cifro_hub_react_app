@@ -1,4 +1,5 @@
 import {FallOutlined, RiseOutlined} from "@ant-design/icons";
+import {Tooltip} from "antd";
 
 const PriceDiffStatusColorMap = {
     only_parsing: "#999999",
@@ -13,27 +14,39 @@ function getPriceColorByStatus(status) {
 }
 
 
-const PriceBlock = ({value, status}) => {
+const PriceBlock = ({value, status, referencePrice}) => {
     if (!value) {
         return ""
     }
 
+    const price = Number(value);
+    const color = getPriceColorByStatus(status);
+
+    const diff = referencePrice !== undefined && referencePrice !== null
+        ? Number(value) - Number(referencePrice)
+        : null;
+
     const renderStatusIcon = () => {
-        if (status === "hub_higher") {
-            return <FallOutlined style={styles.iconFall}/>;
+        if (status === "hub_higher" && diff !== null) {
+            return (
+                <Tooltip title={`−${Math.abs(diff).toFixed(2)}`}>
+                    <FallOutlined style={styles.iconFall}/>
+                </Tooltip>
+            );
         }
-        if (status === "parsing_higher") {
-            return <RiseOutlined style={styles.iconRise}/>;
+        if (status === "parsing_higher" && diff !== null) {
+            return (
+                <Tooltip title={`+${Math.abs(diff).toFixed(2)}`}>
+                    <RiseOutlined style={styles.iconRise}/>
+                </Tooltip>
+            );
         }
         return null;
-    }
-
-    const formatted = Number(value);
-    const color = getPriceColorByStatus(status);
+    };
 
     return (
         <div style={styles.wrapper}>
-            <div style={{...styles.priceBase, color}}>{formatted}</div>
+            <div style={{...styles.priceBase, color}}>{price}</div>
             {renderStatusIcon()}
         </div>
     );
@@ -56,12 +69,10 @@ const styles = {
     },
     iconRise: {
         fontSize: "0.9rem",
-        // color: "#B1BC12FF",
         marginTop: 2,
     },
     iconFall: {
         fontSize: "0.9rem",
-        // color: "#c41d1d",        // color: "#c41d1d",
         marginTop: 2,
     },
 };

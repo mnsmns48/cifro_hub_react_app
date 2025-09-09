@@ -14,8 +14,7 @@ const Consent = ({
     const [loading, setLoading] = useState(false);
     const [isRetail, setIsRetail] = useState(false);
 
-
-    const payload = useMemo(() => ({ vsl_list, path_ids }), [vsl_list, path_ids]);
+    const payload = useMemo(() => ({vsl_list, path_ids}), [vsl_list, path_ids]);
 
     const columns = useMemo(
         () => getConsentTableColumns(setTabsData),
@@ -32,6 +31,7 @@ const Consent = ({
         consentDataApiLoad(payload)
             .then(data => {
                 setTabsData(Array.isArray(data) ? data : []);
+                console.log("Полученные данные:", data);
             })
             .catch(err => {
                 console.error("Ошибка загрузки данных:", err);
@@ -101,7 +101,6 @@ const Consent = ({
                         <Button type="primary">Закрыть</Button>
                     </Popconfirm>
                 </div>
-
 
                 <Tabs items={items}/>
             </div>
