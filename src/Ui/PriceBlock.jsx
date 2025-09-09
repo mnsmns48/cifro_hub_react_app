@@ -4,8 +4,8 @@ const PriceDiffStatusColorMap = {
     only_parsing: "#999999",
     only_hub: "#999999",
     equal: "#222222",
-    hub_higher: "#B1BC12FF",
-    parsing_higher: "#c41d1d",
+    hub_higher: "#ed8000",
+    parsing_higher: "#86a305",
 };
 
 function getPriceColorByStatus(status) {
@@ -56,12 +56,12 @@ const styles = {
     },
     iconRise: {
         fontSize: "0.9rem",
-        color: "#c41d1d",
+        // color: "#B1BC12FF",
         marginTop: 2,
     },
     iconFall: {
         fontSize: "0.9rem",
-        color: "#B1BC12FF",
+        // color: "#c41d1d",        // color: "#c41d1d",
         marginTop: 2,
     },
 };
