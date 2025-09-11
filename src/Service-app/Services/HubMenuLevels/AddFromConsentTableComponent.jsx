@@ -1,14 +1,14 @@
 import MyModal from "../../../Ui/MyModal.jsx";
 import {Button} from "antd";
 
-const AddFromConsentTableComponent = ({ path_ids = [], origins = [], isOpen, onClose }) => {
+const AddFromConsentTableComponent = ({path_ids = [], origins = [], isOpen, onClose}) => {
     return (
         <MyModal
             isOpen={isOpen}
             onCancel={onClose}
             title="Обновляем"
             content={
-                <div style={{ padding: 16 }}>
+                <div style={{padding: 16}}>
                     <h3>Path IDs</h3>
                     <ul>
                         {path_ids.map((id, index) => (
@@ -27,9 +27,14 @@ const AddFromConsentTableComponent = ({ path_ids = [], origins = [], isOpen, onC
                 </div>
             }
             footer={
-                <Button type="primary" onClick={onClose} style={{ padding: "6px 12px" }}>
-                    Закрыть
-                </Button>
+                <>
+                    <Button type="primary" onClick={onClose} style={{padding: "6px 12px"}}>
+                        Закрыть
+                    </Button>
+                    <Button type="primary" onClick={onClose} style={{padding: "6px 12px"}}>
+                        Закрыть
+                    </Button>
+                </>
             }
             width={800}
         />

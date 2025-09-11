@@ -10,8 +10,6 @@
     padding: 0;
     background: none;
     border: none;
-    cursor: pointer;
-    transition: all 0.7s ease;
 }
 
 .price-mode-retail {
@@ -39,7 +37,7 @@
     border: none;
 }
 
-/* Переопределяем все состояния */
+
 .smart-update-button:hover,
 .smart-update-button:focus,
 .smart-update-button:active {
