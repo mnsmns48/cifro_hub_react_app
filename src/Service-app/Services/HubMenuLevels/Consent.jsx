@@ -116,33 +116,67 @@ const Consent = ({
         }));
 
         return (
-            <div>
-                <div style={{
-                    display: "flex",
-                    justifyContent: "end",
-                    alignItems: "center",
-                }}>
-                    <div style={{display: "flex", alignItems: "center", gap: 20, margin: 20}}>
-                        {selectedRowKeys.length === 0 && (
-                            <Button
-                                icon={<ExclamationCircleOutlined />}
-                                className="smart-update-button"
-                                onClick={() => setShowUpdateComponent(true)}
-                            >
-                                Умное обновление цен
-                            </Button>
-                        )}
-                        <Tooltip title={isRetail ? "Показать входящие оптовые цены" : "Показать цены Хаба"}>
-                            <Button
-                                type="text"
-                                onClick={() => setIsRetail(prev => !prev)}
-                                className={`price-mode-button ${isRetail ? "price-mode-retail" : "price-mode-wholesale"}`}
-                            >
-                                {isRetail ? <ShopOutlined/> : <TagOutlined/>}
-                                {isRetail ? "Розничные цены" : "Оптовые цены"}
-                            </Button>
-                        </Tooltip>
+            <div style={{display: 'flex', flexDirection: 'column'}}>
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        margin: '20px',
+                    }}
+                >
+                    <div style={{display: 'flex', alignItems: 'center', gap: 20}}>
+                        <div style={{flex: '0 0 254px'}}>
+                            {selectedRowKeys.length === 0 && (
+                                <Button
+                                    icon={<ExclamationCircleOutlined/>}
+                                    className="smart-update-button"
+                                    onClick={() => setShowUpdateComponent(true)}
+                                >
+                                    Умное обновление цен
+                                </Button>
+                            )}
+                        </div>
 
+                        <div style={{flex: '0 0 180px'}}>
+                            <Tooltip
+                                title={
+                                    isRetail
+                                        ? 'Показать входящие оптовые цены'
+                                        : 'Показать цены Хаба'
+                                }
+                            >
+                                <Button
+                                    type="text"
+                                    onClick={() => setIsRetail((prev) => !prev)}
+                                    className={`price-mode-button ${isRetail ? "price-mode-retail" : "price-mode-wholesale"}`}
+                                >
+                                    {isRetail ? <ShopOutlined/> : <TagOutlined/>}
+                                    {isRetail ? 'Розничные цены' : 'Оптовые цены'}
+                                </Button>
+                            </Tooltip>
+                        </div>
+
+                        {selectedRowKeys.length > 0 && (
+                            <>
+                                <Button
+                                    icon={<RedoOutlined/>}
+                                    onClick={handleOpenUpdateComponent}
+                                >
+                                    Пересчитать цены ({selectedRowKeys.length})
+                                </Button>
+                                <Popconfirm
+                                    title="Удаляем?"
+                                    okText="Да"
+                                    cancelText="Нет"
+                                    onConfirm={handleDeleteItems}
+                                >
+                                    <Button danger icon={<DeleteOutlined/>}>
+                                        Удалить ({selectedRowKeys.length})
+                                    </Button>
+                                </Popconfirm>
+                            </>
+                        )}
                     </div>
 
                     <Popconfirm
@@ -154,20 +188,12 @@ const Consent = ({
                         <Button type="primary">Закрыть</Button>
                     </Popconfirm>
                 </div>
-                {selectedRowKeys.length > 0 && (
-                    <div style={{display: "flex", gap: 20, marginBottom: 20}}>
-                        <Button secondary icon={<RedoOutlined/>} onClick={handleOpenUpdateComponent}
-                        >Пересчитать цены ({selectedRowKeys.length})</Button>
-                        <Popconfirm title="Удаляем?" okText="Да" cancelText="Нет" onConfirm={handleDeleteItems}>
-                            <Button danger icon={<DeleteOutlined/>}>
-                                Удалить ({selectedRowKeys.length})
-                            </Button>
-                        </Popconfirm>
-                    </div>
-                )}
+
                 <Tabs items={items}/>
+
+
                 {showUpdateComponent && selectedRowKeys.length > 0 && (
-                    <div style={{marginTop: 24}}>
+                    <div style={{margin: '24px 20px'}}>
                         <AddFromConsentTableComponent
                             path_ids={path_ids}
                             origins={selectedRowKeys}
@@ -177,7 +203,6 @@ const Consent = ({
                     </div>
                 )}
             </div>
-
         );
     };
 
