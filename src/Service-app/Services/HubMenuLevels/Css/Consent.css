@@ -1,12 +1,17 @@
 .price-mode-button {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     font-weight: 600;
-    font-size: 25px;
+    font-size: 18px;
+    width: 220px;
+    height: 48px;
     padding: 0;
-    height: auto;
     background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.7s ease;
 }
 
 .price-mode-retail {
@@ -16,3 +21,33 @@
 .price-mode-wholesale {
     color: #840ea5;
 }
+
+
+.smart-update-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 20px;
+    padding: 4px 12px;
+    height: auto;
+    background: #000000;
+    border-radius: 20px;
+    color: #ece912;
+    transition: transform 0.2s ease;
+    border: none;
+}
+
+/* Переопределяем все состояния */
+.smart-update-button:hover,
+.smart-update-button:focus,
+.smart-update-button:active {
+    color: #ece912 !important;
+    background: #000000 !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    transform: scale(1.1);
+}
+

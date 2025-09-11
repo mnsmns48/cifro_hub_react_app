@@ -3,8 +3,17 @@ import {Table, Spin, Button, Popconfirm, Tabs, Tooltip} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
 import {consentDataApiLoad, deleteStockItems} from "./api.js";
 import getConsentTableColumns from "./ConsentTableColumns.jsx";
-import {DeleteOutlined, ShopOutlined, TagOutlined} from "@ant-design/icons";
+import {
+    DeleteOutlined,
+    ExclamationCircleOutlined,
+    ExclamationOutlined,
+    RedoOutlined,
+    ShopOutlined,
+    TagOutlined
+} from "@ant-design/icons";
 import "./Css/Consent.css";
+import AddFromConsentTableComponent from "./AddFromConsentTableComponent.jsx";
+
 
 const Consent = ({
                      comparisonObj: {vsl_list, path_ids},
@@ -15,6 +24,8 @@ const Consent = ({
     const [tabsData, setTabsData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isRetail, setIsRetail] = useState(false);
+    const [showUpdateComponent, setShowUpdateComponent] = useState(false);
+
 
     const payload = useMemo(() => ({vsl_list, path_ids}), [vsl_list, path_ids]);
 
@@ -34,6 +45,7 @@ const Consent = ({
             .then(data => {
                 setTabsData(Array.isArray(data) ? data : []);
             })
+
             .catch(err => {
                 console.error("Ошибка загрузки данных:", err);
                 setTabsData([]);
@@ -59,6 +71,11 @@ const Consent = ({
         }
     };
 
+    const handleOpenUpdateComponent = () => {
+        setShowUpdateComponent(true);
+    };
+
+
     const renderContent = () => {
         if (loading) {
             return (
@@ -80,7 +97,7 @@ const Consent = ({
             key: String(tab.path_id),
             label: tab.label,
             children: (
-                <div style={{width: 1220, overflowX: 'auto'}}>
+                <div style={{width: 1250, overflowX: 'auto'}}>
                     <Table
                         rowKey="origin"
                         dataSource={tab.items || []}
@@ -100,8 +117,21 @@ const Consent = ({
 
         return (
             <div>
-                <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12}}>
-                    <div style={{display: "flex", alignItems: "center", gap: 50}}>
+                <div style={{
+                    display: "flex",
+                    justifyContent: "end",
+                    alignItems: "center",
+                }}>
+                    <div style={{display: "flex", alignItems: "center", gap: 20, margin: 20}}>
+                        {selectedRowKeys.length === 0 && (
+                            <Button
+                                icon={<ExclamationCircleOutlined />}
+                                className="smart-update-button"
+                                onClick={() => setShowUpdateComponent(true)}
+                            >
+                                Умное обновление цен
+                            </Button>
+                        )}
                         <Tooltip title={isRetail ? "Показать входящие оптовые цены" : "Показать цены Хаба"}>
                             <Button
                                 type="text"
@@ -112,6 +142,7 @@ const Consent = ({
                                 {isRetail ? "Розничные цены" : "Оптовые цены"}
                             </Button>
                         </Tooltip>
+
                     </div>
 
                     <Popconfirm
@@ -122,32 +153,37 @@ const Consent = ({
                     >
                         <Button type="primary">Закрыть</Button>
                     </Popconfirm>
-
                 </div>
-                <div style={{display: "flex", justifyContent: "start", alignItems: "left", marginBottom: 12}}>
-                    {selectedRowKeys.length > 0 && (
+                {selectedRowKeys.length > 0 && (
+                    <div style={{display: "flex", gap: 20, marginBottom: 20}}>
+                        <Button secondary icon={<RedoOutlined/>} onClick={handleOpenUpdateComponent}
+                        >Пересчитать цены ({selectedRowKeys.length})</Button>
                         <Popconfirm title="Удаляем?" okText="Да" cancelText="Нет" onConfirm={handleDeleteItems}>
-                            <Button danger style={{margin: "0 0 10px 10px"}} icon={<DeleteOutlined/>}>
+                            <Button danger icon={<DeleteOutlined/>}>
                                 Удалить ({selectedRowKeys.length})
                             </Button>
                         </Popconfirm>
-
-                    )}
-                </div>
+                    </div>
+                )}
                 <Tabs items={items}/>
+                {showUpdateComponent && selectedRowKeys.length > 0 && (
+                    <div style={{marginTop: 24}}>
+                        <AddFromConsentTableComponent
+                            path_ids={path_ids}
+                            origins={selectedRowKeys}
+                            isOpen={showUpdateComponent}
+                            onClose={() => setShowUpdateComponent(false)}
+                        />
+                    </div>
+                )}
             </div>
+
         );
     };
 
 
     return (
-        <MyModal
-            isOpen={isOpen}
-            onClose={onClose}
-            content={renderContent()}
-            footer={null}
-            width={1280}
-        />
+        <MyModal isOpen={isOpen} onClose={onClose} content={renderContent()} footer={null} width={1280}/>
     );
 };
 
