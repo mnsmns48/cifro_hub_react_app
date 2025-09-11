@@ -1,9 +1,9 @@
 import {useEffect, useMemo, useState} from "react";
 import {Table, Spin, Button, Popconfirm, Tabs, Tooltip} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
-import {consentDataApiLoad} from "./api.js";
+import {consentDataApiLoad, deleteStockItems} from "./api.js";
 import getConsentTableColumns from "./ConsentTableColumns.jsx";
-import {ShopOutlined, TagOutlined} from "@ant-design/icons";
+import {DeleteOutlined, ShopOutlined, TagOutlined} from "@ant-design/icons";
 import "./Css/Consent.css";
 
 const Consent = ({
@@ -40,6 +40,24 @@ const Consent = ({
             })
             .finally(() => setLoading(false));
     }, [isOpen, payload]);
+
+
+    const handleDeleteItems = async () => {
+        if (selectedRowKeys.length === 0) return;
+
+        try {
+            await deleteStockItems({origins: selectedRowKeys});
+            const updatedTabs = tabsData.map(tab => ({
+                ...tab,
+                items: (tab.items || []).filter(item => !selectedRowKeys.includes(item.origin))
+            }));
+            setTabsData(updatedTabs);
+            setSelectedRowKeys([]);
+
+        } catch (error) {
+            console.error("Ошибка при удалении:", error);
+        }
+    };
 
     const renderContent = () => {
         if (loading) {
@@ -104,8 +122,18 @@ const Consent = ({
                     >
                         <Button type="primary">Закрыть</Button>
                     </Popconfirm>
-                </div>
 
+                </div>
+                <div style={{display: "flex", justifyContent: "start", alignItems: "left", marginBottom: 12}}>
+                    {selectedRowKeys.length > 0 && (
+                        <Popconfirm title="Удаляем?" okText="Да" cancelText="Нет" onConfirm={handleDeleteItems}>
+                            <Button danger style={{margin: "0 0 10px 10px"}} icon={<DeleteOutlined/>}>
+                                Удалить ({selectedRowKeys.length})
+                            </Button>
+                        </Popconfirm>
+
+                    )}
+                </div>
                 <Tabs items={items}/>
             </div>
         );
