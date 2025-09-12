@@ -89,7 +89,8 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
                             ...item,
                             title: response.new_title,
                             output_price: response.new_price,
-                            updated_at: response.updated_at ?? item.updated_at
+                            updated_at: response.updated_at ?? item.updated_at,
+                            profit_range_id: response.profit_range_id,
                         }
                         : item
                 )

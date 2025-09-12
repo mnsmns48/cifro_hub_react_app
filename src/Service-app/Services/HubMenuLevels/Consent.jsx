@@ -31,6 +31,7 @@ const Consent = ({
 
     const columns = useMemo(
         () => getConsentTableColumns(setTabsData, isRetail),
+
         [setTabsData, isRetail]
     );
 
@@ -188,8 +189,11 @@ const Consent = ({
 
                 {showUpdateComponent && (
                     <div>
-                        <AddFromConsentTableComponent path_ids={path_ids} origins={selectedRowKeys}
-                            isOpen={showUpdateComponent} onClose={() => setShowUpdateComponent(false)}/>
+                        <AddFromConsentTableComponent
+                            path_ids={tabsData.map(item => item.path_id)}
+                            origins={selectedRowKeys}
+                            isOpen={showUpdateComponent}
+                            onClose={() => setShowUpdateComponent(false)}/>
                     </div>
                 )}
             </div>

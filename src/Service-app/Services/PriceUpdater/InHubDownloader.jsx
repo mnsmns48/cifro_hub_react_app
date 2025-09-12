@@ -18,15 +18,20 @@ const InHubDownloader = ({
     const handleAddToHub = async () => {
         if (selectedPathId == null) return;
         setSaving(true);
-        const stocksPayload = items.map(item => ({
-            origin: item.origin,
-            pathId: selectedPathId,
-            warranty: item.warranty,
-            inputPrice: item.input_price,
-            outputPrice: item.output_price
-        }));
+        const stocksPayload = {
+            vsl_id: vslId,
+            stocks: items.map(item => ({
+                origin: item.origin,
+                path_id: selectedPathId,
+                warranty: item.warranty,
+                input_price: item.input_price,
+                output_price: item.output_price,
+                profit_range_id: item.profit_range_id
+            }))
+        };
+
         try {
-            const result = await createHubLoading({vsl_id: vslId, stocks: stocksPayload});
+            const result = await createHubLoading(stocksPayload);
             if (result?.status === true) {
                 onConfirm("Позиции успешно добавлены в хаб");
             } else {

@@ -74,17 +74,8 @@ export async function fetchStockHubItems(pathId) {
     }
 }
 
-export async function createHubLoading({vsl_id, stocks}) {
-    const payload = {
-        vsl_id,
-        stocks: stocks.map(({origin, pathId, warranty, inputPrice, outputPrice}) => ({
-            origin,
-            path_id: pathId,
-            warranty,
-            input_price: inputPrice,
-            output_price: outputPrice,
-        })),
-    };
+export async function createHubLoading(payload) {
+    console.log(payload)
     try {
         const response = await axios.post('/service/load_items_in_hub', payload);
         return response.data;
@@ -135,5 +126,10 @@ export const startParsing = async (payload) => {
 
 export const consentDataApiLoad = async (payload) => {
     const response = await axios.post(`/service/give_me_consent`, payload);
+    return response.data;
+};
+
+export const reCalculateApiLoad = async (payload) => {
+    const response = await axios.post(`/service/recompute_output_prices`, payload);
     return response.data;
 };

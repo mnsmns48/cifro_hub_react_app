@@ -59,13 +59,14 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
             }}
                    onRow={(record) => ({
                        onClick: () => {
-                           if (selectedRowKeys.includes(record.id)) {
+                           if (Array.isArray(selectedRowKeys) && selectedRowKeys.includes(record.id)) {
                                setSelectedRowKeys([]);
                                setSelectedRow(null);
                            } else {
                                setSelectedRowKeys([record.id]);
                                setSelectedRow(record);
                            }
+
                        }
                    })}
                    columns={UrlSelectionTableColumns({
