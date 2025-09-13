@@ -157,15 +157,8 @@ const HubMenuLevels = ({
         </div>
     ) : (
         <>
-            <Tree
-                draggable
-                blockNode
-                expandedKeys={expandedKeys}
-                onExpand={setExpandedKeys}
-                treeData={treeData}
-                onDrop={onDrop}
-                onSelect={handleSelect}
-            />
+            <Tree draggable blockNode expandedKeys={expandedKeys} onExpand={setExpandedKeys}
+                treeData={treeData} onDrop={onDrop} onSelect={handleSelect}/>
             {activePathId != null && (
                 <StockHubItemsTable
                     pathId={activePathId} selectedRowKeys={[]} onSelectedOrigins={setSelectedItems}

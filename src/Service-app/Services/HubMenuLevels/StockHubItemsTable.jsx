@@ -5,6 +5,7 @@ import "./Css/Tree.css";
 import {EditOutlined, SaveOutlined, RedoOutlined, FileJpgOutlined, DeleteOutlined} from "@ant-design/icons";
 import UploadImagesModal from "../PriceUpdater/UploadImagesModal.jsx";
 import InfoSelect from "../PriceUpdater/InfoSelect.jsx";
+import OneItemProfileRewardSelector from "../../../Ui/OneItemProfileRewardSelector.jsx";
 
 
 const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
@@ -36,6 +37,7 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
         fetchStockHubItems(pathId)
             .then(data => {
                 setItems(data);
+                console.log('data', data);
             })
             .finally(() => setLoading(false));
     }, [pathId, visible]);
@@ -81,20 +83,22 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
                 new_price: editingRowData.output_price
             };
             const response = await renameOrChangePriceStockItem(payload);
-
             setItems(prev =>
-                prev.map(item =>
-                    item.origin === response.origin
-                        ? {
-                            ...item,
-                            title: response.new_title,
-                            output_price: response.new_price,
-                            updated_at: response.updated_at ?? item.updated_at,
-                            profit_range_id: response.profit_range_id,
-                        }
-                        : item
-                )
+                prev.map(item => {
+                    if (item.origin !== response.origin) return item;
+
+                    const priceChanged = item.output_price !== response.new_price;
+
+                    return {
+                        ...item,
+                        title: response.new_title,
+                        output_price: response.new_price,
+                        updated_at: response.updated_at ?? item.updated_at,
+                        profit_range: priceChanged ? null : item.profit_range,
+                    };
+                })
             );
+
         } catch (error) {
             console.error("Ошибка при сохранении изменений:", error);
         } finally {
@@ -173,8 +177,16 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
                         style={{width: "100%"}}
                     />
                 ) : (
-                    value
+                    <div className="table_output_price">{value}</div>
                 )
+        },
+        {
+            dataIndex: "profit_range",
+            title: "Профиль",
+            key: "profit_range",
+            width: 100,
+            render: (_, record) => <OneItemProfileRewardSelector profit_range={record.profit_range}
+            />
         },
         {
             dataIndex: "dt_parsed",
@@ -247,29 +259,26 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
                 </Popconfirm>
 
             )}
-            <Table
-                className="stockHubTable"
-                dataSource={items}
-                columns={columns}
-                rowKey="origin"
-                pagination={false}
-                size="small"
-                rowSelection={{
-                    selectedRowKeys,
-                    onChange: (keys) => {
-                        setSelectedRowKeys(keys);
-                        const selectedItems = items.filter(item => keys.includes(item.origin));
-                        onSelectedOrigins?.(selectedItems);
-                    }
-                }}
+            <Table className="stockHubTable"
+                   dataSource={items}
+                   columns={columns}
+                   rowKey="origin"
+                   pagination={false}
+                   size="small"
+                   rowSelection={{
+                       selectedRowKeys,
+                       onChange: (keys) => {
+                           setSelectedRowKeys(keys);
+                           const selectedItems = items.filter(item => keys.includes(item.origin));
+                           onSelectedOrigins?.(selectedItems);
+                       }
+                   }}
 
             />
             <UploadImagesModal
-                isOpen={uploadModalOpen}
-                originCode={currentOrigin}
+                isOpen={uploadModalOpen} originCode={currentOrigin}
                 onClose={() => setUploadModalOpen(false)}
-                onUploaded={(data) => handleImageUploaded(data, currentOrigin)}
-            />
+                onUploaded={(data) => handleImageUploaded(data, currentOrigin)}/>
         </div>
 
     );

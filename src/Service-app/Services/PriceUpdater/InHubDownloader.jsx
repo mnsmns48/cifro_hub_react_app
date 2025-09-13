@@ -26,7 +26,7 @@ const InHubDownloader = ({
                 warranty: item.warranty,
                 input_price: item.input_price,
                 output_price: item.output_price,
-                profit_range_id: item.profit_range_id
+                profit_range: item.profit_range
             }))
         };
 
