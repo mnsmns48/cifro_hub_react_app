@@ -1,47 +1,32 @@
 import {Select, Button, Space, Popconfirm} from "antd";
-import {useEffect, useState} from "react";
-import {fetchRangeRewardsProfiles} from "../Service-app/Services/RewardRangeSettings/api.js";
+import {useState, useEffect} from "react";
 
-const OneItemProfileRewardSelector = ({profit_range, onApplyProfile}) => {
+const OneItemProfileRewardSelector = ({profit_range, profiles, onApplyProfile}) => {
     const [options, setOptions] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [selectedId, setSelectedId] = useState(profit_range?.id ?? null);
     const [pendingId, setPendingId] = useState(null);
 
     useEffect(() => {
-        const loadOptions = async () => {
-            setLoading(true);
-            try {
-                const data = await fetchRangeRewardsProfiles();
-                const formatted = data.map(item => ({
-                    label: item.title,
-                    value: item.id
-                }));
+        const formatted = profiles.map(item => ({
+            label: item.title,
+            value: item.id
+        }));
 
-                if (profit_range && !formatted.some(opt => opt.value === profit_range.id)) {
-                    formatted.unshift({
-                        label: profit_range.title,
-                        value: profit_range.id
-                    });
-                }
-                setOptions(formatted);
-            } catch (error) {
-                console.error("Ошибка загрузки профилей:", error);
-                setOptions([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        void loadOptions();
-    }, [profit_range]);
+        if (profit_range && !formatted.some(opt => opt.value === profit_range.id)) {
+            formatted.unshift({
+                label: profit_range.title,
+                value: profit_range.id
+            });
+        }
+        setOptions(formatted);
+    }, [profiles, profit_range]);
 
     const handleSelectChange = (value) => {
         setPendingId(value);
     };
 
     const confirmApply = () => {
-        if (pendingId) {
+        if (pendingId !== null) {
             setSelectedId(pendingId);
             onApplyProfile?.(pendingId);
             setPendingId(null);
@@ -57,13 +42,12 @@ const OneItemProfileRewardSelector = ({profit_range, onApplyProfile}) => {
             <Select
                 value={selectedId}
                 style={{flex: 1}}
-                loading={loading}
                 onChange={handleSelectChange}
                 placeholder="Отсутствует"
                 options={options}
                 allowClear
             />
-            {pendingId && (
+            {pendingId !== null && (
                 <Popconfirm
                     title="Пересчитать цену по выбранному профилю?"
                     onConfirm={confirmApply}

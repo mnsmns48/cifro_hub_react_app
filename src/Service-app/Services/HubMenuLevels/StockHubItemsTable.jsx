@@ -8,6 +8,7 @@ import InfoSelect from "../PriceUpdater/InfoSelect.jsx";
 import OneItemProfileRewardSelector from "../../../Ui/OneItemProfileRewardSelector.jsx";
 
 
+
 const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -88,18 +89,17 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
             const payload = {};
 
             if (titleChanged) {
-                payload.title_updates = {};
-                payload.title_updates[origin] = title;
+                payload.title_update = {};
+                payload.title_update[origin] = title;
             }
 
             if (priceChanged) {
-                payload.price_updates = [{
+                payload.price_update = [{
                     origin: origin,
                     new_price: newPrice
                 }];
 
             }
-
             const responses = await updateStockItem(payload);
 
             setItems(prev =>
@@ -231,10 +231,10 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
             title: "Профиль",
             key: "profit_range",
             width: 100,
-            // render: (_, record) => <OneItemProfileRewardSelector
-            //     profit_range={record.profit_range}
-            //     onApplyProfile={(selectedId) => handleApplyProfile(record.origin, selectedId)}
-            // />
+            render: (_, record) => <OneItemProfileRewardSelector
+                profit_range={record.profit_range}
+                onApplyProfile={(selectedId) => handleApplyProfile(record.origin, selectedId)}
+            />
 
         },
         {
