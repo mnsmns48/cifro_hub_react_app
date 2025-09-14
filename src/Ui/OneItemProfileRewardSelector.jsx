@@ -1,38 +1,29 @@
-import {Select} from "antd";
+import {Select, Button, Space, Popconfirm} from "antd";
 import {useEffect, useState} from "react";
 import {fetchRangeRewardsProfiles} from "../Service-app/Services/RewardRangeSettings/api.js";
 
-
-const OneItemProfileRewardSelector = ({profit_range, onChange}) => {
+const OneItemProfileRewardSelector = ({profit_range, onApplyProfile}) => {
     const [options, setOptions] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [selectedValue, setSelectedValue] = useState(profit_range?.id ?? null);
+    const [selectedId, setSelectedId] = useState(profit_range?.id ?? null);
+    const [pendingId, setPendingId] = useState(null);
 
     useEffect(() => {
-        setSelectedValue(profit_range?.id ?? null);
-    }, [profit_range]);
-
-
-    useEffect(() => {
-        const loadInitialOptions = async () => {
+        const loadOptions = async () => {
             setLoading(true);
             try {
                 const data = await fetchRangeRewardsProfiles();
-                const formatted = data.map((item) => ({
+                const formatted = data.map(item => ({
                     label: item.title,
-                    value: item.id,
+                    value: item.id
                 }));
 
-                if (
-                    profit_range &&
-                    !formatted.some((opt) => opt.value === profit_range.id)
-                ) {
+                if (profit_range && !formatted.some(opt => opt.value === profit_range.id)) {
                     formatted.unshift({
                         label: profit_range.title,
-                        value: profit_range.id,
+                        value: profit_range.id
                     });
                 }
-
                 setOptions(formatted);
             } catch (error) {
                 console.error("Ошибка загрузки профилей:", error);
@@ -42,24 +33,48 @@ const OneItemProfileRewardSelector = ({profit_range, onChange}) => {
             }
         };
 
-        void loadInitialOptions();
+        void loadOptions();
     }, [profit_range]);
 
-    const handleChange = (value) => {
-        setSelectedValue(value);
-        onChange?.(value);
+    const handleSelectChange = (value) => {
+        setPendingId(value);
+    };
+
+    const confirmApply = () => {
+        if (pendingId) {
+            setSelectedId(pendingId);
+            onApplyProfile?.(pendingId);
+            setPendingId(null);
+        }
+    };
+
+    const cancelApply = () => {
+        setPendingId(null);
     };
 
     return (
-        <Select
-            value={selectedValue}
-            style={{width: "100%"}}
-            loading={loading}
-            onChange={handleChange}
-            placeholder="Отсутствет"
-            options={options}
-            allowClear
-        />
+        <Space style={{width: "100%"}}>
+            <Select
+                value={selectedId}
+                style={{flex: 1}}
+                loading={loading}
+                onChange={handleSelectChange}
+                placeholder="Отсутствует"
+                options={options}
+                allowClear
+            />
+            {pendingId && (
+                <Popconfirm
+                    title="Пересчитать цену по выбранному профилю?"
+                    onConfirm={confirmApply}
+                    onCancel={cancelApply}
+                    okText="Да"
+                    cancelText="Нет"
+                >
+                    <Button type="primary">Применить</Button>
+                </Popconfirm>
+            )}
+        </Space>
     );
 };
 

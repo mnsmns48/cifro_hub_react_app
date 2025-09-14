@@ -89,7 +89,7 @@ const Consent = ({
         if (loading) {
             return (
                 <div style={{textAlign: "center", padding: 24}}>
-                    <Spin tip="Загрузка данных..."/>
+                    <Spin />
                 </div>
             );
         }

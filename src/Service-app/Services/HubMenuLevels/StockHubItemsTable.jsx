@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
 import {Table, Spin, Space, Button, Popconfirm} from "antd";
-import {deleteStockItems, fetchStockHubItems, renameOrChangePriceStockItem} from "./api.js";
+import {deleteStockItems, fetchStockHubItems, updateStockItem} from "./api.js";
 import "./Css/Tree.css";
 import {EditOutlined, SaveOutlined, RedoOutlined, FileJpgOutlined, DeleteOutlined} from "@ant-design/icons";
 import UploadImagesModal from "../PriceUpdater/UploadImagesModal.jsx";
@@ -77,28 +77,45 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
 
     const handleSaveEdit = async () => {
         try {
-            const payload = {
-                origin: editingRowData.origin,
-                title: editingRowData.title,
-                new_price: editingRowData.output_price
-            };
-            const response = await renameOrChangePriceStockItem(payload);
+            const origin = editingRowData.origin;
+            const title = editingRowData.title;
+            const newPrice = editingRowData.output_price;
+
+            const original = originalRecord;
+            const titleChanged = original.title !== title;
+            const priceChanged = original.output_price !== newPrice;
+
+            const payload = {};
+
+            if (titleChanged) {
+                payload.title_updates = {};
+                payload.title_updates[origin] = title;
+            }
+
+            if (priceChanged) {
+                payload.price_updates = [{
+                    origin: origin,
+                    new_price: newPrice
+                }];
+
+            }
+
+            const responses = await updateStockItem(payload);
+
             setItems(prev =>
                 prev.map(item => {
-                    if (item.origin !== response.origin) return item;
-
-                    const priceChanged = item.output_price !== response.new_price;
+                    const updated = responses.find(r => r.origin === item.origin);
+                    if (!updated) return item;
 
                     return {
                         ...item,
-                        title: response.new_title,
-                        output_price: response.new_price,
-                        updated_at: response.updated_at ?? item.updated_at,
-                        profit_range: priceChanged ? null : item.profit_range,
+                        title: updated.new_title,
+                        output_price: updated.new_price,
+                        updated_at: updated.updated_at || item.updated_at,
+                        profit_range: updated.profit_range || null
                     };
                 })
             );
-
         } catch (error) {
             console.error("Ошибка при сохранении изменений:", error);
         } finally {
@@ -106,6 +123,35 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
             setOriginalRecord(null);
         }
     };
+
+    const handleApplyProfile = async (origin, selectedProfitRangeId) => {
+        try {
+            const payload = {
+                price_updates: [{origin: origin, new_price: 0}],
+                new_profit_range_id: selectedProfitRangeId
+            };
+
+            const responses = await updateStockItem(payload);
+            const updated = responses.find(r => r.origin === origin);
+            if (!updated) return;
+
+            setItems(prev =>
+                prev.map(item =>
+                    item.origin === origin
+                        ? {
+                            ...item,
+                            output_price: updated.new_price,
+                            updated_at: updated.updated_at || item.updated_at,
+                            profit_range: updated.profit_range || null
+                        }
+                        : item
+                )
+            );
+        } catch (error) {
+            console.error("Ошибка при применении профиля:", error);
+        }
+    };
+
 
     const handleDeleteItems = async () => {
         if (selectedRowKeys.length === 0) return;
@@ -185,8 +231,11 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
             title: "Профиль",
             key: "profit_range",
             width: 100,
-            render: (_, record) => <OneItemProfileRewardSelector profit_range={record.profit_range}
-            />
+            // render: (_, record) => <OneItemProfileRewardSelector
+            //     profit_range={record.profit_range}
+            //     onApplyProfile={(selectedId) => handleApplyProfile(record.origin, selectedId)}
+            // />
+
         },
         {
             dataIndex: "dt_parsed",

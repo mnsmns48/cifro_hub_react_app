@@ -153,7 +153,7 @@ const HubMenuLevels = ({
 
     return loading ? (
         <div style={{padding: 24, textAlign: "center"}}>
-            <Spin tip="Загрузка уровней" size="large"/>
+            <Spin size="large"/>
         </div>
     ) : (
         <>

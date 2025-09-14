@@ -89,9 +89,9 @@ export async function createHubLoading(payload) {
 }
 
 
-export const renameOrChangePriceStockItem = async (payload) => {
+export const updateStockItem = async (payload) => {
     try {
-        const response = await axios.patch(`/service/rename_or_change_price_stock_item`, payload);
+        const response = await axios.post(`/service/update_stock_items`, payload);
         return response.data;
     } catch (error) {
         console.error('Ошибка при обновлении товара:', error);
