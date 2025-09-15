@@ -89,7 +89,6 @@ export const deleteRewardRangeLine = async (lineId) => {
 
 
 export const addRewardRangeLine = async (newLineData) => {
-    console.log('newLineData', newLineData);
     try {
         const response = await axios.post("/service/add_reward_range_line", newLineData);
         return response.data;

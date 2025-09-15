@@ -41,8 +41,7 @@ const Vendors = () => {
 
     const handleSave = (id) => {
         axios.put(`/service/vendors/${id}`, editedValues)
-            .then(response => {
-                console.log('Обновлено:', response.data);
+            .then(() => {
                 setVendors(prevVendors =>
                     prevVendors.map(vendor =>
                         vendor.id === id ? {...vendor, ...editedValues} : vendor
@@ -71,7 +70,6 @@ const Vendors = () => {
         }
         axios.post('/service/vendors', newVendor)
             .then(response => {
-                console.log('Добавлено:', response.data);
                 setVendors(prevVendors => [...prevVendors, response.data['vendor']]);
                 setNewVendor(null);
             })
@@ -87,7 +85,6 @@ const Vendors = () => {
         if (selectedVendor) {
             axios.delete(`/service/vendors/${selectedVendor.id}`)
                 .then(response => {
-                    console.log('Удалено:', response.data);
                     setVendors(prevVendors => prevVendors.filter(vendor => vendor.id !== selectedVendor.id));
                 })
                 .catch(error => console.error('Ошибка удаления:', error))
@@ -112,14 +109,14 @@ const Vendors = () => {
                     key === "function" ? (
                         <Select
                             value={editedValues[key] || ''}
-                            onChange={(value) => setEditedValues(prev => ({ ...prev, [key]: value }))}
-                            options={functionList?.length ? functionList.map(fn => ({ label: fn, value: fn })) : []}
-                            style={{ width: "100%" }}
+                            onChange={(value) => setEditedValues(prev => ({...prev, [key]: value}))}
+                            options={functionList?.length ? functionList.map(fn => ({label: fn, value: fn})) : []}
+                            style={{width: "100%"}}
                         />
                     ) : (
                         <Input
                             value={editedValues[key] || ''}
-                            onChange={(e) => setEditedValues(prev => ({ ...prev, [key]: e.target.value }))}
+                            onChange={(e) => setEditedValues(prev => ({...prev, [key]: e.target.value}))}
                             type={key === "password" ? "password" : "text"} // Если редактируем пароль, используем `type="password"`
                         />
                     )
@@ -199,5 +196,5 @@ const Vendors = () => {
 };
 
 Vendors.componentTitle = "Поставщики"
-Vendors.componentIcon = <img src="/ui/shipper.png" alt="icon" width="30" height="30" />
+Vendors.componentIcon = <img src="/ui/shipper.png" alt="icon" width="30" height="30"/>
 export default Vendors;

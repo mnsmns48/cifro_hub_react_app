@@ -1,10 +1,9 @@
-import {Select, Button, Space, Popconfirm} from "antd";
+import {Select, Space} from "antd";
 import {useState, useEffect} from "react";
 
 const OneItemProfileRewardSelector = ({profit_range, profit_profiles, onApplyProfile}) => {
     const [options, setOptions] = useState([]);
     const [selectedId, setSelectedId] = useState(profit_range?.id ?? null);
-    const [pendingId, setPendingId] = useState(null);
 
     useEffect(() => {
         const formatted = profit_profiles.map(item => ({
@@ -22,19 +21,9 @@ const OneItemProfileRewardSelector = ({profit_range, profit_profiles, onApplyPro
     }, [profit_profiles, profit_range]);
 
     const handleSelectChange = (value) => {
-        setPendingId(value);
-    };
-
-    const confirmApply = () => {
-        if (pendingId !== null) {
-            setSelectedId(pendingId);
-            onApplyProfile?.(pendingId);
-            setPendingId(null);
-        }
-    };
-
-    const cancelApply = () => {
-        setPendingId(null);
+        console.log('handleSelectChange value::::', value);
+        setSelectedId(value);
+        onApplyProfile?.(value);
     };
 
     return (
@@ -47,17 +36,6 @@ const OneItemProfileRewardSelector = ({profit_range, profit_profiles, onApplyPro
                 options={options}
                 allowClear
             />
-            {pendingId !== null && (
-                <Popconfirm
-                    title="Пересчитать цену по выбранному профилю?"
-                    onConfirm={confirmApply}
-                    onCancel={cancelApply}
-                    okText="Да"
-                    cancelText="Нет"
-                >
-                    <Button type="primary">Применить</Button>
-                </Popconfirm>
-            )}
         </Space>
     );
 };

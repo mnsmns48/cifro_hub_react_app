@@ -75,7 +75,6 @@ export async function fetchStockHubItems(pathId) {
 }
 
 export async function createHubLoading(payload) {
-    console.log(payload)
     try {
         const response = await axios.post('/service/load_items_in_hub', payload);
         return response.data;

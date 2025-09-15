@@ -121,7 +121,6 @@ const InfoSelect = ({titles, origin, record, setRows}) => {
 
     const openDependencyDescription = async (title) => {
         const result = await fetchDependencyDetails(title);
-        console.log(result);
         setDependencyResult(result);
         setIsDependencyModalOpen(true);
     };

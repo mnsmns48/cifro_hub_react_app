@@ -8,7 +8,6 @@ import InfoSelect from "../PriceUpdater/InfoSelect.jsx";
 import OneItemProfileRewardSelector from "../../../Ui/OneItemProfileRewardSelector.jsx";
 
 
-
 const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_profiles}) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -38,7 +37,6 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
         fetchStockHubItems(pathId)
             .then(data => {
                 setItems(data);
-                console.log('data', data);
             })
             .finally(() => setLoading(false));
     }, [pathId, visible]);
