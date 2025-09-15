@@ -8,6 +8,7 @@ import TreeDataRender from "./HubMenuLevels/TreeRender.jsx";
 import {ReloadOutlined} from "@ant-design/icons";
 import ComparisonModal from "./HubMenuLevels/ComparisonModal.jsx";
 import Consent from "./HubMenuLevels/Consent.jsx";
+import {fetchRangeRewardsProfiles} from "./RewardRangeSettings/api.js";
 
 
 const HubMenuLevels = ({
@@ -24,10 +25,13 @@ const HubMenuLevels = ({
     const [modalVisible, setModalVisible] = useState(false);
     const [comparisonResult, setComparisonResult] = useState({});
     const [consentVisible, setConsentVisible] = useState(false);
+    const [ProfitRangesProfiles, setProfitRangesProfiles] = useState([]);
 
 
     const loadLevels = useCallback(async () => {
         const data = await fetchHubLevels();
+        const profiles = await fetchRangeRewardsProfiles();
+        setProfitRangesProfiles(profiles)
         setMenuData(data.map(item => ({
             ...item,
             parentId: item.parent_id ?? 0
@@ -158,10 +162,13 @@ const HubMenuLevels = ({
     ) : (
         <>
             <Tree draggable blockNode expandedKeys={expandedKeys} onExpand={setExpandedKeys}
-                treeData={treeData} onDrop={onDrop} onSelect={handleSelect}/>
+                  treeData={treeData} onDrop={onDrop} onSelect={handleSelect}/>
             {activePathId != null && (
                 <StockHubItemsTable
-                    pathId={activePathId} selectedRowKeys={[]} onSelectedOrigins={setSelectedItems}
+                    pathId={activePathId}
+                    selectedRowKeys={[]}
+                    onSelectedOrigins={setSelectedItems}
+                    profit_profiles={ProfitRangesProfiles}
                 />
             )}
             {activePathId != null && (

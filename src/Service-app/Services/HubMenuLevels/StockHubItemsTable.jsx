@@ -9,7 +9,7 @@ import OneItemProfileRewardSelector from "../../../Ui/OneItemProfileRewardSelect
 
 
 
-const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
+const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_profiles}) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [loading, setLoading] = useState(false);
     const [items, setItems] = useState([]);
@@ -233,6 +233,7 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins}) => {
             width: 100,
             render: (_, record) => <OneItemProfileRewardSelector
                 profit_range={record.profit_range}
+                profit_profiles={profit_profiles}
                 onApplyProfile={(selectedId) => handleApplyProfile(record.origin, selectedId)}
             />
 

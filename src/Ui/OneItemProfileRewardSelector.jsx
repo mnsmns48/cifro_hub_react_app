@@ -1,13 +1,13 @@
 import {Select, Button, Space, Popconfirm} from "antd";
 import {useState, useEffect} from "react";
 
-const OneItemProfileRewardSelector = ({profit_range, profiles, onApplyProfile}) => {
+const OneItemProfileRewardSelector = ({profit_range, profit_profiles, onApplyProfile}) => {
     const [options, setOptions] = useState([]);
     const [selectedId, setSelectedId] = useState(profit_range?.id ?? null);
     const [pendingId, setPendingId] = useState(null);
 
     useEffect(() => {
-        const formatted = profiles.map(item => ({
+        const formatted = profit_profiles.map(item => ({
             label: item.title,
             value: item.id
         }));
@@ -19,7 +19,7 @@ const OneItemProfileRewardSelector = ({profit_range, profiles, onApplyProfile}) 
             });
         }
         setOptions(formatted);
-    }, [profiles, profit_range]);
+    }, [profit_profiles, profit_range]);
 
     const handleSelectChange = (value) => {
         setPendingId(value);
