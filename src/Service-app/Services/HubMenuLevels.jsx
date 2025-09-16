@@ -164,6 +164,20 @@ const HubMenuLevels = ({
             <Tree draggable blockNode expandedKeys={expandedKeys} onExpand={setExpandedKeys}
                   treeData={treeData} onDrop={onDrop} onSelect={handleSelect}/>
             {activePathId != null && (
+                <div style={{ paddingTop: 25 }}>
+                    <Button
+                        icon={<ReloadOutlined />}
+                        type="primary"
+                        onClick={handleUpdateDataBtn}
+                        style={{
+                            backgroundColor: "#ffce00",   color: "#000000", borderRadius: 4, fontWeight: 500, boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)"}}
+                    >
+                        Обновить данные
+                    </Button>
+                </div>
+
+            )}
+            {activePathId != null && (
                 <StockHubItemsTable
                     pathId={activePathId}
                     selectedRowKeys={[]}
@@ -171,15 +185,7 @@ const HubMenuLevels = ({
                     profit_profiles={ProfitRangesProfiles}
                 />
             )}
-            {activePathId != null && (
-                <div style={{paddingTop: 10}}>
-                    <Button icon={<ReloadOutlined/>}
-                            type="text"
-                            onClick={() => handleUpdateDataBtn()}>
-                        Обновить данные
-                    </Button>
-                </div>
-            )}
+
             {comparisonResult && (
                 <ComparisonModal
                     isOpen={modalVisible}

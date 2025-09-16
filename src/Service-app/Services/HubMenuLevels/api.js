@@ -87,13 +87,22 @@ export async function createHubLoading(payload) {
     }
 }
 
-
-export const updateStockItem = async (payload) => {
+export const renameHubObj = async (patch_data) => {
     try {
-        const response = await axios.post(`/service/update_stock_items`, payload);
+        const response = await axios.patch(`/service/rename_hubstock_obj_title`, patch_data);
         return response.data;
     } catch (error) {
-        console.error('Ошибка при обновлении товара:', error);
+        console.error('Ошибка при переименовании товара:', error);
+        throw error;
+    }
+};
+
+export const recalcHubStockItems = async (patch_data) => {
+    try {
+        const response = await axios.patch(`/service/calc_hubstock_items`, patch_data);
+        return response.data;
+    } catch (error) {
+        console.error('Ошибка при изменении цены товара:', error);
         throw error;
     }
 };

@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
 import {Table, Spin, Space, Button, Popconfirm} from "antd";
-import {deleteStockItems, fetchStockHubItems, updateStockItem} from "./api.js";
+import {deleteStockItems, fetchStockHubItems, recalcHubStockItems, renameHubObj} from "./api.js";
 import "./Css/Tree.css";
 import {EditOutlined, SaveOutlined, RedoOutlined, FileJpgOutlined, DeleteOutlined} from "@ant-design/icons";
 import UploadImagesModal from "../PriceUpdater/UploadImagesModal.jsx";
@@ -75,61 +75,76 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
 
 
     const handleSaveEdit = async () => {
+        if (!editingRowData || !originalRecord) return;
+
+        const {origin, title, output_price} = editingRowData;
+
+        const promises = [];
+
+        if (title !== originalRecord.title) {
+            const patch_title = {origin, new_title: title};
+            promises.push(
+                renameHubObj(patch_title).then(updated => ({
+                    type: "title",
+                    updated
+                }))
+            );
+        }
+
+        if (output_price !== originalRecord.output_price) {
+            const patch_price = {
+                price_update: [{origin, new_price: output_price}]
+            };
+            promises.push(
+                recalcHubStockItems(patch_price).then(responses => ({
+                    type: "price",
+                    updated: responses.find(r => r.origin === origin)
+                }))
+            );
+        }
+
         try {
-            const origin = editingRowData.origin;
-            const title = editingRowData.title;
-            const newPrice = editingRowData.output_price;
-
-            const original = originalRecord;
-            const titleChanged = original.title !== title;
-            const priceChanged = original.output_price !== newPrice;
-
-            const payload = {};
-
-            if (titleChanged) {
-                payload.title_update = {};
-                payload.title_update[origin] = title;
-            }
-
-            if (priceChanged) {
-                payload.price_update = [{
-                    origin: origin,
-                    new_price: newPrice
-                }];
-
-            }
-            const responses = await updateStockItem(payload);
-
+            const results = await Promise.all(promises);
             setItems(prev =>
                 prev.map(item => {
-                    const updated = responses.find(r => r.origin === item.origin);
-                    if (!updated) return item;
+                    if (item.origin !== origin) return item;
 
-                    return {
-                        ...item,
-                        title: updated.new_title,
-                        output_price: updated.new_price,
-                        updated_at: updated.updated_at || item.updated_at,
-                        profit_range: updated.profit_range || null
-                    };
+                    let updatedItem = {...item};
+
+                    for (const result of results) {
+                        const {updated} = result;
+
+                        if (result.type === "title") {
+                            updatedItem.title = updated.new_title;
+                        }
+
+                        if (result.type === "price") {
+                            updatedItem.output_price = updated.new_price;
+                            updatedItem.updated_at = updated.updated_at || updatedItem.updated_at;
+                            updatedItem.profit_range = updated.profit_range ?? null;
+                        }
+                    }
+
+                    return updatedItem;
                 })
             );
         } catch (error) {
             console.error("Ошибка при сохранении изменений:", error);
-        } finally {
-            setEditingKey(null);
-            setOriginalRecord(null);
+            return;
         }
+
+        setEditingKey(null);
+        setOriginalRecord(null);
     };
+
 
     const handleApplyProfile = async (origin, selectedProfitRangeId) => {
         try {
-            const payload = {
+            const patch_data = {
                 price_update: [{origin: origin}],
                 new_profit_range_id: selectedProfitRangeId
             };
-            console.log('payload::', payload)
-            const responses = await updateStockItem(payload);
+            const responses = await recalcHubStockItems(patch_data);
             const updated = responses.find(r => r.origin === origin);
             if (!updated) return;
 
