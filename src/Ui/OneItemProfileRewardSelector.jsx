@@ -36,6 +36,7 @@ const OneItemProfileRewardSelector = ({profit_range, profit_profiles, onApplyPro
                 onChange={handleSelectChange}
                 placeholder="Отсутствует"
                 options={options}
+                style={{ width: 128}}
             />
         </Space>
     );

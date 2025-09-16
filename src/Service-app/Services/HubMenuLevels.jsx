@@ -9,6 +9,7 @@ import {ReloadOutlined} from "@ant-design/icons";
 import ComparisonModal from "./HubMenuLevels/ComparisonModal.jsx";
 import Consent from "./HubMenuLevels/Consent.jsx";
 import {fetchRangeRewardsProfiles} from "./RewardRangeSettings/api.js";
+import "./HubMenuLevels/Css/ComparisonModal.css";
 
 
 const HubMenuLevels = ({
@@ -166,12 +167,8 @@ const HubMenuLevels = ({
             {activePathId != null && (
                 <div style={{ paddingTop: 25 }}>
                     <Button
-                        icon={<ReloadOutlined />}
-                        type="primary"
-                        onClick={handleUpdateDataBtn}
-                        style={{
-                            backgroundColor: "#ffce00",   color: "#000000", borderRadius: 4, fontWeight: 500, boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)"}}
-                    >
+                        icon={<ReloadOutlined />} type="primary" onClick={handleUpdateDataBtn}
+                        className="comparison-active-button">
                         Обновить данные
                     </Button>
                 </div>

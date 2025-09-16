@@ -4,9 +4,10 @@ import {useEffect, useState} from "react";
 import {getProgressLine} from "../PriceUpdater/api.js";
 import {startParsing} from "./api.js";
 import getComparisonTableColumns from "./ComparisonTableColumns.jsx";
+import "./Css/ComparisonModal.css";
 
 
-const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent }) => {
+const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent}) => {
 
     const {vsl_list: vslList} = comparisonObj || {};
 
@@ -86,7 +87,6 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent }) => {
     };
 
 
-
     const renderTable = () => {
         if (rows.length === 0) {
             return (
@@ -101,25 +101,17 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent }) => {
                 <div style={{marginBottom: 12, textAlign: "left"}}>
                     {!isUpdating && !isUpdateFinished && (
                         <Button
-                            type="primary"
+                            type="default"
                             onClick={handleUpdateClick}
                             disabled={selectedRowKeys.length === 0}
-                            style={{marginRight: 12}}
-                        >
+                            className="comparison-button comparison-update-button">
                             Запустить обновление
                         </Button>
                     )}
                     {!isUpdating && (
-                        <Button
-                            type="primary"
-                            onClick={handleConsent}
-                            style={{
-                                background: "linear-gradient(90deg, #ff4d4f 0%, #ff7a45 100%)",
-                                borderColor: "#fb6d6e",
-                                boxShadow: "0 0 0 2px rgba(255, 77, 79, 0.3)",
-                                fontWeight: "bold"
-                            }}
-                        >
+                        <Button type="default"
+                                onClick={handleConsent}
+                                className="comparison-button comparison-active-button">
                             Сверка
                         </Button>
                     )}
