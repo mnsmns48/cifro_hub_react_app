@@ -20,8 +20,11 @@ const OneItemProfileRewardSelector = ({profit_range, profit_profiles, onApplyPro
         setOptions(formatted);
     }, [profit_profiles, profit_range]);
 
+    useEffect(() => {
+        setSelectedId(profit_range?.id ?? null);
+    }, [profit_range?.id]);
+
     const handleSelectChange = (value) => {
-        console.log('handleSelectChange value::::', value);
         setSelectedId(value);
         onApplyProfile?.(value);
     };

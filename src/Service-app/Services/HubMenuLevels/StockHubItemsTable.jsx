@@ -125,10 +125,10 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
     const handleApplyProfile = async (origin, selectedProfitRangeId) => {
         try {
             const payload = {
-                price_updates: [{origin: origin, new_price: 0}],
+                price_update: [{origin: origin}],
                 new_profit_range_id: selectedProfitRangeId
             };
-
+            console.log('payload::', payload)
             const responses = await updateStockItem(payload);
             const updated = responses.find(r => r.origin === origin);
             if (!updated) return;
