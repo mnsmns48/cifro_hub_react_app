@@ -165,6 +165,34 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
         }
     };
 
+    const bulkApplyProfitProfile = async (selectedProfitRangeId) => {
+        if (!selectedProfitRangeId || selectedRowKeys.length === 0) return;
+
+        const patch_data = {
+            price_update: selectedRowKeys.map(origin => ({origin})),
+            new_profit_range_id: selectedProfitRangeId
+        };
+
+        try {
+            const responses = await recalcHubStockItems(patch_data);
+
+            setItems(prev =>
+                prev.map(item => {
+                    const updated = responses.find(r => r.origin === item.origin);
+                    return updated
+                        ? {
+                            ...item,
+                            output_price: updated.new_price,
+                            updated_at: updated.updated_at || item.updated_at,
+                            profit_range: updated.profit_range ?? null
+                        }
+                        : item;
+                })
+            );
+        } catch (error) {
+            console.error("Ошибка при массовом применении профиля:", error);
+        }
+    };
 
     const handleDeleteItems = async () => {
         if (selectedRowKeys.length === 0) return;
@@ -313,15 +341,23 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
             <Spin size="small"/>
         </div>
     ) : (
-        <div style={{margin: "10px 0"}}>
+        <div style={{margin: "15px"}}>
             {selectedRowKeys.length > 0 && (
-                <Popconfirm title="Удаляем?" okText="Да" cancelText="Нет" onConfirm={handleDeleteItems}>
-                    <Button danger style={{margin: "0 0 10px 10px"}} icon={<DeleteOutlined/>}>
-                        Удалить ({selectedRowKeys.length})
-                    </Button>
-                </Popconfirm>
-
+                <div style={{display: "flex", alignItems: "center", gap: 10, marginBottom: 10}}>
+                    <OneItemProfileRewardSelector
+                        profit_range={null}
+                        profit_profiles={profit_profiles}
+                        onApplyProfile={bulkApplyProfitProfile}
+                    />
+                    <Popconfirm title="Удаляем?" okText="Да" cancelText="Нет" onConfirm={handleDeleteItems}>
+                        <Button danger icon={<DeleteOutlined/>}>
+                            Удалить ({selectedRowKeys.length})
+                        </Button>
+                    </Popconfirm>
+                </div>
             )}
+
+
             <Table className="stockHubTable"
                    dataSource={items}
                    columns={columns}

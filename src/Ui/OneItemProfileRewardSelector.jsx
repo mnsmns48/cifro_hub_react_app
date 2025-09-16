@@ -30,10 +30,9 @@ const OneItemProfileRewardSelector = ({profit_range, profit_profiles, onApplyPro
     };
 
     return (
-        <Space style={{width: "100%"}}>
+        <Space>
             <Select
                 value={selectedId}
-                style={{flex: 1}}
                 onChange={handleSelectChange}
                 placeholder="Отсутствует"
                 options={options}
