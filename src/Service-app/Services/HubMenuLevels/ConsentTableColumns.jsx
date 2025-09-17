@@ -16,7 +16,7 @@ const getConsentTableColumns = (setTabsData, isRetail) => {
             title: "Код",
             dataIndex: "origin",
             key: "origin",
-            width: 80,
+            width: 90,
             render: (text, record) => (
                 <a href={record.url} target="_blank" rel="noopener noreferrer"
                    style={{
@@ -33,7 +33,7 @@ const getConsentTableColumns = (setTabsData, isRetail) => {
         {
             dataIndex: "title",
             key: "title",
-            width: 350,
+            width: 340,
             ellipsis: true,
             render: (text, record) => (
                 <div

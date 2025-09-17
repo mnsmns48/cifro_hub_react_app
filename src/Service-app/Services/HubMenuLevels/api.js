@@ -137,7 +137,13 @@ export const consentDataApiLoad = async (payload) => {
     return response.data;
 };
 
-export const reCalculateApiLoad = async (payload) => {
-    const response = await axios.post(`/service/recompute_output_prices`, payload);
+
+export const comparisonRecomputedData = async (payload) => {
+    const response = await axios.post(`/service/give_recomputed_output_prices`, payload);
+    return response.data;
+};
+
+export const storeRecomputedData = async (payload) => {
+    const response = await axios.patch(`/service/store_new_prices_hubstock_items`, payload);
     return response.data;
 };

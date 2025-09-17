@@ -174,8 +174,8 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
         };
 
         try {
-            const responses = await recalcHubStockItems(patch_data);
 
+            const responses = await recalcHubStockItems(patch_data);
             setItems(prev =>
                 prev.map(item => {
                     const updated = responses.find(r => r.origin === item.origin);

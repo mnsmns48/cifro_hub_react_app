@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Table, Spin, Button, Popconfirm, Tabs, Tooltip} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
 import {consentDataApiLoad, deleteStockItems} from "./api.js";
@@ -24,14 +24,10 @@ const Consent = ({
     const [isRetail, setIsRetail] = useState(false);
     const [showUpdateComponent, setShowUpdateComponent] = useState(false);
 
-    const payload = useMemo(() => ({vsl_list, path_ids}), [
-        vsl_list,
-        path_ids
-    ]);
+    const payload = useMemo(() => ({vsl_list, path_ids}), [vsl_list, path_ids]);
 
     const columns = useMemo(
         () => getConsentTableColumns(setTabsData, isRetail),
-
         [setTabsData, isRetail]
     );
 
@@ -85,11 +81,41 @@ const Consent = ({
             ? <ExclamationCircleOutlined/>
             : <RedoOutlined/>
 
+    const handleUpdateHubStockItems = (updatedGroups) => {
+        const updatedOrigins = new Set();
+        updatedGroups.forEach(group => {
+            (group.recomputed_items || []).forEach(item => {
+                updatedOrigins.add(item.origin);
+            });
+        });
+
+        const newTabsData = tabsData.map(tab => ({
+            ...tab,
+            items: tab.items.map(item => {
+                if (updatedOrigins.has(item.origin)) {
+                    const updatedGroup = updatedGroups.find(g => g.path_id === tab.path_id);
+                    const updatedItem = updatedGroup?.recomputed_items?.find(i => i.origin === item.origin);
+                    if (updatedItem) {
+                        return {
+                            ...item,
+                            hub_output_price: updatedItem.new_price,
+                            hub_updated_at: new Date().toISOString()
+                        };
+                    }
+                }
+                return item;
+            })
+        }));
+
+        setTabsData(newTabsData);
+        setShowUpdateComponent(false);
+    };
+
     const renderContent = () => {
         if (loading) {
             return (
                 <div style={{textAlign: "center", padding: 24}}>
-                    <Spin />
+                    <Spin/>
                 </div>
             );
         }
@@ -193,7 +219,9 @@ const Consent = ({
                             path_ids={tabsData.map(item => item.path_id)}
                             origins={selectedRowKeys}
                             isOpen={showUpdateComponent}
-                            onClose={() => setShowUpdateComponent(false)}/>
+                            onClose={() => setShowUpdateComponent(false)}
+                            onApply={handleUpdateHubStockItems}
+                        />
                     </div>
                 )}
             </div>
