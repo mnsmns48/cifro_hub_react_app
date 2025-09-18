@@ -35,26 +35,36 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
         setIsModalOpen(true);
     };
 
-    const handleDeleteConfirm = () => {
-        if (selectedVSL) {
-            axios.delete(`/service/delete_vsl/${selectedVSL.id}`)
-                .then(() => {
-                    refreshTableData();
-                })
-                .catch(error => console.error('Ошибка удаления:', error))
-                .finally(() => {
-                    setIsModalOpen(false);
-                    setSelectedVSL(null);
-                });
+    const handleDeleteConfirm = async () => {
+        if (!selectedVSL) return;
+        try {
+            const response = await axios.delete(`/service/delete_vsl/${selectedVSL.id}`);
+            if (response.status !== 200) {
+                alert(`Удаление не удалось: статус ${response.status}`);
+                return;
+            }
+            refreshTableData();
+        } catch (error) {
+            console.error('Ошибка удаления:', error);
+            const message =
+                error?.response?.data?.detail ||
+                error?.response?.data?.message ||
+                error?.response?.statusText ||
+                error.message ||
+                'Неизвестная ошибка';
+            alert(`Ошибка удаления: ${message}`);
+        } finally {
+            setIsModalOpen(false);
+            setSelectedVSL(null);
         }
     };
+
 
     return (
         <div>
             <Table rowSelection={{
                 type: 'radio',
                 onChange: handleRowSelection,
-
                 selectedRowKeys: selectedRowKeys
             }}
                    onRow={(record) => ({
@@ -82,6 +92,7 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
                    })}
                    dataSource={tableData}
                    rowKey="id"
+                   pagination={false}
                    rowClassName={() => 'compact-row'}/>
             <MyModal
                 isOpen={isModalOpen}
