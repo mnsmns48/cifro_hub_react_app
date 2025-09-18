@@ -7,15 +7,14 @@ const ParsingButtonsCommonComponent = ({
                                            label,
                                            setProgressLineObj,
                                            setIsParsingStarted,
-                                           syncOption,
+                                           initialSyncOption = true,
                                            confirmText,
                                            apiUrl,
                                            selectedRow,
                                            onComplete,
-
                                        }) => {
     const [confirmOpen, setConfirmOpen] = useState(false);
-    const [syncFeatures, setSyncFeatures] = useState(true);
+    const [syncFeatures, setSyncFeatures] = useState(initialSyncOption); // ← локальное состояние
     const [errorOpen, setErrorOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -23,15 +22,17 @@ const ParsingButtonsCommonComponent = ({
         setConfirmOpen(false);
         const {result: progress} = await getProgressLine();
         if (!progress) return;
+
         setIsParsingStarted(true);
         setProgressLineObj(progress);
+
         let results;
         try {
             results = await startDataCollection({
                 selectedRow,
                 progress,
                 api_url: apiUrl,
-                sync_features: syncFeatures
+                sync_features: syncFeatures,
             });
         } catch (e) {
             setErrorMessage(`Проблема с получением данных с сервера: ${e}`);
@@ -48,42 +49,56 @@ const ParsingButtonsCommonComponent = ({
             setProgressLineObj("");
             return;
         }
+
         onComplete(results);
     };
 
     return (
         <>
-            <Button type="primary" style={{marginBottom: 8, marginTop: 15, width: "100%"}}
-                    onClick={() => setConfirmOpen(true)}>{label}</Button>
-            <MyModal isOpen={confirmOpen}
-                     title={confirmText}
-                     onCancel={() => {setConfirmOpen(false)}}
-                     content={
-                         <Checkbox
-                             onChange={e => setSyncFeatures(e.target.checked)} checked={syncOption}>
-                             Синхронизировать характеристики устройств
-                         </Checkbox>
-                     }
-                     footer={
-                         <>
-                             <Button onClick={() => setConfirmOpen(false)}>Нет</Button>
-                             <Button type="primary" onClick={handleConfirm}>Да</Button>
-                         </>
-                     }
+            <Button
+                type="primary"
+                style={{marginBottom: 8, marginTop: 15, width: "100%"}}
+                onClick={() => setConfirmOpen(true)}
+            >
+                {label}
+            </Button>
+
+            <MyModal
+                isOpen={confirmOpen}
+                title={confirmText}
+                onCancel={() => setConfirmOpen(false)}
+                content={
+                    <Checkbox
+                        checked={syncFeatures}
+                        onChange={e => setSyncFeatures(e.target.checked)}
+                    >
+                        Синхронизировать характеристики устройств
+                    </Checkbox>
+                }
+                footer={
+                    <>
+                        <Button onClick={() => setConfirmOpen(false)}>Нет</Button>
+                        <Button type="primary" onClick={handleConfirm}>Да</Button>
+                    </>
+                }
             />
 
-            <MyModal isOpen={errorOpen} title="Ошибка" content={errorMessage}
-                     onConfirm={() => setErrorOpen(false)}
-                     onCancel={() => setErrorOpen(false)}
-                     footer={
-                         <Button type="primary" onClick={() => setErrorOpen(false)}>
-                             ОК
-                         </Button>
-                     }
-                     danger
+            <MyModal
+                isOpen={errorOpen}
+                title="Ошибка"
+                content={errorMessage}
+                onConfirm={() => setErrorOpen(false)}
+                onCancel={() => setErrorOpen(false)}
+                footer={
+                    <Button type="primary" onClick={() => setErrorOpen(false)}>
+                        ОК
+                    </Button>
+                }
+                danger
             />
         </>
     );
 };
+
 
 export default ParsingButtonsCommonComponent;

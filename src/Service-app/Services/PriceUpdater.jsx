@@ -29,6 +29,7 @@ const PriceUpdater = () => {
     const [progressLineObj, setProgressLineObj] = useState("");
     const [isParsingStarted, setIsParsingStarted] = useState(false);
 
+
     useEffect(() => {
         fetchVendors().then(setVendorList);
     }, []);
@@ -136,7 +137,7 @@ const PriceUpdater = () => {
                                                                    confirmText="Предыдущие результаты?"
                                                                    apiUrl="/service/previous_parsing_results"
                                                                    selectedRow={selectedVSLRow}
-                                                                   syncOption={false}
+                                                                   initialSyncOption={false}
                                                                    onComplete={handleParsingComplete}
                                                                    setProgressLineObj={setProgressLineObj}
                                                                    setIsParsingStarted={setIsParsingStarted}/>
@@ -145,7 +146,7 @@ const PriceUpdater = () => {
                                                                    icon={<SettingOutlined/>}
                                                                    apiUrl="/service/start_parsing"
                                                                    selectedRow={selectedVSLRow}
-                                                                   syncOption={true}
+                                                                   initialSyncOption={true}
                                                                    onComplete={handleParsingComplete}
                                                                    setProgressLineObj={setProgressLineObj}
                                                                    setIsParsingStarted={setIsParsingStarted}/>
