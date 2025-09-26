@@ -1,5 +1,5 @@
 import {Image, Button} from "antd";
-import {PlusOutlined, RightCircleOutlined, UpCircleOutlined} from "@ant-design/icons";
+import {InstagramOutlined, PercentageOutlined, PlusOutlined} from "@ant-design/icons";
 import {updateParsingItem} from "./api.js";
 import InfoSelect from "./InfoSelect.jsx";
 import "../Css/ParsingResults.css";
@@ -21,21 +21,16 @@ export const createParsingColumns = ({setRows, showInputPrice, expandedRows, tog
                         preview={true}
                     />
                 ) : (
-                    <Button type="dashed" icon={<PlusOutlined/>} className="preview-dashed-button"
+                    <Button type="dashed" icon={<PlusOutlined/>}
+                            className="preview-dashed-button"
                             onClick={() => openUploadModal(record.origin)}/>
                 )}
 
                 {url && (
                     <Button
                         type="text"
-                        icon={<UpCircleOutlined style={{fontSize: 18, color: "#1677ff"}}/>}
-                        style={{
-                            position: "absolute",
-                            bottom: 4,
-                            right: 4,
-                            padding: 0,
-                            background: "transparent",
-                        }}
+                        icon={<InstagramOutlined style={{fontSize: 18, color: "#818181"}}/>}
+                        className="add-pic-button"
                         onClick={() => openUploadModal(record.origin)}
                     />
                 )}
@@ -72,12 +67,14 @@ export const createParsingColumns = ({setRows, showInputPrice, expandedRows, tog
     },
     {
         key: "details",
-        width: 40,
+        width: 38,
         align: "center",
         render: (_, record) => (
             <Button
                 type="text"
-                icon={<RightCircleOutlined/>}
+                icon={<PercentageOutlined />}
+                style={{fontSize: 9}}
+
                 onClick={() => toggleExpand(record.origin)}
             />
         ),

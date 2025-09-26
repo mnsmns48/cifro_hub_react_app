@@ -5,7 +5,7 @@ import {createParsingColumns} from "./ParsingResultsColumns.jsx";
 import {deleteParsingItems, exportParsingToExcel} from "./api.js";
 import UploadImagesModal from "./UploadImagesModal.jsx";
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
-import { FileExcelOutlined } from "@ant-design/icons";
+import {FileExcelOutlined, PercentageOutlined} from "@ant-design/icons";
 import {formatDate} from "../../../../utils.js";
 import InHubDownloader from "./InHubDownloader.jsx";
 import MyModal from "../../../Ui/MyModal.jsx";
@@ -156,8 +156,8 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                 </p>
             </div>
 
-            <div style={{display: "flex", gap: 15, flexWrap: "wrap", padding: "15px 0"}}>
-                <Button onClick={() => setShowInputPrice(v => !v)}>{showInputPrice ? "Off" : "₽"}</Button>
+            <div style={{display: "flex", gap: 5, flexWrap: "wrap", padding: "15px 0"}}>
+                <Button onClick={() => setShowInputPrice(v => !v)}>{showInputPrice ? "Off" : <PercentageOutlined/>}</Button>
                 <Button onClick={() => setActiveFilter("all")} style={{background: "yellowgreen"}}/>
                 <Button onClick={() => setActiveFilter("noPreview")} style={{background: "yellow"}}/>
                 <Button onClick={() => setActiveFilter("noFeatures")} style={{background: "red"}}/>

@@ -5,23 +5,27 @@
 }
 
 .preview-container {
-    width: 128px;
-    height: 71px;
+    width: 92px;
+    height: 60px;
     position: relative;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0);
-    border-radius: 4px;
 }
 
 .preview-dashed-button {
-    width: 60px;
-    height: 60px;
+    color: #083aba;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 25%;
+    border-radius: 30%;
+}
+
+.add-pic-button {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    background: transparent;
 }
