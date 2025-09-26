@@ -33,9 +33,9 @@ const InHubDownloader = ({
         try {
             const result = await createHubLoading(stocksPayload);
             if (result?.status === true) {
-                onConfirm("Позиции успешно добавлены в хаб");
+                onConfirm("Позиции успешно добавлены в хаб", result.updated_origins);
             } else {
-                onConfirm("Неверный ответ от сервера");
+                onConfirm("Неверный ответ от сервера", []);
             }
         } catch (err) {
             onConfirm(`Ошибка при создании HubLoading: ${err}`);

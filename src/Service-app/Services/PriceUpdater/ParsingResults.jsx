@@ -1,5 +1,5 @@
 import {useState, useMemo, useCallback, useEffect} from "react";
-import {Table, Button, Input, Select} from "antd";
+import {Table, Button, Input, Select, Popconfirm} from "antd";
 import "../Css/ParsingResults.css";
 import {createParsingColumns} from "./ParsingResultsColumns.jsx";
 import {deleteParsingItems, exportParsingToExcel} from "./api.js";
@@ -29,7 +29,6 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
 
-    
 
     useEffect(() => {
         setRows(Array.isArray(result.parsing_result) ? result.parsing_result : []);
@@ -113,12 +112,12 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
     };
 
     const handleImageUploaded = useCallback(
-        ({ images, preview }, origin) => {
+        ({images, preview}, origin) => {
             setRows(prev =>
                 prev.map(r =>
                     r.origin !== origin
                         ? r
-                        : { ...r, images, preview }
+                        : {...r, images, preview}
                 )
             );
         },
@@ -131,19 +130,25 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                 ...result,
                 dt_parsed: result.dt_parsed ? new Date(result.dt_parsed).toISOString() : null
             };
-
             await exportParsingToExcel(payload);
         } catch (error) {
             console.error("Ошибка при экспорте Excel:", error);
         }
     };
 
-    const selectedItems = rows.filter(r => selectedRowKeys.includes(r.origin) );
+    const selectedItems = rows.filter(r => selectedRowKeys.includes(r.origin));
 
-    const handleAddToHub = (msg) => {
+    const handleAddToHub = (msg, updatedOrigins) => {
         setAddToHubModalVisible(false);
         setSuccessMessage(msg);
         setIsSuccessModalOpen(true);
+        setRows(prev =>
+            prev.map(row =>
+                updatedOrigins.includes(row.origin)
+                    ? {...row, in_hub: true}
+                    : row
+            )
+        );
     };
 
 
@@ -151,13 +156,14 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
         <>
             <div>
                 <p>
-                    <strong>Собрано:</strong> {formatDate(result.dt_parsed)} <br />
+                    <strong>Собрано:</strong> {formatDate(result.dt_parsed)} <br/>
                     <strong>Количество:</strong> {Array.isArray(result.parsing_result) ? result.parsing_result.length : 0}
                 </p>
             </div>
 
             <div style={{display: "flex", gap: 5, flexWrap: "wrap", padding: "15px 0"}}>
-                <Button onClick={() => setShowInputPrice(v => !v)}>{showInputPrice ? "Off" : <PercentageOutlined/>}</Button>
+                <Button onClick={() => setShowInputPrice(v => !v)}>{showInputPrice ? "Off" :
+                    <PercentageOutlined/>}</Button>
                 <Button onClick={() => setActiveFilter("all")} style={{background: "yellowgreen"}}/>
                 <Button onClick={() => setActiveFilter("noPreview")} style={{background: "yellow"}}/>
                 <Button onClick={() => setActiveFilter("noFeatures")} style={{background: "red"}}/>
@@ -167,21 +173,33 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                         options={rewardOptions} defaultValue={result.profit_range_id} onChange={handleSelectRange}/>
                 <Button
                     type="text"
-                    icon={<FileExcelOutlined style={{ fontSize: 20, color: "#52c41a" }} />}
+                    icon={<FileExcelOutlined style={{fontSize: 20, color: "#52c41a"}}/>}
                     onClick={downloadExcel}
                     title="Скачать Excel"
                 />
             </div>
 
             {selectedRowKeys.length > 0 && (
-                <Button danger style={{margin: "0 0 10px 10px"}} onClick={handleDelete}>
-                    Удалить ({selectedRowKeys.length})
+                <Popconfirm
+                    title="Вы уверены, что хотите удалить выбранные позиции?"
+                    onConfirm={handleDelete}
+                    okText="Да"
+                    cancelText="Нет"
+                    placement="left"
+                >
+                    <Button danger className="fixed-hub-button fixed-hub-button-delete">
+                        Удалить ({selectedRowKeys.length})
+                    </Button>
+                </Popconfirm>
+            )}
+            {selectedRowKeys.length > 0 && (
+                <Button onClick={() => setSelectedRowKeys([])} className="fixed-hub-button fixed-hub-button-clear">
+                    Снять выделение ({selectedRowKeys.length})
                 </Button>
             )}
             {selectedRowKeys.length > 0 && (
-                <Button type="primary" style={{ margin: "0 0 10px 10px" }}
-                    onClick={() => setAddToHubModalVisible(true)}
-                >
+                <Button type="primary" onClick={() => setAddToHubModalVisible(true)}
+                        className="fixed-hub-button fixed-hub-button-add">
                     Добавить в Хаб ({selectedRowKeys.length})
                 </Button>
             )}
