@@ -1,11 +1,11 @@
 import {useState, useMemo, useCallback, useEffect} from "react";
-import {Table, Button, Input, Select, Popconfirm} from "antd";
+import {Table, Button, Input, Select, Popconfirm, Spin} from "antd";
 import "../Css/ParsingResults.css";
 import {createParsingColumns} from "./ParsingResultsColumns.jsx";
-import {deleteParsingItems, exportParsingToExcel} from "./api.js";
+import {deleteParsingItems, exportParsingToExcel, reCalcOutputPrices} from "./api.js";
 import UploadImagesModal from "./UploadImagesModal.jsx";
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
-import {FileExcelOutlined, PercentageOutlined} from "@ant-design/icons";
+import {FileExcelOutlined, PercentageOutlined, ReloadOutlined} from "@ant-design/icons";
 import {formatDate} from "../../../../utils.js";
 import InHubDownloader from "./InHubDownloader.jsx";
 import MyModal from "../../../Ui/MyModal.jsx";
@@ -28,6 +28,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
     const [addToHubModalVisible, setAddToHubModalVisible] = useState(false);
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
 
     useEffect(() => {
@@ -151,6 +152,18 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
         );
     };
 
+    const refreshParsingResult = async () => {
+        setIsRefreshing(true);
+        try {
+            const updated = await reCalcOutputPrices(vslId, result.profit_range_id);
+            setRows(Array.isArray(updated.parsing_result) ? updated.parsing_result : []);
+        } catch (error) {
+            console.error("Ошибка при обновлении результатов:", error);
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
+
 
     return (
         <>
@@ -243,6 +256,15 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                 onClose={() => setUploadModalOpen(false)}
                 onUploaded={(data) => handleImageUploaded(data, currentOrigin)}
             />
+            {isRefreshing ? (
+                <div className="refresh-float-button">
+                    <Spin size="small" />
+                </div>
+            ) : (
+                <Button onClick={refreshParsingResult} className="refresh-float-button">
+                    <ReloadOutlined style={{fontSize: 24}} />
+                </Button>
+            )}
             <MyModal
                 isOpen={isSuccessModalOpen}
                 content={successMessage}

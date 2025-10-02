@@ -36,6 +36,7 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
         setLoading(true);
         fetchStockHubItems(pathId)
             .then(data => {
+                console.log("Данные получены:", data);
                 setItems(data);
             })
             .finally(() => setLoading(false));
