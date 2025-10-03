@@ -5,10 +5,11 @@ import {createParsingColumns} from "./ParsingResultsColumns.jsx";
 import {deleteParsingItems, exportParsingToExcel, reCalcOutputPrices} from "./api.js";
 import UploadImagesModal from "./UploadImagesModal.jsx";
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
-import {FileExcelOutlined, PercentageOutlined, ReloadOutlined} from "@ant-design/icons";
+import {FileExcelOutlined, PercentageOutlined, ReloadOutlined, WarningOutlined} from "@ant-design/icons";
 import {formatDate} from "../../../../utils.js";
 import InHubDownloader from "./InHubDownloader.jsx";
 import MyModal from "../../../Ui/MyModal.jsx";
+import {deleteStockItems} from "../HubMenuLevels/api.js";
 
 
 const {Search} = Input;
@@ -152,6 +153,27 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
         );
     };
 
+    const handleClearFromHub = async (originsToClear) => {
+        if (!originsToClear.length) return;
+        try {
+            const deletedOrigins = await deleteStockItems({origins: originsToClear});
+            if (!Array.isArray(deletedOrigins) || deletedOrigins.length === 0) return;
+            setRows(prev =>
+                prev.map(row =>
+                    deletedOrigins.includes(row.origin)
+                        ? {...row, in_hub: false}
+                        : row
+                )
+            );
+            setSelectedRowKeys(prev =>
+                prev.filter(origin => !deletedOrigins.includes(origin))
+            );
+        } catch (error) {
+            console.error("Ошибка при удалении", error);
+        }
+    };
+
+
     const refreshParsingResult = async () => {
         setIsRefreshing(true);
         try {
@@ -193,29 +215,34 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
             </div>
 
             {selectedRowKeys.length > 0 && (
-                <Popconfirm
-                    title="Вы уверены, что хотите удалить выбранные позиции?"
-                    onConfirm={handleDelete}
-                    okText="Да"
-                    cancelText="Нет"
-                    placement="left"
-                >
-                    <Button danger className="fixed-hub-button fixed-hub-button-delete">
-                        Удалить ({selectedRowKeys.length})
+                <div style={{display: "flex", gap: 10, marginBottom: 15}}>
+                    <Popconfirm
+                        title="Вы уверены, что хотите удалить выбранные позиции?"
+                        onConfirm={handleDelete}
+                        okText="Да"
+                        cancelText="Нет"
+                        placement="left"
+                    >
+                        <Button danger className="fixed-hub-button fixed-hub-button-delete">
+                            <WarningOutlined/> Удалить навсегда ({selectedRowKeys.length})
+                        </Button>
+                    </Popconfirm>
+
+                    <Button onClick={() => setSelectedRowKeys([])} className="fixed-hub-button fixed-hub-button-clear">
+                        Снять выделение ({selectedRowKeys.length})
                     </Button>
-                </Popconfirm>
+
+                    <Button onClick={() => setAddToHubModalVisible(true)}
+                            className="fixed-hub-button fixed-hub-button-add">
+                        Добавить в Хаб ({selectedRowKeys.length})
+                    </Button>
+                    <Button onClick={() => handleClearFromHub(selectedRowKeys)}
+                            className="fixed-hub-button fixed-hub-button-remove">
+                        Убрать из хаба ({selectedRowKeys.length})
+                    </Button>
+                </div>
             )}
-            {selectedRowKeys.length > 0 && (
-                <Button onClick={() => setSelectedRowKeys([])} className="fixed-hub-button fixed-hub-button-clear">
-                    Снять выделение ({selectedRowKeys.length})
-                </Button>
-            )}
-            {selectedRowKeys.length > 0 && (
-                <Button type="primary" onClick={() => setAddToHubModalVisible(true)}
-                        className="fixed-hub-button fixed-hub-button-add">
-                    Добавить в Хаб ({selectedRowKeys.length})
-                </Button>
-            )}
+
 
             <Table className="parsing-result-table"
                    dataSource={filteredData}
@@ -258,11 +285,11 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
             />
             {isRefreshing ? (
                 <div className="refresh-float-button">
-                    <Spin size="small" />
+                    <Spin size="small"/>
                 </div>
             ) : (
                 <Button onClick={refreshParsingResult} className="refresh-float-button">
-                    <ReloadOutlined style={{fontSize: 24}} />
+                    <ReloadOutlined style={{fontSize: 24}}/>
                 </Button>
             )}
             <MyModal

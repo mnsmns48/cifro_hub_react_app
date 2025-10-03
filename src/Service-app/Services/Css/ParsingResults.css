@@ -35,15 +35,21 @@
     left: 23%;
     transform: translate(-100%, -50%);
     z-index: 1000;
+    color: #212121 !important;
+    font-weight: bold;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.fixed-hub-button:hover {
+    background-color: #ffffff !important;
 }
 
 .fixed-hub-button-delete {
     top: 50%;
     background-color: #d32f2f !important;
-    color: white !important;
-    font-weight: bold;
-    border: none;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    color: #ffffff !important;
+
 }
 
 .fixed-hub-button-delete:hover {
@@ -52,20 +58,20 @@
 
 
 .fixed-hub-button-clear {
-    top: 55%;
-    background-color: #fdd835 !important;
-    color: #212121 !important;
-    font-weight: bold;
-    border: none;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    top: 60%;
+    background-color: #dfc7ef !important;
 }
 
-.fixed-hub-button-clear:hover {
-    background-color: #fbc02d !important;
-}
 
 .fixed-hub-button-add {
-    top: 60%;
+    top: 65%;
+    background-color: #a9da54 !important;
+}
+
+
+.fixed-hub-button-remove {
+    top: 70%;
+    background-color: #ffe140 !important;
 }
 
 .refresh-float-button {

@@ -199,14 +199,16 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
         if (selectedRowKeys.length === 0) return;
 
         try {
-            await deleteStockItems({origins: selectedRowKeys});
-            setItems(prev => prev.filter(item => !selectedRowKeys.includes(item.origin)));
-            setSelectedRowKeys([]);
+            const deletedOrigins = await deleteStockItems({origins: selectedRowKeys});
+            if (!Array.isArray(deletedOrigins) || deletedOrigins.length === 0) return;
+            setItems(prev => prev.filter(item => !deletedOrigins.includes(item.origin)));
+            setSelectedRowKeys(prev => prev.filter(origin => !deletedOrigins.includes(origin)));
             onSelectedOrigins?.([]);
         } catch (error) {
             console.error("Ошибка при удалении:", error);
         }
     };
+
 
     const openImageModal = useCallback(origin => {
         setCurrentOrigin(origin);
