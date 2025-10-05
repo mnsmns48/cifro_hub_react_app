@@ -1,8 +1,8 @@
 import {List, Button, Spin} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
-import HubMenuLevels from "../HubMenuLevels.jsx";
 import {Suspense, useState} from "react";
 import {createHubLoading} from "../HubMenuLevels/api.js";
+import HubMenuLevels from "../HubMenuLevels.jsx";
 
 
 const InHubDownloader = ({
@@ -73,8 +73,8 @@ const InHubDownloader = ({
                     />
 
                     <div style={{marginTop: 20}}>
-                        <Suspense fallback={<Spin tip="Загрузка хаба..."/>}>
-                            <HubMenuLevels onSelectPath={setSelectedPathId}/>
+                        <Suspense fallback={<Spin/>}>
+                            <HubMenuLevels onSelectPath={setSelectedPathId} simplified={false} compareElements={items}/>
                         </Suspense>
                     </div>
                 </>
@@ -82,12 +82,7 @@ const InHubDownloader = ({
             footer={
                 <>
                     <Button onClick={onCancel}>Отмена</Button>
-                    <Button
-                        type="primary"
-                        onClick={handleAddToHub}
-                        disabled={selectedPathId == null}
-                        loading={saving}
-                    >
+                    <Button type="primary" onClick={handleAddToHub} disabled={selectedPathId == null} loading={saving}>
                         Добавить
                     </Button>
                 </>

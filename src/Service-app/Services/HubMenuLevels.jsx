@@ -10,12 +10,17 @@ import ComparisonModal from "./HubMenuLevels/ComparisonModal.jsx";
 import Consent from "./HubMenuLevels/Consent.jsx";
 import {fetchRangeRewardsProfiles} from "./RewardRangeSettings/api.js";
 import "./HubMenuLevels/Css/ComparisonModal.css";
+import StockHubSimplified from "./HubMenuLevels/StockHubSimplified.jsx";
 
 
-const HubMenuLevels = ({
-                           onSelectPath = () => {
-                           }
-                       }) => {
+const HubMenuLevels = (
+    {
+        onSelectPath = () => {
+        }, simplified = true,
+        compareElements = []
+    }
+) => {
+
     const [menuData, setMenuData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editingKey, setEditingKey] = useState(null);
@@ -164,10 +169,10 @@ const HubMenuLevels = ({
         <>
             <Tree draggable blockNode expandedKeys={expandedKeys} onExpand={setExpandedKeys}
                   treeData={treeData} onDrop={onDrop} onSelect={handleSelect}/>
-            {activePathId != null && (
-                <div style={{ paddingTop: 25 }}>
+            {activePathId != null && simplified && (
+                <div style={{paddingTop: 25}}>
                     <Button
-                        icon={<ReloadOutlined />} type="primary" onClick={handleUpdateDataBtn}
+                        icon={<ReloadOutlined/>} type="primary" onClick={handleUpdateDataBtn}
                         className="comparison-active-button">
                         Обновить данные
                     </Button>
@@ -175,15 +180,19 @@ const HubMenuLevels = ({
 
             )}
             {activePathId != null && (
-                <StockHubItemsTable
-                    pathId={activePathId}
-                    selectedRowKeys={[]}
-                    onSelectedOrigins={setSelectedItems}
-                    profit_profiles={ProfitRangesProfiles}
-                />
+                simplified === false ? (
+                    <StockHubSimplified pathId={activePathId} existingItems={compareElements}/>
+                ) : (
+                    <StockHubItemsTable
+                        pathId={activePathId}
+                        selectedRowKeys={[]}
+                        onSelectedOrigins={setSelectedItems}
+                        profit_profiles={ProfitRangesProfiles}
+                    />
+                )
             )}
 
-            {comparisonResult && (
+            {comparisonResult && simplified && (
                 <ComparisonModal
                     isOpen={modalVisible}
                     onClose={() => setModalVisible(false)}
@@ -194,7 +203,7 @@ const HubMenuLevels = ({
                     }}
                 />
             )}
-            {consentVisible && (
+            {consentVisible && simplified && (
                 <Consent
                     comparisonObj={comparisonResult} isOpen={consentVisible} onClose={() => setConsentVisible(false)}
                 />
