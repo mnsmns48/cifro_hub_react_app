@@ -14,8 +14,7 @@ const MiniAppMainComponent = () => {
     }, []);
 
     return (
-        <div style={{padding: '20px'}}>
-            <h1>Привет, {user?.first_name || 'гость'}!</h1>
+        <div style={{padding: '20px', color: 'white'}}>
             <p>Добро пожаловать в Telegram WebApp</p>
         </div>
     );

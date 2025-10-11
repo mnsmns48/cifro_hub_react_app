@@ -10,9 +10,9 @@ const root = createRoot(document.getElementById('root'));
 root.render(
     <Router>
         <Routes>
-            {/*<Route path="/*" element={<CifrotechMainApp/>}/>*/}
-            <Route path={import.meta.env.VITE_SERVICE_POINT} element={<CheckAccess/>}/>
             <Route path="/webapp" element={<MiniAppMainComponent/>}/>
+            <Route path={import.meta.env.VITE_SERVICE_POINT} element={<CheckAccess/>}/>
+            <Route path="/*" element={<CifrotechMainApp/>}/>
         </Routes>
     </Router>
 );
