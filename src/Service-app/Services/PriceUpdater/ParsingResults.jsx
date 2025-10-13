@@ -2,7 +2,7 @@ import {useState, useMemo, useCallback, useEffect} from "react";
 import {Table, Button, Input, Select, Popconfirm, Spin} from "antd";
 import "../Css/ParsingResults.css";
 import {createParsingColumns} from "./ParsingResultsColumns.jsx";
-import {deleteParsingItems, exportParsingToExcel, reCalcOutputPrices} from "./api.js";
+import {clearMediaData, deleteParsingItems, exportParsingToExcel, reCalcOutputPrices} from "./api.js";
 import UploadImagesModal from "./UploadImagesModal.jsx";
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
 import {FileExcelOutlined, PercentageOutlined, ReloadOutlined, WarningOutlined} from "@ant-design/icons";
@@ -173,6 +173,17 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
         }
     };
 
+    const handleClearMedia = async (selectedOrigins) => {
+        const cleared = await clearMediaData(selectedOrigins);
+        setRows(prev =>
+            prev.map(row =>
+                cleared.includes(row.origin)
+                    ? {...row, pics: [], preview: null}
+                    : row
+            )
+        );
+
+    };
 
     const refreshParsingResult = async () => {
         setIsRefreshing(true);
@@ -235,6 +246,10 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                     <Button onClick={() => setAddToHubModalVisible(true)}
                             className="fixed-hub-button fixed-hub-button-add">
                         Добавить в Хаб ({selectedRowKeys.length})
+                    </Button>
+                    <Button onClick={() => handleClearMedia(selectedRowKeys)}
+                            className="fixed-hub-button fixed-hub-button-clear-media">
+                        Очистить медиа ({selectedRowKeys.length})
                     </Button>
                     <Button onClick={() => handleClearFromHub(selectedRowKeys)}
                             className="fixed-hub-button fixed-hub-button-remove">

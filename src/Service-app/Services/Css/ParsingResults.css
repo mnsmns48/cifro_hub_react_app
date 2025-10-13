@@ -68,11 +68,17 @@
     background-color: #a9da54 !important;
 }
 
+.fixed-hub-button-clear-media {
+    top: 70%;
+    background-color: #b19090 !important;
+}
+
 
 .fixed-hub-button-remove {
-    top: 70%;
+    top: 80%;
     background-color: #ffe140 !important;
 }
+
 
 .refresh-float-button {
     position: fixed;

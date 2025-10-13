@@ -88,6 +88,18 @@ export const updateParsingItem = async (origin, data) => {
     }
 };
 
+export const clearMediaData = async (origins) => {
+    try {
+        const response = await axios.post("/service/clear-media-data", {
+            origins: origins,
+        });
+        return response.data.cleared;
+    } catch (error) {
+        console.error("Ошибка при очистке медиа:", error);
+        return [];
+    }
+};
+
 
 export async function deleteParsingItems(origins) {
     const res = await fetch("/service/delete_parsing_items/", {
