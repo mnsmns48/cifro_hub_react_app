@@ -1,5 +1,5 @@
 import {Button, Col, Flex, Input, Row} from "antd";
-import {PlusOutlined, SettingOutlined} from "@ant-design/icons";
+import {FileSearchOutlined, PlusOutlined, SettingOutlined} from "@ant-design/icons";
 import MyModal from "../../Ui/MyModal.jsx";
 import {useEffect, useState} from "react";
 import VendorSourceSelector from "./PriceUpdater/VendorSourceSelector.jsx";
@@ -202,5 +202,5 @@ const PriceUpdater = () => {
 };
 
 PriceUpdater.componentTitle = "Парсинг"
-PriceUpdater.componentIcon = <img src="/ui/prices.png" alt="icon" width="30" height="30"/>
+PriceUpdater.componentIcon = <FileSearchOutlined style={{fontSize: 30}}/>
 export default PriceUpdater;

@@ -1,4 +1,8 @@
+@import url('/fonts/ttfirsneue/stylesheet.css');
+
+
 .service-app-container {
+    font-family: 'TT Firs Neue', sans-serif;
     width: clamp(320px, 90vw, 1416px);
     margin: 20px auto 0;
     position: relative;
@@ -31,4 +35,29 @@
 
 .bill-wrapper .form-container {
     width: 330px;
+}
+
+.service-app-container .ant-tabs,
+.service-app-container .ant-spin,
+.service-app-container .ant-btn,
+.service-app-container .ant-input {
+    font-family: 'TT Firs Neue', sans-serif !important;
+}
+
+
+.service-app-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: black !important;
+}
+
+
+.service-app-tabs .ant-tabs-tab-active {
+    margin-left: 0px !important;
+    padding-left: 16px !important;
+    border: 1px solid #e2fc2a !important;
+    border-radius: 20px;
+    background-color: #e2fc2a !important;
+}
+
+.ant-tabs-tab:hover {
+    color: #676760 !important;
 }

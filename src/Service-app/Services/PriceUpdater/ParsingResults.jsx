@@ -5,7 +5,13 @@ import {createParsingColumns} from "./ParsingResultsColumns.jsx";
 import {clearMediaData, deleteParsingItems, exportParsingToExcel, reCalcOutputPrices} from "./api.js";
 import UploadImagesModal from "./UploadImagesModal.jsx";
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
-import {FileExcelOutlined, PercentageOutlined, ReloadOutlined, WarningOutlined} from "@ant-design/icons";
+import {
+    AlignLeftOutlined,
+    FileExcelOutlined,
+    PercentageOutlined,
+    ReloadOutlined,
+    WarningOutlined
+} from "@ant-design/icons";
 import {formatDate} from "../../../../utils.js";
 import InHubDownloader from "./InHubDownloader.jsx";
 import MyModal from "../../../Ui/MyModal.jsx";
@@ -30,6 +36,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [isFilterItemOpen, setIsFilterItemOpen] = useState(false);
 
 
     useEffect(() => {
@@ -305,6 +312,15 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
             ) : (
                 <Button onClick={refreshParsingResult} className="refresh-float-button">
                     <ReloadOutlined style={{fontSize: 24}}/>
+                </Button>
+            )}
+            {isRefreshing ? (
+                <div className="refresh-float-button">
+                    <Spin size="small"/>
+                </div>
+            ) : (
+                <Button onClick={refreshParsingResult} className="filter-button">
+                    <AlignLeftOutlined style={{fontSize: 24}}/>
                 </Button>
             )}
             <MyModal

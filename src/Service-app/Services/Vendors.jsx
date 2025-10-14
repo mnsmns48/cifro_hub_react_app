@@ -1,5 +1,5 @@
 import {Button, Table, Input, Select} from 'antd';
-import {EditOutlined, DeleteOutlined, SaveOutlined, PlusOutlined} from '@ant-design/icons';
+import {EditOutlined, DeleteOutlined, SaveOutlined, PlusOutlined, TruckOutlined} from '@ant-design/icons';
 import {useEffect, useState} from 'react';
 import axios from 'axios';
 import './Css/Vendors.css'
@@ -84,7 +84,7 @@ const Vendors = () => {
     const handleDeleteConfirm = () => {
         if (selectedVendor) {
             axios.delete(`/service/vendors/${selectedVendor.id}`)
-                .then(response => {
+                .then(() => {
                     setVendors(prevVendors => prevVendors.filter(vendor => vendor.id !== selectedVendor.id));
                 })
                 .catch(error => console.error('Ошибка удаления:', error))
@@ -196,5 +196,5 @@ const Vendors = () => {
 };
 
 Vendors.componentTitle = "Поставщики"
-Vendors.componentIcon = <img src="/ui/shipper.png" alt="icon" width="30" height="30"/>
+Vendors.componentIcon = <TruckOutlined style={{fontSize: 30}}/>
 export default Vendors;

@@ -1,3 +1,5 @@
+import {PrinterOutlined} from "@ant-design/icons";
+
 const BillPrinter = () => {
     const today = new Date();
     const formattedDate = String(today.getDate()).padStart(2, '0') + '.' +
@@ -60,6 +62,6 @@ const BillPrinter = () => {
     );
 }
 
-BillPrinter.componentTitle = "Напечатать товарный чек"
-BillPrinter.componentIcon = <img src="/ui/913printer2.png" alt="icon" width="30" height="30" />
+BillPrinter.componentTitle = "Товарный чек"
+BillPrinter.componentIcon = <PrinterOutlined style={{fontSize: 30}}/>
 export default BillPrinter;

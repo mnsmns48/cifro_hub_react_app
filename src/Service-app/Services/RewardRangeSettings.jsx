@@ -7,7 +7,14 @@ import {
     updateRewardRangeProfile,
     updateDefaultProfile
 } from "./RewardRangeSettings/api.js";
-import {DeleteOutlined, EditOutlined, PlusOutlined, CheckCircleOutlined, SelectOutlined} from "@ant-design/icons";
+import {
+    DeleteOutlined,
+    EditOutlined,
+    PlusOutlined,
+    CheckCircleOutlined,
+    SelectOutlined,
+    DollarOutlined
+} from "@ant-design/icons";
 import RewardRangeTable from "./RewardRangeSettings/RewardRangeTable.jsx";
 import MyModal from "../../Ui/MyModal.jsx";
 
@@ -182,6 +189,6 @@ const RewardRangeSettings = () => {
         </div>
     </div>);
 }
-RewardRangeSettings.componentTitle = "Настройка вознаграждения"
-RewardRangeSettings.componentIcon = <img src="/ui/rubli-6.png" alt="icon" width="30" height="30"/>
+RewardRangeSettings.componentTitle = "Вознаграждения"
+RewardRangeSettings.componentIcon = <DollarOutlined style={{fontSize: 30}}/>
 export default RewardRangeSettings;

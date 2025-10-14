@@ -5,12 +5,13 @@ import {
 } from "./HubMenuLevels/api.js";
 import StockHubItemsTable from "./HubMenuLevels/StockHubItemsTable.jsx";
 import TreeDataRender from "./HubMenuLevels/TreeRender.jsx";
-import {ReloadOutlined} from "@ant-design/icons";
+import {PrinterOutlined, ReloadOutlined, StarOutlined} from "@ant-design/icons";
 import ComparisonModal from "./HubMenuLevels/ComparisonModal.jsx";
 import Consent from "./HubMenuLevels/Consent.jsx";
 import {fetchRangeRewardsProfiles} from "./RewardRangeSettings/api.js";
 import "./HubMenuLevels/Css/ComparisonModal.css";
 import StockHubSimplified from "./HubMenuLevels/StockHubSimplified.jsx";
+import BillPrinter from "./BillPrinter.jsx";
 
 
 const HubMenuLevels = (
@@ -214,5 +215,5 @@ const HubMenuLevels = (
 };
 
 HubMenuLevels.componentTitle = "Хаб";
-HubMenuLevels.componentIcon = <img src="/ui/levels.png" alt="icon" width="30" height="30"/>;
+HubMenuLevels.componentIcon = <StarOutlined  style={{fontSize: 30}}/>
 export default HubMenuLevels;

@@ -45,7 +45,7 @@ const styles = {
         flexDirection: 'column',
         alignItems: 'center',
         borderRadius: '4px',
-        backgroundColor: '#f0f2f5',
+        backgroundColor: '#b5b5b4',
         boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
     },
     time: {
@@ -58,7 +58,7 @@ const styles = {
         fontWeight: 'bold',
     },
     dateToday: {
-        color: '#289c24',
+        color: '#e2fc2a',
     },
     dateYesterday: {
         color: '#d4a100',
