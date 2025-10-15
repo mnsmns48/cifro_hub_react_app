@@ -9,10 +9,10 @@ import {
     AlignLeftOutlined,
     BarsOutlined,
     CalculatorOutlined,
-    CalendarOutlined, DeleteRowOutlined,
+    CalendarOutlined, ClearOutlined, DeleteOutlined, DeleteRowOutlined,
     EyeInvisibleOutlined,
-    FileExcelOutlined, NodeIndexOutlined,
-    ReloadOutlined,
+    FileExcelOutlined, NodeIndexOutlined, PlusSquareOutlined,
+    ReloadOutlined, RestOutlined, ShareAltOutlined,
     WarningOutlined
 } from "@ant-design/icons";
 import {formatDate} from "../../../../utils.js";
@@ -254,29 +254,26 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                         placement="left"
                     >
                         <Button danger className="fixed-hub-button fixed-hub-button-delete">
-                            <WarningOutlined/> Удалить навсегда ({selectedRowKeys.length})
+                            Удалить навсегда ({selectedRowKeys.length}) <WarningOutlined/>
                         </Button>
                     </Popconfirm>
 
-                    <Button onClick={() => setSelectedRowKeys([])} className="fixed-hub-button fixed-hub-button-clear">
-                        Снять выделение ({selectedRowKeys.length})
-                    </Button>
                     <Button onClick={handleAddDependenceMulti} className="fixed-hub-button fixed-hub-button-dependency">
-                        Зависимость ({selectedRowKeys.length})
+                        Зависимость ({selectedRowKeys.length}) <ShareAltOutlined/>
                     </Button>
                     <Button onClick={() => setAddToHubModalVisible(true)}
                             className="fixed-hub-button fixed-hub-button-add">
-                        Добавить в Хаб ({selectedRowKeys.length})
+                        Добавить в Хаб ({selectedRowKeys.length}) <PlusSquareOutlined/>
                     </Button>
 
                     <Button onClick={() => handleClearMedia(selectedRowKeys)}
                             className="fixed-hub-button fixed-hub-button-clear-media">
-                        Очистить медиа ({selectedRowKeys.length})
+                        Очистить медиа ({selectedRowKeys.length}) <ClearOutlined/>
                     </Button>
 
                     <Button onClick={() => handleClearFromHub(selectedRowKeys)}
                             className="fixed-hub-button fixed-hub-button-remove">
-                        Убрать из хаба ({selectedRowKeys.length})
+                        Убрать из хаба ({selectedRowKeys.length}) <RestOutlined/>
                     </Button>
                 </div>
             )}
@@ -307,9 +304,9 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                    }}
             />
             <InHubDownloader vslId={vslId} isOpen={addToHubModalVisible} items={selectedItems}
-                onCancel={() => setAddToHubModalVisible(false)} onConfirm={handleAddToHub}/>
+                             onCancel={() => setAddToHubModalVisible(false)} onConfirm={handleAddToHub}/>
             <UploadImagesModal isOpen={uploadModalOpen} originCode={currentOrigin}
-                onClose={() => setUploadModalOpen(false)}
+                               onClose={() => setUploadModalOpen(false)}
                                onUploaded={(data) => handleImageUploaded(data, currentOrigin)}/>
             {isRefreshing ? (
                 <div className="refresh-float-button">
@@ -325,7 +322,6 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                 content={successMessage}
                 onConfirm={() => {
                     setIsSuccessModalOpen(false);
-                    // setSelectedRowKeys([]);
                 }}
                 onCancel={() => setIsSuccessModalOpen(false)}
                 footer={<button onClick={() => setIsSuccessModalOpen(false)}>Ок</button>}

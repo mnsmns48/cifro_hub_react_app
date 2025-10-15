@@ -47,7 +47,6 @@
 }
 
 .fixed-hub-button-delete,
-.fixed-hub-button-clear,
 .fixed-hub-button-dependency,
 .fixed-hub-button-clear-media,
 .fixed-hub-button-add,
@@ -56,7 +55,7 @@
 }
 
 
-.fixed-hub-button-clear { top: 55%; }
+
 .fixed-hub-button-clear-media { top: 60%; }
 .fixed-hub-button-dependency {top: 65%; }
 .fixed-hub-button-add { top: 70%; background-color: #e2fc2a !important; }
@@ -68,7 +67,6 @@
     color: #f1f1f0 !important;
 }
 
-.fixed-hub-button-clear:hover,
 .fixed-hub-button-clear-media:hover,
 .fixed-hub-button-dependency:hover,
 .fixed-hub-button-add:hover,
