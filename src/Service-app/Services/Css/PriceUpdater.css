@@ -53,11 +53,12 @@
 }
 
 .row-no-features {
-    background-color: #ffe4e4 !important;
+    background-color: #f1f1f0 !important;
+    color: #cfcfcf !important;
 }
 
 .row-no-image {
-    background-color: #fdfcf2 !important;
+    background-color: #f1f1f0 !important;
 }
 
 .compact-row > td {

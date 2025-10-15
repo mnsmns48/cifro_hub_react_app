@@ -1,5 +1,5 @@
 import {useState, useMemo, useCallback, useEffect} from "react";
-import {Table, Button, Input, Select, Popconfirm, Spin} from "antd";
+import {Table, Button, Input, Select, Popconfirm, Spin, Badge, Tooltip} from "antd";
 import "../Css/ParsingResults.css";
 import {createParsingColumns} from "./ParsingResultsColumns.jsx";
 import {clearMediaData, deleteParsingItems, exportParsingToExcel, reCalcOutputPrices} from "./api.js";
@@ -7,8 +7,11 @@ import UploadImagesModal from "./UploadImagesModal.jsx";
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
 import {
     AlignLeftOutlined,
-    FileExcelOutlined,
-    PercentageOutlined,
+    BarsOutlined,
+    CalculatorOutlined,
+    CalendarOutlined, DeleteRowOutlined,
+    EyeInvisibleOutlined,
+    FileExcelOutlined, NodeIndexOutlined,
     ReloadOutlined,
     WarningOutlined
 } from "@ant-design/icons";
@@ -194,6 +197,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
 
     const refreshParsingResult = async () => {
         setIsRefreshing(true);
+        setSelectedRowKeys([])
         try {
             const updated = await reCalcOutputPrices(vslId, result.profit_range_id);
             setRows(Array.isArray(updated.parsing_result) ? updated.parsing_result : []);
@@ -203,6 +207,13 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
             setIsRefreshing(false);
         }
     };
+
+    const handleAddDependenceMulti = async () => {
+
+    }
+
+    const countNoPreview = rows.filter(r => r.preview == null).length;
+    const countNoFeatures = rows.filter(r => Array.isArray(r.features_title) && r.features_title.length === 0).length;
 
 
     return (
@@ -214,22 +225,23 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                 </p>
             </div>
 
-            <div style={{display: "flex", gap: 5, flexWrap: "wrap", padding: "15px 0"}}>
-                <Button onClick={() => setShowInputPrice(v => !v)}>{showInputPrice ? "Off" :
-                    <PercentageOutlined/>}</Button>
-                <Button onClick={() => setActiveFilter("all")} style={{background: "yellowgreen"}}/>
-                <Button onClick={() => setActiveFilter("noPreview")} style={{background: "yellow"}}/>
-                <Button onClick={() => setActiveFilter("noFeatures")} style={{background: "red"}}/>
+            <div style={{display: "flex", gap: 5, flexWrap: "wrap", padding: "12px 0"}}>
+                <Button onClick={() => setShowInputPrice(v => !v)}>
+                    {showInputPrice ? <CalendarOutlined/> : <CalculatorOutlined/>}</Button>
+                <Button onClick={() => setActiveFilter("all")}><BarsOutlined/></Button>
+                <Badge count={countNoPreview} offset={[-8, -6]}>
+                    <Button onClick={() => setActiveFilter("noPreview")}><EyeInvisibleOutlined/></Button>
+                </Badge>
+                <Badge count={countNoFeatures} offset={[-8, -6]}>
+                    <Button onClick={() => setActiveFilter("noFeatures")}><DeleteRowOutlined/></Button>
+                </Badge>
                 <Search placeholder="Поиск по названию / коду товара" allowClear style={{maxWidth: 500}}
                         value={searchText} onChange={e => setSearchText(e.target.value)}/>
-                <Select style={{minWidth: 200}}
-                        options={rewardOptions} defaultValue={result.profit_range_id} onChange={handleSelectRange}/>
-                <Button
-                    type="text"
-                    icon={<FileExcelOutlined style={{fontSize: 20, color: "#52c41a"}}/>}
-                    onClick={downloadExcel}
-                    title="Скачать Excel"
-                />
+                <Tooltip title={"Профиль вознаграждения"}>
+                    <Select style={{minWidth: 200}}
+                            options={rewardOptions} defaultValue={result.profit_range_id} onChange={handleSelectRange}/>
+                    <Button onClick={downloadExcel}><FileExcelOutlined/></Button>
+                </Tooltip>
             </div>
 
             {selectedRowKeys.length > 0 && (
@@ -249,15 +261,19 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                     <Button onClick={() => setSelectedRowKeys([])} className="fixed-hub-button fixed-hub-button-clear">
                         Снять выделение ({selectedRowKeys.length})
                     </Button>
-
+                    <Button onClick={handleAddDependenceMulti} className="fixed-hub-button fixed-hub-button-dependency">
+                        Зависимость ({selectedRowKeys.length})
+                    </Button>
                     <Button onClick={() => setAddToHubModalVisible(true)}
                             className="fixed-hub-button fixed-hub-button-add">
                         Добавить в Хаб ({selectedRowKeys.length})
                     </Button>
+
                     <Button onClick={() => handleClearMedia(selectedRowKeys)}
                             className="fixed-hub-button fixed-hub-button-clear-media">
                         Очистить медиа ({selectedRowKeys.length})
                     </Button>
+
                     <Button onClick={() => handleClearFromHub(selectedRowKeys)}
                             className="fixed-hub-button fixed-hub-button-remove">
                         Убрать из хаба ({selectedRowKeys.length})
@@ -290,21 +306,11 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                        return "";
                    }}
             />
-
-            <InHubDownloader
-                vslId={vslId}
-                isOpen={addToHubModalVisible}
-                items={selectedItems}
-                onCancel={() => setAddToHubModalVisible(false)}
-                onConfirm={handleAddToHub}
-            />
-
-            <UploadImagesModal
-                isOpen={uploadModalOpen}
-                originCode={currentOrigin}
+            <InHubDownloader vslId={vslId} isOpen={addToHubModalVisible} items={selectedItems}
+                onCancel={() => setAddToHubModalVisible(false)} onConfirm={handleAddToHub}/>
+            <UploadImagesModal isOpen={uploadModalOpen} originCode={currentOrigin}
                 onClose={() => setUploadModalOpen(false)}
-                onUploaded={(data) => handleImageUploaded(data, currentOrigin)}
-            />
+                               onUploaded={(data) => handleImageUploaded(data, currentOrigin)}/>
             {isRefreshing ? (
                 <div className="refresh-float-button">
                     <Spin size="small"/>
@@ -312,15 +318,6 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
             ) : (
                 <Button onClick={refreshParsingResult} className="refresh-float-button">
                     <ReloadOutlined style={{fontSize: 24}}/>
-                </Button>
-            )}
-            {isRefreshing ? (
-                <div className="refresh-float-button">
-                    <Spin size="small"/>
-                </div>
-            ) : (
-                <Button onClick={refreshParsingResult} className="filter-button">
-                    <AlignLeftOutlined style={{fontSize: 24}}/>
                 </Button>
             )}
             <MyModal

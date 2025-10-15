@@ -1,5 +1,5 @@
 .highlight-purple {
-    border: 1px solid #08ba7c;
+    border: 2px solid black;
     border-radius: 25px;
     padding: 10px;
 }
@@ -35,48 +35,49 @@
     left: 21.5%;
     transform: translate(-100%, -50%);
     z-index: 1000;
-    color: #212121 !important;
     font-weight: bold;
     border: none;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    color: #212121 !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .fixed-hub-button:hover {
     background-color: #ffffff !important;
 }
 
-.fixed-hub-button-delete {
-    top: 50%;
-    background-color: #d32f2f !important;
-    color: #ffffff !important;
-
+.fixed-hub-button-delete,
+.fixed-hub-button-clear,
+.fixed-hub-button-dependency,
+.fixed-hub-button-clear-media,
+.fixed-hub-button-add,
+.fixed-hub-button-remove {
+    position: fixed;
 }
+
+
+.fixed-hub-button-clear { top: 55%; }
+.fixed-hub-button-clear-media { top: 60%; }
+.fixed-hub-button-dependency {top: 65%; }
+.fixed-hub-button-add { top: 70%; background-color: #e2fc2a !important; }
+.fixed-hub-button-remove { top: 80%; }
+.fixed-hub-button-delete { top: 85%; background-color: #ff4d4f !important; color: #ffffff !important; }
 
 .fixed-hub-button-delete:hover {
-    background-color: #b71c1c !important;
+    background-color: #ff4d4f !important;
+    color: #f1f1f0 !important;
 }
 
-
-.fixed-hub-button-clear {
-    top: 60%;
-    background-color: #dfc7ef !important;
+.fixed-hub-button-clear:hover,
+.fixed-hub-button-clear-media:hover,
+.fixed-hub-button-dependency:hover,
+.fixed-hub-button-add:hover,
+.fixed-hub-button-remove:hover {
+    color: #b5b5b4 !important;
 }
 
-
-.fixed-hub-button-add {
-    top: 65%;
-    background-color: #a9da54 !important;
-}
-
-.fixed-hub-button-clear-media {
-    top: 70%;
-    background-color: #b19090 !important;
-}
-
-
-.fixed-hub-button-remove {
-    top: 80%;
-    background-color: #ffe140 !important;
+.fixed-hub-button-add:hover {
+    background-color: #e2fc2a !important;
 }
 
 
@@ -90,7 +91,7 @@
     height: 50px;
     border-radius: 50%;
     background-color: #b5b5b4 !important;
-    color: white;
+    color: #e2fc2a;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -100,7 +101,8 @@
 }
 
 .refresh-float-button:hover {
-    color: white !important;
+    color: #e2fc2a !important;
+    border-color: transparent !important;
     background-color: #b5b5b4 !important;
 }
 
@@ -108,7 +110,7 @@
 .filter-button {
     position: fixed;
     left: calc(19.5%);
-    top: 50%;
+    top: 36%;
     transform: translateY(-50%);
     z-index: 1000;
     width: 50px;
@@ -129,3 +131,4 @@
     color: white !important;
     background-color: #b5b5b4 !important;
 }
+
