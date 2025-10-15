@@ -1,3 +1,7 @@
+.body {
+    font-family: 'TT Firs Neue', sans-serif !important;
+}
+
 .comparison-modal-table {
     width: 100%;
     border-collapse: collapse;
@@ -27,29 +31,26 @@
 }
 
 .comparison-button {
-    border: 1px solid transparent;
     box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
-    transition: transform 0.2s ease-in-out;
+    transition: border-color 0.5s ease-in-out;
     cursor: default !important;
+    color: black !important;
+    background: #F1F1F0FF !important;
+    border-color: #cacac9 !important;
 }
+
+
+.comparison-button:hover {
+    border-color: black !important;
+    cursor: pointer !important;
+}
+
 
 .comparison-active-button {
     composes: comparison-button;
-    color: #ffffff !important;;
-    background: linear-gradient(90deg, #ff4d4f 0%, #ff7a45 100%) !important;
-    border-color: #ffffff !important;
 }
-
-
-.comparison-active-button:hover {
-    transform: scale(1.05) !important;
-}
-
 
 .comparison-update-button {
     composes: comparison-button;
     margin-right: 12px;
-    color: white;
-    background: linear-gradient(90deg, #e6e32c 0%, #1b9f04 100%) !important;
-    border-color: #ffffff !important;
 }

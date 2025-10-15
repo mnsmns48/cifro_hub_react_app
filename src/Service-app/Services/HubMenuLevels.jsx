@@ -5,13 +5,12 @@ import {
 } from "./HubMenuLevels/api.js";
 import StockHubItemsTable from "./HubMenuLevels/StockHubItemsTable.jsx";
 import TreeDataRender from "./HubMenuLevels/TreeRender.jsx";
-import {PrinterOutlined, ReloadOutlined, StarOutlined} from "@ant-design/icons";
+import {ReloadOutlined, StarOutlined} from "@ant-design/icons";
 import ComparisonModal from "./HubMenuLevels/ComparisonModal.jsx";
 import Consent from "./HubMenuLevels/Consent.jsx";
 import {fetchRangeRewardsProfiles} from "./RewardRangeSettings/api.js";
 import "./HubMenuLevels/Css/ComparisonModal.css";
 import StockHubSimplified from "./HubMenuLevels/StockHubSimplified.jsx";
-import BillPrinter from "./BillPrinter.jsx";
 
 
 const HubMenuLevels = (
@@ -174,7 +173,7 @@ const HubMenuLevels = (
                 <div style={{paddingTop: 25}}>
                     <Button
                         icon={<ReloadOutlined/>} type="primary" onClick={handleUpdateDataBtn}
-                        className="comparison-active-button">
+                        className="comparison-button">
                         Обновить данные
                     </Button>
                 </div>
@@ -215,5 +214,6 @@ const HubMenuLevels = (
 };
 
 HubMenuLevels.componentTitle = "Хаб";
-HubMenuLevels.componentIcon = <StarOutlined  style={{fontSize: 30}}/>
+HubMenuLevels.componentIcon = <div className="circle-container"><StarOutlined className="icon-style"/></div>
+
 export default HubMenuLevels;

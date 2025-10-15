@@ -1,4 +1,4 @@
-import {PrinterOutlined} from "@ant-design/icons";
+import {PrinterOutlined, StarOutlined} from "@ant-design/icons";
 
 const BillPrinter = () => {
     const today = new Date();
@@ -63,5 +63,5 @@ const BillPrinter = () => {
 }
 
 BillPrinter.componentTitle = "Товарный чек"
-BillPrinter.componentIcon = <PrinterOutlined style={{fontSize: 30}}/>
+BillPrinter.componentIcon = <div className="circle-container"><PrinterOutlined className="icon-style"/></div>
 export default BillPrinter;

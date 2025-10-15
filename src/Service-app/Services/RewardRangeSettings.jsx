@@ -13,7 +13,7 @@ import {
     PlusOutlined,
     CheckCircleOutlined,
     SelectOutlined,
-    DollarOutlined
+    DollarOutlined, FileSearchOutlined
 } from "@ant-design/icons";
 import RewardRangeTable from "./RewardRangeSettings/RewardRangeTable.jsx";
 import MyModal from "../../Ui/MyModal.jsx";
@@ -89,9 +89,6 @@ const RewardRangeSettings = () => {
 
 
     return (<div>
-        <div className='action_parser_main'>
-            <h1>Настройка профилей вознаграждения</h1>
-        </div>
         <div style={{display: "flex", alignItems: "center", gap: "20px"}}>
             <Select
                 labelInValue
@@ -190,5 +187,5 @@ const RewardRangeSettings = () => {
     </div>);
 }
 RewardRangeSettings.componentTitle = "Вознаграждения"
-RewardRangeSettings.componentIcon = <DollarOutlined style={{fontSize: 30}}/>
+RewardRangeSettings.componentIcon = <div className="circle-container"><DollarOutlined className="icon-style"/></div>
 export default RewardRangeSettings;

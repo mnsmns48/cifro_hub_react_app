@@ -61,7 +61,7 @@ const styles = {
         color: '#e2fc2a',
     },
     dateYesterday: {
-        color: '#d4a100',
+        color: '#ff4d4f',
     },
     dateDefault: {
         color: '#214255',

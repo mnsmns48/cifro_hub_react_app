@@ -1,5 +1,5 @@
 import {Button, Table, Input, Select} from 'antd';
-import {EditOutlined, DeleteOutlined, SaveOutlined, PlusOutlined, TruckOutlined} from '@ant-design/icons';
+import {EditOutlined, DeleteOutlined, SaveOutlined, TruckOutlined, PlusSquareOutlined} from '@ant-design/icons';
 import {useEffect, useState} from 'react';
 import axios from 'axios';
 import './Css/Vendors.css'
@@ -142,10 +142,9 @@ const Vendors = () => {
     return (
         <>
             <div className='vendor-main'>
-                <h1>Поставщики</h1>
                 <Button
-                    icon={<PlusOutlined/>}
-                    type="primary"
+                    icon={<PlusSquareOutlined />}
+                    type="text"
                     shape="circle"
                     onClick={handleAdd}
                     className="add_vendor_button"
@@ -196,5 +195,5 @@ const Vendors = () => {
 };
 
 Vendors.componentTitle = "Поставщики"
-Vendors.componentIcon = <TruckOutlined style={{fontSize: 30}}/>
+Vendors.componentIcon = <div className="circle-container"><TruckOutlined className="icon-style"/></div>
 export default Vendors;

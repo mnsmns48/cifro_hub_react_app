@@ -1,5 +1,5 @@
 import {Button, Col, Flex, Input, Row} from "antd";
-import {FileSearchOutlined, PlusOutlined, SettingOutlined} from "@ant-design/icons";
+import {FileSearchOutlined, PlusOutlined, PrinterOutlined, SettingOutlined} from "@ant-design/icons";
 import MyModal from "../../Ui/MyModal.jsx";
 import {useEffect, useState} from "react";
 import VendorSourceSelector from "./PriceUpdater/VendorSourceSelector.jsx";
@@ -104,9 +104,6 @@ const PriceUpdater = () => {
 
     return (
         <>
-            <div className='action_parser_main'>
-                <h1>Информация</h1>
-            </div>
             {!isParsingDone && (
                 <Row style={{alignItems: 'flex-start'}}>
                     <Col span={7} className='left_col'>
@@ -202,5 +199,5 @@ const PriceUpdater = () => {
 };
 
 PriceUpdater.componentTitle = "Парсинг"
-PriceUpdater.componentIcon = <FileSearchOutlined style={{fontSize: 30}}/>
+PriceUpdater.componentIcon = <div className="circle-container"><FileSearchOutlined className="icon-style"/></div>
 export default PriceUpdater;

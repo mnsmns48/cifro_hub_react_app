@@ -7,14 +7,15 @@
     margin: 20px auto 0;
     position: relative;
     padding: 20px;
-    background: #f6f8f8;
+    background: #f8f8f7;
     border-radius: 8px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .service-app-tabs .ant-tabs-nav {
     width: 250px;
 }
+
 .service-app-tabs .ant-tabs-tab {
     padding-left: 0px !important;
 }
@@ -50,14 +51,44 @@
 }
 
 
+.service-app-tabs .ant-tabs-tab {
+    padding-left: 6px !important;
+}
+
+.service-app-tabs .ant-tabs-tab {
+    transition: background-color 0.2s ease,
+    border-radius 0.2s ease, padding-left 0.2s ease;
+    cursor: default !important;
+}
 .service-app-tabs .ant-tabs-tab-active {
-    margin-left: 0px !important;
-    padding-left: 16px !important;
-    border: 1px solid #e2fc2a !important;
+    padding-left: 6px !important;
     border-radius: 20px;
     background-color: #e2fc2a !important;
 }
 
+.service-app-tabs .ant-tabs-tab-active .icon-style {
+    color: #e2fc2a;
+}
+
 .ant-tabs-tab:hover {
     color: #676760 !important;
+}
+
+.circle-container {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #40403d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-style {
+    font-size: 25px;
+    color: white;
+}
+
+.icon-style:hover {
+    color: #e2fc2a;
 }
