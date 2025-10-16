@@ -6,12 +6,11 @@ import {clearMediaData, deleteParsingItems, exportParsingToExcel, reCalcOutputPr
 import UploadImagesModal from "./UploadImagesModal.jsx";
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
 import {
-    AlignLeftOutlined,
     BarsOutlined,
     CalculatorOutlined,
-    CalendarOutlined, ClearOutlined, DeleteOutlined, DeleteRowOutlined,
+    CalendarOutlined, ClearOutlined, DeleteRowOutlined,
     EyeInvisibleOutlined,
-    FileExcelOutlined, NodeIndexOutlined, PlusSquareOutlined,
+    FileExcelOutlined, PlusSquareOutlined,
     ReloadOutlined, RestOutlined, ShareAltOutlined,
     WarningOutlined
 } from "@ant-design/icons";
@@ -19,6 +18,7 @@ import {formatDate} from "../../../../utils.js";
 import InHubDownloader from "./InHubDownloader.jsx";
 import MyModal from "../../../Ui/MyModal.jsx";
 import {deleteStockItems} from "../HubMenuLevels/api.js";
+import InfoSelect from "./InfoSelect.jsx";
 
 
 const {Search} = Input;
@@ -39,7 +39,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [isFilterItemOpen, setIsFilterItemOpen] = useState(false);
+    const [dependencySelection, setDependencySelection] = useState(null);
 
 
     useEffect(() => {
@@ -208,9 +208,24 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
         }
     };
 
-    const handleAddDependenceMulti = async () => {
+    const handleAddDependenceMulti = (selectedKeys) => {
+        if (!selectedKeys.length) return;
 
-    }
+        const selectedRecords = rows.filter(row => selectedKeys.includes(row.origin));
+        const originList = selectedRecords.map(row => row.origin);
+        const titleList = selectedRecords.map(row => String(row.title ?? "??"));
+
+
+        const titleString = titleList.join(", ");
+
+        setDependencySelection({
+            origin: originList,
+            titles: titleList,
+            record: {title: titleString},
+            setRows
+        });
+    };
+
 
     const countNoPreview = rows.filter(r => r.preview == null).length;
     const countNoFeatures = rows.filter(r => Array.isArray(r.features_title) && r.features_title.length === 0).length;
@@ -258,9 +273,11 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                         </Button>
                     </Popconfirm>
 
-                    <Button onClick={handleAddDependenceMulti} className="fixed-hub-button fixed-hub-button-dependency">
+                    <Button onClick={() => handleAddDependenceMulti(selectedRowKeys)}
+                            className="fixed-hub-button fixed-hub-button-dependency">
                         Зависимость ({selectedRowKeys.length}) <ShareAltOutlined/>
                     </Button>
+
                     <Button onClick={() => setAddToHubModalVisible(true)}
                             className="fixed-hub-button fixed-hub-button-add">
                         Добавить в Хаб ({selectedRowKeys.length}) <PlusSquareOutlined/>
@@ -277,7 +294,19 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                     </Button>
                 </div>
             )}
-
+            {dependencySelection && (
+                <InfoSelect
+                    titles={dependencySelection.titles}
+                    origin={dependencySelection.origin}
+                    record={dependencySelection.record}
+                    setRows={dependencySelection.setRows}
+                    autoOpen={true}
+                    onClose={() => {
+                        setSelectedRowKeys([]);
+                        setDependencySelection(null);
+                    }}
+                />
+            )}
 
             <Table className="parsing-result-table"
                    dataSource={filteredData}

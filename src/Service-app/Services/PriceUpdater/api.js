@@ -129,15 +129,18 @@ export async function fetchItemDependencies(origin) {
 
 export async function postDependencyUpdate(data) {
     try {
+        const payload = Array.isArray(data) ? data : [data];
         await axios.post(
             "/service/update_parsing_item_dependency/",
-            data, {headers: {"Content-Type": "application/json"}}
+            {items: payload},
+            {headers: {"Content-Type": "application/json"}}
         );
     } catch (err) {
         const msg = err.response?.data?.detail || err.message;
         throw new Error(msg);
     }
 }
+
 
 export async function fetchDependencyDetails(origin) {
     try {
