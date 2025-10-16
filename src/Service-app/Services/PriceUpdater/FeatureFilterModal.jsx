@@ -1,21 +1,28 @@
 import {Modal, Checkbox, Button, Typography} from "antd";
 import {useState, useMemo} from "react";
 
-const { Text } = Typography;
+const {Text} = Typography;
 
 const FeatureFilterModal = ({visible, onClose, rows, onApply}) => {
     const [selectedFeatures, setSelectedFeatures] = useState([]);
 
-    const allFeatures = useMemo(() => {
-        const withFeatures = rows.filter(row =>
-            Array.isArray(row.features_title) && row.features_title.length > 0
-        );
-        const flat = withFeatures.flatMap(row => row.features_title);
-        const unique = Array.from(new Set(flat)).sort();
-        return ["-------", ...unique];
+
+    const featureCounts = useMemo(() => {
+        const counts = {};
+        rows.forEach(row => {
+            if (Array.isArray(row.features_title)) {
+                row.features_title.forEach(feature => {
+                    counts[feature] = (counts[feature] || 0) + 1;
+                });
+            }
+        });
+        return counts;
     }, [rows]);
 
 
+    const sortedFeatures = useMemo(() => {
+        return ["-------", ...Object.keys(featureCounts).sort()];
+    }, [featureCounts]);
 
     const handleChange = (checkedValues) => {
         setSelectedFeatures(checkedValues);
@@ -37,10 +44,19 @@ const FeatureFilterModal = ({visible, onClose, rows, onApply}) => {
             ]}
         >
             <Checkbox.Group value={selectedFeatures} onChange={handleChange}>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {allFeatures.map(f => (
+                <div style={{display: "flex", flexDirection: "column", gap: 8}}>
+                    {sortedFeatures.map(f => (
                         <Checkbox key={f} value={f}>
-                            {f === "-------" ? <Text type="danger">{f}</Text> : f}
+                            {f === "-------" ? (
+                                <Text type="danger">{f}</Text>
+                            ) : (
+                                <>
+                                    {f}{" "}
+                                    <Text type="secondary" style={{ color: "#1677ff" }}>
+                                       ... {featureCounts[f]}
+                                    </Text>
+                                </>
+                            )}
                         </Checkbox>
                     ))}
                 </div>

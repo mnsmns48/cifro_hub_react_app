@@ -1,9 +1,10 @@
 import {useEffect, useState} from "react";
-import {Button, Typography, Spin, Input} from "antd";
+import {Button, Typography, Input} from "antd";
 import {SelectOutlined} from "@ant-design/icons";
 import MyModal from "../../../Ui/MyModal.jsx";
 import {fetchDependencyDetails, fetchItemDependencies, postDependencyUpdate} from "./api.js";
 import DependencyModal from "./DetailDependencyModal.jsx";
+import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 
 const {Text} = Typography;
 const {Search} = Input;
@@ -99,7 +100,7 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
     };
 
     const modalContent = loading ? (
-        <Spin/>
+        <Spinner/>
     ) : error ? (
         <Text type="danger">{error}</Text>
     ) : (
