@@ -6,6 +6,7 @@ import {clearMediaData, deleteParsingItems, exportParsingToExcel, reCalcOutputPr
 import UploadImagesModal from "./UploadImagesModal.jsx";
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
 import {
+    AlignRightOutlined,
     BarsOutlined,
     CalculatorOutlined,
     CalendarOutlined, ClearOutlined, DeleteRowOutlined,
@@ -19,6 +20,7 @@ import InHubDownloader from "./InHubDownloader.jsx";
 import MyModal from "../../../Ui/MyModal.jsx";
 import {deleteStockItems} from "../HubMenuLevels/api.js";
 import InfoSelect from "./InfoSelect.jsx";
+import FeatureFilterModal from "./FeatureFilterModal.jsx";
 
 
 const {Search} = Input;
@@ -40,6 +42,8 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
     const [successMessage, setSuccessMessage] = useState("");
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [dependencySelection, setDependencySelection] = useState(null);
+    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+    const [featureFilter, setFeatureFilter] = useState([]);
 
 
     useEffect(() => {
@@ -80,22 +84,29 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
     );
 
     const filteredData = useMemo(() => {
-        let data = rows;
-
-        if (activeFilter === "noPreview") {
-            data = data.filter(r => !r.preview);
-        } else if (activeFilter === "noFeatures") {
-            data = data.filter(r => Array.isArray(r.features_title) && r.features_title.length === 0);
-        }
-
         const q = searchText.toLowerCase().trim();
 
-        return data.filter(r => {
-            const titleMatch = (r.title ?? "").toLowerCase().includes(q);
-            const originMatch = String(r.origin).includes(q);
+        return rows.filter(row => {
+            const hasFeatures = Array.isArray(row.features_title) && row.features_title.length > 0;
+
+            if (activeFilter === "noPreview" && row.preview) return false;
+            if (activeFilter === "noFeatures" && hasFeatures) return false;
+
+            if (featureFilter.length > 0) {
+                const isNoFeatureSelected = featureFilter.includes("-------");
+
+                if (isNoFeatureSelected && hasFeatures) return false;
+                if (!isNoFeatureSelected && (!hasFeatures || !featureFilter.some(f => row.features_title.includes(f)))) {
+                    return false;
+                }
+            }
+
+            const titleMatch = (row.title ?? "").toLowerCase().includes(q);
+            const originMatch = String(row.origin).includes(q);
+
             return titleMatch || originMatch;
         });
-    }, [rows, activeFilter, searchText]);
+    }, [rows, activeFilter, searchText, featureFilter]);
 
 
     const columns = useMemo(
@@ -226,10 +237,8 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
         });
     };
 
-
     const countNoPreview = rows.filter(r => r.preview == null).length;
     const countNoFeatures = rows.filter(r => Array.isArray(r.features_title) && r.features_title.length === 0).length;
-
 
     return (
         <>
@@ -243,7 +252,10 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
             <div style={{display: "flex", gap: 5, flexWrap: "wrap", padding: "12px 0"}}>
                 <Button onClick={() => setShowInputPrice(v => !v)}>
                     {showInputPrice ? <CalendarOutlined/> : <CalculatorOutlined/>}</Button>
-                <Button onClick={() => setActiveFilter("all")}><BarsOutlined/></Button>
+                <Button onClick={() => {
+                    setActiveFilter("all");
+                    setFeatureFilter([]);
+                }}><BarsOutlined/></Button>
                 <Badge count={countNoPreview} offset={[-8, -6]}>
                     <Button onClick={() => setActiveFilter("noPreview")}><EyeInvisibleOutlined/></Button>
                 </Badge>
@@ -255,8 +267,8 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                 <Tooltip title={"Профиль вознаграждения"}>
                     <Select style={{minWidth: 200}}
                             options={rewardOptions} defaultValue={result.profit_range_id} onChange={handleSelectRange}/>
-                    <Button onClick={downloadExcel}><FileExcelOutlined/></Button>
                 </Tooltip>
+                <Button onClick={downloadExcel}><FileExcelOutlined/></Button>
             </div>
 
             {selectedRowKeys.length > 0 && (
@@ -283,10 +295,17 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                         Добавить в Хаб ({selectedRowKeys.length}) <PlusSquareOutlined/>
                     </Button>
 
-                    <Button onClick={() => handleClearMedia(selectedRowKeys)}
-                            className="fixed-hub-button fixed-hub-button-clear-media">
-                        Очистить медиа ({selectedRowKeys.length}) <ClearOutlined/>
-                    </Button>
+                    <Popconfirm title="Очистить медиа у выбранных позиций?"
+                                description={`Будут удалены картинки и превью.`}
+                                okText="Да, очистить" cancelText="Отмена"
+                                onConfirm={() => handleClearMedia(selectedRowKeys)}
+                                disabled={!selectedRowKeys.length}>
+                        <Button
+                            className="fixed-hub-button fixed-hub-button-clear-media" icon={<ClearOutlined/>}
+                            disabled={!selectedRowKeys.length}>
+                            Очистить медиа ({selectedRowKeys.length})
+                        </Button>
+                    </Popconfirm>
 
                     <Button onClick={() => handleClearFromHub(selectedRowKeys)}
                             className="fixed-hub-button fixed-hub-button-remove">
@@ -338,14 +357,17 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                                onClose={() => setUploadModalOpen(false)}
                                onUploaded={(data) => handleImageUploaded(data, currentOrigin)}/>
             {isRefreshing ? (
-                <div className="refresh-float-button">
+                <div className="circle-float-button refresh-float-button">
                     <Spin size="small"/>
                 </div>
             ) : (
-                <Button onClick={refreshParsingResult} className="refresh-float-button">
+                <Button onClick={refreshParsingResult} className="circle-float-button refresh-float-button">
                     <ReloadOutlined style={{fontSize: 24}}/>
                 </Button>
             )}
+            <Button onClick={() => setIsFilterModalOpen(true)} className="circle-float-button filter-button">
+                <AlignRightOutlined style={{fontSize: 24}}/>
+            </Button>
             <MyModal
                 isOpen={isSuccessModalOpen}
                 content={successMessage}
@@ -354,6 +376,12 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                 }}
                 onCancel={() => setIsSuccessModalOpen(false)}
                 footer={<button onClick={() => setIsSuccessModalOpen(false)}>Ок</button>}
+            />
+            <FeatureFilterModal
+                visible={isFilterModalOpen}
+                onClose={() => setIsFilterModalOpen(false)}
+                rows={rows}
+                onApply={(selected) => setFeatureFilter(selected)}
             />
         </>
     );

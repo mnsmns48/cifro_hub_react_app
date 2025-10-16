@@ -56,8 +56,8 @@
 
 
 
-.fixed-hub-button-clear-media { top: 60%; }
-.fixed-hub-button-dependency {top: 65%; }
+.fixed-hub-button-clear-media { top: 65%; }
+.fixed-hub-button-dependency {top: 60%; }
 .fixed-hub-button-add { top: 70%; background-color: #e2fc2a !important; }
 .fixed-hub-button-remove { top: 80%; }
 .fixed-hub-button-delete { top: 85%; background-color: #ff4d4f !important; color: #ffffff !important; }
@@ -79,10 +79,9 @@
 }
 
 
-.refresh-float-button {
+.circle-float-button {
     position: fixed;
     left: calc(19.5%);
-    top: 43%;
     transform: translateY(-50%);
     z-index: 1000;
     width: 50px;
@@ -98,35 +97,18 @@
     transition: background-color 0.3s ease;
 }
 
-.refresh-float-button:hover {
+.circle-float-button:hover {
     color: #e2fc2a !important;
     border-color: transparent !important;
     background-color: #b5b5b4 !important;
 }
 
+.refresh-float-button {
+    top: 43%;
+}
 
 .filter-button {
-    position: fixed;
-    left: calc(19.5%);
-    top: 36%;
-    transform: translateY(-50%);
-    z-index: 1000;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #b5b5b4;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    top: 50%;
 }
 
-
-.filter-button:hover {
-    color: white !important;
-    background-color: #b5b5b4 !important;
-}
 
