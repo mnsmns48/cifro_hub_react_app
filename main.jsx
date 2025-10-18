@@ -2,7 +2,7 @@ import {createRoot} from 'react-dom/client';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import CifrotechMainApp from "./src/CifrotechMainApp.jsx";
 import CheckAccess from "./src/Auth/CheckAccess.jsx";
-import MiniAppMainComponent from "./src/miniApp-V1/webapp.jsx";
+import MiniAppMainComponent from "./src/miniApp-V1/miniapp.jsx";
 
 
 const root = createRoot(document.getElementById('root'));
