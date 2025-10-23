@@ -1,4 +1,4 @@
-import {PrinterOutlined, StarOutlined} from "@ant-design/icons";
+import {PrinterOutlined} from "@ant-design/icons";
 
 const BillPrinter = () => {
     const today = new Date();
@@ -11,11 +11,11 @@ const BillPrinter = () => {
         event.preventDefault();
         const data = new FormData(event.target);
         const formDataObj = Object.fromEntries(data.entries());
-        if (formDataObj.receipt_date &&
-            formDataObj.receipt_number &&
-            formDataObj.receipt_qty &&
-            formDataObj.receipt_product &&
-            formDataObj.receipt_price) {
+        if (formDataObj.receiptDate &&
+            formDataObj.receiptNumber &&
+            formDataObj.receiptQty &&
+            formDataObj.receiptProduct &&
+            formDataObj.receiptPrice) {
             try {
                 const response = await fetch("/service/billrender",
                     {method: "POST", body: data});
@@ -46,15 +46,15 @@ const BillPrinter = () => {
             <div className="form-container">
                 <form onSubmit={billRender} method="POST">
                     <label htmlFor="receipt_date">Дата чека:</label>
-                    <input type="text" id="receipt_date" name="receipt_date" defaultValue={formattedDate}/><br/>
+                    <input type="text" id="receipt_date" name="receiptDate" defaultValue={formattedDate}/><br/>
                     <label htmlFor="receipt_number">Номер чека:</label>
-                    <input type="number" id="receipt_number" name="receipt_number" defaultValue={randomNumber}/><br/>
+                    <input type="number" id="receipt_number" name="receiptNumber" defaultValue={randomNumber}/><br/>
                     <label htmlFor="receipt_product">Наименование товара:</label>
-                    <input type="text" id="receipt_product" name="receipt_product"/><br/>
+                    <input type="text" id="receipt_product" name="receiptProduct"/><br/>
                     <label htmlFor="receipt_qty">Количество:</label>
-                    <input type="number" id="receipt_qty" name="receipt_qty"/><br/>
+                    <input type="number" id="receipt_qty" name="receiptQty"/><br/>
                     <label htmlFor="receipt_price">Цена:</label>
-                    <input type="number" id="receipt_price" name="receipt_price"/><br/>
+                    <input type="number" id="receipt_price" name="receiptPrice"/><br/>
                     <input type="submit" value="Скачать"/>
                 </form>
             </div>
