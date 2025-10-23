@@ -1,13 +1,22 @@
 import {ConfigProvider} from 'antd-mobile';
-import {ThemeContext} from "../ThemeContext.jsx";
-import {themes} from "../theme/themes.js";
+import {ThemeContext} from "./ThemeContext.jsx";
+import {themes} from "./themes.js";
+import {resolveThemeKey} from "./resolveThemeKey.js";
+import {useEffect} from "react";
+import {applyAntdMobileTheme} from "./applyAntdMobileTheme.js";
 
-const ThemeProvider = ({children, themeKey = 'light'}) => {
-    const theme = themes[themeKey] || themes.light;
+const ThemeProvider = ({children}) => {
+    const themeKey = resolveThemeKey();
+    const theme = themes[themeKey] ?? themes.light;
+
+    useEffect(() => {
+        applyAntdMobileTheme(theme);
+    }, [theme]);
+
 
     return (
         <ThemeContext.Provider value={theme}>
-            <ConfigProvider theme={theme}>
+            <ConfigProvider>
                 {children}
             </ConfigProvider>
         </ThemeContext.Provider>

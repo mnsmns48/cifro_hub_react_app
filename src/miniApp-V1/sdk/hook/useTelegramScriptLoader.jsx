@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export const useTelegramWebApp = () => {
+export const useTelegramScriptLoader = () => {
     useEffect(() => {
         const alreadyLoaded = document.querySelector('script[src="https://telegram.org/js/telegram-web-app.js"]');
         const isWebAppAvailable = window.Telegram?.WebApp;

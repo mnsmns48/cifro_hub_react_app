@@ -1,19 +1,18 @@
-import {useEffect} from 'react';
+import {useTelegramScriptLoader} from './sdk/hook/useTelegramScriptLoader.jsx';
+import MobileLayout from "./sdk/component/MobileLayout.jsx";
+import '/fonts/ttfirsneue/stylesheet.css';
+import './miniapp.css'
+import useTelegramWebApp from "./sdk/hook/useTelegramWebApp.jsx";
 
 
-const MiniAppMain = () => {
+const MainMiniApp = () => {
+    useTelegramScriptLoader();
+    useTelegramWebApp()
+    //
+    // const {isTablet} = useDeviceLayout();
 
-    useEffect(() => {
-        if (!window.Telegram) {
-            const script = document.createElement('script');
-            script.src = 'https://telegram.org/js/telegram-web-app.js';
-            script.async = true;
-            script.onerror = () => {
-                console.error('❌ Не удалось загрузить telegram-web-app.js');
-            };
-            document.head.appendChild(script);
-        }
-    }, []);
-}
+    // return isTablet ? <TabletLayout/> : <MobileLayout/>;
+    return <MobileLayout/>
+};
 
-export default MiniAppMain;
+export default MainMiniApp;
