@@ -1,186 +1,145 @@
-import { useEffect, useState } from 'react';
-import { loadTelegramScript } from '../utils/loadTelegramScript';
-
-// Включи debug = true для подробных логов в консоль при отладке на устройствах
-const DEBUG = false;
+import {useContext, useEffect, useState} from 'react';
+import {loadTelegramScript} from '../utils/loadTelegramScript';
+import {ThemeContext} from "../theme/ThemeContext.jsx";
 
 const readSafeAreaInsetTop = () => {
-    try {
-        // создаём элемент со стилем padding-top: env(safe-area-inset-top) и читаем computed value
-        const el = document.createElement('div');
-        el.style.cssText = 'position:fixed; top:0; left:0; width:0; height:0; padding-top: env(safe-area-inset-top);';
-        document.body.appendChild(el);
-        const computed = parseFloat(getComputedStyle(el).paddingTop) || 0;
-        document.body.removeChild(el);
-        return computed;
-    } catch (e) {
-        return 0;
-    }
+    const el = document.createElement('div');
+    el.style.cssText = 'position:fixed; top:0; left:0; width:0; height:0; padding-top: env(safe-area-inset-top);';
+    document.body.appendChild(el);
+    const computed = parseFloat(getComputedStyle(el).paddingTop) || 0;
+    document.body.removeChild(el);
+    return computed;
 };
 
 const isIPadLike = () => {
     const ua = navigator.userAgent || '';
-    // iPadOS 13+ reports MacIntel with touch points -> detect via maxTouchPoints
-    if (/iPad/.test(ua)) return true;
-    if (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && screen.width >= 768) return true;
-    return false;
+    return /iPad/.test(ua) || (navigator.maxTouchPoints > 2 && screen.width >= 768);
 };
 
-export const useTelegram = () => {
+const resolvePlatform = (tg) => {
+    return tg?.platform ||
+        tg?.initDataUnsafe?.device_platform ||
+        (/Android/i.test(navigator.userAgent) ? 'android' : /iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'ios' : 'web');
+};
+
+const resolveIsMobile = (platform) => {
+    return ['android', 'ios'].includes(platform) || isIPadLike();
+};
+
+const tryGetViewportTopFromTelegram = async (tg, timeout = 1200) => {
+    tg.recalculateViewportHeight?.();
+    if (tg.viewportTop > 0) return tg.viewportTop;
+
+    let resolved = null;
+    const onViewport = () => {
+        if (tg.viewportTop > 0) {
+            resolved = tg.viewportTop;
+            tg.offEvent?.('viewportChanged', onViewport);
+        }
+    };
+    tg.onEvent?.('viewportChanged', onViewport);
+
+    const start = Date.now();
+    while (Date.now() - start < timeout) {
+        if (resolved || tg.viewportTop > 0) {
+            resolved = tg.viewportTop;
+            break;
+        }
+        await new Promise((r) => setTimeout(r, 100));
+    }
+
+    tg.offEvent?.('viewportChanged', onViewport);
+    return resolved || 0;
+};
+
+const resolveSafeTopOffset = async (tg, platform) => {
+    const tgTop = await tryGetViewportTopFromTelegram(tg, 1200);
+    if (tgTop > 0) return tgTop;
+    if (!platform) return 0;
+
+    const vv = window.visualViewport;
+    const vvOffset = vv ? (typeof vv.offsetTop === 'number' ? vv.offsetTop : vv.pageTop || 0) : 0;
+    const safeInset = readSafeAreaInsetTop();
+    let offset = Math.max(vvOffset || 0, safeInset || 0) || (vvOffset + safeInset) || 0;
+
+    return offset;
+};
+
+function useTelegram() {
     const [hasTelegram, setHasTelegram] = useState(false);
-    const [safeTopOffset, setSafeTopOffset] = useState(0);
-    const [isMobile, setIsMobile] = useState(false);
-    const [isDesktop, setIsDesktop] = useState(false);
+    const [safeTopOffset, setSafeTopOffset] = useState(() => {
+        const cached = sessionStorage.getItem('safeTopOffset');
+        return cached ? Number(cached) : 0;
+    });
+    const [isMobile, setIsMobile] = useState(() => {
+        const platform = resolvePlatform(window.Telegram?.WebApp || {});
+        return resolveIsMobile(platform);
+    });
+    const [isDesktop, setIsDesktop] = useState(() => !isMobile);
+
+    const theme = useContext(ThemeContext);
 
     useEffect(() => {
-        let cleanupFns = [];
         let stopped = false;
+        let cleanupFns = [];
 
         const setOffsetSafely = (val) => {
-            if (stopped) return;
-            setSafeTopOffset(val || 0);
-            if (DEBUG) console.log('[useTelegramApp] safeTopOffset set ->', val);
+            if (!stopped) {
+                setSafeTopOffset(val || 0);
+                sessionStorage.setItem('safeTopOffset', String(val || 0));
+            }
         };
 
-        const initTelegram = async () => {
-            try {
-                await loadTelegramScript();
-            } catch (err) {
-                if (DEBUG) console.warn('[useTelegramApp] script load error', err);
-                return;
-            }
-
-            const tg = window.Telegram?.WebApp;
-            if (!tg) {
-                if (DEBUG) console.warn('[useTelegramApp] Telegram.WebApp not found after load');
-                return;
-            }
-
-            setHasTelegram(true);
-
-            // определяем платформу (используем tg.platform когда есть)
-            const platform =
-                tg.platform ||
-                tg.initDataUnsafe?.device_platform ||
-                (/Android/i.test(navigator.userAgent) ? 'android' : /iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'ios' : 'web');
-
-            const mobile = ['android', 'ios'].includes(platform) || isIPadLike();
-            setIsMobile(mobile);
-            setIsDesktop(!mobile);
-
-            // Попытка получить viewportTop из Telegram — с ожиданием
-            const tryGetViewportTopFromTelegram = async (timeout = 2000) => {
-                // первый быстрый вызов
-                tg.recalculateViewportHeight?.();
-                if (tg.viewportTop > 0) return tg.viewportTop;
-
-                // слушаем событие viewportChanged
-                let resolved = null;
-                const onViewport = () => {
-                    if (tg.viewportTop > 0) {
-                        resolved = tg.viewportTop;
-                        // не забываем удалить слушателя
-                        tg.offEvent?.('viewportChanged', onViewport);
-                    }
-                };
-                tg.onEvent?.('viewportChanged', onViewport);
-
-                // подстраховка: ждём до timeout ms, проверяя раз в 150ms
-                const start = Date.now();
-                while (Date.now() - start < timeout) {
-                    if (resolved) break;
-                    if (tg.viewportTop > 0) {
-                        resolved = tg.viewportTop;
-                        break;
-                    }
-                    // eslint-disable-next-line no-await-in-loop
-                    await new Promise((r) => setTimeout(r, 150));
-                }
-                // очистка
-                tg.offEvent?.('viewportChanged', onViewport);
-                return resolved || 0;
-            };
-
-            let offset = 0;
-
-            try {
-                const tgTop = await tryGetViewportTopFromTelegram(2500); // ждём до 2.5s
-                if (tgTop > 0) {
-                    offset = tgTop;
-                    if (DEBUG) console.log('[useTelegramApp] got viewportTop from Telegram:', tgTop);
-                } else {
-                    // fallback: используем visualViewport + safe-area-inset
-                    const vv = window.visualViewport;
-                    const vvOffset = vv ? (typeof vv.offsetTop === 'number' ? vv.offsetTop : (vv.pageTop || 0)) : 0;
-                    const safeInset = readSafeAreaInsetTop();
-                    if (DEBUG) {
-                        console.log('[useTelegramApp] tgTop=0, visualViewport.offsetTop=', vvOffset, 'safe-area-inset-top=', safeInset);
-                    }
-
-                    // Логика: если мобильное устройство — берем visualViewport.offsetTop + safeInset (если оба есть)
-                    if (mobile) {
-                        // При некоторых браузерах offsetTop уже включает safe-area; на других — нет, поэтому используем максимум
-                        offset = Math.max(vvOffset || 0, safeInset || 0) || (vvOffset + safeInset) || 0;
-
-                        // Если всё ещё 0, пробуем более агрессивную эвристику:
-                        if (!offset) {
-                            // iPad special detection might yield positive values - try small pause and re-read visualViewport
-                            if (vv) {
-                                // краткая задержка, т.к. визуальная вьюпорта может обновиться
-                                await new Promise((r) => setTimeout(r, 200));
-                                const vv2 = window.visualViewport;
-                                const vvOffset2 = vv2 ? (typeof vv2.offsetTop === 'number' ? vv2.offsetTop : (vv2.pageTop || 0)) : 0;
-                                offset = vvOffset2 || safeInset || 0;
-                            }
-                        }
-                    } else {
-                        // desktop -> 0
-                        offset = 0;
-                    }
-                }
-            } catch (err) {
-                if (DEBUG) console.warn('[useTelegramApp] error while resolving offset', err);
-                offset = 0;
-            }
-
-            setOffsetSafely(offset);
-
-            // подписываемся на изменения viewport (чтобы в будущем обновлять)
+        const subscribeToViewportChanges = (tg, mobile) => {
             const handleViewportChanged = () => {
-                try {
-                    const newTop = tg.viewportTop || 0;
-                    if (mobile) {
-                        if (newTop > 0) {
-                            setOffsetSafely(newTop);
-                        } else {
-                            // fallback to visualViewport if tg reports 0
-                            const vv = window.visualViewport;
-                            const vvOffset = vv ? (typeof vv.offsetTop === 'number' ? vv.offsetTop : (vv.pageTop || 0)) : 0;
-                            const safeInset = readSafeAreaInsetTop();
-                            const guessed = Math.max(vvOffset || 0, safeInset || 0) || (vvOffset + safeInset) || 0;
-                            setOffsetSafely(guessed);
-                        }
+                const newTop = tg.viewportTop || 0;
+                if (mobile) {
+                    if (newTop > 0) {
+                        setOffsetSafely(newTop);
                     } else {
-                        setOffsetSafely(0);
+                        const vv = window.visualViewport;
+                        const vvOffset = vv ? (typeof vv.offsetTop === 'number' ? vv.offsetTop : vv.pageTop || 0) : 0;
+                        const safeInset = readSafeAreaInsetTop();
+                        const guessed = Math.max(vvOffset || 0, safeInset || 0) || (vvOffset + safeInset) || 0;
+                        setOffsetSafely(guessed);
                     }
-                } catch (e) {
-                    if (DEBUG) console.warn('[useTelegramApp] viewportChanged handler error', e);
+                } else {
+                    setOffsetSafely(0);
                 }
             };
 
             tg.onEvent?.('viewportChanged', handleViewportChanged);
             cleanupFns.push(() => tg.offEvent?.('viewportChanged', handleViewportChanged));
 
-            // Also listen to 'ready' to re-run resolve if needed
-            const handleReady = () => {
-                // re-resolve quickly
-                handleViewportChanged();
-            };
-            tg.onEvent?.('ready', handleReady);
-            cleanupFns.push(() => tg.offEvent?.('ready', handleReady));
+            tg.onEvent?.('ready', handleViewportChanged);
+            cleanupFns.push(() => tg.offEvent?.('ready', handleViewportChanged));
         };
 
-        initTelegram();
+        const initTelegram = async () => {
+            await loadTelegramScript();
+            const tg = window.Telegram?.WebApp;
+            if (!tg) return;
+
+            setHasTelegram(true);
+
+            const platform = resolvePlatform(tg);
+            const mobile = resolveIsMobile(platform);
+            setIsMobile(mobile);
+            setIsDesktop(!mobile);
+
+            if (theme?.colorBackground) {
+                tg.setHeaderColor(theme.colorBackground);
+                tg.setBackgroundColor(theme.colorBackground);
+            }
+
+
+            const offset = await resolveSafeTopOffset(tg, mobile);
+            setOffsetSafely(mobile ? offset : 0);
+
+            subscribeToViewportChanges(tg, mobile);
+        };
+
+        void initTelegram();
 
         return () => {
             stopped = true;
@@ -188,5 +147,13 @@ export const useTelegram = () => {
         };
     }, []);
 
-    return { hasTelegram, safeTopOffset, isMobile, isDesktop };
-};
+    return {
+        hasTelegram,
+        safeTopOffset,
+        isMobile,
+        isDesktop,
+        theme
+    };
+}
+
+export default useTelegram;

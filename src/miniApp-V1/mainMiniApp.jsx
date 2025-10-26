@@ -1,35 +1,31 @@
-import {useContext, useEffect} from "react";
 import styles from "./miniapp.module.css";
-import TelegramDebugPanel from "./sdk/component/TelegramDebugPanel.jsx";
-import {ThemeContext} from "./sdk/theme/ThemeContext.jsx";
-import {Spin} from "antd";
-import {useTelegram} from "./sdk/hook/useTelegram.jsx";
-
+import Spinner from "../Cifrotech-app/components/Spinner.jsx";
+import useTelegram from "./sdk/hook/useTelegram.jsx";
+import MobileLayout from "./sdk/component/MobileLayout.jsx";
 
 const MainMiniApp = () => {
-    const { hasTelegram, safeTopOffset, isMobile, isDesktop } = useTelegram()
-    const theme = useContext(ThemeContext);
+    const {hasTelegram, safeTopOffset, isMobile} = useTelegram();
 
-    useEffect(() => {
-        if (hasTelegram && window.Telegram?.WebApp) {
-            window.Telegram.WebApp.setHeaderColor(theme.colorBackground);
-            window.Telegram.WebApp.setBackgroundColor(theme.colorBackground);
-        }
-    }, [hasTelegram, theme]);
+    const isReady = hasTelegram && (!isMobile || safeTopOffset !== 0);
 
+    if (!isReady) {
+        return (
+            <div className={styles.container} style={{
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                zIndex: 1000
+            }}>
+                <Spinner/>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container} style={{paddingTop: safeTopOffset}}>
-            {hasTelegram ? <TelegramDebugPanel/> : <Spin/>}
-            <div style={{ marginTop: 16, fontSize: 14 }}>
-                <strong>safeTopOffset:</strong> {safeTopOffset}
-                <br />
-                <strong>isMobile:</strong> {String(isMobile)}
-                <br />
-                <strong>isDesktop:</strong> {String(isDesktop)}
-            </div>
+            <MobileLayout/>
         </div>
-
     );
 };
 
