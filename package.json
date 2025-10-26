@@ -12,6 +12,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
     "@telegram-apps/sdk-react": "^3.3.9",
+    "@tma.js/sdk-react": "^3.0.8",
     "antd": "^5.25.1",
     "antd-mobile": "^5.41.1",
     "antd-style": "^3.7.1",
