@@ -33,8 +33,8 @@ const MiniAppMenuBar = ({insets, theme, onHeightChange}) => {
             }}
         >
             <TabBar activeKey={activeTab} onChange={setActiveTab}>
-                <TabBar.Item key="cifrohub" title="Быстро доставим" icon={<TruckOutlined/>}/>
-                <TabBar.Item key="cifrotech" title="Наличие" icon={<HomeOutlined/>}/>
+                <TabBar.Item key="cifrohub" title="Быстро доставим" icon={<TruckOutlined/>} style={{ padding: '0 40px' }}/>
+                <TabBar.Item key="cifrotech" title="Наличие" icon={<HomeOutlined/>}style={{ padding: '0 40px' }}/>
             </TabBar>
         </div>
     );

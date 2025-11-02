@@ -8,7 +8,7 @@ import useAppEnvironment from "./sdk/hook/useAppEnvironment.jsx";
 
 
 const MainMiniApp = () => {
-    const {hasTelegram, isMobile, insets, theme, viewportHeight} = useAppEnvironment();
+    const {hasTelegram, isMobile, insets, theme} = useAppEnvironment();
     const [searchHeight, setSearchHeight] = useState(0);
     const [menuHeight, setMenuHeight] = useState(0);
 
@@ -39,10 +39,7 @@ const MainMiniApp = () => {
                 </div>
             )}
 
-            <MiniAppMenuBar insets={insets}
-                            theme={theme}
-                            viewportHeight={viewportHeight}
-                            onHeightChange={setMenuHeight}/>
+            <MiniAppMenuBar insets={insets} theme={theme} onHeightChange={setMenuHeight}/>
         </>
 
     );
