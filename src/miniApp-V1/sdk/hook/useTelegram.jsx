@@ -53,7 +53,9 @@ export function useTelegram() {
             }
             telegram.ready?.();
             setViewportHeight(telegram.viewportHeight || window.innerHeight);
-
+            telegram.onEvent?.("viewportChanged", () => {
+                window.dispatchEvent(new Event('tg:insetsChanged'));
+            });
 
             const handleChange = () => {
                 if (!stopped) {
@@ -81,7 +83,7 @@ export function useTelegram() {
     }, [theme]);
 
 
-    const {insets, contentInsets} = useSafeAreaInsets(tg);
+    const insets = useSafeAreaInsets();
 
 
     const handleResize = () => {
@@ -99,7 +101,6 @@ export function useTelegram() {
         isDesktop,
         theme,
         insets,
-        contentInsets,
         viewportHeight
     };
 }

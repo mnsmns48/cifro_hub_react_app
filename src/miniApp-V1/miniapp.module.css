@@ -4,4 +4,25 @@
     width: 100%;
     overflow: hidden;
     z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.searchWrapper {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 8px 0;
+}
+
+.centeredSpinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
 }

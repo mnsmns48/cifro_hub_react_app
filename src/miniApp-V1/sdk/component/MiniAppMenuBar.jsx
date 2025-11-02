@@ -4,9 +4,8 @@ import {useState} from "react";
 import {HomeOutlined, TruckOutlined} from "@ant-design/icons";
 
 
-const MiniAppMenuBar = ({contentInsets, theme, viewportHeight}) => {
+const MiniAppMenuBar = ({theme, viewportHeight}) => {
     const [activeTab, setActiveTab] = useState('cifrohub');
-    const safeBottom = contentInsets?.bottom ?? 0;
     const paddingTop = viewportHeight ? `${viewportHeight * 0.008}px` : '3px';
 
 
@@ -14,8 +13,8 @@ const MiniAppMenuBar = ({contentInsets, theme, viewportHeight}) => {
         <div className={styles.miniAppMenuBar}
              style={{
                  borderTop: `1px solid ${theme.colorBorder}`,
-                 // backgroundColor: theme.colorCard,
                  paddingTop: paddingTop,
+
                  paddingBottom: `env(safe-area-inset-bottom)`,
                  backgroundColor: '#41a618',
              }}

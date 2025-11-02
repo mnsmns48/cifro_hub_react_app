@@ -1,22 +1,40 @@
-import {useRef} from 'react'
-import {SearchBar} from 'antd-mobile'
+import { useRef, useLayoutEffect } from 'react';
+import { SearchBar } from 'antd-mobile';
 
-function SearchLine({insets, isMobile}) {
-    const searchRef = useRef(null)
-    const safeTop = insets?.top ?? 0;
-    const handleSearch = () => {
-    }
+function SearchLine({ onHeightChange }) {
+    const ref = useRef(null);
+
+    useLayoutEffect(() => {
+        if (!ref.current) return;
+        const node = ref.current?.nativeElement || ref.current;
+        const updateHeight = () => {
+            const height = node?.offsetHeight ?? 0;
+            onHeightChange?.(height);
+        };
+
+        updateHeight();
+        window.addEventListener('resize', updateHeight);
+        return () => window.removeEventListener('resize', updateHeight);
+    }, [onHeightChange]);
+
+    const handleSearch = () => {};
 
     return (
-        // <div style={{paddingTop: `calc(${safeTop}px + env(safe-area-inset-top, 0px) - 10px)`}}>
+        <div ref={ref} style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <SearchBar
                 placeholder="Я ищу"
                 onSearch={handleSearch}
-                ref={searchRef}
+                style={{
+                    '--text-color': 'white',
+                    '--text-weight': 'bold',
+                    '--placeholder-color': '#808080',
+                    '--background': '#e4e4e4',
+                    '--border-radius': '999px',
+                    width: '33%',
+                }}
             />
-
-        // </div>
-    )
+        </div>
+    );
 }
 
 export default SearchLine;
