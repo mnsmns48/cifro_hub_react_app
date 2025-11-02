@@ -1,5 +1,6 @@
 import { useRef, useLayoutEffect } from 'react';
 import { SearchBar } from 'antd-mobile';
+import styles from "../css/searchline.module.css";
 
 function SearchLine({ onHeightChange }) {
     const ref = useRef(null);
@@ -23,6 +24,7 @@ function SearchLine({ onHeightChange }) {
         <div ref={ref} style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <SearchBar
                 placeholder="Я ищу"
+                className={styles.searchBar}
                 onSearch={handleSearch}
                 style={{
                     '--text-color': 'white',

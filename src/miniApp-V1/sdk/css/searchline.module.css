@@ -1,0 +1,18 @@
+.searchBar :global(.adm-search-bar-input-box) {
+    border: 1px solid transparent;
+    border-radius: 999px;
+    transition: border-color 0.2s ease;
+}
+
+.searchBar :global(.adm-search-bar-input-box:focus-within) {
+    border: 2px solid #e2fc2a;
+    background-color: #808080;
+}
+
+.searchBar :global(.adm-input-element:focus-within) {
+    color: white;
+}
+
+.searchBar :global(.adm-input-element:focus::placeholder) {
+    color: transparent;
+}
