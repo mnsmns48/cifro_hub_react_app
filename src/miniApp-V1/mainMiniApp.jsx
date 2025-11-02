@@ -10,34 +10,43 @@ import useAppEnvironment from "./sdk/hook/useAppEnvironment.jsx";
 const MainMiniApp = () => {
     const {hasTelegram, isMobile, insets, theme, viewportHeight} = useAppEnvironment();
     const [searchHeight, setSearchHeight] = useState(0);
+    const [menuHeight, setMenuHeight] = useState(0);
 
     const isReady = hasTelegram && (!isMobile || insets.top !== 0);
     const safeTop = insets?.top ?? '0px';
+    const safeBottom = insets?.bottom ?? '0px';
+
     if (!isReady) {
-        return (
-            <div className={styles.centeredSpinner}>
-                <Spinner/>
-            </div>
-        );
+        return <div className={styles.centeredSpinner}><Spinner/></div>;
     }
 
     return (
         <>
-            <div className={styles.appWrapper} style={{paddingTop: safeTop, backgroundColor: theme?.colorBackground}}></div>
+            <div className={styles.appWrapper}
+                 style={{paddingTop: safeTop, backgroundColor: theme?.colorBackground}}></div>
+
             <div className={styles.searchWrapper} style={{backgroundColor: theme?.colorBackground, top: safeTop}}>
                 <SearchLine onHeightChange={setSearchHeight}/>
             </div>
-            <div style={{paddingTop: `calc(${safeTop} + 5px + ${searchHeight}px)`}}>
-                <LoremIpsum/>
-            </div>
 
-            {/*<MiniAppMenuBar*/}
-            {/*    contentInsets={insets}*/}
-            {/*    theme={theme}*/}
-            {/*    viewportHeight={viewportHeight}*/}
-            {/*/>*/}
+            {searchHeight > 0 && menuHeight > 0 && (
+                <div className={styles.scrollArea}
+                     style={{
+                         top: `calc(${safeTop} + ${searchHeight}px + 15px)`,
+                         bottom: `calc(${menuHeight}px + ${safeBottom})`
+                     }}>
+                    <LoremIpsum/>
+                </div>
+            )}
 
+            <MiniAppMenuBar
+                insets={insets}
+                theme={theme}
+                viewportHeight={viewportHeight}
+                onHeightChange={setMenuHeight}
+            />
         </>
+
     );
 };
 

@@ -3,15 +3,12 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    /*height: 40px;*/
-    background-color: #f1f1f1; /* можно заменить на theme.colorCard */
-    border-top: 1px solid #e0e0e0; /* можно заменить на theme.colorBorder */
     display: flex;
     justify-content: center;
     align-items: center;
-    /*gap: 60px;*/
     z-index: 1000;
 }
+
 
 .menuButton {
     background: none;
@@ -19,7 +16,6 @@
     font-size: 20px;
     color: #333;
     cursor: pointer;
-    /*padding: 8px;*/
     border-radius: 8px;
     transition: background-color 0.2s ease;
 }
@@ -27,3 +23,5 @@
 .menuButton:hover {
     background-color: #e0e0e0;
 }
+
+
