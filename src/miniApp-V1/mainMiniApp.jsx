@@ -23,7 +23,7 @@ const MainMiniApp = () => {
     return (
         <>
             <div className={styles.appWrapper}
-                 style={{paddingTop: safeTop, backgroundColor: theme?.colorBackground}}></div>
+                 style={{backgroundColor: theme?.colorBackground, paddingTop: safeTop}}></div>
 
             <div className={styles.searchWrapper} style={{backgroundColor: theme?.colorBackground, top: safeTop}}>
                 <SearchLine onHeightChange={setSearchHeight}/>
@@ -39,12 +39,10 @@ const MainMiniApp = () => {
                 </div>
             )}
 
-            <MiniAppMenuBar
-                insets={insets}
-                theme={theme}
-                viewportHeight={viewportHeight}
-                onHeightChange={setMenuHeight}
-            />
+            <MiniAppMenuBar insets={insets}
+                            theme={theme}
+                            viewportHeight={viewportHeight}
+                            onHeightChange={setMenuHeight}/>
         </>
 
     );
