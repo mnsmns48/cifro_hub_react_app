@@ -1,47 +1,82 @@
-import styles from './miniapp.module.css';
-import Spinner from '../Cifrotech-app/components/Spinner.jsx';
+import styles from "./miniapp.module.css";
+import Spinner from "../Cifrotech-app/components/Spinner.jsx";
 import LoremIpsum from "./sdk/component/LoremIpsum.jsx";
 import MiniAppMenuBar from "./sdk/component/MiniAppMenuBar.jsx";
 import SearchLine from "./sdk/component/SearchLine.jsx";
 import {useState} from "react";
 import useAppEnvironment from "./sdk/hook/useAppEnvironment.jsx";
+import menuElementsObj from "./menuElements.jsx";
 
+const isKeyboardOpen = () => {
+    if (typeof window === "undefined" || typeof document === "undefined") return false;
+
+    const active = document.activeElement;
+    if (active) {
+        const tag = active.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA") return true;
+        if (active.isContentEditable) return true;
+    }
+
+    return false;
+};
 
 const MainMiniApp = () => {
     const {hasTelegram, isMobile, insets, theme} = useAppEnvironment();
     const [searchHeight, setSearchHeight] = useState(0);
     const [menuHeight, setMenuHeight] = useState(0);
+    const [menuActiveTab, setMenuActiveTab] = useState(null);
 
-    const isReady = hasTelegram && (!isMobile || insets.top !== 0);
-    const safeTop = insets?.top ?? '0px';
-    const safeBottom = insets?.bottom ?? '0px';
+
+    const isReady = hasTelegram && (isMobile || insets.top !== 0);
+    const safeTop = insets?.top ?? "0px";
+    const safeBottom = insets?.bottom ?? "0px";
+    const safeLeft = insets?.left ?? "0px";
+    const safeRight = insets?.right ?? "0px";
+
+
+    const keyboardOpenNow = isKeyboardOpen();
+
+    const bottomNow = keyboardOpenNow
+        ? safeBottom
+        : `calc(${menuHeight}px + ${safeBottom})`;
+
 
     if (!isReady) {
-        return <div className={styles.centeredSpinner}><Spinner/></div>;
+        return (
+            <div className={styles.centeredSpinner}>
+                <Spinner/>
+            </div>
+        );
     }
+
 
     return (
         <>
             <div className={styles.appWrapper}
-                 style={{backgroundColor: theme?.colorBackground, paddingTop: safeTop}}></div>
-
+                 style={{backgroundColor: theme?.colorBackground, paddingTop: safeTop}}/>
             <div className={styles.searchWrapper} style={{backgroundColor: theme?.colorBackground, top: safeTop}}>
                 <SearchLine onHeightChange={setSearchHeight}/>
             </div>
-
-            {searchHeight > 0 && menuHeight > 0 && (
+            {searchHeight > 0 && (
                 <div className={styles.scrollArea}
                      style={{
                          top: `calc(${safeTop} + ${searchHeight}px + 15px)`,
-                         bottom: `calc(${menuHeight}px + ${safeBottom})`
+                         left: `calc(${safeLeft} + 10px)`,
+                         right: `calc(${safeRight} + 10px)`,
+                         bottom: bottomNow
                      }}>
+                    <p>
+                        {menuActiveTab}
+                    </p>
                     <LoremIpsum/>
                 </div>
             )}
 
-            <MiniAppMenuBar insets={insets} theme={theme} onHeightChange={setMenuHeight}/>
-        </>
+            <MiniAppMenuBar insets={insets} theme={theme} onHeightChange={setMenuHeight}
+                            keyboardOpen={keyboardOpenNow} onTabChange={setMenuActiveTab}
+                            menuElements={menuElementsObj}/>
 
+        </>
     );
 };
 

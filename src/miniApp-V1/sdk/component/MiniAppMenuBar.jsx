@@ -1,42 +1,71 @@
-import {useRef, useLayoutEffect, useState} from "react";
+import {useRef, useLayoutEffect, useState, useEffect} from "react";
 import {TabBar} from "antd-mobile";
-import {HomeOutlined, TruckOutlined} from "@ant-design/icons";
 import styles from "../css/menubar.module.css";
 
-const MiniAppMenuBar = ({insets, theme, onHeightChange}) => {
+const MiniAppMenuBar = ({insets, theme, onHeightChange, keyboardOpen = false, onTabChange, menuElements = []}) => {
     const [activeTab, setActiveTab] = useState("cifrohub");
     const safeBottom = insets?.bottom ?? "0px";
     const ref = useRef(null);
+    const lastHeightRef = useRef(null);
+
+    const HEIGHT_THRESHOLD = 1;
+
+    useEffect(() => {
+        onTabChange?.(activeTab);
+    }, [activeTab, onTabChange]);
+
 
     useLayoutEffect(() => {
         const node = ref.current;
         if (!node) return;
-        const height = node.offsetHeight || 0;
-        onHeightChange?.(height);
+
+        const notifyIfChanged = (height) => {
+            const last = lastHeightRef.current;
+            if (typeof last !== "number" || Math.abs(last - height) > HEIGHT_THRESHOLD) {
+                lastHeightRef.current = height;
+                onHeightChange?.(height);
+            }
+        };
+
+        notifyIfChanged(node.offsetHeight || 0);
+
+        if (typeof ResizeObserver !== "undefined") {
+            const ro = new ResizeObserver((entries) => {
+                for (const entry of entries) {
+                    const h = Math.round(entry.contentRect.height);
+                    notifyIfChanged(h);
+                }
+            });
+            ro.observe(node);
+            return () => ro.disconnect();
+        }
+
+        const winHandler = () => notifyIfChanged(node.offsetHeight || 0);
+        window.addEventListener("resize", winHandler);
+        return () => window.removeEventListener("resize", winHandler);
     }, [onHeightChange]);
 
+    if (keyboardOpen) return null;
+
     return (
-        <div ref={ref}
-             className={styles.miniAppMenuBar}
-             style={{
-                 borderTop: `1px solid ${theme.colorMuted}`,
-                 paddingBottom: safeBottom,
-                 backgroundColor: theme.colorBorder,
-             }}
+        <div
+            ref={ref}
+            className={styles.miniAppMenuBar}
+            style={{
+                borderTop: `1px solid ${theme.colorMuted}`,
+                paddingBottom: safeBottom,
+                backgroundColor: theme.colorBorder,
+            }}
         >
             <TabBar activeKey={activeTab} onChange={setActiveTab}>
-                <TabBar.Item
-                    key="cifrohub"
-                    title="Быстро доставим"
-                    icon={<TruckOutlined/>}
-                    style={{padding: "0 40px"}}
-                />
-                <TabBar.Item
-                    key="cifrotech"
-                    title="Наличие"
-                    icon={<HomeOutlined/>}
-                    style={{padding: "0 40px"}}
-                />
+                {menuElements.map((it) => (
+                    <TabBar.Item
+                        key={it.key}
+                        title={it.title}
+                        icon={it.icon}
+                        style={it.style}
+                    />
+                ))}
             </TabBar>
         </div>
     );
