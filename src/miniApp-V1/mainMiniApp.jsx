@@ -1,11 +1,11 @@
 import styles from "./miniapp.module.css";
 import Spinner from "../Cifrotech-app/components/Spinner.jsx";
-import LoremIpsum from "./sdk/component/LoremIpsum.jsx";
 import MiniAppMenuBar from "./sdk/component/MiniAppMenuBar.jsx";
 import SearchLine from "./sdk/component/SearchLine.jsx";
 import {useState} from "react";
 import useAppEnvironment from "./sdk/hook/useAppEnvironment.jsx";
 import menuElementsObj from "./menuElements.jsx";
+import ContentArea from "./sdk/component/ContentArea.jsx";
 
 const isKeyboardOpen = () => {
     if (typeof window === "undefined" || typeof document === "undefined") return false;
@@ -38,7 +38,7 @@ const MainMiniApp = () => {
 
     const bottomNow = keyboardOpenNow
         ? safeBottom
-        : `calc(${menuHeight}px + ${safeBottom})`;
+        : `calc(${menuHeight + 2}px + ${safeBottom})`;
 
 
     if (!isReady) {
@@ -55,7 +55,7 @@ const MainMiniApp = () => {
             <div className={styles.appWrapper}
                  style={{backgroundColor: theme?.colorBackground, paddingTop: safeTop}}/>
             <div className={styles.searchWrapper} style={{backgroundColor: theme?.colorBackground, top: safeTop}}>
-                <SearchLine onHeightChange={setSearchHeight}/>
+                <SearchLine onHeightChange={setSearchHeight} theme={theme}/>
             </div>
             {searchHeight > 0 && (
                 <div className={styles.scrollArea}
@@ -65,10 +65,7 @@ const MainMiniApp = () => {
                          right: `calc(${safeRight} + 10px)`,
                          bottom: bottomNow
                      }}>
-                    <p>
-                        {menuActiveTab}
-                    </p>
-                    <LoremIpsum/>
+                    <ContentArea theme={theme} menuActiveTab={menuActiveTab}/>
                 </div>
             )}
 

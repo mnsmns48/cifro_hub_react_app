@@ -1,8 +1,8 @@
-import { useRef, useLayoutEffect } from 'react';
-import { SearchBar } from 'antd-mobile';
+import {useRef, useLayoutEffect} from 'react';
+import {SearchBar} from 'antd-mobile';
 import styles from "../css/searchline.module.css";
 
-function SearchLine({ onHeightChange }) {
+function SearchLine({onHeightChange, theme}) {
     const ref = useRef(null);
 
     useLayoutEffect(() => {
@@ -18,22 +18,19 @@ function SearchLine({ onHeightChange }) {
         return () => window.removeEventListener('resize', updateHeight);
     }, [onHeightChange]);
 
-    const handleSearch = () => {};
+    const handleSearch = () => {
+    };
 
     return (
-        <div ref={ref} style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <SearchBar
-                placeholder="Я ищу"
-                className={styles.searchBar}
-                onSearch={handleSearch}
-                style={{
-                    '--text-color': 'white',
-                    '--text-weight': 'bold',
-                    '--placeholder-color': '#808080',
-                    '--background': '#e4e4e4',
-                    '--border-radius': '999px',
-                    width: '33%',
-                }}
+        <div ref={ref} style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
+            <SearchBar placeholder="Я ищу"
+                       className={styles.searchBar}
+                       onSearch={handleSearch}
+                       style={{
+                           '--placeholder-color': theme.Border,
+                           '--background': theme.colorBorder,
+                           width: '33%',
+                       }}
             />
         </div>
     );

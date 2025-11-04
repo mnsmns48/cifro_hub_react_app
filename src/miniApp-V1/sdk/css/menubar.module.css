@@ -7,23 +7,20 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    font-family: 'TT Firs Neue', sans-serif;
+    font-weight: 600;
+    padding: 5px;
 }
 
 
-.menuButton {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #333;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: background-color 0.2s ease;
+.inactiveTab {
+    padding: 1px;
+    border-radius: 12px;
 }
 
-.menuButton:hover {
-    background-color: #e0e0e0;
-}
 
-/*.adm-tab-bar {*/
-/*    --adm-tab-bar-item-padding: 10px 14px;*/
-/*}*/
+.activeTab {
+    background-color: #e2fc2a;
+    border-radius: 120px;
+    transition: background-color 0.3s ease;
+}

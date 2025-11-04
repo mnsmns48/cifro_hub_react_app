@@ -45,26 +45,30 @@ const MiniAppMenuBar = ({insets, theme, onHeightChange, keyboardOpen = false, on
         return () => window.removeEventListener("resize", winHandler);
     }, [onHeightChange]);
 
-    if (keyboardOpen) return null;
+    if (keyboardOpen) {
+        return (
+            <div ref={ref} className={styles.miniAppMenuBar}
+                 style={{
+                     position: "absolute",
+                     visibility: "hidden",
+                     pointerEvents: "none",
+                     overflow: "hidden"
+                 }}
+            />
+        );
+    }
 
     return (
-        <div
-            ref={ref}
-            className={styles.miniAppMenuBar}
-            style={{
-                borderTop: `1px solid ${theme.colorMuted}`,
-                paddingBottom: safeBottom,
-                backgroundColor: theme.colorBorder,
-            }}
-        >
-            <TabBar activeKey={activeTab} onChange={setActiveTab}>
+        <div ref={ref}
+             className={styles.miniAppMenuBar}
+             style={{
+                 borderTop: `1px solid ${theme.colorCard}`,
+                 paddingBottom: safeBottom,
+                 backgroundColor: theme.colorBorder,
+             }}>
+            <TabBar activeKey={activeTab} onChange={setActiveTab} >
                 {menuElements.map((it) => (
-                    <TabBar.Item
-                        key={it.key}
-                        title={it.title}
-                        icon={it.icon}
-                        style={it.style}
-                    />
+                    <TabBar.Item key={it.key} title={it.title} icon={it.icon} style={it.style} className={activeTab === it.key ? styles.activeTab : styles.inactiveTab}/>
                 ))}
             </TabBar>
         </div>

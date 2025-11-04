@@ -6,13 +6,15 @@
 
 .searchBar :global(.adm-search-bar-input-box:focus-within) {
     border: 2px solid #e2fc2a;
-    background-color: #808080;
+    background-color: #e0e0e0;
 }
 
-.searchBar :global(.adm-input-element:focus-within) {
-    color: white;
-}
 
 .searchBar :global(.adm-input-element:focus::placeholder) {
     color: transparent;
+}
+
+.searchBar :global(.adm-input-element) {
+    font-size: 12px;
+    font-weight: bold;
 }
