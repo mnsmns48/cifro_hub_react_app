@@ -8,26 +8,21 @@ const PathTable = () => {
     const [data, setData] = useState([]);
     const [links, setLinks] = useState({});
 
-
     const handleUpload = async (originId, file) => {
         const response = await loadingImage(originId, "utils", file);
-
         const url = Array.isArray(response.url)
             ? response.url.find(item => item.name === response.filename)?.url
             : response.url;
-
         if (response?.filename && url) {
             setLinks(prev => ({...prev, [originId]: response.filename}));
             setData(prev =>
                 prev.map(item =>
                     item.id === originId
                         ? {...item, icon: url}
-                        : item
-                )
+                        : item)
             );
         }
     };
-
 
     const handleLinkChange = (id, value) => {
         setLinks(prev => ({...prev, [id]: value}));
@@ -42,9 +37,7 @@ const PathTable = () => {
                 }
                 return a.sort_order - b.sort_order;
             });
-
             setData(sortedData);
-
             const initialLinks = {};
             result.forEach(item => {
                 if (item.icon) {
@@ -57,10 +50,8 @@ const PathTable = () => {
                     }
                 }
             });
-
             setLinks(initialLinks);
         };
-
         void loadData();
     }, []);
 
@@ -68,7 +59,8 @@ const PathTable = () => {
     const columns = [
         {dataIndex: "label", key: "label"},
         {
-            dataIndex: "icon", key: "icon_preview", render: (icon) =>
+            dataIndex: "icon", key: "icon_preview",
+            render: (icon) =>
                 icon ? (
                     <img src={icon} alt="иконка" style={{width: 40, height: 40}}/>
                 ) : (
@@ -97,7 +89,7 @@ const PathTable = () => {
                     style={{fontSize: 12}}
                     value={links[record.id] || ""}
                     onChange={(e) => handleLinkChange(record.id, e.target.value)}
-                    placeholder="Название файла"
+                    placeholder="Файл"
                 />
             )
         },

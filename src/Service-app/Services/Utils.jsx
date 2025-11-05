@@ -5,11 +5,10 @@ import IconSettings from "./Utils/IconSettings.jsx";
 const Utils = () => {
 
 
-
     return (
         <Row>
             <Col span={11}>
-                <IconSettings title='Цифрохаб' />
+                <IconSettings title='Цифрохаб'/>
             </Col>
 
             <Col span={1}>
