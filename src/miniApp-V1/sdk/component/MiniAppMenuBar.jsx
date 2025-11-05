@@ -66,9 +66,10 @@ const MiniAppMenuBar = ({insets, theme, onHeightChange, keyboardOpen = false, on
                  paddingBottom: safeBottom,
                  backgroundColor: theme.colorBorder,
              }}>
-            <TabBar activeKey={activeTab} onChange={setActiveTab} >
+            <TabBar activeKey={activeTab} onChange={setActiveTab}>
                 {menuElements.map((it) => (
-                    <TabBar.Item key={it.key} title={it.title} icon={it.icon} style={it.style} className={activeTab === it.key ? styles.activeTab : styles.inactiveTab}/>
+                    <TabBar.Item key={it.key} title={it.title} icon={it.icon} style={it.style}
+                                 className={activeTab === it.key ? styles.activeTab : styles.inactiveTab}/>
                 ))}
             </TabBar>
         </div>
