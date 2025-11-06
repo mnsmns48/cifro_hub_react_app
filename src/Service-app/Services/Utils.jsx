@@ -8,7 +8,7 @@ const Utils = () => {
     return (
         <Row>
             <Col span={11}>
-                <IconSettings title='Цифрохаб'/>
+                <IconSettings title='Цифрохаб' table='cifrohub'/>
             </Col>
 
             <Col span={1}>
@@ -16,7 +16,7 @@ const Utils = () => {
             </Col>
 
             <Col span={11}>
-                {/*<IconSettings title='Цифротех' />*/}
+                <IconSettings title='Цифротех' table='cifrotech'/>
             </Col>
         </Row>
 
