@@ -56,21 +56,22 @@ const PathTable = ({table}) => {
         const result = await updateAndDeleteIcon(table, record, filename);
         if (!result) return;
 
-        const { icon, filename: updatedFilename } = result;
+        const {icon, filename: updatedFilename} = result;
 
         setData(prev =>
             prev.map(item =>
                 item.id === record.id
-                    ? { ...item, icon }
+                    ? {...item, icon}
                     : item
             )
         );
-        setLinks(prev => ({ ...prev, [record.id]: updatedFilename }));
+        setLinks(prev => ({...prev, [record.id]: updatedFilename}));
     };
 
 
     const columns = [
         {dataIndex: "label", key: "label"},
+        {dataIndex: "parent_id", key: "parent_id", width: 10},
         {
             dataIndex: "icon", key: "icon_preview",
             render: (icon) =>
