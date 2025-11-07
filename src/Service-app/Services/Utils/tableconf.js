@@ -8,8 +8,9 @@ export const tableConfig = {
         updateHandler: (payload) => UpdateOrDeleteImage(payload, "/service/update_or_delete_hub_image")
     },
     cifrotech: {
-        endpoint: "/service/initial_cifrotech_levels",
+        endpoint: "/service/initial_home_levels",
         keyMap: {name: "label", parent: "parent_id", code: "id"},
-        uploadHandler: (code, file) => loadingImage(code, file, "/service/loading_ctech_one_image")
+        uploadHandler: (code, file) => loadingImage(code, file, "/service/loading_home_one_image"),
+        updateHandler: (payload) => UpdateOrDeleteImage(payload, "/service/update_or_delete_home_image")
     }
 };
