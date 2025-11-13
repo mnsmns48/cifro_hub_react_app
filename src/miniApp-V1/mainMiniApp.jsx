@@ -4,8 +4,9 @@ import MiniAppMenuBar from "./sdk/component/MiniAppMenuBar.jsx";
 import SearchLine from "./sdk/component/SearchLine.jsx";
 import {useState} from "react";
 import useAppEnvironment from "./sdk/hook/useAppEnvironment.jsx";
-import menuElementsObj from "./menuElements.jsx";
+
 import ContentArea from "./sdk/component/ContentArea.jsx";
+import {miniAppConfig} from "./miniAppConf.jsx";
 
 const isKeyboardOpen = () => {
     if (typeof window === "undefined" || typeof document === "undefined") return false;
@@ -69,9 +70,12 @@ const MainMiniApp = () => {
                 </div>
             )}
 
-            <MiniAppMenuBar insets={insets} theme={theme} onHeightChange={setMenuHeight}
-                            keyboardOpen={keyboardOpenNow} onTabChange={setMenuActiveTab}
-                            menuElements={menuElementsObj}/>
+            <MiniAppMenuBar insets={insets} theme={theme}
+                            onHeightChange={setMenuHeight}
+                            keyboardOpen={keyboardOpenNow}
+                            onTabChange={setMenuActiveTab}
+                            miniAppConfig={miniAppConfig}
+            />
 
         </>
     );

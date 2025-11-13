@@ -4,16 +4,16 @@ import {DownloadOutlined, FileUnknownOutlined, SaveOutlined} from "@ant-design/i
 import {fetchLevels, updateAndDeleteIcon, uploadIcon} from "./crud.js";
 
 
-const PathTable = ({table}) => {
+const PathTable = ({config}) => {
     const [data, setData] = useState([]);
     const [links, setLinks] = useState({});
 
     useEffect(() => {
         void loadData();
-    }, [table]);
+    }, [config]);
 
     const loadData = async () => {
-        const result = await fetchLevels(table);
+        const result = await fetchLevels(config);
         setData(result);
         const initialLinks = {};
 
@@ -21,8 +21,7 @@ const PathTable = ({table}) => {
             if (item.icon) {
                 try {
                     const url = new URL(item.icon);
-                    const filename = decodeURIComponent(url.pathname.split("/").pop());
-                    initialLinks[item.id] = filename;
+                    initialLinks[item.id] = decodeURIComponent(url.pathname.split("/").pop());
                 } catch {
                     initialLinks[item.id] = item.icon;
                 }
@@ -32,7 +31,7 @@ const PathTable = ({table}) => {
     };
 
     const handleUpload = async (code, file) => {
-        const result = await uploadIcon(table, code, file);
+        const result = await uploadIcon(config, code, file);
         if (!result) return;
 
         const {filename, url} = result;
@@ -53,7 +52,7 @@ const PathTable = ({table}) => {
 
     const handleSave = async (record) => {
         const filename = links[record.id] || null;
-        const result = await updateAndDeleteIcon(table, record, filename);
+        const result = await updateAndDeleteIcon(config, record, filename);
         if (!result) return;
 
         const {icon, filename: updatedFilename} = result;
@@ -116,7 +115,7 @@ const PathTable = ({table}) => {
         },
     ];
 
-    return <Table columns={columns} dataSource={data} pagination={false} showHeader={false}/>;
+    return <Table columns={columns} dataSource={data} pagination={false} showHeader={false} rowKey="id"/>;
 };
 
 export default PathTable;

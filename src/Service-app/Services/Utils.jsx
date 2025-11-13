@@ -2,13 +2,14 @@ import {ToolOutlined} from "@ant-design/icons";
 import {Col, Row} from "antd";
 import IconSettings from "./Utils/IconSettings.jsx";
 
+
 const Utils = () => {
 
 
     return (
         <Row>
             <Col span={11}>
-                <IconSettings title='Цифрохаб' table='cifrohub'/>
+                <IconSettings table='hub'/>
             </Col>
 
             <Col span={1}>
@@ -16,7 +17,7 @@ const Utils = () => {
             </Col>
 
             <Col span={11}>
-                <IconSettings title='Цифротех' table='cifrotech'/>
+                <IconSettings table='home'/>
             </Col>
         </Row>
 

@@ -1,11 +1,7 @@
 import {fetchLevelsWithPreview} from "./api.js";
-import {tableConfig} from "./tableconf.js";
 
 
-export const fetchLevels = async (table) => {
-    const config = tableConfig[table];
-    if (!config) throw new Error(`Unknown table: ${table}`);
-
+export const fetchLevels = async (config) => {
     const raw = await fetchLevelsWithPreview(config.endpoint);
     const {keyMap} = config;
 
@@ -17,20 +13,16 @@ export const fetchLevels = async (table) => {
         });
     });
 
-    const sortedData = raw.sort((a, b) => {
+    return raw.sort((a, b) => {
         if (a.parent_id !== b.parent_id) {
             return a.parent_id - b.parent_id;
         }
         return a.sort_order - b.sort_order;
     });
-    console.log(sortedData)
-    return sortedData;
+
 };
 
-export const uploadIcon = async (table, originId, file) => {
-    const config = tableConfig[table];
-    if (!config?.uploadHandler) return null;
-
+export const uploadIcon = async (config, originId, file) => {
     try {
         const response = await config.uploadHandler(originId, file);
 
@@ -49,9 +41,7 @@ export const uploadIcon = async (table, originId, file) => {
     }
 };
 
-export const updateAndDeleteIcon = async (table, record, filename) => {
-    const config = tableConfig[table];
-    if (!config?.updateHandler) return null;
+export const updateAndDeleteIcon = async (config, record, filename) => {
 
     const result = await config.updateHandler({code: record.id, icon: filename});
     if (!result) return null;

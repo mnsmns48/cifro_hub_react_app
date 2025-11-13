@@ -2,13 +2,23 @@ import {useRef, useLayoutEffect, useState, useEffect} from "react";
 import {TabBar} from "antd-mobile";
 import styles from "../css/menubar.module.css";
 
-const MiniAppMenuBar = ({insets, theme, onHeightChange, keyboardOpen = false, onTabChange, menuElements = []}) => {
-    const [activeTab, setActiveTab] = useState("cifrohub");
+
+const MiniAppMenuBar = ({insets, theme, onHeightChange, keyboardOpen = false, onTabChange, miniAppConfig}) => {
+
+    const defaultMenuKey =
+        String(
+            Object.values(miniAppConfig || {}).find(({ AppBar }) => AppBar.default)?.AppBar.key ||
+            Object.values(miniAppConfig || {})[0]?.AppBar?.key ||
+            ""
+        );
+
+    const [activeTab, setActiveTab] = useState(defaultMenuKey);
     const safeBottom = insets?.bottom ?? "0px";
     const ref = useRef(null);
     const lastHeightRef = useRef(null);
 
     const HEIGHT_THRESHOLD = 1;
+
 
     useEffect(() => {
         onTabChange?.(activeTab);
@@ -66,11 +76,17 @@ const MiniAppMenuBar = ({insets, theme, onHeightChange, keyboardOpen = false, on
                  paddingBottom: safeBottom,
                  backgroundColor: theme.colorBorder,
              }}>
-            <TabBar activeKey={activeTab} onChange={setActiveTab}>
-                {menuElements.map((it) => (
-                    <TabBar.Item key={it.key} title={it.title} icon={it.icon} style={it.style}
-                                 className={activeTab === it.key ? styles.activeTab : styles.inactiveTab}/>
+            <TabBar activeKey={activeTab} onChange={setActiveTab} defaultActiveKey={defaultMenuKey}>
+                {Object.values(miniAppConfig).map(({AppBar}) => (
+                    <TabBar.Item
+                        key={AppBar.key}
+                        title={AppBar.title}
+                        icon={AppBar.icon}
+                        style={{padding: "0 40px"}}
+                        className={activeTab === AppBar.key ? styles.activeTab : styles.inactiveTab}
+                    />
                 ))}
+
             </TabBar>
         </div>
     );

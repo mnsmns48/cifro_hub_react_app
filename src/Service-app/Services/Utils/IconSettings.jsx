@@ -1,15 +1,16 @@
 import style from './utils.module.css'
 import PathTable from "./PathTable.jsx";
+import {tableConfig} from "./tableconf.js";
 
 
-const IconSettings = ({title, table}) => {
-
+const IconSettings = ({table}) => {
+    const config = tableConfig[table]
 
     return (<>
             <div className={style.topContainer}>
-                {title}
+                {config.title}
             </div>
-            <PathTable table={table} />
+            <PathTable config={config}/>
         </>
 
     )
