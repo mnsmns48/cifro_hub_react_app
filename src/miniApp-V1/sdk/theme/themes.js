@@ -2,9 +2,12 @@ const light = {
     colorPrimary: '#000000',
     colorText: '#3a3a3a',
     colorBackground: '#ffffff',
-    colorCard: '#f1f1f1',
+
     colorMuted: '#999999',
     colorBorder: '#e0e0e0',
+    colorCard: '#f1f1f1',
+    colorBright: "#e2fc2a",
+
 
     fontSizeBase: '14px',
     fontSizeSm: '12px',

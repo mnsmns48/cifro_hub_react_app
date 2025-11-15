@@ -1,0 +1,72 @@
+.drillSidebarWrap :global(.adm-list-item-content) {
+    border-top: none !important;
+}
+
+.drillSidebarWrap :global(.adm-list-default .adm-list-body) {
+    border-top: none !important;
+    border-bottom: none !important;
+}
+
+.sidebarContainer :global(.adm-side-bar-items) {
+    width: 50vw !important;
+}
+
+.sidebarContainer :global(.adm-side-bar-extra-space) {
+    width: 50vw !important;
+}
+
+
+
+.drillSidebarWrap {
+    width: 50vw;            /* <-- точно половина экрана */
+    max-width: 50vw;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+}
+
+.header {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.backBtn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.backIcon {
+    font-size: 20px;
+}
+
+.backPlaceholder {
+    width: 32px;
+}
+
+.headerTitle {
+    flex: 1;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.sidebarContainer {
+    flex: 1;
+    overflow: hidden;
+}
+
+.sidebar {
+    height: 100%;
+    overflow-y: auto;
+    border-right: 1px solid #eee;
+}

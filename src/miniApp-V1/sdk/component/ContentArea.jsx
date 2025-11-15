@@ -2,36 +2,35 @@ import CapsuleTabsMenu from "./CapsuleTabsMenu.jsx";
 import {useEffect, useState} from "react";
 import {miniAppConfig} from "../../miniAppConf.jsx";
 import {backEndFetch} from "../../api.js";
+import CategoryNavigator from "./CategoryNavigator.jsx";
 
 
-function ContentArea({theme, menuActiveTab}) {
+function ContentArea({barTab}) {
     const [data, setData] = useState([]);
+    const [capsuleChoice, setCapsuleChoice] = useState(null);
 
 
     useEffect(() => {
         async function fetchData() {
 
-            const config = miniAppConfig[menuActiveTab];
+            const config = miniAppConfig[barTab];
             if (!config || !config.Content || !config.Content.endpointMenu) {
                 setData([]);
                 return;
             }
-
-            try {
-                const result = await backEndFetch(config.Content.endpointMenu);
-                setData(result);
-            } catch (err) {
-                console.error("Ошибка загрузки данных для вкладки:", menuActiveTab, err);
-                setData([]);
-            }
+            const result = await backEndFetch(config.Content.endpointMenu);
+            setData(result);
         }
 
         void fetchData();
-    }, [menuActiveTab]);
+    }, [barTab]);
 
 
     return (
-        <CapsuleTabsMenu theme={theme} data={data}/>
+        <>
+            <CapsuleTabsMenu data={data.filter(item => item.depth === 0)} onTabChange={setCapsuleChoice}/>
+            <CategoryNavigator data={data} parent={capsuleChoice} />
+        </>
     )
 }
 

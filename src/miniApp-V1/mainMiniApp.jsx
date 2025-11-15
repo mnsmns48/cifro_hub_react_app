@@ -25,7 +25,7 @@ const MainMiniApp = () => {
     const {hasTelegram, isMobile, insets, theme} = useAppEnvironment();
     const [searchHeight, setSearchHeight] = useState(0);
     const [menuHeight, setMenuHeight] = useState(0);
-    const [menuActiveTab, setMenuActiveTab] = useState(null);
+    const [barTab, setBarTab] = useState(null);
 
 
     const isReady = hasTelegram && (isMobile || insets.top !== 0);
@@ -56,7 +56,7 @@ const MainMiniApp = () => {
             <div className={styles.appWrapper}
                  style={{backgroundColor: theme?.colorBackground, paddingTop: safeTop}}/>
             <div className={styles.searchWrapper} style={{backgroundColor: theme?.colorBackground, top: safeTop}}>
-                <SearchLine onHeightChange={setSearchHeight} theme={theme}/>
+                <SearchLine onHeightChange={setSearchHeight} />
             </div>
             {searchHeight > 0 && (
                 <div className={styles.scrollArea}
@@ -66,14 +66,14 @@ const MainMiniApp = () => {
                          right: `calc(${safeRight} + 10px)`,
                          bottom: bottomNow
                      }}>
-                    <ContentArea theme={theme} menuActiveTab={menuActiveTab}/>
+                    <ContentArea barTab={barTab}/>
                 </div>
             )}
 
-            <MiniAppMenuBar insets={insets} theme={theme}
+            <MiniAppMenuBar insets={insets}
                             onHeightChange={setMenuHeight}
                             keyboardOpen={keyboardOpenNow}
-                            onTabChange={setMenuActiveTab}
+                            onTabChange={setBarTab}
                             miniAppConfig={miniAppConfig}
             />
 

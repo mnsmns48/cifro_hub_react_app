@@ -1,9 +1,11 @@
 import {useRef, useLayoutEffect} from 'react';
 import {SearchBar} from 'antd-mobile';
 import styles from "../css/searchline.module.css";
+import {useCurrentTheme} from "../theme/useTheme.js";
 
-function SearchLine({onHeightChange, theme}) {
+function SearchLine({onHeightChange}) {
     const ref = useRef(null);
+    const theme = useCurrentTheme();
 
     useLayoutEffect(() => {
         if (!ref.current) return;
@@ -26,11 +28,7 @@ function SearchLine({onHeightChange, theme}) {
             <SearchBar placeholder="Я ищу"
                        className={styles.searchBar}
                        onSearch={handleSearch}
-                       style={{
-                           '--placeholder-color': theme.Border,
-                           '--background': theme.colorBorder,
-                           width: '33%',
-                       }}
+                       style={{width: '33%', '--background': theme.colorBorder}}
             />
         </div>
     );

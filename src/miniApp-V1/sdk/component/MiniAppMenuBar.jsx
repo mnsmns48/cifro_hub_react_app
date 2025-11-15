@@ -1,9 +1,11 @@
 import {useRef, useLayoutEffect, useState, useEffect} from "react";
 import {TabBar} from "antd-mobile";
 import styles from "../css/menubar.module.css";
+import {useCurrentTheme} from "../theme/useTheme.js";
 
 
-const MiniAppMenuBar = ({insets, theme, onHeightChange, keyboardOpen = false, onTabChange, miniAppConfig}) => {
+const MiniAppMenuBar = ({insets, onHeightChange, keyboardOpen = false, onTabChange, miniAppConfig}) => {
+    const theme = useCurrentTheme();
 
     const defaultMenuKey =
         String(
