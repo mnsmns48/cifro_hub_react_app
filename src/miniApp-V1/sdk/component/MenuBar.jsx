@@ -4,7 +4,7 @@ import styles from "../css/menubar.module.css";
 import {useCurrentTheme} from "../theme/useTheme.js";
 
 
-const MiniAppMenuBar = ({insets, onHeightChange, keyboardOpen = false, onTabChange, miniAppConfig}) => {
+const MenuBar = ({insets, onHeightChange, keyboardOpen = false, onTabChange, miniAppConfig}) => {
     const theme = useCurrentTheme();
 
     const defaultMenuKey =
@@ -77,6 +77,8 @@ const MiniAppMenuBar = ({insets, onHeightChange, keyboardOpen = false, onTabChan
                  borderTop: `1px solid ${theme.colorCard}`,
                  paddingBottom: safeBottom,
                  backgroundColor: theme.colorBorder,
+                 "--appbar-active-bg": theme.colorLightGreen
+
              }}>
             <TabBar activeKey={activeTab} onChange={setActiveTab} defaultActiveKey={defaultMenuKey}>
                 {Object.values(miniAppConfig).map(({AppBar}) => (
@@ -94,4 +96,4 @@ const MiniAppMenuBar = ({insets, onHeightChange, keyboardOpen = false, onTabChan
     );
 };
 
-export default MiniAppMenuBar;
+export default MenuBar;

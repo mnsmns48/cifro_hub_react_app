@@ -6,7 +6,7 @@ const light = {
     colorMuted: '#999999',
     colorBorder: '#e0e0e0',
     colorCard: '#f1f1f1',
-    colorBright: "#e2fc2a",
+    colorLightGreen: "#e2fc2a",
 
 
     fontSizeBase: '14px',

@@ -1,6 +1,6 @@
 import styles from "./miniapp.module.css";
 import Spinner from "../Cifrotech-app/components/Spinner.jsx";
-import MiniAppMenuBar from "./sdk/component/MiniAppMenuBar.jsx";
+import MenuBar from "./sdk/component/MenuBar.jsx";
 import SearchLine from "./sdk/component/SearchLine.jsx";
 import {useState} from "react";
 import useAppEnvironment from "./sdk/hook/useAppEnvironment.jsx";
@@ -70,11 +70,11 @@ const MainMiniApp = () => {
                 </div>
             )}
 
-            <MiniAppMenuBar insets={insets}
-                            onHeightChange={setMenuHeight}
-                            keyboardOpen={keyboardOpenNow}
-                            onTabChange={setBarTab}
-                            miniAppConfig={miniAppConfig}
+            <MenuBar insets={insets}
+                     onHeightChange={setMenuHeight}
+                     keyboardOpen={keyboardOpenNow}
+                     onTabChange={setBarTab}
+                     miniAppConfig={miniAppConfig}
             />
 
         </>

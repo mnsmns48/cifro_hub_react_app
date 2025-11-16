@@ -1,6 +1,7 @@
 import {useState, useMemo, useEffect, useCallback} from "react";
-import BreadcrumbTabs from "./BreadcrumbTabs";
+import Breadcrumb from "./Breadcrumb.jsx";
 import {useCurrentTheme} from "../theme/useTheme.js";
+import styles from "../css/categorynavigator.module.css";
 
 export default function CategoryNavigator({data = [], parent}) {
     const [stack, setStack] = useState([]);
@@ -20,15 +21,12 @@ export default function CategoryNavigator({data = [], parent}) {
         );
     }, [data, parentKey]);
 
-    // текущие элементы
     const currentItems = useMemo(() => {
         if (stack.length === 0) return level1;
-
         const last = stack[stack.length - 1];
         return data.filter((i) => String(i.parent_id) === String(last.id));
     }, [data, level1, stack]);
 
-    // клик по элементу (добавление в стек)
     const handleSelect = useCallback((item) => {
         setStack((prev) => [
             ...prev,
@@ -36,10 +34,9 @@ export default function CategoryNavigator({data = [], parent}) {
         ]);
     }, []);
 
-    // клик по Breadcrumb
     const handleBreadcrumbSelect = useCallback((index) => {
         if (index === 0) {
-            setStack([]); // назад к parentId
+            setStack([]);
         } else {
             setStack((prev) => prev.slice(0, index));
         }
@@ -49,83 +46,38 @@ export default function CategoryNavigator({data = [], parent}) {
         <div>
             {!parent ? null : (
                 <>
-                    <div style={{textAlign: "center", display: "flex", justifyContent: "center"}}>
-                        <BreadcrumbTabs
-                            stack={[{label: parent.label}, ...stack]}
-                            onSelect={handleBreadcrumbSelect}
-                        />
+                    <div className={styles.centeredContainer}>
+                        <Breadcrumb stack={[{label: parent.label}, ...stack]} onSelect={handleBreadcrumbSelect}/>
                     </div>
 
-                    <div
-                        style={{
-                            paddingTop: 10,
-                            display: "flex",
-                            justifyContent: "center"
-                        }}
-                    >
-                        <div
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(auto-fit, minmax(min(160px, 100%), 1fr))",
-                                gap: 12,
-                                width: "98%",
-                                boxSizing: "border-box",
-                            }}
-                        >
+                    <div className={styles.centeredContainer} style={{paddingTop: 12}}>
+                        <div className={styles.depthBoxContainer}>
                             {currentItems.map((item) => (
-                                <div
-                                    key={item.id}
-                                    onClick={() => handleSelect(item)}
-                                    style={{
-                                        width: '130px',
-                                        padding: "12px 16px",
-                                        cursor: "pointer",
-                                        display: "flex",
-                                        alignItems: "center",
-
-                                        justifyContent: item.icon
-                                            ? "flex-start"
-                                            : "center",
-
-                                        gap: item.icon ? "12px" : 0,
-                                        boxShadow: `0 0 4px ${theme.colorPrimary}79`,
-                                        fontSize: 17,
-                                        background: "#f2f2f2",
-                                        borderRadius: 20,
-                                    }}
-                                >
+                                <div className={styles.elementButton}
+                                     key={item.id}
+                                     onClick={() => handleSelect(item)}
+                                     style={{
+                                         justifyContent: item.icon
+                                             ? "flex-start"
+                                             : "center",
+                                         gap: item.icon ? "12px" : 0,
+                                         boxShadow: `0 0 4px ${theme.colorPrimary}79`,
+                                         background: theme.colorCard,
+                                     }}>
                                     {item.icon && (
-                                        <div
-                                            style={{
-                                                width: 32,
-                                                height: 32,
-                                                borderRadius: 6,
-                                                overflow: "hidden",
-                                                background: "transparent",
-                                                flexShrink: 0,
-                                            }}
-                                        >
-                                            <img
-                                                src={item.icon}
-                                                alt={item.label}
-                                                style={{
-                                                    width: "100%",
-                                                    height: "100%",
-                                                    objectFit: "cover"
-                                                }}
-                                            />
+                                        <div className={styles.elementIcon}>
+                                            <img className={styles.elementImg}
+                                                 src={item.icon}
+                                                 alt={item.label}/>
                                         </div>
                                     )}
-
                                     <span>{item.label}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
-
                 </>
             )}
         </div>
     );
-
 }

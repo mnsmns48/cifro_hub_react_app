@@ -13,14 +13,12 @@ const ThemeProvider = ({ children }) => {
         applyAntdMobileTheme(theme);
         document.body.dataset.theme = themeKey;
 
-        // --- системная цветовая схема формируется из активной темы ---
         const meta = document.createElement("meta");
         meta.name = "theme-color";
         meta.content = theme.colorBackground;
         document.head.appendChild(meta);
 
         const style = document.createElement("style");
-        // color-scheme ставим light, но можем подставить dynamic
         style.innerHTML = `
             :root {
                 color-scheme: ${themeKey === 'dark' ? 'dark' : 'light'};
