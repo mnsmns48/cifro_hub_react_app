@@ -1,7 +1,7 @@
 import {useCurrentTheme} from "../theme/useTheme.js";
 import styles from "../css/breadcrumb.module.css";
 
-export default function Breadcrumb({stack, onSelect}) {
+export default function BreadCrumbs({stack, onSelect}) {
     const theme = useCurrentTheme();
 
     return (
@@ -17,9 +17,9 @@ export default function Breadcrumb({stack, onSelect}) {
                 }}>
             {item.label}
           </span>
-                {index < stack.length - 1 && (
-                    <span style={{margin: "0 3px"}}>{"➡"}</span>
-                )}
+                    {index < stack.length - 1 && (
+                        <span style={{margin: "0 3px"}}>{"➡"}</span>
+                    )}
                 </div>
             ))}
         </div>
