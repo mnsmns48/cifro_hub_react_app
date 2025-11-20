@@ -1,6 +1,6 @@
 .cardTitle {
     font-weight: normal;
-    height: 80px;           /* фиксированная высота блока */
+    height: 50px;           /* фиксированная высота блока */
     line-height: 16px;      /* высота строки */
     overflow: hidden;       /* скрываем лишний текст */
     text-overflow: ellipsis;/* добавляем троеточие */
@@ -30,8 +30,12 @@
 }
 
 .price {
-    margin-top: 4px;
+    padding-bottom: 2px;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 800;
     text-align: center;
+
+    background: linear-gradient(225deg, #F1117E 0%, #F1117E 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }

@@ -6,7 +6,10 @@ import CategoryNavigator from "./CategoryNavigator.jsx";
 import baseStyles from "../css/base.module.css";
 import BreadCrumbs from "./Breadcrumbs.jsx";
 import CollectionView from "./CollectionView.jsx";
-import useAppParams from "../hook/useAppParams.jsx";
+
+
+import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
+
 
 function getAllIds(menuItems, parentId) {
     const ids = [];
@@ -29,9 +32,9 @@ function ContentArea({barTab, noImg}) {
     const [stack, setStack] = useState([]);
     const [duration, setDuration] = useState(0);
     const [productItems, setProductItems] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const config = miniAppConfig[barTab];
-
 
     useEffect(() => {
         setStack([]);
@@ -39,8 +42,7 @@ function ContentArea({barTab, noImg}) {
 
     useEffect(() => {
         async function fetchMenuItems() {
-
-            if (!config || !config.Content || !config.Content.endpointMenu) {
+            if (!config?.Content?.endpointMenu) {
                 setMenuItems([]);
                 return;
             }
@@ -53,13 +55,7 @@ function ContentArea({barTab, noImg}) {
 
     useEffect(() => {
         async function fetchProductItems() {
-            if (!config?.Content?.endpointProducts) {
-                setProductItems([]);
-                setDuration(0);
-                return;
-            }
-
-            if (!stack.length) {
+            if (!config?.Content?.endpointProducts || !stack.length) {
                 setProductItems([]);
                 setDuration(0);
                 return;
@@ -73,17 +69,20 @@ function ContentArea({barTab, noImg}) {
             }
 
             const pathIds = getAllIds(menuItems, Number(lastId)) || [];
-
             if (!Array.isArray(pathIds) || pathIds.length === 0) {
                 setProductItems([]);
                 setDuration(0);
                 return;
             }
 
-            const result = await getFetch(config.Content.endpointProducts, {ids: pathIds});
-
-            setProductItems(result?.products || []);
-            setDuration(result?.duration_ms || 0);
+            setLoading(true);
+            try {
+                const result = await getFetch(config.Content.endpointProducts, {ids: pathIds});
+                setProductItems(result?.products || []);
+                setDuration(result?.duration_ms || 0);
+            } finally {
+                setLoading(false);
+            }
         }
 
         void fetchProductItems();
@@ -103,23 +102,40 @@ function ContentArea({barTab, noImg}) {
 
     return (
         <>
-            <CapsuleTabsMenu data={menuItems.filter(item => item.depth === 0)} onTabChange={setCapsuleChoice}/>
-
-            <span style={{fontSize: "2rem", color: "blue", display: "block", textAlign: "center"}}>{duration}</span>
+            <CapsuleTabsMenu
+                data={menuItems.filter(item => item.depth === 0)}
+                onTabChange={setCapsuleChoice}
+            />
 
             {capsuleChoice && (
                 <div className={baseStyles.centeredContainer}>
-
-                    <BreadCrumbs stack={[{label: capsuleChoice.label}, ...stack]}
-                                 onSelect={handleBreadcrumbSelect}
+                    <BreadCrumbs
+                        stack={[{label: capsuleChoice.label}, ...stack]}
+                        onSelect={handleBreadcrumbSelect}
                     />
                 </div>
             )}
 
-            <CategoryNavigator data={menuItems} parent={capsuleChoice} stack={stack} onSelect={handleSelect}/>
-            <CollectionView items={productItems} noImg={noImg} onSelect={(item) => console.log(item)}/>
+            <CategoryNavigator
+                data={menuItems}
+                parent={capsuleChoice}
+                stack={stack}
+                onSelect={handleSelect}
+            />
+
+            {loading ? (
+                <div>
+                    <Spinner/>
+                </div>
+            ) : (
+                <CollectionView
+                    items={productItems}
+                    noImg={noImg}
+                    onSelect={(item) => console.log(item)}
+                />
+            )}
         </>
-    )
+    );
 }
 
 export default ContentArea;

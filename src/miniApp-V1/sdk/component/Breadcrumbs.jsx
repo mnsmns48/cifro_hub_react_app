@@ -18,7 +18,7 @@ export default function BreadCrumbs({stack, onSelect}) {
             {item.label}
           </span>
                     {index < stack.length - 1 && (
-                        <span style={{margin: "0 3px"}}>{"➡"}</span>
+                        <span style={{margin: "0 3px"}}>{" "}</span>
                     )}
                 </div>
             ))}
