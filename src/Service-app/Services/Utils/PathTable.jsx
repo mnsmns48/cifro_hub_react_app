@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {Table, Input, Button, Upload} from "antd";
 import {DownloadOutlined, FileUnknownOutlined, SaveOutlined} from "@ant-design/icons";
-import {fetchLevels, updateAndDeleteIcon, uploadIcon} from "./crud.js";
+import {fetchLevelsFunction, updateAndDeleteIcon, uploadIcon} from "./crud.js";
 
 
 const PathTable = ({config}) => {
@@ -13,7 +13,7 @@ const PathTable = ({config}) => {
     }, [config]);
 
     const loadData = async () => {
-        const result = await fetchLevels(config);
+        const result = await fetchLevelsFunction(config);
         setData(result);
         const initialLinks = {};
 

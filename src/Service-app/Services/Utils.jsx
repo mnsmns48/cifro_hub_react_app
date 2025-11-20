@@ -1,26 +1,31 @@
 import {ToolOutlined} from "@ant-design/icons";
 import {Col, Row} from "antd";
 import IconSettings from "./Utils/IconSettings.jsx";
+import {ServiceImageBlock} from "./Utils/ServiceImageBlock.jsx";
 
 
 const Utils = () => {
 
 
     return (
-        <Row>
-            <Col span={11}>
-                <IconSettings table='hub'/>
-            </Col>
+        <>
+            <div style={{paddingBottom: 20}}>
+                <ServiceImageBlock/>
+            </div>
+            <Row>
+                <Col span={11}>
+                    <IconSettings table='hub'/>
+                </Col>
 
-            <Col span={1}>
+                <Col span={1}>
 
-            </Col>
+                </Col>
 
-            <Col span={11}>
-                <IconSettings table='home'/>
-            </Col>
-        </Row>
-
+                <Col span={11}>
+                    <IconSettings table='home'/>
+                </Col>
+            </Row>
+        </>
     );
 };
 

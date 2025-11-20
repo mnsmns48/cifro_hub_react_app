@@ -1,8 +1,8 @@
-import {fetchLevelsWithPreview} from "./api.js";
+import {fetchApiGet} from "./api.js";
 
 
-export const fetchLevels = async (config) => {
-    const raw = await fetchLevelsWithPreview(config.endpoint);
+export const fetchLevelsFunction = async (config) => {
+    const raw = await fetchApiGet(config.endpoint);
     const {keyMap} = config;
 
     raw.forEach(item => {

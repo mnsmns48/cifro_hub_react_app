@@ -7,6 +7,7 @@ const IconSettings = ({table}) => {
     const config = tableConfig[table]
 
     return (<>
+
             <div className={style.topContainer}>
                 {config.title}
             </div>

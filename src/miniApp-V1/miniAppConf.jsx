@@ -11,5 +11,4 @@ export const miniAppConfig = {
     home: {
         AppBar: {key: "home", title: "Наличие", icon: <HomeOutlined/>}
     }
-
 }

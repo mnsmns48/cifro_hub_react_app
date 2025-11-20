@@ -7,7 +7,7 @@ import baseStyles from "../css/base.module.css";
 import BreadCrumbs from "./Breadcrumbs.jsx";
 import CollectionView from "./CollectionView.jsx";
 
-function getAllDescendantIds(menuItems, parentId) {
+function getAllIds(menuItems, parentId) {
     const ids = [];
 
     function recurse(id) {
@@ -51,21 +51,18 @@ function ContentArea({barTab}) {
 
     useEffect(() => {
         async function fetchProductItems() {
-            // 1. Проверка конфига
             if (!config?.Content?.endpointProducts) {
                 setProductItems([]);
                 setDuration(0);
                 return;
             }
 
-            // 2. Проверка стека
             if (!stack.length) {
                 setProductItems([]);
                 setDuration(0);
                 return;
             }
 
-            // 3. Last ID
             const lastId = stack.at(-1)?.id;
             if (lastId == null) {
                 setProductItems([]);
@@ -73,23 +70,16 @@ function ContentArea({barTab}) {
                 return;
             }
 
-            // 4. Получаем все id пути
-            const pathIds = getAllDescendantIds(menuItems, Number(lastId)) || [];
+            const pathIds = getAllIds(menuItems, Number(lastId)) || [];
 
-            // 5. Проверка pathIds — обязательная
             if (!Array.isArray(pathIds) || pathIds.length === 0) {
                 setProductItems([]);
                 setDuration(0);
                 return;
             }
 
-            // 6. Делаем запрос
-            const result = await getFetch(
-                config.Content.endpointProducts,
-                { ids: pathIds }
-            );
+            const result = await getFetch(config.Content.endpointProducts, {ids: pathIds});
 
-            // 7. Устанавливаем результат
             setProductItems(result?.products || []);
             setDuration(result?.duration_ms || 0);
         }
@@ -117,7 +107,6 @@ function ContentArea({barTab}) {
 
             {capsuleChoice && (
                 <div className={baseStyles.centeredContainer}>
-
 
                     <BreadCrumbs stack={[{label: capsuleChoice.label}, ...stack]}
                                  onSelect={handleBreadcrumbSelect}
