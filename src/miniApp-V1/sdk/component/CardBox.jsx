@@ -3,16 +3,17 @@ import styles from "../css/cardbox.module.css";
 
 
 
-export default function CardBox({ cardData, onSelect }) {
+export default function CardBox({ cardData, noImg, onSelect }) {
+    const imgSrc = cardData.preview ? cardData.preview : noImg;
+
     return (
         <Card
             className={styles.card}
             onBodyClick={() => onSelect?.(cardData)}
-            style={{ borderRadius: '16px' }}
+            style={{ borderRadius: "16px" }}
         >
-
             <div className={styles.imgWrapper}>
-                <img src={cardData.preview} alt={cardData.title} className={styles.img} />
+                <img src={imgSrc} alt={cardData.title} className={styles.img} />
             </div>
 
             <div className={styles.price}>
@@ -22,8 +23,6 @@ export default function CardBox({ cardData, onSelect }) {
             <div className={styles.cardTitle}>
                 {cardData.title}
             </div>
-
-
         </Card>
     );
 }

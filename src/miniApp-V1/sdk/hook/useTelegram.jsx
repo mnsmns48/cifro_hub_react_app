@@ -1,6 +1,7 @@
 import {useContext, useEffect, useState, useRef} from "react";
-import {ThemeContext} from "../theme/ThemeContext.jsx";
 import useSafeAreaInsets from "./useSafeAreaInsets.jsx";
+import {ThemeContext} from "../context.js";
+
 
 const loadTelegramScript = () => {
     return new Promise((resolve, reject) => {

@@ -98,8 +98,8 @@ export function ServiceImageBlock() {
                 dataSource={data}
                 rowKey="id"
                 pagination={false}
-                style={{ width: "auto", marginBottom: 16 }}
-                locale={{emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Нет данных" />}}
+                style={{width: "auto", marginBottom: 16}}
+                locale={{emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Нет данных"/>}}
             />
 
             <Button

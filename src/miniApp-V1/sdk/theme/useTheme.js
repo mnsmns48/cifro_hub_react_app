@@ -1,5 +1,6 @@
 import {useContext} from 'react';
-import {ThemeContext} from "./ThemeContext.jsx";
+import {ThemeContext} from "../context.js";
+
 
 
 export const useCurrentTheme = () => {

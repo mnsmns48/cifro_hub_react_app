@@ -6,6 +6,7 @@ import CategoryNavigator from "./CategoryNavigator.jsx";
 import baseStyles from "../css/base.module.css";
 import BreadCrumbs from "./Breadcrumbs.jsx";
 import CollectionView from "./CollectionView.jsx";
+import useAppParams from "../hook/useAppParams.jsx";
 
 function getAllIds(menuItems, parentId) {
     const ids = [];
@@ -22,7 +23,7 @@ function getAllIds(menuItems, parentId) {
 }
 
 
-function ContentArea({barTab}) {
+function ContentArea({barTab, noImg}) {
     const [menuItems, setMenuItems] = useState([]);
     const [capsuleChoice, setCapsuleChoice] = useState(null);
     const [stack, setStack] = useState([]);
@@ -30,6 +31,7 @@ function ContentArea({barTab}) {
     const [productItems, setProductItems] = useState([]);
 
     const config = miniAppConfig[barTab];
+
 
     useEffect(() => {
         setStack([]);
@@ -115,7 +117,7 @@ function ContentArea({barTab}) {
             )}
 
             <CategoryNavigator data={menuItems} parent={capsuleChoice} stack={stack} onSelect={handleSelect}/>
-            <CollectionView items={productItems} onSelect={(item) => console.log(item)}/>
+            <CollectionView items={productItems} noImg={noImg} onSelect={(item) => console.log(item)}/>
         </>
     )
 }

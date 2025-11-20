@@ -7,6 +7,8 @@ import useAppEnvironment from "./sdk/hook/useAppEnvironment.jsx";
 
 import ContentArea from "./sdk/component/ContentArea.jsx";
 import {miniAppConfig} from "./miniAppConf.jsx";
+import useAppParams from "./sdk/hook/useAppParams.jsx";
+
 
 const isKeyboardOpen = () => {
     if (typeof window === "undefined" || typeof document === "undefined") return false;
@@ -27,12 +29,13 @@ const MainMiniApp = () => {
     const [menuHeight, setMenuHeight] = useState(0);
     const [barTab, setBarTab] = useState(null);
 
-
     const isReady = hasTelegram && (isMobile || insets.top !== 0);
     const safeTop = insets?.top ?? "0px";
     const safeBottom = insets?.bottom ?? "0px";
     const safeLeft = insets?.left ?? "0px";
     const safeRight = insets?.right ?? "0px";
+
+    const params = useAppParams();
 
 
     const keyboardOpenNow = isKeyboardOpen();
@@ -56,7 +59,7 @@ const MainMiniApp = () => {
             <div className={styles.appWrapper}
                  style={{backgroundColor: theme?.colorBackground, paddingTop: safeTop}}/>
             <div className={styles.searchWrapper} style={{backgroundColor: theme?.colorBackground, top: safeTop}}>
-                <SearchLine onHeightChange={setSearchHeight} />
+                <SearchLine onHeightChange={setSearchHeight}/>
             </div>
             {searchHeight > 0 && (
                 <div className={styles.scrollArea}
@@ -66,7 +69,7 @@ const MainMiniApp = () => {
                          right: `calc(${safeRight} + 10px)`,
                          bottom: bottomNow
                      }}>
-                    <ContentArea barTab={barTab}/>
+                    <ContentArea barTab={barTab} noImg={params?.noImg} />
                 </div>
             )}
 
@@ -76,7 +79,6 @@ const MainMiniApp = () => {
                      onTabChange={setBarTab}
                      miniAppConfig={miniAppConfig}
             />
-
         </>
     );
 };
