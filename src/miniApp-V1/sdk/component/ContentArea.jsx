@@ -26,7 +26,7 @@ function getAllIds(menuItems, parentId) {
 }
 
 
-function ContentArea({barTab, noImg}) {
+function ContentArea({barTab, noImg, safeInsets}) {
     const [menuItems, setMenuItems] = useState([]);
     const [capsuleChoice, setCapsuleChoice] = useState(null);
     const [stack, setStack] = useState([]);
@@ -131,6 +131,7 @@ function ContentArea({barTab, noImg}) {
                 <CollectionView
                     items={productItems}
                     noImg={noImg}
+                    safeInsets={safeInsets}
                     onSelect={(item) => console.log(item)}
                 />
             )}

@@ -1,16 +1,39 @@
 .cardTitle {
     font-weight: normal;
-    height: 50px;           /* фиксированная высота блока */
-    line-height: 16px;      /* высота строки */
-    overflow: hidden;       /* скрываем лишний текст */
-    text-overflow: ellipsis;/* добавляем троеточие */
-    display: -webkit-box;   /* для многолинейного ellipsis */
-    -webkit-line-clamp: 3;  /* максимум 2 строки */
+    line-height: 15px;
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
     -webkit-box-orient: vertical;
+    text-align: center;
+
+    border-radius: 12px;
+    padding: 6px 8px;
+    border: 1px solid #f1f1f1;
+    box-shadow: rgba(220, 220, 220, 0.47) 0 0 4px;
+    background-color: #f6f6f6;
 }
 
-.card {
-    --adm-card-padding: 8px;
+.blinkBorder {
+    animation: blink-red-border 0.2s ease;
+}
+
+@keyframes blink-red-border {
+    0% {
+        border-color: transparent;
+    }
+    50% {
+        border-color: #e2fc2a;
+    }
+    100% {
+        border-color: transparent;
+    }
+}
+
+.card :global(.adm-card-body) {
+    padding: 0 !important;
 }
 
 .imgWrapper {
@@ -30,7 +53,7 @@
 }
 
 .price {
-    padding-bottom: 2px;
+    padding-bottom: 4px;
     font-size: 16px;
     font-weight: 800;
     text-align: center;
@@ -39,3 +62,4 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+

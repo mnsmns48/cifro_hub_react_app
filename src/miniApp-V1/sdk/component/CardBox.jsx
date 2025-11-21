@@ -1,28 +1,52 @@
+import {useState} from "react";
 import {Card} from "antd-mobile";
 import styles from "../css/cardbox.module.css";
+import PicSwapper from "./PicSwapper.jsx";
 
+export default function CardBox({cardData, noImg, safeInsets, onSelect}) {
+    const pics = cardData.pics?.length ? cardData.pics : [noImg];
+    const [visible, setVisible] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [blink, setBlink] = useState(false);
 
-
-export default function CardBox({ cardData, noImg, onSelect }) {
-    const imgSrc = cardData.preview ? cardData.preview : noImg;
+    const handleClick = () => {
+        setBlink(true);
+        setTimeout(() => setBlink(false), 600);
+    };
 
     return (
-        <Card
-            className={styles.card}
-            onBodyClick={() => onSelect?.(cardData)}
-            style={{ borderRadius: "16px" }}
-        >
-            <div className={styles.imgWrapper}>
-                <img src={imgSrc} alt={cardData.title} className={styles.img} />
-            </div>
+        <>
+            <Card className={styles.card} onBodyClick={() => onSelect?.(cardData)}>
+                <div className={styles.imgWrapper}>
+                    <img src={cardData.preview || noImg} alt={cardData.title}
+                         className={styles.img}
+                         onClick={(e) => {
+                             e.stopPropagation();
+                             if (cardData.preview) {
+                                 setActiveIndex(0);
+                                 setVisible(true);
+                             }
+                         }}
+                    />
+                </div>
 
-            <div className={styles.price}>
-                {cardData.output_price} ₽
-            </div>
+                <div className={styles.price}>{cardData.output_price} ₽</div>
 
-            <div className={styles.cardTitle}>
-                {cardData.title}
-            </div>
-        </Card>
+                <div className={`${styles.cardTitle} ${blink ? styles.blinkBorder : ""}`} lang="ru"
+                     onClick={handleClick}>
+                    {cardData.title}
+                </div>
+            </Card>
+
+            {cardData.preview && (
+                <PicSwapper visible={visible}
+                            onClose={() => setVisible(false)}
+                            pics={pics}
+                            activeIndex={activeIndex}
+                            safeInsets={safeInsets}
+                            title={cardData.title}
+                />
+            )}
+        </>
     );
 }

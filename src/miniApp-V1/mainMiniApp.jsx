@@ -30,19 +30,19 @@ const MainMiniApp = () => {
     const [barTab, setBarTab] = useState(null);
 
     const isReady = hasTelegram && (isMobile || insets.top !== 0);
-    const safeTop = insets?.top ?? "0px";
-    const safeBottom = insets?.bottom ?? "0px";
-    const safeLeft = insets?.left ?? "0px";
-    const safeRight = insets?.right ?? "0px";
-
+    const safeInsets = {
+        top: insets?.top ?? "0px",
+        bottom: insets?.bottom ?? "0px",
+        left: insets?.left ?? "0px",
+        right: insets?.right ?? "0px",
+    };
     const params = useAppParams();
-
 
     const keyboardOpenNow = isKeyboardOpen();
 
     const bottomNow = keyboardOpenNow
-        ? safeBottom
-        : `calc(${menuHeight + 2}px + ${safeBottom})`;
+        ? safeInsets.bottom
+        : `calc(${menuHeight + 2}px + ${safeInsets.bottom})`;
 
 
     if (!isReady) {
@@ -53,23 +53,22 @@ const MainMiniApp = () => {
         );
     }
 
-
     return (
         <>
             <div className={styles.appWrapper}
-                 style={{backgroundColor: theme?.colorBackground, paddingTop: safeTop}}/>
-            <div className={styles.searchWrapper} style={{backgroundColor: theme?.colorBackground, top: safeTop}}>
+                 style={{backgroundColor: theme?.colorBackground, paddingTop: safeInsets.top}}/>
+            <div className={styles.searchWrapper} style={{backgroundColor: theme?.colorBackground, top: safeInsets.top}}>
                 <SearchLine onHeightChange={setSearchHeight}/>
             </div>
             {searchHeight > 0 && (
                 <div className={styles.scrollArea}
                      style={{
-                         top: `calc(${safeTop} + ${searchHeight}px + 15px)`,
-                         left: `calc(${safeLeft} + 10px)`,
-                         right: `calc(${safeRight} + 10px)`,
+                         top: `calc(${safeInsets.top} + ${searchHeight}px + 15px)`,
+                         left: `calc(${safeInsets.left} + 10px)`,
+                         right: `calc(${safeInsets.right} + 10px)`,
                          bottom: bottomNow
                      }}>
-                    <ContentArea barTab={barTab} noImg={params?.noImg} />
+                    <ContentArea barTab={barTab} noImg={params?.noImg} safeInsets={safeInsets}/>
                 </div>
             )}
 
