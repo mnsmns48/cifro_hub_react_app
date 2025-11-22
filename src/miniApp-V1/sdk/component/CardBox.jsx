@@ -3,7 +3,7 @@ import {Card} from "antd-mobile";
 import styles from "../css/cardbox.module.css";
 import PicSwapper from "./PicSwapper.jsx";
 
-export default function CardBox({cardData, noImg, safeInsets, onSelect}) {
+export default function CardBox({theme, cardData, noImg, safeInsets, onSelect}) {
     const pics = cardData.pics?.length ? cardData.pics : [noImg];
     const [visible, setVisible] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
@@ -39,12 +39,14 @@ export default function CardBox({cardData, noImg, safeInsets, onSelect}) {
             </Card>
 
             {cardData.preview && (
-                <PicSwapper visible={visible}
-                            onClose={() => setVisible(false)}
-                            pics={pics}
-                            activeIndex={activeIndex}
-                            safeInsets={safeInsets}
-                            title={cardData.title}
+                <PicSwapper
+                    theme={theme}
+                    visible={visible}
+                    onClose={() => setVisible(false)}
+                    pics={pics}
+                    activeIndex={activeIndex}
+                    safeInsets={safeInsets}
+                    title={cardData.title}
                 />
             )}
         </>

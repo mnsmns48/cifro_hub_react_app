@@ -1,8 +1,7 @@
-import {useCurrentTheme} from "../theme/useTheme.js";
 import styles from "../css/breadcrumb.module.css";
 
-export default function BreadCrumbs({stack, onSelect}) {
-    const theme = useCurrentTheme();
+export default function BreadCrumbs({theme, stack, onSelect}) {
+
 
     return (
         <div className={styles.breadCrumbContainer}>

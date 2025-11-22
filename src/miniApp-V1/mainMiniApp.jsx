@@ -57,7 +57,8 @@ const MainMiniApp = () => {
         <>
             <div className={styles.appWrapper}
                  style={{backgroundColor: theme?.colorBackground, paddingTop: safeInsets.top}}/>
-            <div className={styles.searchWrapper} style={{backgroundColor: theme?.colorBackground, top: safeInsets.top}}>
+            <div className={styles.searchWrapper}
+                 style={{backgroundColor: theme?.colorBackground, top: safeInsets.top}}>
                 <SearchLine onHeightChange={setSearchHeight}/>
             </div>
             {searchHeight > 0 && (
@@ -68,7 +69,7 @@ const MainMiniApp = () => {
                          right: `calc(${safeInsets.right} + 10px)`,
                          bottom: bottomNow
                      }}>
-                    <ContentArea barTab={barTab} noImg={params?.noImg} safeInsets={safeInsets} />
+                    <ContentArea barTab={barTab} noImg={params?.noImg} safeInsets={safeInsets}/>
                 </div>
             )}
 

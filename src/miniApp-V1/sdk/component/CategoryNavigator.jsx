@@ -1,11 +1,9 @@
 import {useMemo} from 'react';
 
-import {useCurrentTheme} from "../theme/useTheme.js";
 import baseStyles from "../css/base.module.css";
 import styles from "../css/categorynavigator.module.css";
 
-export default function CategoryNavigator({data = [], parent, stack, onSelect}) {
-    const theme = useCurrentTheme();
+export default function CategoryNavigator({theme, data = [], parent, stack, onSelect}) {
 
     const parentKey = parent?.id != null ? String(parent.id) : null;
 

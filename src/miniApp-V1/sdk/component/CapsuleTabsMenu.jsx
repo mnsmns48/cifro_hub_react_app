@@ -1,10 +1,9 @@
 import { CapsuleTabs } from "antd-mobile";
 import styles from "../css/capsuletab.module.css";
-import { useCurrentTheme } from "../theme/useTheme.js";
 import { useState, useCallback } from "react";
 
-export default function CapsuleTabsMenu({ data = [], onTabChange }) {
-    const theme = useCurrentTheme();
+export default function CapsuleTabsMenu({theme, data = [], onTabChange }) {
+
     const [activeKey, setActiveKey] = useState('');
 
     const toggleTab = useCallback(

@@ -6,9 +6,8 @@ import CategoryNavigator from "./CategoryNavigator.jsx";
 import baseStyles from "../css/base.module.css";
 import BreadCrumbs from "./Breadcrumbs.jsx";
 import CollectionView from "./CollectionView.jsx";
-
-
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
+import {useCurrentTheme} from "../theme/useTheme.js";
 
 
 function getAllIds(menuItems, parentId) {
@@ -35,6 +34,7 @@ function ContentArea({barTab, noImg, safeInsets}) {
     const [loading, setLoading] = useState(false);
 
     const config = miniAppConfig[barTab];
+    const theme = useCurrentTheme()
 
     useEffect(() => {
         setStack([]);
@@ -105,11 +105,13 @@ function ContentArea({barTab, noImg, safeInsets}) {
             <CapsuleTabsMenu
                 data={menuItems.filter(item => item.depth === 0)}
                 onTabChange={setCapsuleChoice}
+                theme={theme}
             />
 
             {capsuleChoice && (
                 <div className={baseStyles.centeredContainer}>
                     <BreadCrumbs
+                        theme={theme}
                         stack={[{label: capsuleChoice.label}, ...stack]}
                         onSelect={handleBreadcrumbSelect}
                     />
@@ -117,6 +119,7 @@ function ContentArea({barTab, noImg, safeInsets}) {
             )}
 
             <CategoryNavigator
+                theme={theme}
                 data={menuItems}
                 parent={capsuleChoice}
                 stack={stack}
@@ -129,6 +132,7 @@ function ContentArea({barTab, noImg, safeInsets}) {
                 </div>
             ) : (
                 <CollectionView
+                    theme={theme}
                     items={productItems}
                     noImg={noImg}
                     safeInsets={safeInsets}
