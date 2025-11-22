@@ -8,7 +8,7 @@ export const miniAppConfig = {
         AppBar: {key: "hub", title: "Быстро доставим", icon: <TruckOutlined/>, default: true},
         Content: {endpointMenu: `${prefix}/hub_levels`, endpointProducts: `${prefix}/products_by_path_ids`},
     },
-    home: {
-        AppBar: {key: "home", title: "Наличие", icon: <HomeOutlined/>}
-    }
+    // home: {
+    //     AppBar: {key: "home", title: "Наличие", icon: <HomeOutlined/>}
+    // }
 }
