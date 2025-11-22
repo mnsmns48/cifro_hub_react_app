@@ -68,7 +68,7 @@ const MainMiniApp = () => {
                          right: `calc(${safeInsets.right} + 10px)`,
                          bottom: bottomNow
                      }}>
-                    <ContentArea barTab={barTab} noImg={params?.noImg} safeInsets={safeInsets}/>
+                    <ContentArea barTab={barTab} noImg={params?.noImg} safeInsets={safeInsets} />
                 </div>
             )}
 
