@@ -16,21 +16,6 @@
     background-color: #f6f6f6;
 }
 
-.blinkBorder {
-    animation: blink-red-border 0.2s ease;
-}
-
-@keyframes blink-red-border {
-    0% {
-        border-color: transparent;
-    }
-    50% {
-        border-color: #e2fc2a;
-    }
-    100% {
-        border-color: transparent;
-    }
-}
 
 .card :global(.adm-card-body) {
     padding: 0 !important;

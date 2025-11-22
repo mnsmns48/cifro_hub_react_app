@@ -7,11 +7,9 @@ export default function CardBox({theme, cardData, noImg, safeInsets, onSelect}) 
     const pics = cardData.pics?.length ? cardData.pics : [noImg];
     const [visible, setVisible] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
-    const [blink, setBlink] = useState(false);
 
-    const handleClick = () => {
-        setBlink(true);
-        setTimeout(() => setBlink(false), 600);
+
+    const openFeaturesClick = () => {
     };
 
     return (
@@ -29,12 +27,9 @@ export default function CardBox({theme, cardData, noImg, safeInsets, onSelect}) 
                          }}
                     />
                 </div>
-
-                <div className={styles.price}>{cardData.output_price} ₽</div>
-
-                <div className={`${styles.cardTitle} ${blink ? styles.blinkBorder : ""}`} lang="ru"
-                     onClick={handleClick}>
-                    {cardData.title}
+                <div onClick={openFeaturesClick}>
+                    <div className={styles.price}>{cardData.output_price} ₽</div>
+                    <div className={styles.cardTitle} lang="ru">{cardData.title}</div>
                 </div>
             </Card>
 
