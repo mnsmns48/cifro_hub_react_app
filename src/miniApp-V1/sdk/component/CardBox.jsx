@@ -11,6 +11,7 @@ export default function CardBox({theme, cardData, noImg, safeInsets, onSelect}) 
     const [featuresVisible, setFeaturesVisible] = useState(false);
 
     const openFeaturesClick = () => {
+        window.Telegram.WebApp.HapticFeedback.impactOccurred('medium')
         setFeaturesVisible(true);
     };
 

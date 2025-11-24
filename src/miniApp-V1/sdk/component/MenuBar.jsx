@@ -24,6 +24,7 @@ const MenuBar = ({insets, onHeightChange, keyboardOpen = false, onTabChange, min
 
     useEffect(() => {
         onTabChange?.(activeTab);
+        window.Telegram?.WebApp?.BackButton?.hide();
     }, [activeTab, onTabChange]);
 
 

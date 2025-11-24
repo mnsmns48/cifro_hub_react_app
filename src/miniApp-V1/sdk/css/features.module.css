@@ -5,6 +5,7 @@
     flex: 1;
 }
 
+
 .mainTitle {
     text-align: center;
     font-weight: bold;
@@ -25,3 +26,61 @@
     max-height: 100%;
     object-fit: contain;
 }
+
+.infoBox {
+    margin: 16px 16px 0 16px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    font-size: 16px;
+    line-height: 1.4;
+    box-shadow: 0 1px 3px #999999;
+}
+
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+}
+
+.infoLabel {
+    font-weight: 600;
+}
+
+.infoVersion {
+    font-weight: 300;
+
+}
+
+.infoValue {
+    font-weight: 800;
+}
+
+.infoPrice {
+    font-family: 'TT Firs Neue', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+}
+
+.Segmented :global(.adm-segmented-group) {
+    border-radius: 14px;
+    box-shadow: 0 1px 3px #999999;
+}
+
+
+.Segmented :global(.adm-segmented-item) {
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.Segmented :global(.adm-segmented-item-selected) {
+    border-radius: 14px;
+    background: #999999;
+    color: #e2fc2a;
+    font-size: 13px;
+}
+
+
+
+
+

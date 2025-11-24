@@ -19,7 +19,6 @@ export async function getFetch(endpoint, data = null) {
                 }
             }
             : {};
-
         const response = await axios.get(endpoint, config);
         return response.data;
 

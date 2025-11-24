@@ -1,7 +1,7 @@
 import {Segmented} from "antd-mobile";
-import {DislikeOutlined, LikeOutlined, SearchOutlined} from "@ant-design/icons";
+import {DislikeOutlined, LikeOutlined, UnorderedListOutlined} from "@ant-design/icons";
 import {useState} from "react";
-
+import styles from "../css/features.module.css";
 
 export default function FeaturesSegmented({features}) {
     const [tab, setTab] = useState("searchOutlined");
@@ -10,14 +10,14 @@ export default function FeaturesSegmented({features}) {
     const info = features[0]?.info ?? [];
 
     return (
-        <div style={{flex: 1, display: "flex", flexDirection: "column"}}>
-            <div style={{padding: "8px", justifyContent: "center", display: "flex"}}>
+        <div style={{flex: 1, display: "flex", flexDirection: "column", marginTop: 16 }}>
+            <div style={{justifyContent: "center", display: "flex"}} className={styles.Segmented}>
                 <Segmented
                     options={[
                         {
                             label: (
                                 <div style={{padding: 4}}>
-                                    <SearchOutlined/>
+                                    <UnorderedListOutlined />
                                     <div>Параметры</div>
                                 </div>
                             ),
@@ -44,6 +44,7 @@ export default function FeaturesSegmented({features}) {
                     ]}
                     value={tab}
                     onChange={setTab}
+                    style={{ borderRadius: 14 }}                // подписи
 
                 />
             </div>

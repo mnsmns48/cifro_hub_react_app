@@ -8,7 +8,6 @@ const light = {
     colorCard: '#f1f1f1',
     colorLightGreen: "#e2fc2a",
 
-
     fontSizeBase: '14px',
     fontSizeSm: '12px',
     fontSizeLg: '16px',

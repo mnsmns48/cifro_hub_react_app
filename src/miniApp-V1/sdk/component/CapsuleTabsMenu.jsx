@@ -25,7 +25,9 @@ export default function CapsuleTabsMenu({theme, data = [], onTabChange }) {
         (e, key) => {
             e.stopPropagation();
             toggleTab(key);
+            window.Telegram.WebApp.HapticFeedback.impactOccurred('medium')
         },
+
         [toggleTab]
     );
 

@@ -89,6 +89,7 @@ function ContentArea({barTab, noImg, safeInsets}) {
     }, [barTab, menuItems, stack, config]);
 
     const handleSelect = (item) => {
+        window.Telegram.WebApp.HapticFeedback.impactOccurred('medium')
         setStack((p) => [...p, {id: String(item.id), label: item.label}]);
     };
 
@@ -98,6 +99,7 @@ function ContentArea({barTab, noImg, safeInsets}) {
         } else {
             setStack((prev) => prev.slice(0, index));
         }
+        window.Telegram.WebApp.HapticFeedback.impactOccurred('medium')
     }, []);
 
     return (
@@ -136,7 +138,6 @@ function ContentArea({barTab, noImg, safeInsets}) {
                     items={productItems}
                     noImg={noImg}
                     safeInsets={safeInsets}
-                    onSelect={(item) => console.log(item)}
                 />
             )}
         </>

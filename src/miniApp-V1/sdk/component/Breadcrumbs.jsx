@@ -2,7 +2,6 @@ import styles from "../css/breadcrumb.module.css";
 
 export default function BreadCrumbs({theme, stack, onSelect}) {
 
-
     return (
         <div className={styles.breadCrumbContainer}>
             {stack.map((item, index) => (
