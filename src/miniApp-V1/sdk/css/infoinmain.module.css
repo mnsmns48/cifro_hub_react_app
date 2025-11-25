@@ -1,0 +1,40 @@
+.mainContainer {
+    padding: 10px;
+    border-radius: 14px;
+}
+
+.mainContainer img {
+    box-shadow: 0 2px 3px #999999;
+}
+
+.addressText {
+    padding-top: 18px;
+    font-size: 14px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.mapContainer {
+    box-shadow: 0 2px 3px #999999;
+    position: relative;
+    box-sizing: border-box;
+    height: 300px;
+    overflow: hidden;
+    border-radius: 14px;
+    padding-top: 16px;
+}
+
+.telegramLink {
+    display: block;
+    text-align: center;
+    margin: 16px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #0088cc;
+    text-decoration: none;
+}
+
+.telegramLink:hover {
+    text-decoration: underline;
+}

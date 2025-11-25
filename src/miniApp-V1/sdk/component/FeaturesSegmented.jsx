@@ -44,7 +44,7 @@ export default function FeaturesSegmented({features}) {
                     ]}
                     value={tab}
                     onChange={setTab}
-                    style={{ borderRadius: 14 }}                // подписи
+                    style={{ borderRadius: 14 }}
 
                 />
             </div>

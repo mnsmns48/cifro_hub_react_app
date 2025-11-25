@@ -6,8 +6,10 @@ import CategoryNavigator from "./CategoryNavigator.jsx";
 import baseStyles from "../css/base.module.css";
 import BreadCrumbs from "./Breadcrumbs.jsx";
 import CollectionView from "./CollectionView.jsx";
+import {Space, Image} from "antd";
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 import {useCurrentTheme} from "../theme/useTheme.js";
+import InfoInMain from "./InfoInMain.jsx";
 
 
 function getAllIds(menuItems, parentId) {
@@ -25,7 +27,7 @@ function getAllIds(menuItems, parentId) {
 }
 
 
-function ContentArea({barTab, noImg, safeInsets}) {
+function ContentArea({barTab, serviceImages, safeInsets}) {
     const [menuItems, setMenuItems] = useState([]);
     const [capsuleChoice, setCapsuleChoice] = useState(null);
     const [stack, setStack] = useState([]);
@@ -89,7 +91,6 @@ function ContentArea({barTab, noImg, safeInsets}) {
     }, [barTab, menuItems, stack, config]);
 
     const handleSelect = (item) => {
-        window.Telegram.WebApp.HapticFeedback.impactOccurred('medium')
         setStack((p) => [...p, {id: String(item.id), label: item.label}]);
     };
 
@@ -99,25 +100,26 @@ function ContentArea({barTab, noImg, safeInsets}) {
         } else {
             setStack((prev) => prev.slice(0, index));
         }
-        window.Telegram.WebApp.HapticFeedback.impactOccurred('medium')
     }, []);
 
     return (
         <>
-            <CapsuleTabsMenu
-                data={menuItems.filter(item => item.depth === 0)}
-                onTabChange={setCapsuleChoice}
-                theme={theme}
+            <CapsuleTabsMenu theme={theme}
+                             data={menuItems.filter(item => item.depth === 0)}
+                             onTabChange={setCapsuleChoice}
             />
 
             {capsuleChoice && (
                 <div className={baseStyles.centeredContainer}>
-                    <BreadCrumbs
-                        theme={theme}
-                        stack={[{label: capsuleChoice.label}, ...stack]}
-                        onSelect={handleBreadcrumbSelect}
+                    <BreadCrumbs theme={theme}
+                                 stack={[{label: capsuleChoice.label}, ...stack]}
+                                 onSelect={handleBreadcrumbSelect}
                     />
                 </div>
+            )}
+
+            {!capsuleChoice && (
+                <InfoInMain img={serviceImages} safeInsets={safeInsets}/>
             )}
 
             <CategoryNavigator
@@ -136,8 +138,9 @@ function ContentArea({barTab, noImg, safeInsets}) {
                 <CollectionView
                     theme={theme}
                     items={productItems}
-                    noImg={noImg}
+                    noImg={serviceImages?.no_img}
                     safeInsets={safeInsets}
+                    onSelect={(item) => console.log(item)}
                 />
             )}
         </>

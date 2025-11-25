@@ -36,7 +36,7 @@ const MainMiniApp = () => {
         left: insets?.left ?? "0px",
         right: insets?.right ?? "0px",
     };
-    const params = useAppParams();
+    const serviceImages = useAppParams();
 
     const keyboardOpenNow = isKeyboardOpen();
 
@@ -69,18 +69,23 @@ const MainMiniApp = () => {
                          right: `calc(${safeInsets.right} + 10px)`,
                          bottom: bottomNow
                      }}>
-                    <ContentArea barTab={barTab} noImg={params?.noImg} safeInsets={safeInsets}/>
+                    <ContentArea barTab={barTab} serviceImages={serviceImages} safeInsets={safeInsets}/>
                 </div>
             )}
 
-            <MenuBar insets={insets}
-                     onHeightChange={setMenuHeight}
-                     keyboardOpen={keyboardOpenNow}
-                     onTabChange={setBarTab}
-                     miniAppConfig={miniAppConfig}
-            />
+            {/*Временно скрыл*/}
+
+            <div style={{display: "none"}}>
+                <MenuBar insets={insets}
+                         onHeightChange={setMenuHeight}
+                         keyboardOpen={keyboardOpenNow}
+                         onTabChange={setBarTab}
+                         miniAppConfig={miniAppConfig}
+                />
+            </div>
         </>
     );
 };
 
 export default MainMiniApp;
+

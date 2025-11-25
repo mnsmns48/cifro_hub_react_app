@@ -15,7 +15,7 @@ export default function ParamsProvider({children}) {
         const fetchParams = async () => {
             try {
                 const data = await loadServiceImages();
-                setParams({noImg: data});
+                setParams(data);
             } catch (err) {
                 console.error("Ошибка загрузки:", err);
             }
