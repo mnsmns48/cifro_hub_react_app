@@ -9,7 +9,7 @@ import styles from "../css/features.module.css";
 import '/fonts/ttfirsneue/stylesheet.css';
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 
-export default function Features({theme, safeInsets, visible, onClose, cardData}) {
+export default function Features({ theme, safeInsets, visible, onClose, cardData }) {
     const [features, setFeatures] = useState([]);
     const [swiperVisible, setSwiperVisible] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
@@ -63,43 +63,46 @@ export default function Features({theme, safeInsets, visible, onClose, cardData}
                     paddingBottom: safeInsets.bottom,
                     paddingLeft: safeInsets.left,
                     paddingRight: safeInsets.right,
+                    display: "flex",
+                    flexDirection: "column"
                 }}
             >
-                <div style={{paddingTop: `calc(${safeInsets.top} + 1px)`}}>
-                    {loading ? (
-                        <div>
-                            < Spinner/>
-                        < /div>
-                    ) : (
-                        <>
-                            {features.length > 0 && (
-                                <div className={styles.mainTitle} style={{color: theme.colorText}}>
-                                    {features[0].title}
-                                </div>
-                            )}
+                {loading ? (
+                    <div style={{flex: 1, display: "flex", alignItems: "center", justifyContent: "center"}}>
+                        <Spinner />
+                    </div>
+                ) : (
+                    <div className={styles.contentContainer}>
+                        {features.length > 0 && (
+                            <div className={styles.mainTitle} style={{color: theme.colorText}}>
+                                {features[0].title}
+                            </div>
+                        )}
 
-                            {pics.length > 0 && (
-                                <Swiper defaultIndex={0} loop={pics.length > 1}>
-                                    {pics.map((src, idx) => (
-                                        <Swiper.Item key={idx}>
-                                            <div className={styles.swiperPicItemContainer}>
-                                                <img
-                                                    src={src}
-                                                    alt={`${cardData.title} ${idx}`}
-                                                    onClick={() => handleOpenSwiper(pics, idx, cardData.title)}
-                                                />
-                                            </div>
-                                        </Swiper.Item>
-                                    ))}
-                                </Swiper>
-                            )}
+                        {pics.length > 0 && (
+                            <Swiper defaultIndex={0} loop={pics.length > 1}>
+                                {pics.map((src, idx) => (
+                                    <Swiper.Item key={idx}>
+                                        <div className={styles.swiperPicItemContainer}>
+                                            <img
+                                                src={src}
+                                                alt={`${cardData.title} ${idx}`}
+                                                onClick={() => handleOpenSwiper(pics, idx, cardData.title)}
+                                            />
+                                        </div>
+                                    </Swiper.Item>
+                                ))}
+                            </Swiper>
+                        )}
 
-                            <CardInfo cardData={cardData} theme={theme}/>
+                        <CardInfo cardData={cardData} theme={theme} />
 
-                            <FeaturesSegmented features={features}/>
-                        </>
-                    )}
-                </div>
+                        {/* Скроллируемая часть */}
+                        <div className={styles.scrollContainer}>
+                            <FeaturesSegmented features={features} />
+                        </div>
+                    </div>
+                )}
             </Popup>
 
             <PicSwapper

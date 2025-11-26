@@ -2,32 +2,32 @@ import {Image, Space} from "antd";
 import styles from "../css/infoinmain.module.css"
 import '/fonts/ttfirsneue/stylesheet.css';
 
-export default function InfoInMain({img, safeInsets}) {
-
+export default function InfoInMain({serviceImages, safeInsets}) {
+    console.log('serviceImages', serviceImages)
     return (
         <>
+
             <div className={styles.mainContainer}>
                 <Space wrap>
-                    <Image src={img?.cifrotech_} alt='main_photo_pic' style={{borderRadius: 14}}/>
+                    <Image src={serviceImages?.cifrotech_} alt='main_photo_pic' style={{borderRadius: 14}}/>
                 </Space>
                 <div className={styles.addressText} style={{fontFamily: "'TT Firs Neue', sans-serif"}}>
                     п. Ленино, Проспект Ленина 9
                 </div>
-                    <div style={{position: "relative", zIndex: 10}}>
-                        <a
-                            href="tel:+79787156486"
-                            style={{
-                                justifyContent: 'center',
-                                display: 'flex',
-                                paddingTop: 16,
-                                color: 'inherit',
-                                textDecoration: 'none'
-                            }}
-                        >
-                            +7 (978) 715-64-86
-                        </a>
-                    </div>
-
+                <div style={{position: "relative", zIndex: 10}}>
+                    <a
+                        href="tel:+79787156486"
+                        style={{
+                            justifyContent: 'center',
+                            display: 'flex',
+                            paddingTop: 16,
+                            color: 'inherit',
+                            textDecoration: 'none'
+                        }}
+                    >
+                        +7 (978) 715-64-86
+                    </a>
+                </div>
 
 
                 <a

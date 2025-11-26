@@ -1,7 +1,8 @@
-import {Segmented} from "antd-mobile";
+import {Segmented, Collapse} from "antd-mobile";
 import {DislikeOutlined, LikeOutlined, UnorderedListOutlined} from "@ant-design/icons";
 import {useState} from "react";
 import styles from "../css/features.module.css";
+
 
 export default function FeaturesSegmented({features}) {
     const [tab, setTab] = useState("searchOutlined");
@@ -10,7 +11,7 @@ export default function FeaturesSegmented({features}) {
     const info = features[0]?.info ?? [];
 
     return (
-        <div style={{flex: 1, display: "flex", flexDirection: "column", marginTop: 16 }}>
+        <div style={{flex: 1, display: "flex", flexDirection: "column"}}>
             <div style={{justifyContent: "center", display: "flex"}} className={styles.Segmented}>
                 <Segmented
                     options={[
@@ -68,12 +69,11 @@ export default function FeaturesSegmented({features}) {
                 )}
 
                 {tab === "searchOutlined" && Array.isArray(info) && (
-                    <div>
+                    <Collapse accordion>
                         {info.map((section, idx) => {
                             const [sectionName, sectionValues] = Object.entries(section)[0];
                             return (
-                                <div key={idx} style={{marginBottom: "12px"}}>
-                                    <h4 style={{margin: "0 0 4px"}}>{sectionName}</h4>
+                                <Collapse.Panel key={idx} title={sectionName}>
                                     <ul style={{paddingLeft: "20px", margin: 0}}>
                                         {Object.entries(sectionValues).map(([key, value]) => (
                                             <li key={key}>
@@ -81,10 +81,10 @@ export default function FeaturesSegmented({features}) {
                                             </li>
                                         ))}
                                     </ul>
-                                </div>
+                                </Collapse.Panel>
                             );
                         })}
-                    </div>
+                    </Collapse>
                 )}
             </div>
         </div>

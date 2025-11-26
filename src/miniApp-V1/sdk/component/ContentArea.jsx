@@ -119,7 +119,7 @@ function ContentArea({barTab, serviceImages, safeInsets}) {
             )}
 
             {!capsuleChoice && (
-                <InfoInMain img={serviceImages} safeInsets={safeInsets}/>
+                <InfoInMain serviceImages={serviceImages} safeInsets={safeInsets}/>
             )}
 
             <CategoryNavigator
