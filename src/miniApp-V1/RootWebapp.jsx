@@ -2,7 +2,7 @@ import styles from "./miniapp.module.css";
 import Spinner from "../Cifrotech-app/components/Spinner.jsx";
 import MenuBar from "./sdk/component/MenuBar.jsx";
 import SearchLine from "./sdk/component/SearchLine.jsx";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import useAppEnvironment from "./sdk/hook/useAppEnvironment.jsx";
 
 import ContentArea from "./sdk/component/ContentArea.jsx";
