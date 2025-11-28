@@ -1,10 +1,12 @@
-import { CapsuleTabs } from "antd-mobile";
+import {CapsuleTabs} from "antd-mobile";
 import styles from "../css/capsuletab.module.css";
-import { useState, useCallback } from "react";
+import {useState, useCallback, useContext} from "react";
+import {ThemeContext} from "../context.js";
 
-export default function CapsuleTabsMenu({theme, data = [], onTabChange }) {
-
+export default function CapsuleTabsMenu({data = [], onTabChange}) {
     const [activeKey, setActiveKey] = useState('');
+
+    const theme = useContext(ThemeContext);
 
     const toggleTab = useCallback(
         (key) => {
@@ -48,17 +50,12 @@ export default function CapsuleTabsMenu({theme, data = [], onTabChange }) {
             aria-pressed={activeKey === itemId}
             onClick={(e) => handleClick(e, itemId)}
             onKeyDown={(e) => handleKey(e, itemId)}
-            style={{ textAlign: "center", cursor: "pointer" }}
+            style={{textAlign: "center", cursor: "pointer"}}
         >
             <img
                 src={icon}
                 alt={label}
-                style={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: 8,
-                    objectFit: "cover",
-                }}
+                style={{width: 50, height: 50, borderRadius: 8, objectFit: "cover"}}
             />
             <div>{label}</div>
         </div>
@@ -70,7 +67,7 @@ export default function CapsuleTabsMenu({theme, data = [], onTabChange }) {
         <div
             className={styles.capsuleTabMenu}
             data-none-selected={activeKey === '' ? "true" : "false"}
-            style={{ "--capsule-active-bg": theme.colorMuted }}
+            style={{"--capsule-active-bg": theme.colorMuted}}
         >
             <CapsuleTabs activeKey={activeKey}>
                 {data.map((item) => {

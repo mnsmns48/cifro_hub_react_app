@@ -1,6 +1,9 @@
 import styles from "../css/breadcrumb.module.css";
+import {useContext} from "react";
+import {ThemeContext} from "../context.js";
 
-export default function BreadCrumbs({theme, stack, onSelect}) {
+export default function BreadCrumbs({stack, onSelect}) {
+    const theme = useContext(ThemeContext);
 
     return (
         <div className={styles.breadCrumbContainer}>

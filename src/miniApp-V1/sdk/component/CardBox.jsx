@@ -1,10 +1,14 @@
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {Card} from "antd-mobile";
 import styles from "../css/cardbox.module.css";
 import PicSwapper from "./PicSwapper.jsx";
 import Features from "./Features.jsx";
+import {AppServicePicsContext} from "../context.js";
 
-export default function CardBox({theme, cardData, noImg, safeInsets, onSelect}) {
+export default function CardBox({theme, cardData, safeInsets}) {
+    const serviceImages = useContext(AppServicePicsContext)
+    const noImg = serviceImages?.no_img
+
     const pics = cardData.pics?.length ? cardData.pics : [noImg];
     const [visible, setVisible] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
@@ -18,7 +22,7 @@ export default function CardBox({theme, cardData, noImg, safeInsets, onSelect}) 
     return (
         <>
             <div onClick={openFeaturesClick}>
-                <Card className={styles.card} onBodyClick={() => onSelect?.(cardData)}>
+                <Card className={styles.card}>
                     <div className={styles.imgWrapper}>
                         <img src={cardData.preview || noImg} alt={cardData.title}
                              className={styles.img}

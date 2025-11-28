@@ -1,7 +1,12 @@
 import styles from '../css/collectionview.module.css';
 import CardBox from "./CardBox.jsx";
+import {useContext} from "react";
+import {ThemeContext} from "../context.js";
 
-function CollectionView({theme, items, noImg, safeInsets, onSelect}) {
+
+function CollectionView({items, safeInsets}) {
+    const theme = useContext(ThemeContext);
+
     return (
         <div className={styles.grid}>
             {items.map(item => (
@@ -10,8 +15,6 @@ function CollectionView({theme, items, noImg, safeInsets, onSelect}) {
                     key={item.id}
                     cardData={item}
                     safeInsets={safeInsets}
-                    noImg={noImg}
-                    onSelect={onSelect}
                 />
             ))}
         </div>

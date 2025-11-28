@@ -1,14 +1,18 @@
-import ParamsProvider from "./sdk/hook/ParamsProvider.jsx";
+import ServicePicProvider from "./sdk/hook/ServicePicProvider.jsx";
 import ThemeProvider from "./sdk/theme/ThemeProvider.jsx";
+import AppEnvironmentProvider from "./sdk/hook/useAppEnvironment.jsx";
+
 import RootWebapp from "./RootWebapp.jsx";
 
 
 const WebApp = () => {
     return (
         <ThemeProvider>
-            <ParamsProvider>
-                <RootWebapp/>
-            </ParamsProvider>
+            <ServicePicProvider>
+                <AppEnvironmentProvider>
+                    <RootWebapp/>
+                </AppEnvironmentProvider>
+            </ServicePicProvider>
         </ThemeProvider>
     )
 }

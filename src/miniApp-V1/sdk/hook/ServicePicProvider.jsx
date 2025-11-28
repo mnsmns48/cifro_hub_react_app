@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
 import {getFetch} from "../../api.js";
-import {AppParamsContext} from "../context.js";
+import {AppServicePicsContext} from "../context.js";
 
 const loadServiceImages = async () => {
     return await getFetch(
@@ -8,7 +8,7 @@ const loadServiceImages = async () => {
     );
 };
 
-export default function ParamsProvider({children}) {
+export default function ServicePicProvider({children}) {
     const [images, setImages] = useState(null);
 
     useEffect(() => {
@@ -24,9 +24,11 @@ export default function ParamsProvider({children}) {
         void fetchParams();
     }, []);
 
+    console.log(images);
+
     return (
-        <AppParamsContext.Provider value={images}>
+        <AppServicePicsContext.Provider value={images}>
             {children}
-        </AppParamsContext.Provider>
+        </AppServicePicsContext.Provider>
     );
 }

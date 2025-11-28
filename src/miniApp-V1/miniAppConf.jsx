@@ -1,4 +1,4 @@
-import {HomeOutlined, TruckOutlined} from "@ant-design/icons";
+import {TruckOutlined} from "@ant-design/icons";
 
 const prefix = import.meta.env.VITE_TG_MINI_APP_PREFIX
 

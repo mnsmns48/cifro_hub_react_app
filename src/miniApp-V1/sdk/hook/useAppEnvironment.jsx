@@ -1,6 +1,7 @@
 import useTelegram from "./useTelegram.jsx";
+import {AppEnvironmentContext} from "../context.js";
 
-function useAppEnvironment() {
+const useAppEnvironment = () => {
     let tgData = useTelegram();
 
     const defaultData = {
@@ -14,4 +15,14 @@ function useAppEnvironment() {
     return tgData || defaultData;
 }
 
-export default useAppEnvironment;
+const AppEnvironmentProvider = ({children}) => {
+    const env = useAppEnvironment();
+    return (
+        <AppEnvironmentContext.Provider value={env}>
+            {children}
+        </AppEnvironmentContext.Provider>
+    );
+};
+
+
+export default AppEnvironmentProvider;

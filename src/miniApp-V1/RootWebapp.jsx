@@ -2,12 +2,12 @@ import styles from "./miniapp.module.css";
 import Spinner from "../Cifrotech-app/components/Spinner.jsx";
 import MenuBar from "./sdk/component/MenuBar.jsx";
 import SearchLine from "./sdk/component/SearchLine.jsx";
-import {useState} from "react";
-import useAppEnvironment from "./sdk/hook/useAppEnvironment.jsx";
+import {useContext, useState} from "react";
+
 
 import ContentArea from "./sdk/component/ContentArea.jsx";
 import {miniAppConfig} from "./miniAppConf.jsx";
-import useAppParams from "./sdk/hook/useAppParams.jsx";
+import {AppEnvironmentContext} from "./sdk/context.js";
 
 
 const isKeyboardOpen = () => {
@@ -19,15 +19,15 @@ const isKeyboardOpen = () => {
         if (tag === "INPUT" || tag === "TEXTAREA") return true;
         if (active.isContentEditable) return true;
     }
-
     return false;
 };
 
 const RootWebapp = () => {
-    const {hasTelegram, isMobile, insets, theme, tg} = useAppEnvironment();
     const [searchHeight, setSearchHeight] = useState(0);
     const [menuHeight, setMenuHeight] = useState(0);
     const [barTab, setBarTab] = useState(null);
+
+    const {hasTelegram, isMobile, insets, theme} = useContext(AppEnvironmentContext);
 
     const isReady = hasTelegram && (isMobile || insets.top !== 0);
     const safeInsets = {
@@ -36,7 +36,6 @@ const RootWebapp = () => {
         left: insets?.left ?? "0px",
         right: insets?.right ?? "0px",
     };
-    const serviceImages = useAppParams();
 
     const keyboardOpenNow = isKeyboardOpen();
 
@@ -44,18 +43,6 @@ const RootWebapp = () => {
         ? safeInsets.bottom
         : `calc(${menuHeight + 2}px + ${safeInsets.bottom})`;
 
-    console.log('tg', tg)
-
-    // useEffect(() => {
-    //     const tg = window.Telegram?.WebApp;
-    //     if (!tg) return;
-    //
-    //     if (barTab) {
-    //         tg.BackButton.hide();
-    //     } else {
-    //         tg.BackButton.show();
-    //     }
-    // }, [barTab]);
 
     if (!isReady) {
         return (
@@ -81,7 +68,7 @@ const RootWebapp = () => {
                          right: `calc(${safeInsets.right} + 10px)`,
                          bottom: bottomNow
                      }}>
-                    <ContentArea barTab={barTab} serviceImages={serviceImages} safeInsets={safeInsets}/>
+                    <ContentArea barTab={barTab} safeInsets={safeInsets}/>
                 </div>
             )}
 

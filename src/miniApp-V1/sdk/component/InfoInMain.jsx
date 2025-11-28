@@ -2,7 +2,9 @@ import {Collapse, Image, Space} from "antd";
 import styles from "../css/infoinmain.module.css"
 import '/fonts/ttfirsneue/stylesheet.css';
 import {DownCircleOutlined} from "@ant-design/icons";
-import {Card, Masonry} from 'antd';
+import {Masonry} from 'antd';
+import {AppServicePicsContext} from "../context.js";
+import {useContext} from "react";
 
 
 const extractPromoImages = (serviceImages) => {
@@ -16,8 +18,8 @@ const extractPromoImages = (serviceImages) => {
         .filter(Boolean);
 }
 
-export default function InfoInMain({serviceImages, safeInsets}) {
-
+export default function InfoInMain({safeInsets}) {
+    const serviceImages = useContext(AppServicePicsContext)
 
     const imageList = extractPromoImages(serviceImages);
 
