@@ -1,5 +1,5 @@
 .mainContainer {
-    padding: 10px;
+    padding: 20px;
     border-radius: 14px;
 }
 
@@ -8,11 +8,9 @@
 }
 
 .addressText {
-    padding-top: 18px;
-    font-size: 14px;
+    font-size: 16px;
     justify-content: center;
     align-items: center;
-    display: flex;
 }
 
 .mapContainer {

@@ -2,7 +2,7 @@ import styles from "./miniapp.module.css";
 import Spinner from "../Cifrotech-app/components/Spinner.jsx";
 import MenuBar from "./sdk/component/MenuBar.jsx";
 import SearchLine from "./sdk/component/SearchLine.jsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import useAppEnvironment from "./sdk/hook/useAppEnvironment.jsx";
 
 import ContentArea from "./sdk/component/ContentArea.jsx";
@@ -23,8 +23,8 @@ const isKeyboardOpen = () => {
     return false;
 };
 
-const MainMiniApp = () => {
-    const {hasTelegram, isMobile, insets, theme} = useAppEnvironment();
+const RootWebapp = () => {
+    const {hasTelegram, isMobile, insets, theme, tg} = useAppEnvironment();
     const [searchHeight, setSearchHeight] = useState(0);
     const [menuHeight, setMenuHeight] = useState(0);
     const [barTab, setBarTab] = useState(null);
@@ -44,6 +44,18 @@ const MainMiniApp = () => {
         ? safeInsets.bottom
         : `calc(${menuHeight + 2}px + ${safeInsets.bottom})`;
 
+    console.log('tg', tg)
+
+    // useEffect(() => {
+    //     const tg = window.Telegram?.WebApp;
+    //     if (!tg) return;
+    //
+    //     if (barTab) {
+    //         tg.BackButton.hide();
+    //     } else {
+    //         tg.BackButton.show();
+    //     }
+    // }, [barTab]);
 
     if (!isReady) {
         return (
@@ -87,5 +99,5 @@ const MainMiniApp = () => {
     );
 };
 
-export default MainMiniApp;
+export default RootWebapp;
 

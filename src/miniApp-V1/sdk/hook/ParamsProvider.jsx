@@ -9,13 +9,13 @@ const loadServiceImages = async () => {
 };
 
 export default function ParamsProvider({children}) {
-    const [params, setParams] = useState(null);
+    const [images, setImages] = useState(null);
 
     useEffect(() => {
         const fetchParams = async () => {
             try {
                 const data = await loadServiceImages();
-                setParams(data);
+                setImages(data);
             } catch (err) {
                 console.error("Ошибка загрузки:", err);
             }
@@ -25,7 +25,7 @@ export default function ParamsProvider({children}) {
     }, []);
 
     return (
-        <AppParamsContext.Provider value={params}>
+        <AppParamsContext.Provider value={images}>
             {children}
         </AppParamsContext.Provider>
     );
