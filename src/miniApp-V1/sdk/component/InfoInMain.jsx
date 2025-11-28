@@ -1,7 +1,7 @@
 import {Collapse, Image, Space} from "antd";
 import styles from "../css/infoinmain.module.css"
 import '/fonts/ttfirsneue/stylesheet.css';
-import {DownCircleOutlined} from "@ant-design/icons";
+import {DownCircleOutlined, UserOutlined} from "@ant-design/icons";
 import {Masonry} from 'antd';
 import {AppServicePicsContext} from "../context.js";
 import {useContext} from "react";
@@ -18,7 +18,7 @@ const extractPromoImages = (serviceImages) => {
         .filter(Boolean);
 }
 
-export default function InfoInMain({safeInsets}) {
+export default function InfoInMain() {
     const serviceImages = useContext(AppServicePicsContext)
 
     const imageList = extractPromoImages(serviceImages);
@@ -28,17 +28,14 @@ export default function InfoInMain({safeInsets}) {
             <div style={{position: "relative", zIndex: 10}}>
                 <a href="tel:+79787156486"
                    style={{
-                       justifyContent: 'center',
-                       display: 'flex',
-                       paddingTop: 16,
-                       color: 'inherit',
-                       textDecoration: 'none'
+                       justifyContent: 'center', display: 'flex',
+                       paddingTop: 16, color: 'inherit', textDecoration: 'none'
                    }}>+7 (978) 715-64-86</a>
             </div>
             <a href="https://t.me/cifrotech_mobile"
                target="_blank"
                rel="noopener noreferrer"
-               className={styles.telegramLink}>Администратор</a>
+               className={styles.telegramLink}><UserOutlined/> Администратор</a>
             <Collapse
                 bordered={false}
                 className={styles.addressText}
