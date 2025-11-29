@@ -66,7 +66,7 @@ const RootWebapp = () => {
                          right: `calc(${safeInsets.right} + 10px)`,
                          bottom: bottomNow
                      }}>
-                    <ContentArea barTab={barTab} safeInsets={safeInsets}/>
+                    <ContentArea barTab={barTab}/>
                 </div>
             )}
 
@@ -85,4 +85,3 @@ const RootWebapp = () => {
 };
 
 export default RootWebapp;
-

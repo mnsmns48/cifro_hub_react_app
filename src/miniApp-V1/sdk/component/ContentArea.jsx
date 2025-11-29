@@ -24,7 +24,7 @@ function getAllIds(menuItems, parentId) {
     return ids;
 }
 
-function ContentArea({barTab, safeInsets}) {
+function ContentArea({barTab}) {
     const [menuItems, setMenuItems] = useState([]);
     const [capsuleChoice, setCapsuleChoice] = useState(null);
     const [stack, setStack] = useState([]);
@@ -33,7 +33,6 @@ function ContentArea({barTab, safeInsets}) {
     const [loading, setLoading] = useState(false);
 
     const config = miniAppConfig[barTab];
-
 
     async function fetchMenuItems() {
         if (!config?.Content?.endpointMenu) {
@@ -101,10 +100,8 @@ function ContentArea({barTab, safeInsets}) {
 
     return (
         <>
-            <CapsuleTabsMenu
-                data={menuItems.filter(item => item.depth === 0)}
-                onTabChange={setCapsuleChoice}
-            />
+            <CapsuleTabsMenu data={menuItems.filter(item => item.depth === 0)}
+                             onTabChange={setCapsuleChoice}/>
 
             {capsuleChoice && (
                 <div className={baseStyles.centeredContainer}>
@@ -115,21 +112,19 @@ function ContentArea({barTab, safeInsets}) {
                 </div>
             )}
 
-            {!capsuleChoice && <InfoInMain safeInsets={safeInsets}/>}
+            {!capsuleChoice && <InfoInMain/>}
 
-            <CategoryNavigator
-                data={menuItems}
-                parent={capsuleChoice}
-                stack={stack}
-                onSelect={handleSelect}
-            />
+            <CategoryNavigator data={menuItems}
+                               parent={capsuleChoice}
+                               stack={stack}
+                               onSelect={handleSelect}/>
 
             {loading ? (
                 <div>
                     <Spinner/>
                 </div>
             ) : (
-                <CollectionView items={productItems} safeInsets={safeInsets}/>
+                <CollectionView items={productItems}/>
             )}
         </>
     );

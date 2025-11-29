@@ -3,11 +3,13 @@ import {Card} from "antd-mobile";
 import styles from "../css/cardbox.module.css";
 import PicSwapper from "./PicSwapper.jsx";
 import Features from "./Features.jsx";
-import {AppServicePicsContext} from "../context.js";
+import {AppEnvironmentContext, AppServicePicsContext} from "../context.js";
 
-export default function CardBox({theme, cardData, safeInsets}) {
+export default function CardBox({theme, cardData}) {
     const serviceImages = useContext(AppServicePicsContext)
     const noImg = serviceImages?.no_img
+
+    const {insets} = useContext(AppEnvironmentContext);
 
     const pics = cardData.pics?.length ? cardData.pics : [noImg];
     const [visible, setVisible] = useState(false);
@@ -35,14 +37,14 @@ export default function CardBox({theme, cardData, safeInsets}) {
                             visible={visible}
                             onClose={() => setVisible(false)}
                             pics={pics}
-                            safeInsets={safeInsets}
+                            safeInsets={insets}
                             title={cardData.title}/>
             )}
 
             {featuresVisible && (
                 <Features theme={theme}
                           noImg={noImg}
-                          safeInsets={safeInsets}
+                          safeInsets={insets}
                           cardData={cardData}
                           visible={featuresVisible}
                           onClose={() => setFeaturesVisible(false)}/>

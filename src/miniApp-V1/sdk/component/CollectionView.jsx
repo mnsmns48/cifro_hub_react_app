@@ -4,7 +4,7 @@ import {useContext} from "react";
 import {ThemeContext} from "../context.js";
 
 
-function CollectionView({items, safeInsets}) {
+function CollectionView({items}) {
     const theme = useContext(ThemeContext);
 
     return (
@@ -14,7 +14,6 @@ function CollectionView({items, safeInsets}) {
                     theme={theme}
                     key={item.id}
                     cardData={item}
-                    safeInsets={safeInsets}
                 />
             ))}
         </div>

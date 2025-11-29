@@ -53,24 +53,29 @@ export default function InfoInMain() {
                         }}
                     />
                 )}
-            >
-                <Collapse.Panel header="п. Ленино, Проспект Ленина 9" key="1">
-                    <div className={styles.mapContainer}>
-                        <iframe
-                            src="https://yandex.ru/map-widget/v1/?um=constructor%3A0a95ba835d61c82795fafd46843418bb4923ab84978c079e6e2602ed17d7726b&amp;source=constructor"
-                            className="responsive-iframe"
-                            frameBorder="0"
-                            title="Location Map"
-                            style={{
-                                borderRadius: 14,
-                                width: "100%",
-                                height: "100%",
-                                margin: 0
-                            }}
-                        ></iframe>
-                    </div>
-                </Collapse.Panel>
-            </Collapse>
+                items={[
+                    {
+                        key: "1",
+                        label: "п. Ленино, Проспект Ленина 9",
+                        children: (
+                            <div className={styles.mapContainer}>
+                                <iframe
+                                    src="https://yandex.ru/map-widget/v1/?um=constructor%3A0a95ba835d61c82795fafd46843418bb4923ab84978c079e6e2602ed17d7726b&amp;source=constructor"
+                                    className="responsive-iframe"
+                                    frameBorder="0"
+                                    title="Location Map"
+                                    style={{
+                                        borderRadius: 14,
+                                        width: "100%",
+                                        height: "100%",
+                                        margin: 0
+                                    }}
+                                ></iframe>
+                            </div>
+                        )
+                    }
+                ]}
+            />
             <div className={styles.mainContainer}>
                 <Space wrap>
                     <Image src={serviceImages?.cifrotech_} alt='main_photo_pic' style={{borderRadius: 14}}/>
