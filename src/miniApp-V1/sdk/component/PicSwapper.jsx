@@ -8,7 +8,6 @@ export default function PicSwapper({
                                        visible,
                                        onClose,
                                        pics,
-                                       activeIndex,
                                        safeInsets,
                                        title
                                    }) {
@@ -33,7 +32,7 @@ export default function PicSwapper({
                 className={styles.swiperContainer}
             >
                 {safePics.length > 0 ? (
-                    <Swiper defaultIndex={activeIndex} loop={safePics.length > 1}>
+                    <Swiper loop={safePics.length > 1}>
                         {safePics.map((src, idx) => (
                             <Swiper.Item key={idx}>
                                 <div

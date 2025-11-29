@@ -11,7 +11,6 @@ export default function CardBox({theme, cardData, safeInsets}) {
 
     const pics = cardData.pics?.length ? cardData.pics : [noImg];
     const [visible, setVisible] = useState(false);
-    const [activeIndex, setActiveIndex] = useState(0);
     const [featuresVisible, setFeaturesVisible] = useState(false);
 
     const openFeaturesClick = () => {
@@ -24,27 +23,18 @@ export default function CardBox({theme, cardData, safeInsets}) {
             <div onClick={openFeaturesClick}>
                 <Card className={styles.card}>
                     <div className={styles.imgWrapper}>
-                        <img src={cardData.preview || noImg} alt={cardData.title}
-                             className={styles.img}
-                            // onClick={(e) => {
-                            //     e.stopPropagation();
-                            //     if (cardData.preview) {
-                            //         setActiveIndex(0);
-                            //         setVisible(true);
-                            //     }
-                            // }}
-                        />
+                        <img src={cardData.preview || noImg} alt={cardData.title} className={styles.img}/>
                     </div>
                     <div className={styles.price}>{cardData.output_price} ₽</div>
                     <div className={styles.cardTitle} lang="ru">{cardData.title}</div>
                 </Card>
             </div>
+
             {cardData.preview && (
                 <PicSwapper theme={theme}
                             visible={visible}
                             onClose={() => setVisible(false)}
                             pics={pics}
-                            activeIndex={activeIndex}
                             safeInsets={safeInsets}
                             title={cardData.title}/>
             )}

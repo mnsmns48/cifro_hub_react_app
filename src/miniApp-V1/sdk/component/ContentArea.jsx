@@ -7,7 +7,6 @@ import baseStyles from "../css/base.module.css";
 import BreadCrumbs from "./Breadcrumbs.jsx";
 import CollectionView from "./CollectionView.jsx";
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
-import {useCurrentTheme} from "../theme/useTheme.js";
 import InfoInMain from "./InfoInMain.jsx";
 
 
@@ -24,7 +23,6 @@ function getAllIds(menuItems, parentId) {
     recurse(parentId);
     return ids;
 }
-
 
 function ContentArea({barTab, safeInsets}) {
     const [menuItems, setMenuItems] = useState([]);
@@ -45,7 +43,6 @@ function ContentArea({barTab, safeInsets}) {
         const result = await getFetch(config.Content.endpointMenu);
         setMenuItems(result);
     }
-
 
     async function fetchProductItems() {
         if (!config?.Content?.endpointProducts || !stack.length) {
@@ -90,40 +87,41 @@ function ContentArea({barTab, safeInsets}) {
         void fetchProductItems();
     }, [barTab, menuItems, stack, config]);
 
-    const handleSelect = (item) => {
-        setStack((p) => [...p, {id: String(item.id), label: item.label}]);
+    const handleSelect = item => {
+        setStack(prev => [...prev, {id: String(item.id), label: item.label}]);
     };
 
-    const handleBreadcrumbSelect = useCallback((index) => {
+    const handleBreadcrumbSelect = useCallback(index => {
         if (index === 0) {
             setStack([]);
         } else {
-            setStack((prev) => prev.slice(0, index));
+            setStack(prev => prev.slice(0, index));
         }
     }, []);
 
     return (
         <>
-            <CapsuleTabsMenu data={menuItems.filter(item => item.depth === 0)}
-                             onTabChange={setCapsuleChoice}
+            <CapsuleTabsMenu
+                data={menuItems.filter(item => item.depth === 0)}
+                onTabChange={setCapsuleChoice}
             />
 
             {capsuleChoice && (
                 <div className={baseStyles.centeredContainer}>
-                    <BreadCrumbs stack={[{label: capsuleChoice.label}, ...stack]}
-                                 onSelect={handleBreadcrumbSelect}
+                    <BreadCrumbs
+                        stack={[{label: capsuleChoice.label}, ...stack]}
+                        onSelect={handleBreadcrumbSelect}
                     />
                 </div>
             )}
 
-            {!capsuleChoice && (
-                <InfoInMain safeInsets={safeInsets}/>
-            )}
+            {!capsuleChoice && <InfoInMain safeInsets={safeInsets}/>}
 
-            <CategoryNavigator data={menuItems}
-                               parent={capsuleChoice}
-                               stack={stack}
-                               onSelect={handleSelect}
+            <CategoryNavigator
+                data={menuItems}
+                parent={capsuleChoice}
+                stack={stack}
+                onSelect={handleSelect}
             />
 
             {loading ? (

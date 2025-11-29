@@ -3,8 +3,6 @@ import Spinner from "../Cifrotech-app/components/Spinner.jsx";
 import MenuBar from "./sdk/component/MenuBar.jsx";
 import SearchLine from "./sdk/component/SearchLine.jsx";
 import {useContext, useState} from "react";
-
-
 import ContentArea from "./sdk/component/ContentArea.jsx";
 import {miniAppConfig} from "./miniAppConf.jsx";
 import {AppEnvironmentContext} from "./sdk/context.js";
