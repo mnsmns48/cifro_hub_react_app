@@ -1,14 +1,19 @@
 import { useEffect, useRef, useCallback } from "react";
 
-export function useTelegramBackButton(tg, capsuleChoice, stack, setStack, setCapsuleChoice) {
+export function useTelegramBackButton(
+    tg,
+    capsuleChoice,
+    stack,
+    setStack,
+    setCapsuleChoice,
+    featuresVisible // новый флаг
+) {
     const stackRef = useRef(stack);
     const capsuleRef = useRef(capsuleChoice);
 
-    // обновляем refs на каждое изменение
     useEffect(() => { stackRef.current = stack; }, [stack]);
     useEffect(() => { capsuleRef.current = capsuleChoice; }, [capsuleChoice]);
 
-    // стабильный обработчик
     const handler = useCallback(() => {
         const currentStack = stackRef.current;
         const currentCapsule = capsuleRef.current;
@@ -16,20 +21,19 @@ export function useTelegramBackButton(tg, capsuleChoice, stack, setStack, setCap
         if (!currentCapsule) return;
 
         if (currentStack.length > 0) {
-            // шаг назад по stack
             setStack(prev => prev.slice(0, -1));
         } else {
-            // выход из capsuleChoice
             setCapsuleChoice(null);
             tg?.BackButton?.hide();
         }
     }, [setStack, setCapsuleChoice, tg]);
 
-    // навешиваем обработчик и управляем показом кнопки
     useEffect(() => {
         if (!tg?.BackButton) return;
 
-        // очистка старых обработчиков
+        // если открыт Features → глобальный хук не активен
+        if (featuresVisible) return;
+
         tg.BackButton.offClick?.(handler);
 
         if (capsuleChoice) {
@@ -42,9 +46,8 @@ export function useTelegramBackButton(tg, capsuleChoice, stack, setStack, setCap
         return () => {
             tg.BackButton.offClick?.(handler);
         };
-    }, [tg, capsuleChoice, handler]);
+    }, [tg, capsuleChoice, handler, featuresVisible]);
 
-    // гарантированно скрываем кнопку при первом монтировании
     useEffect(() => {
         tg?.BackButton?.hide();
     }, [tg]);

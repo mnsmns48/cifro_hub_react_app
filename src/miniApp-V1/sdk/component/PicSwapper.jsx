@@ -14,6 +14,7 @@ export default function PicSwapper({
 
     const safePics = Array.isArray(pics) ? pics : [];
 
+
     return (
         <Popup
             visible={visible}

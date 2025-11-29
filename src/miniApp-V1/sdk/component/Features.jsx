@@ -1,5 +1,5 @@
 import {Popup, Swiper} from "antd-mobile";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {getFetch} from "../../api.js";
 import {miniAppConfig} from "../../miniAppConf.jsx";
 import FeaturesSegmented from "./FeaturesSegmented.jsx";
@@ -8,9 +8,11 @@ import PicSwapper from "./PicSwapper.jsx";
 import styles from "../css/features.module.css";
 import '/fonts/ttfirsneue/stylesheet.css';
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
+import {AppEnvironmentContext} from "../context.js";
+import spinnerStyles from "../../miniapp.module.css";
 
-export default function Features({ theme, safeInsets, visible, onClose, cardData }) {
-    const [features, setFeatures] = useState([]);
+export default function Features({theme, safeInsets, visible, onClose, cardData}) {
+    const [features, setFeatures] = useState(null);
     const [swiperVisible, setSwiperVisible] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
     const [activePics, setActivePics] = useState([]);
@@ -18,6 +20,7 @@ export default function Features({ theme, safeInsets, visible, onClose, cardData
     const [loading, setLoading] = useState(false);
 
     const pics = Array.isArray(cardData?.pics) ? cardData.pics : [];
+    const {tg} = useContext(AppEnvironmentContext);
 
     const handleOpenSwiper = (pics, index = 0, title = "") => {
         setActivePics(Array.isArray(pics) ? pics : []);
@@ -25,6 +28,26 @@ export default function Features({ theme, safeInsets, visible, onClose, cardData
         setTitle(title);
         setSwiperVisible(true);
     };
+
+    useEffect(() => {
+        if (!tg?.BackButton) return;
+
+        const localHandler = () => {
+            onClose();
+        };
+
+        if (visible) {
+            tg.BackButton.offClick(localHandler);
+            tg.BackButton.show();
+            tg.BackButton.onClick(localHandler);
+        } else {
+            tg.BackButton.offClick(localHandler);
+        }
+        return () => {
+            tg.BackButton.offClick(localHandler);
+        };
+    }, [tg, visible, onClose]);
+
 
     useEffect(() => {
         if (visible && cardData?.origin) {
@@ -37,18 +60,6 @@ export default function Features({ theme, safeInsets, visible, onClose, cardData
         }
     }, [visible, cardData?.origin]);
 
-    // useEffect(() => {
-    //     if (visible) {
-    //         window.Telegram?.WebApp?.BackButton?.show();
-    //         window.Telegram?.WebApp?.BackButton?.onClick(() => {
-    //             onClose();
-    //             window.Telegram.WebApp.HapticFeedback.impactOccurred("medium");
-    //             window.Telegram?.WebApp?.BackButton?.hide();
-    //         });
-    //     } else {
-    //         window.Telegram?.WebApp?.BackButton?.hide();
-    //     }
-    // }, [visible, onClose]);
 
     return (
         <>
@@ -68,14 +79,14 @@ export default function Features({ theme, safeInsets, visible, onClose, cardData
                 }}
             >
                 {loading ? (
-                    <div style={{flex: 1, display: "flex", alignItems: "center", justifyContent: "center"}}>
-                        <Spinner />
+                    <div className={spinnerStyles.centeredSpinner}>
+                        <Spinner/>
                     </div>
                 ) : (
                     <div className={styles.contentContainer}>
-                        {features.length > 0 && (
+                        {features && (
                             <div className={styles.mainTitle} style={{color: theme.colorText}}>
-                                {features[0].title}
+                                {features.title}
                             </div>
                         )}
 
@@ -95,11 +106,10 @@ export default function Features({ theme, safeInsets, visible, onClose, cardData
                             </Swiper>
                         )}
 
-                        <CardInfo cardData={cardData} theme={theme} />
+                        <CardInfo cardData={cardData} theme={theme}/>
 
-                        {/* Скроллируемая часть */}
                         <div className={styles.scrollContainer}>
-                            <FeaturesSegmented features={features} />
+                            <FeaturesSegmented features={features}/>
                         </div>
                     </div>
                 )}

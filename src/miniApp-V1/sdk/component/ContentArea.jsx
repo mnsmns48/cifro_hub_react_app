@@ -10,6 +10,7 @@ import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 import InfoInMain from "./InfoInMain.jsx";
 import {AppEnvironmentContext} from "../context.js";
 import {useTelegramBackButton} from "../hook/useTelegramBackButton.js";
+import spinnerStyles from "../../miniapp.module.css";
 
 
 function getAllIds(menuItems, parentId) {
@@ -33,6 +34,7 @@ function ContentArea({barTab}) {
     const [duration, setDuration] = useState(0);
     const [productItems, setProductItems] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [featuresVisible, setFeaturesVisible] = useState(false);
 
     const config = miniAppConfig[barTab];
     const {tg} = useContext(AppEnvironmentContext)
@@ -77,7 +79,7 @@ function ContentArea({barTab}) {
         }
     }
 
-    useTelegramBackButton(tg, capsuleChoice, stack, setStack, setCapsuleChoice);
+    useTelegramBackButton(tg, capsuleChoice, stack, setStack, setCapsuleChoice, featuresVisible);
 
     useEffect(() => {
         setStack([]);
@@ -125,11 +127,12 @@ function ContentArea({barTab}) {
                                onSelect={handleSelect}/>
 
             {loading ? (
-                <div>
+                <div className={spinnerStyles.centeredSpinner}>
                     <Spinner/>
                 </div>
             ) : (
-                <CollectionView items={productItems}/>
+                <CollectionView items={productItems}
+                                featuresVisible={featuresVisible} setFeaturesVisible={setFeaturesVisible}/>
             )}
         </>
     );

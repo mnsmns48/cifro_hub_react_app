@@ -4,7 +4,7 @@ import {useContext} from "react";
 import {ThemeContext} from "../context.js";
 
 
-function CollectionView({items}) {
+function CollectionView({items, featuresVisible, setFeaturesVisible}) {
     const theme = useContext(ThemeContext);
 
     return (
@@ -14,6 +14,8 @@ function CollectionView({items}) {
                     theme={theme}
                     key={item.id}
                     cardData={item}
+                    backBtnVisible={featuresVisible}
+                    setBackBtnVisible={setFeaturesVisible}
                 />
             ))}
         </div>

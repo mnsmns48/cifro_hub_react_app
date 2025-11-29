@@ -1,23 +1,21 @@
 import {useContext, useState} from "react";
 import {Card} from "antd-mobile";
 import styles from "../css/cardbox.module.css";
-import PicSwapper from "./PicSwapper.jsx";
 import Features from "./Features.jsx";
 import {AppEnvironmentContext, AppServicePicsContext} from "../context.js";
 
-export default function CardBox({theme, cardData}) {
+export default function CardBox({theme, cardData, backBtnVisible, setBackBtnVisible}) {
+    const {insets, tg} = useContext(AppEnvironmentContext);
     const serviceImages = useContext(AppServicePicsContext)
     const noImg = serviceImages?.no_img
 
-    const {insets} = useContext(AppEnvironmentContext);
+    const [featurePopUpVisible, setFeaturePopUpVisible] = useState(false);
 
-    const pics = cardData.pics?.length ? cardData.pics : [noImg];
-    const [visible, setVisible] = useState(false);
-    const [featuresVisible, setFeaturesVisible] = useState(false);
 
     const openFeaturesClick = () => {
-        window.Telegram.WebApp.HapticFeedback.impactOccurred('medium')
-        setFeaturesVisible(true);
+        tg?.HapticFeedback.impactOccurred('medium')
+        setBackBtnVisible(true);
+        setFeaturePopUpVisible(true)
     };
 
     return (
@@ -32,22 +30,10 @@ export default function CardBox({theme, cardData}) {
                 </Card>
             </div>
 
-            {cardData.preview && (
-                <PicSwapper theme={theme}
-                            visible={visible}
-                            onClose={() => setVisible(false)}
-                            pics={pics}
-                            safeInsets={insets}
-                            title={cardData.title}/>
-            )}
 
-            {featuresVisible && (
-                <Features theme={theme}
-                          noImg={noImg}
-                          safeInsets={insets}
-                          cardData={cardData}
-                          visible={featuresVisible}
-                          onClose={() => setFeaturesVisible(false)}/>
+            {featurePopUpVisible && (
+                <Features theme={theme} noImg={noImg} safeInsets={insets} cardData={cardData}
+                          visible={backBtnVisible} onClose={() => setBackBtnVisible(false)}/>
             )}
         </>
     );

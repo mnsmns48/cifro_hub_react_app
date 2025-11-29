@@ -7,8 +7,9 @@ import styles from "../css/features.module.css";
 export default function FeaturesSegmented({features}) {
     const [tab, setTab] = useState("searchOutlined");
 
-    const prosCons = features[0]?.pros_cons ?? {};
-    const info = features[0]?.info ?? [];
+    const prosCons = features?.pros_cons ?? {};
+    const info = features?.info ?? [];
+
 
     return (
         <div style={{flex: 1, display: "flex", flexDirection: "column"}}>
@@ -18,7 +19,7 @@ export default function FeaturesSegmented({features}) {
                         {
                             label: (
                                 <div style={{padding: 4}}>
-                                    <UnorderedListOutlined />
+                                    <UnorderedListOutlined/>
                                     <div>Параметры</div>
                                 </div>
                             ),
@@ -45,7 +46,7 @@ export default function FeaturesSegmented({features}) {
                     ]}
                     value={tab}
                     onChange={setTab}
-                    style={{ borderRadius: 14 }}
+                    style={{borderRadius: 14}}
 
                 />
             </div>

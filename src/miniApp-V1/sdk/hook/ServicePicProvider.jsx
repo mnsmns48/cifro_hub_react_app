@@ -24,7 +24,6 @@ export default function ServicePicProvider({children}) {
         void fetchParams();
     }, []);
 
-    console.log(images);
 
     return (
         <AppServicePicsContext.Provider value={images}>
