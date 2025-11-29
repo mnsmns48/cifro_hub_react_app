@@ -37,18 +37,18 @@ export default function Features({ theme, safeInsets, visible, onClose, cardData
         }
     }, [visible, cardData?.origin]);
 
-    useEffect(() => {
-        if (visible) {
-            window.Telegram?.WebApp?.BackButton?.show();
-            window.Telegram?.WebApp?.BackButton?.onClick(() => {
-                onClose();
-                window.Telegram.WebApp.HapticFeedback.impactOccurred("medium");
-                window.Telegram?.WebApp?.BackButton?.hide();
-            });
-        } else {
-            window.Telegram?.WebApp?.BackButton?.hide();
-        }
-    }, [visible, onClose]);
+    // useEffect(() => {
+    //     if (visible) {
+    //         window.Telegram?.WebApp?.BackButton?.show();
+    //         window.Telegram?.WebApp?.BackButton?.onClick(() => {
+    //             onClose();
+    //             window.Telegram.WebApp.HapticFeedback.impactOccurred("medium");
+    //             window.Telegram?.WebApp?.BackButton?.hide();
+    //         });
+    //     } else {
+    //         window.Telegram?.WebApp?.BackButton?.hide();
+    //     }
+    // }, [visible, onClose]);
 
     return (
         <>

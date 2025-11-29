@@ -1,5 +1,5 @@
 import CapsuleTabsMenu from "./CapsuleTabsMenu.jsx";
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useContext, useEffect, useState} from "react";
 import {miniAppConfig} from "../../miniAppConf.jsx";
 import {getFetch} from "../../api.js";
 import CategoryNavigator from "./CategoryNavigator.jsx";
@@ -8,6 +8,8 @@ import BreadCrumbs from "./Breadcrumbs.jsx";
 import CollectionView from "./CollectionView.jsx";
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 import InfoInMain from "./InfoInMain.jsx";
+import {AppEnvironmentContext} from "../context.js";
+import {useTelegramBackButton} from "../hook/useTelegramBackButton.js";
 
 
 function getAllIds(menuItems, parentId) {
@@ -33,6 +35,7 @@ function ContentArea({barTab}) {
     const [loading, setLoading] = useState(false);
 
     const config = miniAppConfig[barTab];
+    const {tg} = useContext(AppEnvironmentContext)
 
     async function fetchMenuItems() {
         if (!config?.Content?.endpointMenu) {
@@ -73,6 +76,8 @@ function ContentArea({barTab}) {
             setLoading(false);
         }
     }
+
+    useTelegramBackButton(tg, capsuleChoice, stack, setStack, setCapsuleChoice);
 
     useEffect(() => {
         setStack([]);
