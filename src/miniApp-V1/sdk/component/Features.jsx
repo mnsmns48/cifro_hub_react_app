@@ -8,10 +8,9 @@ import PicSwapper from "./PicSwapper.jsx";
 import styles from "../css/features.module.css";
 import '/fonts/ttfirsneue/stylesheet.css';
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
-import {AppEnvironmentContext} from "../context.js";
 import spinnerStyles from "../../miniapp.module.css";
 
-export default function Features({theme, safeInsets, visible, onClose, cardData}) {
+export default function Features({theme, tg, insets, cardData, visible, onClose}) {
     const [features, setFeatures] = useState(null);
     const [swiperVisible, setSwiperVisible] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
@@ -20,7 +19,13 @@ export default function Features({theme, safeInsets, visible, onClose, cardData}
     const [loading, setLoading] = useState(false);
 
     const pics = Array.isArray(cardData?.pics) ? cardData.pics : [];
-    const {tg} = useContext(AppEnvironmentContext);
+
+    const safeInsets = {
+        top: insets?.top ?? "0px",
+        bottom: insets?.bottom ?? "0px",
+        left: insets?.left ?? "0px",
+        right: insets?.right ?? "0px",
+    };
 
     const handleOpenSwiper = (pics, index = 0, title = "") => {
         setActivePics(Array.isArray(pics) ? pics : []);
@@ -54,8 +59,10 @@ export default function Features({theme, safeInsets, visible, onClose, cardData}
             setLoading(true);
             const endpoint = `${miniAppConfig.hub.Content.endpointFeatures}/${cardData.origin}`;
             getFetch(endpoint)
-                .then((data) => setFeatures(Array.isArray(data) ? data : []))
-                .catch(() => setFeatures([]))
+                .then((data) => {
+                    setFeatures(data?.features ?? null);
+                })
+                .catch(() => setFeatures(null))
                 .finally(() => setLoading(false));
         }
     }, [visible, cardData?.origin]);
@@ -83,7 +90,7 @@ export default function Features({theme, safeInsets, visible, onClose, cardData}
                         <Spinner/>
                     </div>
                 ) : (
-                    <div className={styles.contentContainer}>
+                    <div className={styles.contentContainer} style={{marginTop: 14}}>
                         {features && (
                             <div className={styles.mainTitle} style={{color: theme.colorText}}>
                                 {features.title}

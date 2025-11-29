@@ -32,7 +32,7 @@ export default function CardBox({theme, cardData, backBtnVisible, setBackBtnVisi
 
 
             {featurePopUpVisible && (
-                <Features theme={theme} noImg={noImg} safeInsets={insets} cardData={cardData}
+                <Features theme={theme} tg={tg} insets={insets} cardData={cardData}
                           visible={backBtnVisible} onClose={() => setBackBtnVisible(false)}/>
             )}
         </>
