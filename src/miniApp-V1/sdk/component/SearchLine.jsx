@@ -25,10 +25,10 @@ function SearchLine({onHeightChange}) {
 
     return (
         <div ref={ref} style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
-            <SearchBar placeholder="Я ищу"
+            <SearchBar placeholder="Поиск отключен"
                        className={styles.searchBar}
                        onSearch={handleSearch}
-                       style={{width: '33%', '--background': theme.colorBorder}}
+                       style={{width: '40%', '--background': theme.colorBorder}}
             />
         </div>
     );

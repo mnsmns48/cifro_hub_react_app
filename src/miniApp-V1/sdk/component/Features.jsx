@@ -1,5 +1,5 @@
 import {Popup, Swiper} from "antd-mobile";
-import {useContext, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {getFetch} from "../../api.js";
 import {miniAppConfig} from "../../miniAppConf.jsx";
 import FeaturesSegmented from "./FeaturesSegmented.jsx";
@@ -7,8 +7,6 @@ import CardInfo from "./CardHubInfo.jsx";
 import PicSwapper from "./PicSwapper.jsx";
 import styles from "../css/features.module.css";
 import '/fonts/ttfirsneue/stylesheet.css';
-import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
-import spinnerStyles from "../../miniapp.module.css";
 
 export default function Features({theme, tg, insets, cardData, visible, onClose}) {
     const [features, setFeatures] = useState(null);
@@ -16,7 +14,6 @@ export default function Features({theme, tg, insets, cardData, visible, onClose}
     const [activeIndex, setActiveIndex] = useState(0);
     const [activePics, setActivePics] = useState([]);
     const [title, setTitle] = useState("");
-    const [loading, setLoading] = useState(false);
 
     const pics = Array.isArray(cardData?.pics) ? cardData.pics : [];
 
@@ -56,14 +53,12 @@ export default function Features({theme, tg, insets, cardData, visible, onClose}
 
     useEffect(() => {
         if (visible && cardData?.origin) {
-            setLoading(true);
             const endpoint = `${miniAppConfig.hub.Content.endpointFeatures}/${cardData.origin}`;
             getFetch(endpoint)
                 .then((data) => {
                     setFeatures(data?.features ?? null);
                 })
-                .catch(() => setFeatures(null))
-                .finally(() => setLoading(false));
+                .catch(() => setFeatures(null));
         }
     }, [visible, cardData?.origin]);
 
@@ -74,6 +69,7 @@ export default function Features({theme, tg, insets, cardData, visible, onClose}
                 visible={visible}
                 onMaskClick={onClose}
                 onClose={onClose}
+                position="bottom"
                 className={styles.rootPopup}
                 bodyStyle={{
                     height: `calc(100vh - ${safeInsets.top} - ${safeInsets.bottom})`,
@@ -85,12 +81,8 @@ export default function Features({theme, tg, insets, cardData, visible, onClose}
                     flexDirection: "column"
                 }}
             >
-                {loading ? (
-                    <div className={spinnerStyles.centeredSpinner}>
-                        <Spinner/>
-                    </div>
-                ) : (
-                    <div className={styles.contentContainer} style={{marginTop: 14}}>
+
+                    <div className={styles.contentContainer} style={{marginTop: 40}}>
                         {features && (
                             <div className={styles.mainTitle} style={{color: theme.colorText}}>
                                 {features.title}
@@ -112,14 +104,12 @@ export default function Features({theme, tg, insets, cardData, visible, onClose}
                                 ))}
                             </Swiper>
                         )}
-
-                        <CardInfo cardData={cardData} theme={theme}/>
-
                         <div className={styles.scrollContainer}>
+                            <CardInfo cardData={cardData} theme={theme}/>
                             <FeaturesSegmented features={features}/>
                         </div>
                     </div>
-                )}
+
             </Popup>
 
             <PicSwapper

@@ -44,7 +44,7 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
         setFetched(null);
         setError(null);
         setSearchQuery("");
-        onClose?.(); // сбросить dependencySelection, если передан
+        onClose?.();
     };
 
     const filtered = fetched?.filter(item => {
@@ -79,6 +79,7 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
                 title: item.title,
                 brand: item.brand,
                 product_type: item.product_type,
+                source: item.source,
                 info,
                 pros_cons
             }));

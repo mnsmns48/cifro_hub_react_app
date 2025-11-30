@@ -7,7 +7,9 @@ const DependencyModal = ({open, onClose, data}) => {
         <MyModal isOpen={open} onConfirm={onClose} onCancel={onClose}
             title={
                 <div style={{textAlign: "center"}}>
-                    {data?.title || "Детали"}
+                    <div style={{color: 'blue'}}>{data?.source}</div>
+                    <span>{data?.title || "Детали"}</span>
+
                 </div>
             }
             content={

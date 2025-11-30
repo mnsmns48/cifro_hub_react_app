@@ -22,10 +22,11 @@ export default function CategoryNavigator({data = [], parent, stack, onSelect}) 
         return data.filter((i) => String(i.parent_id) === String(last.id));
     }, [data, level1, stack]);
 
-    if (!parent) return null;
+    if (!parent || !Array.isArray(data) || data.length === 0) return null;
+
+    if (!currentItems.length) return null;
 
     return (
-
         <div className={baseStyles.centeredContainer} style={{paddingTop: 12}}>
             <div className={styles.depthBoxContainer}>
                 {currentItems.map(item => (

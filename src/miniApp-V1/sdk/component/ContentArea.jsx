@@ -6,11 +6,9 @@ import CategoryNavigator from "./CategoryNavigator.jsx";
 import baseStyles from "../css/base.module.css";
 import BreadCrumbs from "./Breadcrumbs.jsx";
 import CollectionView from "./CollectionView.jsx";
-import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 import InfoInMain from "./InfoInMain.jsx";
 import {AppEnvironmentContext} from "../context.js";
 import {useTelegramBackButton} from "../hook/useTelegramBackButton.js";
-import spinnerStyles from "../../miniapp.module.css";
 
 
 function getAllIds(menuItems, parentId) {
@@ -33,7 +31,6 @@ function ContentArea({barTab}) {
     const [stack, setStack] = useState([]);
     const [duration, setDuration] = useState(0);
     const [productItems, setProductItems] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [featuresVisible, setFeaturesVisible] = useState(false);
 
     const config = miniAppConfig[barTab];
@@ -69,14 +66,10 @@ function ContentArea({barTab}) {
             return;
         }
 
-        setLoading(true);
-        try {
-            const result = await getFetch(config.Content.endpointProducts, {ids: pathIds});
-            setProductItems(result?.products || []);
-            setDuration(result?.duration_ms || 0);
-        } finally {
-            setLoading(false);
-        }
+        const result = await getFetch(config.Content.endpointProducts, {ids: pathIds});
+        setProductItems(result?.products || []);
+        setDuration(result?.duration_ms || 0);
+
     }
 
     useTelegramBackButton(tg, capsuleChoice, stack, setStack, setCapsuleChoice, featuresVisible);
@@ -125,15 +118,9 @@ function ContentArea({barTab}) {
                                parent={capsuleChoice}
                                stack={stack}
                                onSelect={handleSelect}/>
+            <CollectionView items={productItems}
+                            featuresVisible={featuresVisible} setFeaturesVisible={setFeaturesVisible}/>
 
-            {loading ? (
-                <div className={spinnerStyles.centeredSpinner}>
-                    <Spinner/>
-                </div>
-            ) : (
-                <CollectionView items={productItems}
-                                featuresVisible={featuresVisible} setFeaturesVisible={setFeaturesVisible}/>
-            )}
         </>
     );
 }

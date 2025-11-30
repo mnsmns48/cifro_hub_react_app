@@ -55,7 +55,7 @@ const RootWebapp = () => {
             <div className={styles.appWrapper}
                  style={{backgroundColor: theme?.colorBackground, paddingTop: safeInsets.top}}/>
             <div className={styles.searchWrapper}
-                 style={{backgroundColor: theme?.colorBackground, top: safeInsets.top}}>
+                 style={{backgroundColor: theme?.colorBackground, top: safeInsets.top, display: 'none'}}>
                 <SearchLine onHeightChange={setSearchHeight}/>
             </div>
             {searchHeight > 0 && (
