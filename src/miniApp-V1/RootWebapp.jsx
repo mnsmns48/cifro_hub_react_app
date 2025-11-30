@@ -54,14 +54,14 @@ const RootWebapp = () => {
         <>
             <div className={styles.appWrapper}
                  style={{backgroundColor: theme?.colorBackground, paddingTop: safeInsets.top}}/>
-            <div className={styles.searchWrapper}
-                 style={{backgroundColor: theme?.colorBackground, top: safeInsets.top, display: 'none'}}>
-                <SearchLine onHeightChange={setSearchHeight}/>
-            </div>
-            {searchHeight > 0 && (
+            {/*<div className={styles.searchWrapper}*/}
+            {/*     style={{backgroundColor: theme?.colorBackground, top: safeInsets.top, display: 'none'}}>*/}
+            {/*    <SearchLine onHeightChange={setSearchHeight}/>*/}
+            {/*</div>*/}
+            {searchHeight >= 0 && (
                 <div className={styles.scrollArea}
                      style={{
-                         top: `calc(${safeInsets.top} + ${searchHeight}px + 15px)`,
+                         top: `calc(${safeInsets.top} + ${searchHeight || 20}px + 15px)`,
                          left: `calc(${safeInsets.left} + 10px)`,
                          right: `calc(${safeInsets.right} + 10px)`,
                          bottom: bottomNow
