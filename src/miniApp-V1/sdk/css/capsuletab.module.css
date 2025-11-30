@@ -1,0 +1,16 @@
+.capsuleTabMenu {
+    --capsule-active-bg: #b7b7b7;
+
+}
+
+.capsuleTabMenu :global(.adm-capsule-tabs-tab.adm-capsule-tabs-tab-active) {
+    background-color: var(--capsule-active-bg) !important;
+}
+
+.capsuleTabMenu :global(.adm-capsule-tabs-tab) {
+    background-color: white !important;
+}
+
+.capsuleTabMenu :global(.adm-capsule-tabs-header) {
+    border-bottom: none !important;
+}

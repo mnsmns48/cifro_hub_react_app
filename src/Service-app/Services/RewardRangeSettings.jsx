@@ -13,7 +13,7 @@ import {
     PlusOutlined,
     CheckCircleOutlined,
     SelectOutlined,
-    DollarOutlined, FileSearchOutlined
+    DollarOutlined
 } from "@ant-design/icons";
 import RewardRangeTable from "./RewardRangeSettings/RewardRangeTable.jsx";
 import MyModal from "../../Ui/MyModal.jsx";

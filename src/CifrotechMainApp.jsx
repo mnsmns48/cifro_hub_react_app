@@ -68,7 +68,7 @@ export default function CifrotechMainApp() {
         collapsed
     };
     return (
-        <>
+        <div id="cifrotech-root">
             <AppHeader onMainSwitchBtnClick={handleMainSwitchBtnClick} toggleButtonText={currentMenu.text}/>
             <Layout style={WhiteStyle}>
                 <AppCarousel/>
@@ -96,6 +96,6 @@ export default function CifrotechMainApp() {
                 </Layout>
             </Layout>
             <AppFooter/>
-        </>
+        </div>
     );
 }
