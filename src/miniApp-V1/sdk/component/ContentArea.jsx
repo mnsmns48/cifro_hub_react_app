@@ -42,7 +42,7 @@ function ContentArea({barTab}) {
             return;
         }
         const result = await getFetch(config.Content.endpointMenu);
-        setMenuItems(result);
+        setMenuItems(Array.isArray(result) ? result : []);
     }
 
     async function fetchProductItems() {
@@ -100,8 +100,9 @@ function ContentArea({barTab}) {
 
     return (
         <>
-            <CapsuleTabsMenu data={menuItems.filter(item => item.depth === 0)}
-                             onTabChange={setCapsuleChoice}/>
+            <CapsuleTabsMenu
+                data={(menuItems || []).filter(item => item.depth === 0)}
+                onTabChange={setCapsuleChoice}/>
 
             {capsuleChoice && (
                 <div className={baseStyles.centeredContainer}>
