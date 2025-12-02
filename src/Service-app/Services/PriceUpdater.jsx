@@ -1,5 +1,5 @@
-import {Button, Col, Flex, Input, Row} from "antd";
-import {FileSearchOutlined, PlusOutlined, PrinterOutlined, SettingOutlined} from "@ant-design/icons";
+import {Button, Col, Flex, Input, Modal, Row} from "antd";
+import {FileSearchOutlined, PlusOutlined, PrinterOutlined, SettingOutlined, SubnodeOutlined} from "@ant-design/icons";
 import MyModal from "../../Ui/MyModal.jsx";
 import {useEffect, useState} from "react";
 import VendorSourceSelector from "./PriceUpdater/VendorSourceSelector.jsx";
@@ -132,100 +132,199 @@ const PriceUpdater = () => {
     return (
         <>
             {!isParsingDone && (
-                <Row style={{alignItems: 'flex-start'}}>
-                    <Col span={7} className='left_col'>
-                        <Flex vertical style={{width: 300}}>
-                            <VendorSourceSelector list={vendorList} onChange={setSelectedVendor}/>
-                            {!selectedVSLRow && (
-                                <Input style={{marginTop: 8}} placeholder="Ссылка"
-                                       onChange={(e) => setInputVSLink(e.target.value)} value={inputVSLink}/>
-                            )}
-                            {inputVSLink && (
-                                <div className='input_link_container'>
-                                    <Button type="primary" icon={<PlusOutlined/>} className='input_link'
-                                            onClick={() => addVSL(selectedVendor, {
-                                                    title: inputTitle,
-                                                    url: inputVSLink
-                                                }, refreshTableData,
-                                                setInputVSLink, setInputTitle, setSuccessMessage, setIsSuccessModalOpen,
-                                                setErrorMessage, setIsErrorModalOpen)}/>
-                                    <Input className='input_link_title' placeholder="Наименование ссылки"
-                                           onChange={(e) => setInputTitle(e.target.value)}/>
+                <div style={{display: "flex", flexDirection: "column", gap: 20}}>
 
-                                </div>
-                            )
-                            }
-                            {selectedVSLRow !== null && (
-                                <div className='parser_buttons'>
-                                    <ParsingButtonsCommonComponent label="Предыдущие результаты"
-                                                                   confirmText="Предыдущие результаты?"
-                                                                   apiUrl="/service/previous_parsing_results"
-                                                                   selectedRow={selectedVSLRow}
-                                                                   initialSyncOption={false}
-                                                                   onComplete={handleParsingComplete}
-                                                                   setProgressLineObj={setProgressLineObj}
-                                                                   setIsParsingStarted={setIsParsingStarted}/>
-                                    <ParsingButtonsCommonComponent label="Старт"
-                                                                   confirmText="Запустить парсинг?"
-                                                                   icon={<SettingOutlined/>}
-                                                                   apiUrl="/service/start_parsing"
-                                                                   selectedRow={selectedVSLRow}
-                                                                   initialSyncOption={true}
-                                                                   onComplete={handleParsingComplete}
-                                                                   setProgressLineObj={setProgressLineObj}
-                                                                   setIsParsingStarted={setIsParsingStarted}/>
-                                </div>
-                            )}
-                            {isParsingStarted && (
-                                <div style={{margin: "15px 0", width: "100%"}}>
-                                    <ParsingProgress progress_obj={progressLineObj}/>
-                                    <Spinner/>
-                                </div>
-                            )}
-                        </Flex>
-                    </Col>
-                    <Col span={15} className='right_col'>
-                        {selectedVendor && (
-                            <SearchTableSelector tableData={tableData} refreshTableData={refreshTableData}
-                                                 setSelectedRow={setSelectedVSLRow} selectedRowKeys={selectedVSLRowKeys}
-                                                 setSelectedRowKeys={setSelectedVSLRowKeys}
-                                                 handlePrevResByBtn={handlePrevResByBtn}/>
+                    <Flex vertical style={{width: 300}} align="flex-start">
+                        <VendorSourceSelector list={vendorList} onChange={setSelectedVendor}/>
+
+                        {
+                            <Input
+                                style={{marginTop: 8}}
+                                placeholder="Новая ссылка"
+                                onChange={(e) => setInputVSLink(e.target.value)}
+                                value={inputVSLink}
+                            />
+                        }
+
+                        {inputVSLink && (
+                            <div className="input_link_container">
+                                <Input
+                                    placeholder="Как будет называться"
+                                    value={inputTitle}
+                                    onChange={(e) => setInputTitle(e.target.value)}
+                                    style={{marginBottom: 8}} // небольшой отступ снизу
+                                />
+
+                                <Button
+                                    className="input_link"
+                                    type="default"
+                                    onClick={() =>
+                                        addVSL(
+                                            selectedVendor,
+                                            {title: inputTitle, url: inputVSLink},
+                                            refreshTableData,
+                                            setInputVSLink,
+                                            setInputTitle,
+                                            setSuccessMessage,
+                                            setIsSuccessModalOpen,
+                                            setErrorMessage,
+                                            setIsErrorModalOpen
+                                        )
+                                    }
+                                >
+                                    Добавить
+                                </Button>
+                            </div>
                         )}
-                    </Col>
-                </Row>)}
 
-            <MyModal isOpen={isErrorModalOpen} onCancel={() => setIsErrorModalOpen(false)}
-                     content={errorMessage} danger={true}
-                     footer={<Button type="primary" danger onClick={() => {
-                         setIsErrorModalOpen(false);
-                         closeModalAfterDelay(setIsErrorModalOpen);
-                     }}>ОК</Button>}
+                        {/*{selectedVSLRow !== null && (*/}
+                        {/*    <div className='parser_buttons'>*/}
+                        {/*        <ParsingButtonsCommonComponent*/}
+                        {/*            label="Предыдущие результаты"*/}
+                        {/*            confirmText="Предыдущие результаты?"*/}
+                        {/*            apiUrl="/service/previous_parsing_results"*/}
+                        {/*            selectedRow={selectedVSLRow}*/}
+                        {/*            initialSyncOption={false}*/}
+                        {/*            onComplete={handleParsingComplete}*/}
+                        {/*            setProgressLineObj={setProgressLineObj}*/}
+                        {/*            setIsParsingStarted={setIsParsingStarted}*/}
+                        {/*        />*/}
+
+                        {/*        <ParsingButtonsCommonComponent*/}
+                        {/*            label="Старт"*/}
+                        {/*            confirmText="Запустить парсинг?"*/}
+                        {/*            icon={<SettingOutlined/>}*/}
+                        {/*            apiUrl="/service/start_parsing"*/}
+                        {/*            selectedRow={selectedVSLRow}*/}
+                        {/*            initialSyncOption={true}*/}
+                        {/*            onComplete={handleParsingComplete}*/}
+                        {/*            setProgressLineObj={setProgressLineObj}*/}
+                        {/*            setIsParsingStarted={setIsParsingStarted}*/}
+                        {/*        />*/}
+                        {/*    </div>*/}
+                        {/*)}*/}
+
+                        {isParsingStarted && (
+                            <div style={{margin: "15px 0", width: "100%"}}>
+                                <ParsingProgress progress_obj={progressLineObj}/>
+                                <Spinner/>
+                            </div>
+                        )}
+                    </Flex>
+
+                    {selectedVendor && (
+                        <SearchTableSelector
+                            tableData={tableData}
+                            refreshTableData={refreshTableData}
+                            setSelectedRow={setSelectedVSLRow}
+                            selectedRowKeys={selectedVSLRowKeys}
+                            setSelectedRowKeys={setSelectedVSLRowKeys}
+                            handlePrevResByBtn={handlePrevResByBtn}
+                        />
+                    )}
+
+                </div>
+            )}
+
+            <MyModal
+                isOpen={isErrorModalOpen}
+                onCancel={() => setIsErrorModalOpen(false)}
+                content={errorMessage}
+                danger={true}
+                footer={
+                    <Button
+                        type="primary"
+                        danger
+                        onClick={() => {
+                            setIsErrorModalOpen(false);
+                            closeModalAfterDelay(setIsErrorModalOpen);
+                        }}
+                    >
+                        ОК
+                    </Button>
+                }
             />
 
-            <MyModal isOpen={isSuccessModalOpen} onConfirm={() => {
-                setIsSuccessModalOpen(false);
-                closeModalAfterDelay(setIsSuccessModalOpen);
-            }}
-                     onCancel={() => {
-                         setIsSuccessModalOpen(false);
-                         closeModalAfterDelay(setIsSuccessModalOpen);
-                     }}
-                     content={successMessage}
-                     footer={<Button type="primary" onClick={() => {
-                         setIsSuccessModalOpen(false);
-                         closeModalAfterDelay(setIsSuccessModalOpen);
-                     }}>OK</Button>}
+            <MyModal
+                isOpen={isSuccessModalOpen}
+                onConfirm={() => {
+                    setIsSuccessModalOpen(false);
+                    closeModalAfterDelay(setIsSuccessModalOpen);
+                }}
+                onCancel={() => {
+                    setIsSuccessModalOpen(false);
+                    closeModalAfterDelay(setIsSuccessModalOpen);
+                }}
+                content={successMessage}
+                footer={
+                    <Button
+                        type="primary"
+                        onClick={() => {
+                            setIsSuccessModalOpen(false);
+                            closeModalAfterDelay(setIsSuccessModalOpen);
+                        }}
+                    >
+                        OK
+                    </Button>
+                }
             />
+
+            {/*{selectedVSLRow !== null && (*/}
+            {/*    <Modal*/}
+            {/*        open={true}*/}
+            {/*        onCancel={() => setSelectedVSLRow(null)}*/}
+            {/*        footer={*/}
+            {/*            <div className='parser_buttons'>*/}
+            {/*                <ParsingButtonsCommonComponent*/}
+            {/*                    label="Предыдущие результаты"*/}
+            {/*                    confirmText="Предыдущие результаты?"*/}
+            {/*                    apiUrl="/service/previous_parsing_results"*/}
+            {/*                    selectedRow={selectedVSLRow}*/}
+            {/*                    initialSyncOption={false}*/}
+            {/*                    onComplete={(data) => {*/}
+            {/*                        handleParsingComplete(data);*/}
+            {/*                        setSelectedVSLRow(null);*/}
+            {/*                    }}*/}
+            {/*                    setProgressLineObj={setProgressLineObj}*/}
+            {/*                    setIsParsingStarted={setIsParsingStarted}*/}
+            {/*                />*/}
+
+            {/*                <ParsingButtonsCommonComponent*/}
+            {/*                    label="Старт"*/}
+            {/*                    confirmText="Запустить парсинг?"*/}
+            {/*                    icon={<SettingOutlined/>}*/}
+            {/*                    apiUrl="/service/start_parsing"*/}
+            {/*                    selectedRow={selectedVSLRow}*/}
+            {/*                    initialSyncOption={true}*/}
+            {/*                    onComplete={(data) => {*/}
+            {/*                        handleParsingComplete(data);*/}
+            {/*                        setSelectedVSLRow(null);*/}
+            {/*                    }}*/}
+            {/*                    setProgressLineObj={setProgressLineObj}*/}
+            {/*                    setIsParsingStarted={setIsParsingStarted}*/}
+            {/*                />*/}
+            {/*            </div>*/}
+            {/*        }*/}
+            {/*    >*/}
+            {/*    </Modal>*/}
+
+            {/*)}*/}
+
             {isParsingDone && parsedData && (
                 <>
                     <Button onClick={handleNewSearch}>Новый поиск</Button>
-                    <ParsingResults result={parsedData} vslId={selectedVSLRow?.id} onRangeChange={handleRangeChange}/>
+                    <ParsingResults
+                        result={parsedData}
+                        vslId={selectedVSLRow?.id}
+                        onRangeChange={handleRangeChange}
+                    />
                 </>
             )}
         </>
     );
+
 };
 
-PriceUpdater.componentTitle = "Парсинг"
+PriceUpdater.componentTitle = "Данные"
 PriceUpdater.componentIcon = <div className="circle-container"><FileSearchOutlined className="icon-style"/></div>
 export default PriceUpdater;

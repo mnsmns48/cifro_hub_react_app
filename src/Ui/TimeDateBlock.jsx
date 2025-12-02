@@ -1,3 +1,5 @@
+import {ClockCircleOutlined} from "@ant-design/icons";
+
 const TimeDayBlock = ({ isoString }) => {
     if (!isoString) {
         return "";
@@ -33,7 +35,7 @@ const TimeDayBlock = ({ isoString }) => {
 
     return (
         <div style={styles.wrapper}>
-            <div style={styles.time}>{`${hours}:${minutes}`}</div>
+             <div style={styles.time}><ClockCircleOutlined style={{color: '#999999'}}/>&nbsp;&nbsp;{`${hours}:${minutes}`}</div>
             <div style={{ ...styles.dateBase, color: dateColor }}>{dateLabel}</div>
         </div>
     );
@@ -50,7 +52,7 @@ const styles = {
         padding: '0 6px'
     },
     time: {
-        fontSize: '1rem',
+        fontSize: '0,8em',
         fontWeight: 'bold',
         color: '#222',
     },
