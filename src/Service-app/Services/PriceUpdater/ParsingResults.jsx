@@ -45,7 +45,6 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [featureFilter, setFeatureFilter] = useState([]);
 
-
     useEffect(() => {
         setRows(Array.isArray(result.parsing_result) ? result.parsing_result : []);
         setSelectedRowKeys([]);

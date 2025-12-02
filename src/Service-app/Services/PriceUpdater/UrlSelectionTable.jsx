@@ -19,8 +19,7 @@ export const UrlSelectionTableColumns = ({
         render: (text, record) =>
             <a
                 className={styles.linkText}
-                onClick={(e) => {
-                    e.stopPropagation();
+                onClick={() => {
                     handleAction({
                         key: "prevResults",
                         selectedRow: record
@@ -36,7 +35,6 @@ export const UrlSelectionTableColumns = ({
         render: (_, record) => (
             <Checkbox
                 checked={isSyncFeatures[record.id] ?? false}
-                onClick={(e) => e.stopPropagation()}
                 onChange={(e) =>
                     handleAction({
                         key: "isSyncFeatures",
@@ -54,8 +52,7 @@ export const UrlSelectionTableColumns = ({
             <Button
                 icon={<SyncOutlined/>}
                 className={styles.actionParsingBtn}
-                onClick={(e) => {
-                    e.stopPropagation();
+                onClick={() => {
                     handleAction({
                         key: "startParsing",
                         selectedRow: record

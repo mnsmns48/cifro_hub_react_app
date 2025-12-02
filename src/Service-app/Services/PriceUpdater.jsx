@@ -1,5 +1,5 @@
-import {Button, Col, Flex, Input, Modal, Row} from "antd";
-import {FileSearchOutlined, PlusOutlined, PrinterOutlined, SettingOutlined, SubnodeOutlined} from "@ant-design/icons";
+import {Button, Flex, Input} from "antd";
+import {FileSearchOutlined} from "@ant-design/icons";
 import MyModal from "../../Ui/MyModal.jsx";
 import {useEffect, useState} from "react";
 import VendorSourceSelector from "./PriceUpdater/VendorSourceSelector.jsx";
@@ -14,9 +14,7 @@ import {
     getProgressLine
 } from "./PriceUpdater/api.js";
 import ParsingResults from "./PriceUpdater/ParsingResults.jsx";
-import ParsingButtonsCommonComponent from "./PriceUpdater/ParsingButtonsCommonComponent.jsx";
-import ParsingProgress from "./PriceUpdater/ParsingProgress.jsx";
-import Spinner from "../../Cifrotech-app/components/Spinner.jsx";
+import ProgressIndicator from "./PriceUpdater/ProgressIndicator.jsx";
 
 
 const PriceUpdater = () => {
@@ -108,8 +106,30 @@ const PriceUpdater = () => {
         }
     };
 
+    const runParsingFlow = async ({selectedRow, api_url}) => {
+        const {result: progress} = await getProgressLine();
+        if (!progress) return;
 
-    const handleAction = async ({ key, selectedRow, value }) => {
+        setIsParsingStarted(true);
+        setProgressLineObj(progress);
+
+        const results = await startDataCollection({
+            selectedRow,
+            progress,
+            api_url,
+            sync_features: isSyncFeatures[selectedRow.id] ?? false,
+        });
+
+        if (!results.is_ok) {
+            setIsParsingStarted(false);
+            setProgressLineObj("");
+            return;
+        }
+        handleParsingComplete(results);
+    };
+
+
+    const handleAction = async ({key, selectedRow, value}) => {
         switch (key) {
             case "isSyncFeatures":
                 setIsSyncFeatures(prev => ({
@@ -118,82 +138,39 @@ const PriceUpdater = () => {
                 }));
                 break;
 
-            case "startParsingBtn": {
-                const { result: progress } = await getProgressLine();
-                if (!progress) return;
-
-                setIsParsingStarted(true);
-                setProgressLineObj(progress);
-                console.log('isSyncFeatures[selectedRow.id] ?? false', isSyncFeatures[selectedRow.id] ?? false)
-                const results = await startDataCollection({
+            case "startParsing":
+                await runParsingFlow({
                     selectedRow,
-                    progress,
-                    api_url: "/service/start_parsing",
-                    sync_features: isSyncFeatures[selectedRow.id] ?? false,
+                    api_url: "/service/start_parsing"
                 });
-
-                if (!results.is_ok) {
-                    setIsParsingStarted(false);
-                    setProgressLineObj("");
-                    return;
-                }
-                handleParsingComplete(results);
                 break;
-            }
 
-            case "prevResults": {
-                const { result: progress } = await getProgressLine();
-                if (!progress) return;
-
-                setIsParsingStarted(true);
-                setProgressLineObj(progress);
-                console.log('isSyncFeatures[selectedRow.id] ?? false', isSyncFeatures[selectedRow.id] ?? false)
-                const results = await startDataCollection({
+            case "prevResults":
+                await runParsingFlow({
                     selectedRow,
-                    progress,
-                    api_url: "/service/previous_parsing_results",
-                    sync_features: isSyncFeatures[selectedRow.id] ?? false,
+                    api_url: "/service/previous_parsing_results"
                 });
-
-                if (!results.is_ok) {
-                    setIsParsingStarted(false);
-                    setProgressLineObj("");
-                    return;
-                }
-                handleParsingComplete(results);
                 break;
-            }
         }
     };
-
 
 
     return (
         <>
             {!isParsingDone && (
                 <div style={{display: "flex", flexDirection: "column", gap: 20}}>
-
                     <Flex vertical style={{width: 300}} align="flex-start">
                         <VendorSourceSelector list={vendorList} onChange={setSelectedVendor}/>
-
-                        {
-                            <Input
-                                style={{marginTop: 8}}
-                                placeholder="Новая ссылка"
-                                onChange={(e) => setInputVSLink(e.target.value)}
-                                value={inputVSLink}
-                            />
-                        }
-
+                        <Input style={{marginTop: 8}}
+                               placeholder="Новая ссылка"
+                               onChange={(e) => setInputVSLink(e.target.value)}
+                               value={inputVSLink}/>
                         {inputVSLink && (
                             <div className="input_link_container">
-                                <Input
-                                    placeholder="Как будет называться"
-                                    value={inputTitle}
-                                    onChange={(e) => setInputTitle(e.target.value)}
-                                    style={{marginBottom: 8}}
-                                />
-
+                                <Input placeholder="Как будет называться"
+                                       value={inputTitle}
+                                       onChange={(e) => setInputTitle(e.target.value)}
+                                       style={{marginBottom: 8}}/>
                                 <Button
                                     className="input_link"
                                     type="default"
@@ -215,13 +192,6 @@ const PriceUpdater = () => {
                                 </Button>
                             </div>
                         )}
-
-                        {isParsingStarted && (
-                            <div style={{margin: "15px 0", width: "100%"}}>
-                                <ParsingProgress progress_obj={progressLineObj}/>
-                                <Spinner/>
-                            </div>
-                        )}
                     </Flex>
 
                     {selectedVendor && (
@@ -235,7 +205,9 @@ const PriceUpdater = () => {
                             isSyncFeatures={isSyncFeatures}
                         />
                     )}
-
+                    {isParsingStarted && (
+                        <ProgressIndicator progress_obj={progressLineObj}/>
+                    )}
                 </div>
             )}
 
@@ -245,15 +217,12 @@ const PriceUpdater = () => {
                 content={errorMessage}
                 danger={true}
                 footer={
-                    <Button
-                        type="primary"
-                        danger
-                        onClick={() => {
-                            setIsErrorModalOpen(false);
-                            closeModalAfterDelay(setIsErrorModalOpen);
-                        }}
-                    >
-                        ОК
+                    <Button type="primary" danger
+                            onClick={() => {
+                                setIsErrorModalOpen(false);
+                                closeModalAfterDelay(setIsErrorModalOpen);
+                            }}
+                    >ОК
                     </Button>
                 }
             />
@@ -270,24 +239,21 @@ const PriceUpdater = () => {
                 }}
                 content={successMessage}
                 footer={
-                    <Button
-                        type="primary"
-                        onClick={() => {
-                            setIsSuccessModalOpen(false);
-                            closeModalAfterDelay(setIsSuccessModalOpen);
-                        }}
-                    >
-                        OK
+                    <Button type="primary"
+                            onClick={() => {
+                                setIsSuccessModalOpen(false);
+                                closeModalAfterDelay(setIsSuccessModalOpen);
+                            }}
+                    >OK
                     </Button>
                 }
             />
             {isParsingDone && parsedData && (
                 <>
                     <Button onClick={handleNewSearch}>Новый поиск</Button>
-                    <ParsingResults
-                        result={parsedData}
-                        vslId={selectedVSLRow?.id}
-                        onRangeChange={handleRangeChange}
+                    <ParsingResults result={parsedData}
+                                    vslId={selectedVSLRow?.id}
+                                    onRangeChange={handleRangeChange}
                     />
                 </>
             )}
