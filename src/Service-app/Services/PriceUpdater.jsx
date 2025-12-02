@@ -35,7 +35,7 @@ const PriceUpdater = () => {
     const [isParsingDone, setIsParsingDone] = useState(false);
     const [progressLineObj, setProgressLineObj] = useState("");
     const [isParsingStarted, setIsParsingStarted] = useState(false);
-
+    const [isSyncFeatures, setIsSyncFeatures] = useState({});
 
     useEffect(() => {
         fetchVendors().then(setVendorList);
@@ -108,25 +108,64 @@ const PriceUpdater = () => {
         }
     };
 
-    const handlePrevResByBtn = async (record) => {
-        const {result: progress} = await getProgressLine();
-        if (!progress) return;
-        setIsParsingStarted(true);
-        setProgressLineObj(progress);
-        const results = await startDataCollection({
-            selectedRow: record,
-            progress,
-            api_url: "/service/previous_parsing_results",
-            sync_features: false,
-        });
 
-        if (!results.is_ok) {
-            setIsParsingStarted(false);
-            setProgressLineObj("");
-            return;
+    const handleAction = async ({ key, selectedRow, value }) => {
+        switch (key) {
+            case "isSyncFeatures":
+                setIsSyncFeatures(prev => ({
+                    ...prev,
+                    [selectedRow.id]: value
+                }));
+                break;
+
+            case "startParsingBtn": {
+                const { result: progress } = await getProgressLine();
+                if (!progress) return;
+
+                setIsParsingStarted(true);
+                setProgressLineObj(progress);
+                console.log('isSyncFeatures[selectedRow.id] ?? false', isSyncFeatures[selectedRow.id] ?? false)
+                const results = await startDataCollection({
+                    selectedRow,
+                    progress,
+                    api_url: "/service/start_parsing",
+                    sync_features: isSyncFeatures[selectedRow.id] ?? false,
+                });
+
+                if (!results.is_ok) {
+                    setIsParsingStarted(false);
+                    setProgressLineObj("");
+                    return;
+                }
+                handleParsingComplete(results);
+                break;
+            }
+
+            case "prevResults": {
+                const { result: progress } = await getProgressLine();
+                if (!progress) return;
+
+                setIsParsingStarted(true);
+                setProgressLineObj(progress);
+                console.log('isSyncFeatures[selectedRow.id] ?? false', isSyncFeatures[selectedRow.id] ?? false)
+                const results = await startDataCollection({
+                    selectedRow,
+                    progress,
+                    api_url: "/service/previous_parsing_results",
+                    sync_features: isSyncFeatures[selectedRow.id] ?? false,
+                });
+
+                if (!results.is_ok) {
+                    setIsParsingStarted(false);
+                    setProgressLineObj("");
+                    return;
+                }
+                handleParsingComplete(results);
+                break;
+            }
         }
-        handleParsingComplete(results);
     };
+
 
 
     return (
@@ -152,7 +191,7 @@ const PriceUpdater = () => {
                                     placeholder="Как будет называться"
                                     value={inputTitle}
                                     onChange={(e) => setInputTitle(e.target.value)}
-                                    style={{marginBottom: 8}} // небольшой отступ снизу
+                                    style={{marginBottom: 8}}
                                 />
 
                                 <Button
@@ -177,33 +216,6 @@ const PriceUpdater = () => {
                             </div>
                         )}
 
-                        {/*{selectedVSLRow !== null && (*/}
-                        {/*    <div className='parser_buttons'>*/}
-                        {/*        <ParsingButtonsCommonComponent*/}
-                        {/*            label="Предыдущие результаты"*/}
-                        {/*            confirmText="Предыдущие результаты?"*/}
-                        {/*            apiUrl="/service/previous_parsing_results"*/}
-                        {/*            selectedRow={selectedVSLRow}*/}
-                        {/*            initialSyncOption={false}*/}
-                        {/*            onComplete={handleParsingComplete}*/}
-                        {/*            setProgressLineObj={setProgressLineObj}*/}
-                        {/*            setIsParsingStarted={setIsParsingStarted}*/}
-                        {/*        />*/}
-
-                        {/*        <ParsingButtonsCommonComponent*/}
-                        {/*            label="Старт"*/}
-                        {/*            confirmText="Запустить парсинг?"*/}
-                        {/*            icon={<SettingOutlined/>}*/}
-                        {/*            apiUrl="/service/start_parsing"*/}
-                        {/*            selectedRow={selectedVSLRow}*/}
-                        {/*            initialSyncOption={true}*/}
-                        {/*            onComplete={handleParsingComplete}*/}
-                        {/*            setProgressLineObj={setProgressLineObj}*/}
-                        {/*            setIsParsingStarted={setIsParsingStarted}*/}
-                        {/*        />*/}
-                        {/*    </div>*/}
-                        {/*)}*/}
-
                         {isParsingStarted && (
                             <div style={{margin: "15px 0", width: "100%"}}>
                                 <ParsingProgress progress_obj={progressLineObj}/>
@@ -219,7 +231,8 @@ const PriceUpdater = () => {
                             setSelectedRow={setSelectedVSLRow}
                             selectedRowKeys={selectedVSLRowKeys}
                             setSelectedRowKeys={setSelectedVSLRowKeys}
-                            handlePrevResByBtn={handlePrevResByBtn}
+                            handleAction={handleAction}
+                            isSyncFeatures={isSyncFeatures}
                         />
                     )}
 
@@ -268,48 +281,6 @@ const PriceUpdater = () => {
                     </Button>
                 }
             />
-
-            {/*{selectedVSLRow !== null && (*/}
-            {/*    <Modal*/}
-            {/*        open={true}*/}
-            {/*        onCancel={() => setSelectedVSLRow(null)}*/}
-            {/*        footer={*/}
-            {/*            <div className='parser_buttons'>*/}
-            {/*                <ParsingButtonsCommonComponent*/}
-            {/*                    label="Предыдущие результаты"*/}
-            {/*                    confirmText="Предыдущие результаты?"*/}
-            {/*                    apiUrl="/service/previous_parsing_results"*/}
-            {/*                    selectedRow={selectedVSLRow}*/}
-            {/*                    initialSyncOption={false}*/}
-            {/*                    onComplete={(data) => {*/}
-            {/*                        handleParsingComplete(data);*/}
-            {/*                        setSelectedVSLRow(null);*/}
-            {/*                    }}*/}
-            {/*                    setProgressLineObj={setProgressLineObj}*/}
-            {/*                    setIsParsingStarted={setIsParsingStarted}*/}
-            {/*                />*/}
-
-            {/*                <ParsingButtonsCommonComponent*/}
-            {/*                    label="Старт"*/}
-            {/*                    confirmText="Запустить парсинг?"*/}
-            {/*                    icon={<SettingOutlined/>}*/}
-            {/*                    apiUrl="/service/start_parsing"*/}
-            {/*                    selectedRow={selectedVSLRow}*/}
-            {/*                    initialSyncOption={true}*/}
-            {/*                    onComplete={(data) => {*/}
-            {/*                        handleParsingComplete(data);*/}
-            {/*                        setSelectedVSLRow(null);*/}
-            {/*                    }}*/}
-            {/*                    setProgressLineObj={setProgressLineObj}*/}
-            {/*                    setIsParsingStarted={setIsParsingStarted}*/}
-            {/*                />*/}
-            {/*            </div>*/}
-            {/*        }*/}
-            {/*    >*/}
-            {/*    </Modal>*/}
-
-            {/*)}*/}
-
             {isParsingDone && parsedData && (
                 <>
                     <Button onClick={handleNewSearch}>Новый поиск</Button>

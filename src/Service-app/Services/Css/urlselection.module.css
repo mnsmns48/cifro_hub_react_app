@@ -4,6 +4,13 @@
     font-size: 16px;
 }
 
+.actionParsingBtn:hover {
+    color: #e2fc2a !important;
+    border: 1px solid transparent !important;
+    background: #b5b5b5 !important;
+    cursor: default !important;
+}
+
 .linkText {
     color: #3a3a3a;
     font-size: 15px;

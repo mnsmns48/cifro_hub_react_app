@@ -5,16 +5,20 @@ import MyModal from "../../../Ui/MyModal.jsx";
 import {UrlSelectionTableColumns} from "./UrlSelectionTable.jsx";
 
 
-const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selectedRowKeys, setSelectedRowKeys, handlePrevResByBtn}) => {
+const SearchTableSelector = ({
+                                 tableData,
+                                 refreshTableData,
+                                 setSelectedRow,
+                                 selectedRowKeys,
+                                 setSelectedRowKeys,
+                                 isSyncFeatures,
+                                 handleAction
+                             }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedVSL, setSelectedVSL] = useState(null);
     const [editingKey, setEditingKey] = useState(null);
     const [editedValues, setEditedValues] = useState({});
 
-    const handleRowSelection = (selectedKeys, selectedRows) => {
-        setSelectedRowKeys(selectedKeys);
-        setSelectedRow(selectedRows[0] || null);
-    };
 
     const handleEdit = (record) => {
         setEditingKey(record.id);
@@ -62,40 +66,37 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
 
     return (
         <div>
-            <Table rowSelection={{
-                type: 'radio',
-                onChange: handleRowSelection,
-                selectedRowKeys: selectedRowKeys
-            }}
-                   onRow={(record) => ({
-                       onClick: () => {
-                           if (Array.isArray(selectedRowKeys) && selectedRowKeys.includes(record.id)) {
-                               setSelectedRowKeys([]);
-                               setSelectedRow(null);
-                           } else {
-                               setSelectedRowKeys([record.id]);
-                               setSelectedRow(record);
-                           }
+            <Table
+                onRow={(record) => ({
+                    onClick: () => {
+                        if (Array.isArray(selectedRowKeys) && selectedRowKeys.includes(record.id)) {
+                            setSelectedRowKeys([]);
+                            setSelectedRow(null);
+                        } else {
+                            setSelectedRowKeys([record.id]);
+                            setSelectedRow(record);
+                        }
 
-                       }
-                   })}
-                   columns={UrlSelectionTableColumns({
-                       editingKey,
-                       editedValues: {
-                           title: editedValues.title,
-                           url: editedValues.url,
-                           set: setEditedValues
-                       },
-                       handleEdit,
-                       handleSave,
-                       handlePrevResByBtn,
-                       showDeleteModal
-                   })}
-                   showHeader={false}
-                   dataSource={tableData}
-                   rowKey="id"
-                   pagination={false}
-                   rowClassName={() => 'compact-row'}/>
+                    }
+                })}
+                columns={UrlSelectionTableColumns({
+                    editingKey,
+                    editedValues: {
+                        title: editedValues.title,
+                        url: editedValues.url,
+                        set: setEditedValues
+                    },
+                    handleEdit,
+                    handleSave,
+                    handleAction,
+                    isSyncFeatures,
+                    showDeleteModal
+                })}
+                showHeader={false}
+                dataSource={tableData}
+                rowKey="id"
+                pagination={false}
+                rowClassName={() => 'compact-row'}/>
             <MyModal
                 isOpen={isModalOpen}
                 onCancel={() => setIsModalOpen(false)}

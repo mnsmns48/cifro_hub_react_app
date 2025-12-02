@@ -1,5 +1,5 @@
 import {Input, Button, Checkbox} from 'antd';
-import {EditOutlined, SaveOutlined, DeleteOutlined, SearchOutlined, SyncOutlined} from '@ant-design/icons';
+import {EditOutlined, SaveOutlined, DeleteOutlined, SyncOutlined} from '@ant-design/icons';
 import TimeDateBlock from "../../../Ui/TimeDateBlock.jsx";
 import styles from "../Css/urlselection.module.css";
 
@@ -8,51 +8,63 @@ export const UrlSelectionTableColumns = ({
                                              editedValues,
                                              handleEdit,
                                              handleSave,
-                                             handlePrevResByBtn,
+                                             handleAction,
+                                             isSyncFeatures,
                                              showDeleteModal
                                          }) => [
     {
-        title: 'Title',
-        dataIndex: 'title',
-        key: 'title',
+        title: "Title",
+        dataIndex: "title",
+        key: "title",
         render: (text, record) =>
-            editingKey === record.id ? (
-                <Input
-                    value={editedValues.title || ''}
-                    onChange={(e) =>
-                        editedValues.set(prev => ({...prev, title: e.target.value}))
-                    }
-                />
-            ) : (
-                <a style={{fontFamily: "'TT Firs Neue', sans-serif"}}
-                   onClick={(e) => {
-                       e.stopPropagation();
-                       handlePrevResByBtn(record)
-                   }}
-                   className={styles.linkText}
-                >
-                    {text}
-                </a>
-            )
+            <a
+                className={styles.linkText}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    handleAction({
+                        key: "prevResults",
+                        selectedRow: record
+                    });
+                }}
+            >
+                {text}
+            </a>
     },
     {
         key: "isSyncFeatures",
         align: "center",
-        render: () => (
+        render: (_, record) => (
             <Checkbox
-                // onChange={() => {
-                //     // пока ничего не делаем
-                // }}
+                checked={isSyncFeatures[record.id] ?? false}
+                onClick={(e) => e.stopPropagation()}
+                onChange={(e) =>
+                    handleAction({
+                        key: "isSyncFeatures",
+                        selectedRow: record,
+                        value: e.target.checked
+                    })
+                }
             />
         ),
     },
     {
-        key: "startParsingBtn",
+        key: "startParsing",
         align: "center",
-        render: () => (
-            <Button icon={<SyncOutlined/>} className={styles.actionParsingBtn}/>
+        render: (_, record) => (
+            <Button
+                icon={<SyncOutlined/>}
+                className={styles.actionParsingBtn}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    handleAction({
+                        key: "startParsing",
+                        selectedRow: record
+                    });
+                }}
+            />
         ),
     },
+
     {
         title: 'Собрано',
         dataIndex: 'dt_parsed',
@@ -81,23 +93,12 @@ export const UrlSelectionTableColumns = ({
         dataIndex: 'url',
         key: 'url',
         align: 'left',
-        onCell: () => ({
-            style: {backgroundColor: '#e0e0e0'}
-        }),
-        render: (text, record) =>
-            editingKey === record.id ? (
-                <Input
-                    value={editedValues.url || ''}
-                    onChange={(e) =>
-                        editedValues.set(prev => ({...prev, url: e.target.value}))
-                    }
-                />
-            ) : (
-                <a
-                    href={text} target="_blank" rel="noopener noreferrer"
-                    style={{color: '#3a3a3a', fontSize: '0.8em'}}>
-                    {text}
-                </a>
-            )
+        onCell: () => ({style: {backgroundColor: '#ffffff'}}),
+        render: (text, record) => editingKey === record.id ? (
+            <Input
+                value={editedValues.url || ''}
+                onChange={(e) => editedValues.set(prev => ({...prev, url: e.target.value}))}/>) : (
+            <a href={text} target="_blank" rel="noopener noreferrer"
+               style={{color: '#3a3a3a', fontSize: '0.8em'}}> {text} </a>)
     }
 ];
