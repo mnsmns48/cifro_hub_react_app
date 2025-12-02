@@ -58,5 +58,9 @@
 .compact-row > td {
     padding: 0 6px !important;
     margin: 0 6px !important;
+
 }
 
+.ant-table-cell {
+    border-bottom: none !important;
+}

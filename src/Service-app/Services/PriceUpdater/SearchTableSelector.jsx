@@ -4,7 +4,6 @@ import {Button, Table} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
 import {UrlSelectionTableColumns} from "./UrlSelectionTable.jsx";
 
-
 const SearchTableSelector = ({
                                  tableData,
                                  refreshTableData,

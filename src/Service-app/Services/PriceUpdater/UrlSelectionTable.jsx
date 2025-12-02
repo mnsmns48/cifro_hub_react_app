@@ -1,4 +1,4 @@
-import {Input, Button, Checkbox} from 'antd';
+import {Input, Button, Checkbox, Popconfirm} from 'antd';
 import {EditOutlined, SaveOutlined, DeleteOutlined, SyncOutlined} from '@ant-design/icons';
 import TimeDateBlock from "../../../Ui/TimeDateBlock.jsx";
 import styles from "../Css/urlselection.module.css";
@@ -17,23 +17,33 @@ export const UrlSelectionTableColumns = ({
         dataIndex: "title",
         key: "title",
         render: (text, record) =>
-            <a
-                className={styles.linkText}
-                onClick={() => {
-                    handleAction({
-                        key: "prevResults",
-                        selectedRow: record
-                    });
-                }}
-            >
-                {text}
-            </a>
+            editingKey === record.id ? (
+                <Input
+                    value={editedValues.title || ''}
+                    onChange={(e) =>
+                        editedValues.set(prev => ({ ...prev, title: e.target.value }))
+                    }
+                />
+            ) : (
+                <a
+                    className={styles.linkText}
+                    onClick={() => {
+                        handleAction({
+                            key: "prevResults",
+                            selectedRow: record
+                        });
+                    }}
+                >
+                    {text}
+                </a>
+            )
     },
     {
         key: "isSyncFeatures",
         align: "center",
         render: (_, record) => (
             <Checkbox
+                className={styles.checkBoxSync}
                 checked={isSyncFeatures[record.id] ?? false}
                 onChange={(e) =>
                     handleAction({
@@ -49,19 +59,24 @@ export const UrlSelectionTableColumns = ({
         key: "startParsing",
         align: "center",
         render: (_, record) => (
-            <Button
-                icon={<SyncOutlined/>}
-                className={styles.actionParsingBtn}
-                onClick={() => {
+            <Popconfirm
+                title="Вы уверены, что хотите обновить данные в этой таблице?"
+                okText="Да"
+                cancelText="Нет"
+                onConfirm={() => {
                     handleAction({
                         key: "startParsing",
-                        selectedRow: record
+                        selectedRow: record,
                     });
                 }}
-            />
+            >
+                <Button
+                    icon={<SyncOutlined />}
+                    className={styles.actionParsingBtn}
+                />
+            </Popconfirm>
         ),
     },
-
     {
         title: 'Собрано',
         dataIndex: 'dt_parsed',

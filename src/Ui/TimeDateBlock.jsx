@@ -46,19 +46,17 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        borderRadius: '4px',
-        backgroundColor: '#e0e0e0',
-        boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-        padding: '0 6px'
+        borderRadius: '30px',
+        backgroundColor: 'rgba(109,123,154,0.36)',
+        boxShadow: '0 2px 2px rgba(0,22,0,100)',
+        margin: '3px'
     },
     time: {
-        fontSize: '0,8em',
-        fontWeight: 'bold',
+        fontSize: '0,7em',
         color: '#222',
     },
     dateBase: {
-        fontSize: '1rem',
-        fontWeight: 'bold',
+        fontSize: '0.8rem',
     },
     dateToday: {
         color: '#e2fc2a',
