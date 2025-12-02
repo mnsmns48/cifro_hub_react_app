@@ -11,13 +11,12 @@ import {
     CalculatorOutlined,
     CalendarOutlined, ClearOutlined, DeleteRowOutlined,
     EyeInvisibleOutlined,
-    FileExcelOutlined, PlusSquareOutlined,
+    FileExcelOutlined, LoadingOutlined, PlusSquareOutlined,
     ReloadOutlined, RestOutlined, ShareAltOutlined,
     WarningOutlined
 } from "@ant-design/icons";
 import {formatDate} from "../../../../utils.js";
 import InHubDownloader from "./InHubDownloader.jsx";
-import MyModal from "../../../Ui/MyModal.jsx";
 import {deleteStockItems} from "../HubMenuLevels/api.js";
 import InfoSelect from "./InfoSelect.jsx";
 import FeatureFilterModal from "./FeatureFilterModal.jsx";
@@ -38,8 +37,6 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
     const [currentOrigin, setCurrentOrigin] = useState(null);
     const [rewardOptions, setRewardOptions] = useState([]);
     const [addToHubModalVisible, setAddToHubModalVisible] = useState(false);
-    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-    const [successMessage, setSuccessMessage] = useState("");
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [dependencySelection, setDependencySelection] = useState(null);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -162,8 +159,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
 
     const handleAddToHub = (msg, updatedOrigins) => {
         setAddToHubModalVisible(false);
-        setSuccessMessage(msg);
-        setIsSuccessModalOpen(true);
+        setSelectedRowKeys([])
         setRows(prev =>
             prev.map(row =>
                 updatedOrigins.includes(row.origin)
@@ -238,6 +234,8 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
 
     const countNoPreview = rows.filter(r => r.preview == null).length;
     const countNoFeatures = rows.filter(r => Array.isArray(r.features_title) && r.features_title.length === 0).length;
+
+    const spinIcon = <LoadingOutlined style={{fontSize: 18, color: "#e2fc2a"}} spin/>;
 
     return (
         <>
@@ -357,25 +355,16 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                                onUploaded={(data) => handleImageUploaded(data, currentOrigin)}/>
             {isRefreshing ? (
                 <div className="circle-float-button refresh-float-button">
-                    <Spin size="small"/>
+                    <Spin indicator={spinIcon}/>
                 </div>
             ) : (
                 <Button onClick={refreshParsingResult} className="circle-float-button refresh-float-button">
-                    <ReloadOutlined style={{fontSize: 24}}/>
+                    <ReloadOutlined style={{fontSize: 20}}/>
                 </Button>
             )}
             <Button onClick={() => setIsFilterModalOpen(true)} className="circle-float-button filter-button">
-                <AlignRightOutlined style={{fontSize: 24}}/>
+                <AlignRightOutlined style={{fontSize: 20}}/>
             </Button>
-            <MyModal
-                isOpen={isSuccessModalOpen}
-                content={successMessage}
-                onConfirm={() => {
-                    setIsSuccessModalOpen(false);
-                }}
-                onCancel={() => setIsSuccessModalOpen(false)}
-                footer={<button onClick={() => setIsSuccessModalOpen(false)}>Ок</button>}
-            />
             <FeatureFilterModal
                 visible={isFilterModalOpen}
                 onClose={() => setIsFilterModalOpen(false)}

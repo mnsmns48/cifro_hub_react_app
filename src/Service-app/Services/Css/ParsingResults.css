@@ -32,7 +32,7 @@
 
 .fixed-hub-button {
     position: fixed;
-    left: 21.5%;
+    left: 31%;
     transform: translate(-100%, -50%);
     z-index: 1000;
     font-weight: bold;
@@ -81,7 +81,7 @@
 
 .circle-float-button {
     position: fixed;
-    left: calc(19.5%);
+    left: calc(28.5%);
     transform: translateY(-50%);
     z-index: 1000;
     width: 50px;
@@ -104,11 +104,11 @@
 }
 
 .refresh-float-button {
-    top: 43%;
+    top: 47%;
 }
 
 .filter-button {
-    top: 50%;
+    top: 53%;
 }
 
 
