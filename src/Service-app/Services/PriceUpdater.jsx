@@ -5,7 +5,14 @@ import {useEffect, useState} from "react";
 import VendorSourceSelector from "./PriceUpdater/VendorSourceSelector.jsx";
 import SearchTableSelector from "./PriceUpdater/SearchTableSelector.jsx";
 import './Css/PriceUpdater.css';
-import {fetchVendors, fetchTableData, addVSL, reCalcOutputPrices} from "./PriceUpdater/api.js";
+import {
+    fetchVendors,
+    fetchTableData,
+    addVSL,
+    reCalcOutputPrices,
+    startDataCollection,
+    getProgressLine
+} from "./PriceUpdater/api.js";
 import ParsingResults from "./PriceUpdater/ParsingResults.jsx";
 import ParsingButtonsCommonComponent from "./PriceUpdater/ParsingButtonsCommonComponent.jsx";
 import ParsingProgress from "./PriceUpdater/ParsingProgress.jsx";
@@ -101,6 +108,26 @@ const PriceUpdater = () => {
         }
     };
 
+    const handlePrevResByBtn = async (record) => {
+        const {result: progress} = await getProgressLine();
+        if (!progress) return;
+        setIsParsingStarted(true);
+        setProgressLineObj(progress);
+        const results = await startDataCollection({
+            selectedRow: record,
+            progress,
+            api_url: "/service/previous_parsing_results",
+            sync_features: false,
+        });
+
+        if (!results.is_ok) {
+            setIsParsingStarted(false);
+            setProgressLineObj("");
+            return;
+        }
+        handleParsingComplete(results);
+    };
+
 
     return (
         <>
@@ -161,7 +188,8 @@ const PriceUpdater = () => {
                         {selectedVendor && (
                             <SearchTableSelector tableData={tableData} refreshTableData={refreshTableData}
                                                  setSelectedRow={setSelectedVSLRow} selectedRowKeys={selectedVSLRowKeys}
-                                                 setSelectedRowKeys={setSelectedVSLRowKeys}/>
+                                                 setSelectedRowKeys={setSelectedVSLRowKeys}
+                                                 handlePrevResByBtn={handlePrevResByBtn}/>
                         )}
                     </Col>
                 </Row>)}

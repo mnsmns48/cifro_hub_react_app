@@ -5,7 +5,7 @@ import MyModal from "../../../Ui/MyModal.jsx";
 import {UrlSelectionTableColumns} from "./UrlSelectionTable.jsx";
 
 
-const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selectedRowKeys, setSelectedRowKeys}) => {
+const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selectedRowKeys, setSelectedRowKeys, handlePrevResByBtn}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedVSL, setSelectedVSL] = useState(null);
     const [editingKey, setEditingKey] = useState(null);
@@ -88,8 +88,10 @@ const SearchTableSelector = ({tableData, refreshTableData, setSelectedRow, selec
                        },
                        handleEdit,
                        handleSave,
+                       handlePrevResByBtn,
                        showDeleteModal
                    })}
+                   showHeader={false}
                    dataSource={tableData}
                    rowKey="id"
                    pagination={false}

@@ -45,8 +45,9 @@ const styles = {
         flexDirection: 'column',
         alignItems: 'center',
         borderRadius: '4px',
-        backgroundColor: '#b5b5b4',
+        backgroundColor: '#e0e0e0',
         boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+        padding: '0 6px'
     },
     time: {
         fontSize: '1rem',
