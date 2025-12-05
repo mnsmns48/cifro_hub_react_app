@@ -76,10 +76,22 @@ export default function InfoInMain() {
                     }
                 ]}
             />
+
             <div className={styles.mainContainer}>
-                <Space wrap>
-                    <Image src={serviceImages?.cifrotech_} alt='main_photo_pic' style={{borderRadius: 14}}/>
-                </Space>
+                <Masonry
+                    columns={1}
+                    gutter={4}
+                    items={[
+                        {
+                            key: "cifrotech_main",
+                            data: serviceImages?.cifrotech_
+                        }
+                    ]}
+                    itemRender={({data}) => (
+                        <img src={data} alt="main" style={{width: "100%", borderRadius: 14}}/>
+                    )}
+                />
+
                 {Array.isArray(imageList) && imageList.length > 0 && (
                     <div style={{paddingTop: 16}}>
                         <Masonry
