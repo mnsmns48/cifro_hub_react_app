@@ -44,7 +44,7 @@ export default function FeaturesSegmented({features}) {
                             title={sectionName}
                             key={sectionName}
                             description={
-                                <span style={{ color: isActive ? theme.colorLightGreen : "inherit" }}>
+                                <span style={{color: isActive ? theme.colorLightGreen : "inherit"}}>
                 {getSectionIcon(sectionName)}
               </span>
                             }
@@ -88,7 +88,6 @@ export default function FeaturesSegmented({features}) {
     );
 
 
-
     if (!hasPros && !hasCons && hasInfo) {
         return (
             <div style={{flex: 1, display: "flex", flexDirection: "column"}}>
@@ -107,8 +106,8 @@ export default function FeaturesSegmented({features}) {
         {
             label: (
                 <div style={{padding: 4}}>
-                    <Switch checked={showInfo} onChange={setShowInfo} />
-                    <div style={{ width: 70, textAlign: "center" }}>{showInfo ? "Подробно" : "Кратко"}</div>
+                    <Switch checked={showInfo} onChange={setShowInfo}/>
+                    <div style={{width: 70, textAlign: "center"}}>{showInfo ? "Подробно" : "Кратко"}</div>
                 </div>
             ),
             value: "info",
@@ -116,7 +115,7 @@ export default function FeaturesSegmented({features}) {
         hasPros && {
             label: (
                 <div style={{padding: 4, marginTop: 3}}>
-                    <LikeOutlined style={{ fontSize: 20 }} />
+                    <LikeOutlined style={{fontSize: 20}}/>
                     <div>Преимущества</div>
                 </div>
             ),
@@ -125,7 +124,7 @@ export default function FeaturesSegmented({features}) {
         hasCons && {
             label: (
                 <div style={{padding: 4, marginTop: 3}}>
-                    <DislikeOutlined style={{ fontSize: 20 }}/>
+                    <DislikeOutlined style={{fontSize: 20}}/>
                     <div>Недостатки</div>
                 </div>
             ),

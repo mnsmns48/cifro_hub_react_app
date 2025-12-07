@@ -57,6 +57,7 @@ export default function Features({theme, tg, insets, cardData, visible, onClose}
             getFetch(endpoint)
                 .then((data) => {
                     setFeatures(data?.features ?? null);
+
                 })
                 .catch(() => setFeatures(null));
         }

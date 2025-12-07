@@ -130,7 +130,6 @@ export async function fetchItemDependencies(origin) {
 export async function postDependencyUpdate(data) {
     try {
         const payload = Array.isArray(data) ? data : [data];
-        console.log('payload', payload);
         await axios.post(
             "/service/update_parsing_item_dependency/",
             {items: payload},

@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {Button, Typography, Input} from "antd";
-import {SelectOutlined} from "@ant-design/icons";
+import {DeleteRowOutlined, SelectOutlined} from "@ant-design/icons";
 import MyModal from "../../../Ui/MyModal.jsx";
 import {fetchDependencyDetails, fetchItemDependencies, postDependencyUpdate} from "./api.js";
 import DependencyModal from "./DetailDependencyModal.jsx";
@@ -106,6 +106,9 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
         <Text type="danger">{error}</Text>
     ) : (
         <>
+            <div style={{justifyContent: "end", display: "flex", paddingBottom: '10px'}}>
+                <Button icon={<DeleteRowOutlined/>}/>
+            </div>
             <Search
                 placeholder="Поиск по названию"
                 value={searchQuery}
