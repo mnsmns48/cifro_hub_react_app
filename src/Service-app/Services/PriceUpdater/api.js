@@ -144,12 +144,20 @@ export async function postDependencyUpdate(data) {
 
 export async function fetchDependencyDetails(origin) {
     try {
-        return await fetch(`/service/load_dependency_details/${origin}`, {
+        const res = await fetch(`/service/load_dependency_details/${origin}`, {
             method: "GET",
-            headers: {Accept: "application/json"},
-        }).then(res => res.json());
+            headers: { Accept: "application/json" },
+        });
+
+        if (!res.ok) {
+            alert(`Ошибка от сервера: ${res.status}`);
+            return null;
+        }
+
+        return await res.json();
     } catch (error) {
-        console.error("Ошибка запроса:", error);
+        alert("Сервер недоступен. Проверьте подключение.");
+        return null;
     }
 }
 
@@ -208,4 +216,11 @@ export const exportParsingToExcel = async (payload) => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
+};
+
+
+export const deleteDependencies = async (origins) => {
+    const url = "/service/clear_features_dependencies";
+    const response = await axios.delete(url, {data: {origins}});
+    return response.data;
 };

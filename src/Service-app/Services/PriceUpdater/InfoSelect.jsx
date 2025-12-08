@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
 import {Button, Typography, Input} from "antd";
-import {DeleteRowOutlined, SelectOutlined} from "@ant-design/icons";
+import {DeleteRowOutlined, ScissorOutlined, SelectOutlined} from "@ant-design/icons";
 import MyModal from "../../../Ui/MyModal.jsx";
-import {fetchDependencyDetails, fetchItemDependencies, postDependencyUpdate} from "./api.js";
+import {deleteDependencies, fetchDependencyDetails, fetchItemDependencies, postDependencyUpdate} from "./api.js";
 import DependencyModal from "./DetailDependencyModal.jsx";
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 
@@ -100,22 +100,48 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
         }
     };
 
+    const handleDelete = async () => {
+        try {
+            setLoading(true);
+            const result = await deleteDependencies(originList);
+
+            setRows(prev =>
+                prev.map(row =>
+                    result.deleted.includes(row.origin)
+                        ? {...row, features_title: []}
+                        : row
+                )
+            );
+
+            closeModal();
+        } catch (err) {
+            alert(`Ошибка удаления: ${err.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const modalContent = loading ? (
         <Spinner/>
     ) : error ? (
         <Text type="danger">{error}</Text>
     ) : (
         <>
-            <div style={{justifyContent: "end", display: "flex", paddingBottom: '10px'}}>
-                <Button icon={<DeleteRowOutlined/>}/>
+            <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12}}>
+                <Search
+                    placeholder="Поиск по названию"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    allowClear
+                    style={{flex: 1, marginRight: 8}}
+                />
+
+                <Button
+                    icon={<ScissorOutlined/>}
+                    onClick={handleDelete}
+                    type="default" shape="shape" danger>Отвязать</Button>
             </div>
-            <Search
-                placeholder="Поиск по названию"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                style={{marginBottom: 12}}
-                allowClear
-            />
+
             {filtered?.length ? (
                 filtered.map((item, i) => (
                     <Button key={i} block type="default" size="small" style={{marginBottom: 8}}
@@ -130,9 +156,16 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
     );
 
     const openDependencyDescription = async (title) => {
-        const result = await fetchDependencyDetails(title);
-        setDependencyResult(result);
-        setIsDependencyModalOpen(true);
+        try {
+            const result = await fetchDependencyDetails(title);
+            if (!result) {
+                return;
+            }
+            setDependencyResult(result);
+            setIsDependencyModalOpen(true);
+        } catch (e) {
+            alert(`Проблема с получением данных: ${e}`);
+        }
     };
 
     const closeDependencyModal = () => {
