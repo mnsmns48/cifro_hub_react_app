@@ -68,7 +68,6 @@ export const getSectionIcon = (sectionName) => {
 
         default:
             return <HolderOutlined/>
-
     }
 }
 

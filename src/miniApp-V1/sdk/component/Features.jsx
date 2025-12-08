@@ -2,11 +2,11 @@ import {Popup, Swiper} from "antd-mobile";
 import {useEffect, useState} from "react";
 import {getFetch} from "../../api.js";
 import {miniAppConfig} from "../../miniAppConf.jsx";
-import FeaturesSegmented from "./FeaturesSegmented.jsx";
 import CardInfo from "./CardHubInfo.jsx";
 import PicSwapper from "./PicSwapper.jsx";
 import styles from "../css/features.module.css";
 import '/fonts/ttfirsneue/stylesheet.css';
+import FeaturesSegmented from "./FeaturesSegmented.jsx";
 
 export default function Features({theme, tg, insets, cardData, visible, onClose}) {
     const [features, setFeatures] = useState(null);
@@ -60,6 +60,7 @@ export default function Features({theme, tg, insets, cardData, visible, onClose}
 
                 })
                 .catch(() => setFeatures(null));
+
         }
     }, [visible, cardData?.origin]);
 
@@ -83,33 +84,33 @@ export default function Features({theme, tg, insets, cardData, visible, onClose}
                 }}
             >
 
-                    <div className={styles.contentContainer} style={{marginTop: 40}}>
-                        {features && (
-                            <div className={styles.mainTitle} style={{color: theme.colorText}}>
-                                {features.title}
-                            </div>
-                        )}
-
-                        {pics.length > 0 && (
-                            <Swiper defaultIndex={0} loop={pics.length > 1}>
-                                {pics.map((src, idx) => (
-                                    <Swiper.Item key={idx}>
-                                        <div className={styles.swiperPicItemContainer}>
-                                            <img
-                                                src={src}
-                                                alt={`${cardData.title} ${idx}`}
-                                                onClick={() => handleOpenSwiper(pics, idx, cardData.title)}
-                                            />
-                                        </div>
-                                    </Swiper.Item>
-                                ))}
-                            </Swiper>
-                        )}
-                        <div className={styles.scrollContainer}>
-                            <CardInfo cardData={cardData} theme={theme}/>
-                            <FeaturesSegmented type={cardData?.type} features={features}/>
+                <div className={styles.contentContainer} style={{marginTop: 40}}>
+                    {features && (
+                        <div className={styles.mainTitle} style={{color: theme.colorText}}>
+                            {features.title}
                         </div>
+                    )}
+
+                    {pics.length > 0 && (
+                        <Swiper defaultIndex={0} loop={pics.length > 1}>
+                            {pics.map((src, idx) => (
+                                <Swiper.Item key={idx}>
+                                    <div className={styles.swiperPicItemContainer}>
+                                        <img
+                                            src={src}
+                                            alt={`${cardData.title} ${idx}`}
+                                            onClick={() => handleOpenSwiper(pics, idx, cardData.title)}
+                                        />
+                                    </div>
+                                </Swiper.Item>
+                            ))}
+                        </Swiper>
+                    )}
+                    <div className={styles.scrollContainer}>
+                        <CardInfo cardData={cardData} theme={theme}/>
+                        <FeaturesSegmented features={features}/>
                     </div>
+                </div>
 
             </Popup>
 

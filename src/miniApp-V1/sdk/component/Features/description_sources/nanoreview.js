@@ -231,6 +231,8 @@ const nanoreviewShortSmartPhoneSpecification = (features_array) => {
 };
 
 
-export default function nanoreview(features_array) {
-    return nanoreviewShortSmartPhoneSpecification(features_array);
+export default function nanoreview(type, features_array) {
+    if (type === 'phone') {
+        return nanoreviewShortSmartPhoneSpecification(features_array);
+    }
 }

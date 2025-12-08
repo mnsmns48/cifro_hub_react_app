@@ -4,10 +4,10 @@ import styles from "../css/features.module.css";
 import {useContext, useState} from "react";
 import {getSectionIcon} from "./Features/IconMap.jsx";
 import {ThemeContext} from "../context.js";
-import SmartPhone from "./Features/SmartPhone.jsx";
-import FeatureMap from "./Features/FeatureMap.jsx";
+import ShortFeaturesComponent from "./Features/ShortFeaturesComponent.jsx";
 
-export default function FeaturesSegmented({type, features}) {
+
+export default function FeaturesSegmented({features}) {
     const [tab, setTab] = useState("info");
     const [showInfo, setShowInfo] = useState(false);
 
@@ -97,7 +97,13 @@ export default function FeaturesSegmented({type, features}) {
                 </div>
 
                 <div style={{flex: 1, overflowY: "auto", padding: "12px"}} className={styles.FeatureBlock}>
-                    {showInfo ? renderInfo() : <FeatureMap type={type} info={info} /> }
+                    {showInfo ? renderInfo() : <ShortFeaturesComponent
+                        type_={features?.type}
+                        info={{
+                            info: features.info,
+                            source: features.source
+                        }}
+                    />}
                 </div>
             </div>
         );
@@ -147,7 +153,15 @@ export default function FeaturesSegmented({type, features}) {
             <div style={{flex: 1, overflowY: "auto", padding: "16px"}} className={styles.FeatureBlock}>
                 {tab === "pros" && hasPros && renderList(prosCons.advantage)}
                 {tab === "cons" && hasCons && renderList(prosCons.disadvantage)}
-                {tab === "info" && hasInfo && (showInfo ? renderInfo() : <SmartPhone info={features}/>)}
+                {tab === "info" && hasInfo && (showInfo ? renderInfo() :
+                        <ShortFeaturesComponent
+                            type_={features?.type}
+                            info={{
+                                info: features.info,
+                                source: features.source
+                            }}
+                        />
+                )}
             </div>
         </div>
     );

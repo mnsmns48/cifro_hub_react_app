@@ -313,7 +313,19 @@ const gsmarenaShortSmartPhoneSpecification = (features_array) => {
     );
 };
 
+const gsmarenaShortSmartWatchSpecification = (features_array) => {
+    return createShortSmartPhoneSpecification(
+        features_array,
+        gsmarenaReleaseDate,
+    );
+};
 
-export default function gsmarena(features_array) {
-    return gsmarenaShortSmartPhoneSpecification(features_array);
+
+export default function gsmarena(type, features_array) {
+    if (type === 'phone') {
+        return gsmarenaShortSmartPhoneSpecification(features_array);
+    }
+    if (type === 'watch') {
+        return gsmarenaShortSmartWatchSpecification(features_array);
+    }
 }
