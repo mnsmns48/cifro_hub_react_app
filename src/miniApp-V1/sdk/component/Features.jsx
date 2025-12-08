@@ -107,7 +107,7 @@ export default function Features({theme, tg, insets, cardData, visible, onClose}
                         )}
                         <div className={styles.scrollContainer}>
                             <CardInfo cardData={cardData} theme={theme}/>
-                            <FeaturesSegmented features={features}/>
+                            <FeaturesSegmented type={cardData?.type} features={features}/>
                         </div>
                     </div>
 

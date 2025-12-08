@@ -5,8 +5,9 @@ import {useContext, useState} from "react";
 import {getSectionIcon} from "./Features/IconMap.jsx";
 import {ThemeContext} from "../context.js";
 import SmartPhone from "./Features/SmartPhone.jsx";
+import FeatureMap from "./Features/FeatureMap.jsx";
 
-export default function FeaturesSegmented({features}) {
+export default function FeaturesSegmented({type, features}) {
     const [tab, setTab] = useState("info");
     const [showInfo, setShowInfo] = useState(false);
 
@@ -96,7 +97,7 @@ export default function FeaturesSegmented({features}) {
                 </div>
 
                 <div style={{flex: 1, overflowY: "auto", padding: "12px"}} className={styles.FeatureBlock}>
-                    {showInfo ? renderInfo() : <SmartPhone info={features}/>}
+                    {showInfo ? renderInfo() : <FeatureMap type={type} info={info} /> }
                 </div>
             </div>
         );
