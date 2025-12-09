@@ -49,3 +49,10 @@ export const formatDate = isoString => {
     date.setHours(date.getHours() + 3);
     return date.toISOString().slice(0, 16).replace("T", " ");
 };
+
+
+export function runExtractors(extractors) {
+    return Object.fromEntries(
+        Object.entries(extractors).map(([key, fn]) => [key, fn()])
+    );
+}

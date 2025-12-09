@@ -1,23 +1,4 @@
-import {shortSmartPhoneSpecification} from "./FeatureMap.jsx";
-
-const specMap = {
-    phone: shortSmartPhoneSpecification,
-    tablet: shortSmartPhoneSpecification,
-    watch: shortSmartPhoneSpecification
-}
-
-export default function ShortFeaturesComponent({type_, info}) {
-
-    const features_array = Array.isArray(info.info) ? info.info : [];
-
-    const getSpecs = specMap[type_];
-    if (!getSpecs)
-        return null;
-
-    const blocks = getSpecs(features_array, info.source, type_);
-    if (!blocks.length)
-        return null;
-
+export default function ShortFeaturesComponent({blocks}) {
 
     return (
         <div style={{padding: "8px"}}>
@@ -31,10 +12,7 @@ export default function ShortFeaturesComponent({type_, info}) {
                             borderRadius: '12px',
                         }}>{icon}</span> {title}</strong>{" "}
                         <div style={{display: "inline", lineHeight: 1.9}}>
-                            {specs
-                                .map((s) => (s?.value ? `${s.value}${s.label || ""}` : null))
-                                .filter(Boolean)
-                                .join(" ")}
+                            {specs.map(s => `${s.value} ${s.label ? s.label : ''}`).join(' ')}
                         </div>
 
                     </li>

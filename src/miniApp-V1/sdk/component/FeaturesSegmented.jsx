@@ -2,9 +2,10 @@ import {JumboTabs, Segmented, Switch} from "antd-mobile";
 import {DislikeOutlined, LikeOutlined} from "@ant-design/icons";
 import styles from "../css/features.module.css";
 import {useContext, useState} from "react";
-import {getSectionIcon} from "./Features/IconMap.jsx";
+import {getSectionIcon} from "./Features/SectionIconMap.jsx";
 import {ThemeContext} from "../context.js";
 import ShortFeaturesComponent from "./Features/ShortFeaturesComponent.jsx";
+import {getDeviceFeaturesUI} from "./Features/FeatureService.js";
 
 
 export default function FeaturesSegmented({features}) {
@@ -32,6 +33,8 @@ export default function FeaturesSegmented({features}) {
             ))}
         </ul>
     );
+
+    const featuresBlocks = getDeviceFeaturesUI(features?.info, features?.type, features?.source);
 
     const renderInfo = () => (
         <div>
@@ -97,13 +100,7 @@ export default function FeaturesSegmented({features}) {
                 </div>
 
                 <div style={{flex: 1, overflowY: "auto", padding: "12px"}} className={styles.FeatureBlock}>
-                    {showInfo ? renderInfo() : <ShortFeaturesComponent
-                        type_={features?.type}
-                        info={{
-                            info: features.info,
-                            source: features.source
-                        }}
-                    />}
+                    {showInfo ? renderInfo() : <ShortFeaturesComponent blocks={featuresBlocks}/>}
                 </div>
             </div>
         );
@@ -153,15 +150,7 @@ export default function FeaturesSegmented({features}) {
             <div style={{flex: 1, overflowY: "auto", padding: "16px"}} className={styles.FeatureBlock}>
                 {tab === "pros" && hasPros && renderList(prosCons.advantage)}
                 {tab === "cons" && hasCons && renderList(prosCons.disadvantage)}
-                {tab === "info" && hasInfo && (showInfo ? renderInfo() :
-                        <ShortFeaturesComponent
-                            type_={features?.type}
-                            info={{
-                                info: features.info,
-                                source: features.source
-                            }}
-                        />
-                )}
+                {tab === "info" && hasInfo && (showInfo ? renderInfo() : <ShortFeaturesComponent blocks={featuresBlocks}/>)}
             </div>
         </div>
     );
