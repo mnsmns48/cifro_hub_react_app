@@ -1,0 +1,25 @@
+.horizontalScrollContainer {
+    display: flex;
+    overflow-x: auto;
+    padding: 5px 0;
+    gap: 8px;
+}
+
+.modelButton {
+    flex: 0 0 auto;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 16px;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modelButton.selected {
+    background-color: #1890ff;
+    color: #fff;
+    border-color: #1890ff;
+}
