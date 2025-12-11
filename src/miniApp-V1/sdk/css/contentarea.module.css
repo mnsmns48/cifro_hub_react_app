@@ -1,0 +1,9 @@
+.ProductGradeFilterBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.625rem;
+    border-radius: 14px;
+    white-space: nowrap;
+    font-size: 0.875rem;
+}

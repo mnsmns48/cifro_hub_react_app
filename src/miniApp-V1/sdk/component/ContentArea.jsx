@@ -4,12 +4,15 @@ import { miniAppConfig } from "../../miniAppConf.jsx";
 import { getFetch } from "../../api.js";
 import CategoryNavigator from "./CategoryNavigator.jsx";
 import baseStyles from "../css/base.module.css";
+import contentAreaStyles from "../css/contentArea.module.css";
 import BreadCrumbs from "./Breadcrumbs.jsx";
 import CollectionView from "./CollectionView.jsx";
 import InfoInMain from "./InfoInMain.jsx";
 import { AppEnvironmentContext } from "../context.js";
 import { useTelegramBackButton } from "../hook/useTelegramBackButton.js";
-import ProductRoundGrade from "./ProductRoundGrade.jsx";
+import ProductFilterSidebar from "./ProductFilterSidebar.jsx";
+import { UnorderedListOutlined } from "@ant-design/icons";
+import { Button } from "antd";
 
 function getAllIds(menuItems, parentId) {
     const ids = [];
@@ -27,15 +30,19 @@ function ContentArea({ barTab }) {
     const [menuItems, setMenuItems] = useState([]);
     const [capsuleChoice, setCapsuleChoice] = useState(null);
     const [stack, setStack] = useState([]);
-    const [duration, setDuration] = useState(0);
-    const [productItems, setProductItems] = useState([]);
     const [featuresVisible, setFeaturesVisible] = useState(false);
-    const [modelDisplayed, setModelDisplayed] = useState("ALL");
+
+    const [productState, setProductState] = useState({
+        items: [],
+        selectedModel: "ALL",
+        sidebarOpen: false,
+        loadedForStack: false
+    });
 
     const config = miniAppConfig[barTab];
     const { tg } = useContext(AppEnvironmentContext);
 
-    // Фетчим меню
+
     async function fetchMenuItems() {
         if (!config?.Content?.endpointMenu) {
             setMenuItems([]);
@@ -45,88 +52,75 @@ function ContentArea({ barTab }) {
         setMenuItems(Array.isArray(result) ? result : []);
     }
 
-    // Фетчим продукты по переданному stack
+
     async function fetchProductItemsForStack(currentStack) {
+        setProductState(prev => ({ ...prev, loadedForStack: false, selectedModel: "ALL" }));
+
         if (!config?.Content?.endpointProducts || !currentStack.length) {
-            setProductItems([]);
-            setDuration(0);
+            setProductState(prev => ({ ...prev, items: [], loadedForStack: true }));
             return;
         }
 
         const lastId = currentStack.at(-1)?.id;
-        if (lastId == null) {
-            setProductItems([]);
-            setDuration(0);
+        if (!lastId) {
+            setProductState(prev => ({ ...prev, items: [], loadedForStack: true }));
             return;
         }
 
-        const pathIds = getAllIds(menuItems, Number(lastId)) || [];
-        if (!Array.isArray(pathIds) || pathIds.length === 0) {
-            setProductItems([]);
-            setDuration(0);
+        const pathIds = getAllIds(menuItems, Number(lastId));
+        if (!pathIds.length) {
+            setProductState(prev => ({ ...prev, items: [], loadedForStack: true }));
             return;
         }
 
         const result = await getFetch(config.Content.endpointProducts, { ids: pathIds });
-        setProductItems(result?.products || []);
-        setDuration(result?.duration_ms || 0);
+        setProductState(prev => ({
+            ...prev,
+            items: result?.products || [],
+            loadedForStack: true,
+            selectedModel: "ALL"
+        }));
     }
 
     useTelegramBackButton(tg, capsuleChoice, stack, setStack, setCapsuleChoice, featuresVisible);
 
+
     useEffect(() => {
-        setModelDisplayed("ALL");
+        setProductState(prev => ({ ...prev, selectedModel: "ALL" }));
     }, [capsuleChoice, stack]);
 
-    useEffect(() => {
-        setStack([]);
-    }, [capsuleChoice]);
+    useEffect(() => setStack([]), [capsuleChoice]);
+    useEffect(() => { void fetchMenuItems(); }, [barTab]);
+    useEffect(() => { void fetchProductItemsForStack(stack); }, [barTab, menuItems, stack, config]);
 
-    useEffect(() => {
-        void fetchMenuItems();
-    }, [barTab]);
-
-    useEffect(() => {
-        void fetchProductItemsForStack(stack);
-    }, [barTab, menuItems, stack, config]);
-
-    const handleSelect = item => {
-        setStack(prev => [...prev, { id: String(item.id), label: item.label }]);
-    };
-
+    const handleSelect = item => setStack(prev => [...prev, { id: String(item.id), label: item.label }]);
     const handleBreadcrumbSelect = useCallback(index => {
-        setStack(prev => {
-            if (index === 0) return [];
-            return prev.slice(0, index);
-        });
+        setStack(prev => (index === 0 ? [] : prev.slice(0, index)));
     }, []);
-
 
     const isLeafSelected = useMemo(() => {
         if (!stack.length) return false;
         const lastId = Number(stack.at(-1)?.id);
         const lastItem = menuItems.find(item => item.id === lastId);
         if (!lastItem) return false;
-        const hasChildren = menuItems.some(item => item.parent_id === lastId);
-        return !hasChildren;
+        return !menuItems.some(item => item.parent_id === lastId);
     }, [stack, menuItems]);
 
-
     const uniqueModels = useMemo(() => {
-        return Array.from(new Set(productItems.map(p => p.model)));
-    }, [productItems]);
+        return Array.from(new Set(productState.items.map(p => p.model).filter(Boolean)));
+    }, [productState.items]);
 
-
-    const showProductRoundGrade = isLeafSelected && uniqueModels.length > 1;
-
+    const showProductGradeFilter = useMemo(() => {
+        return isLeafSelected && productState.loadedForStack && uniqueModels.length > 1;
+    }, [isLeafSelected, productState.loadedForStack, uniqueModels]);
 
     const filteredItems = useMemo(() => {
-        if (!showProductRoundGrade) return productItems;
-        if (modelDisplayed === "ALL") return productItems;
-        if (modelDisplayed === "NO_MODEL") return productItems.filter(p => !p.model);
-        return productItems.filter(p => p.model === modelDisplayed);
-    }, [modelDisplayed, productItems, showProductRoundGrade]);
-
+        if (!showProductGradeFilter) return productState.items;
+        if (productState.selectedModel === "ALL") return productState.items;
+        if (productState.selectedModel === "NO_MODEL")
+            return productState.items.filter(p => !p.model);
+        return productState.items.filter(p => p.model === productState.selectedModel);
+    }, [productState.items, productState.selectedModel, showProductGradeFilter]);
 
     return (
         <>
@@ -136,11 +130,21 @@ function ContentArea({ barTab }) {
             />
 
             {capsuleChoice && (
-                <div className={baseStyles.centeredContainer}>
+                <div className={baseStyles.breadcrumbRow}>
                     <BreadCrumbs
                         stack={[{ label: capsuleChoice.label }, ...stack]}
                         onSelect={handleBreadcrumbSelect}
                     />
+                    <Button
+                        onClick={() =>
+                            setProductState(prev => ({ ...prev, sidebarOpen: true }))
+                        }
+                        className={contentAreaStyles.ProductGradeFilterBtn}
+                        disabled={!showProductGradeFilter}
+                        style={{ opacity: showProductGradeFilter ? 1 : 0 }}
+                    >
+                        <UnorderedListOutlined />
+                    </Button>
                 </div>
             )}
 
@@ -153,11 +157,17 @@ function ContentArea({ barTab }) {
                 onSelect={handleSelect}
             />
 
-            {showProductRoundGrade && (
-                <ProductRoundGrade
-                    productItems={productItems}
-                    selectedModel={modelDisplayed}
-                    setSelectedModel={setModelDisplayed}
+            {showProductGradeFilter && (
+                <ProductFilterSidebar
+                    productItems={productState.items}
+                    selectedModel={productState.selectedModel}
+                    setSelectedModel={model =>
+                        setProductState(prev => ({ ...prev, selectedModel: model }))
+                    }
+                    open={productState.sidebarOpen}
+                    setOpen={open =>
+                        setProductState(prev => ({ ...prev, sidebarOpen: open }))
+                    }
                 />
             )}
 
