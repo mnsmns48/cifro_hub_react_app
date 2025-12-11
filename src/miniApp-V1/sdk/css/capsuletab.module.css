@@ -1,6 +1,5 @@
 .capsuleTabMenu {
     --capsule-active-bg: #b7b7b7;
-
 }
 
 .capsuleTabMenu :global(.adm-capsule-tabs-tab.adm-capsule-tabs-tab-active) {

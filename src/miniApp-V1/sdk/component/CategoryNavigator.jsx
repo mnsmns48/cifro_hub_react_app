@@ -27,7 +27,7 @@ export default function CategoryNavigator({data = [], parent, stack, onSelect}) 
     if (!currentItems.length) return null;
 
     return (
-        <div className={baseStyles.centeredContainer} style={{paddingTop: 12}}>
+        <div className={baseStyles.centeredContainer} style={{paddingTop: 6}}>
             <div className={styles.depthBoxContainer}>
                 {currentItems.map(item => (
                     <div
@@ -35,8 +35,8 @@ export default function CategoryNavigator({data = [], parent, stack, onSelect}) 
                         className={styles.elementButton}
                         onClick={() => onSelect(item)}
                         style={{
-                            justifyContent: item.icon ? "flex-start" : "center",
-                            gap: item.icon ? "12px" : 0,
+                            justifyContent: "center",
+                            gap: item.icon ? "8px" : 0,
                             boxShadow: `0 0 4px ${theme.colorPrimary}79`,
                             background: theme.colorCard
                         }}

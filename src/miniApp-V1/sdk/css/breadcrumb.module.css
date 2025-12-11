@@ -2,7 +2,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 22px 12px;
+    padding: 12px 12px;
     overflow-x: auto;
     white-space: nowrap;
     z-index: 999;
