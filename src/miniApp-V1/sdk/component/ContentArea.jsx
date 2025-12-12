@@ -4,7 +4,7 @@ import { miniAppConfig } from "../../miniAppConf.jsx";
 import { getFetch } from "../../api.js";
 import CategoryNavigator from "./CategoryNavigator.jsx";
 import baseStyles from "../css/base.module.css";
-import contentAreaStyles from "../css/contentArea.module.css";
+import contentAreaStyles from "../css/contentarea.module.css";
 import BreadCrumbs from "./Breadcrumbs.jsx";
 import CollectionView from "./CollectionView.jsx";
 import InfoInMain from "./InfoInMain.jsx";
