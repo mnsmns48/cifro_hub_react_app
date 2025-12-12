@@ -1,14 +1,15 @@
-import { useMemo } from "react";
-import { Popup, Button } from "antd-mobile";
-import {QuestionOutlined} from "@ant-design/icons";
+import {useContext, useMemo} from "react";
+import {Popup, Button} from "antd-mobile";
+import {ThemeContext} from "../context.js";
+import styles from "../css/productroundgrade.module.css";
 
 export default function ProductFilterSidebar({
-                                                     productItems,
-                                                     selectedModel,
-                                                     setSelectedModel,
-                                                     open,
-                                                     setOpen
-                                                 }) {
+                                                 productItems,
+                                                 selectedModel,
+                                                 setSelectedModel,
+                                                 open,
+                                                 setOpen
+                                             }) {
     const modelList = useMemo(() => {
         return Array.from(
             new Set(productItems.map(p => p.model).filter(Boolean))
@@ -28,26 +29,17 @@ export default function ProductFilterSidebar({
         setOpen(false);
     };
 
+    const theme = useContext(ThemeContext);
+
     return (
         <Popup
             visible={open}
             onMaskClick={() => setOpen(false)}
             position="right"
-            bodyStyle={{ height: 0}}
+            bodyStyle={{height: 0}}
         >
-            <div
-                style={{
-                    marginTop: '35vh',
-                    maxHeight: '60vh',
-                    background: '#ffffff',
-                    borderRadius: '20px 0 0 20px',
-                    padding: 10,
-                    overflowY: 'auto',
-                    justifyContent: 'end',
-                    display: 'flex'
-                }}
-            >
-                <div>
+            <div className={styles.popupContainer}>
+                <div >
                     {buttons.map(model => (
                         <Button
                             key={model}
@@ -55,15 +47,16 @@ export default function ProductFilterSidebar({
                             fill={selectedModel === model ? "solid" : "outline"}
                             onClick={() => handleSelect(model)}
                             style={{
-                                fontSize: "0.85rem",
-                                display: "flex",
-                                borderRadius: "1.25rem",
-                                margin: "0.375rem"
+                                background: selectedModel === model
+                                    ? theme.colorLightGreen
+                                    : theme.colorCard,
+                                color: selectedModel === model
+                                    ? "black"
+                                    : theme.colorText,
                             }}
+                            className={styles.pickBtn}
                         >
-                            {model === "ALL" ? "Все сразу" : model === "NO_MODEL" ? (
-                                <QuestionOutlined />
-                            ) : null}
+                            {model === "ALL" ? "Все сразу" : model === "NO_MODEL" ? "Без категории" : null}
                             {model !== "ALL" && model !== "NO_MODEL" ? model : ""}
                         </Button>
                     ))}

@@ -6,4 +6,14 @@
     border-radius: 14px;
     white-space: nowrap;
     font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.ProductGradeFilterBtn.ProductGradeFilterBtn {
+    border: none !important;
+}
+
+.ProductGradeFilterBtn.ProductGradeFilterBtn:hover {
+    border: none !important;
+    box-shadow: none !important;
 }

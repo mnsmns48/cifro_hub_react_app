@@ -8,7 +8,7 @@ import contentAreaStyles from "../css/contentArea.module.css";
 import BreadCrumbs from "./Breadcrumbs.jsx";
 import CollectionView from "./CollectionView.jsx";
 import InfoInMain from "./InfoInMain.jsx";
-import { AppEnvironmentContext } from "../context.js";
+import {AppEnvironmentContext, ThemeContext} from "../context.js";
 import { useTelegramBackButton } from "../hook/useTelegramBackButton.js";
 import ProductFilterSidebar from "./ProductFilterSidebar.jsx";
 import { UnorderedListOutlined } from "@ant-design/icons";
@@ -41,7 +41,7 @@ function ContentArea({ barTab }) {
 
     const config = miniAppConfig[barTab];
     const { tg } = useContext(AppEnvironmentContext);
-
+    const theme = useContext(ThemeContext);
 
     async function fetchMenuItems() {
         if (!config?.Content?.endpointMenu) {
@@ -141,7 +141,10 @@ function ContentArea({ barTab }) {
                         }
                         className={contentAreaStyles.ProductGradeFilterBtn}
                         disabled={!showProductGradeFilter}
-                        style={{ opacity: showProductGradeFilter ? 1 : 0 }}
+                        style={{ opacity: showProductGradeFilter ? 1 : 0,
+                            background: theme.colorCard,
+                            color: theme.colorText,
+                        }}
                     >
                         <UnorderedListOutlined />
                     </Button>
