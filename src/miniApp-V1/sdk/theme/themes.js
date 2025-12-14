@@ -4,10 +4,12 @@ const light = {
     colorBackground: '#ffffff',
 
     colorMuted: '#999999',
+    colorSecondary: '#707575',
     colorBorder: '#e0e0e0',
     colorCard: '#f1f1f1',
     colorLightGreen: "#e2fc2a",
 
+    fontFamily: 'TT Firs Neue',
     fontSizeBase: '14px',
     fontSizeSm: '12px',
     fontSizeLg: '16px',

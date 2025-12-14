@@ -1,11 +1,11 @@
-import {JumboTabs, Segmented, Switch} from "antd-mobile";
+import {Segmented, Switch} from "antd-mobile";
 import {DislikeOutlined, LikeOutlined} from "@ant-design/icons";
 import styles from "../css/features.module.css";
 import {useContext, useState} from "react";
-import {getSectionIcon} from "./Features/SectionIconMap.jsx";
 import {ThemeContext} from "../context.js";
-import ShortFeaturesComponent from "./Features/ShortFeaturesComponent.jsx";
+import FeaturesComponentShort from "./Features/FeaturesComponentShort.jsx";
 import {getDeviceFeaturesUI} from "./Features/FeatureService.js";
+import FeaturesComponentDetailed from "./Features/FeaturesComponentDetailed.jsx";
 
 
 export default function FeaturesSegmented({features}) {
@@ -27,131 +27,69 @@ export default function FeaturesSegmented({features}) {
     if (!hasPros && !hasCons && !hasInfo) return null;
 
     const renderList = (items) => (
-        <ul style={{paddingLeft: "20px", margin: 0, color: "#3a3a3a"}}>
-            {items.map((item, idx) => (
-                <li key={idx}>{item}</li>
-            ))}
+        <ul style={{color: theme.colorText}}>
+            {items.map((item, idx) => (<li key={idx}>{item}</li>))}
         </ul>
     );
 
     const featuresBlocks = getDeviceFeaturesUI(features?.info, features?.type, features?.source);
 
-    const renderInfo = () => (
-        <div>
-            <JumboTabs activeKey={activeKey || firstSectionName} onChange={setActiveKey}>
-                {info.map((section) => {
-                    const [sectionName, sectionValues] = Object.entries(section)[0] ?? ["", {}];
-                    const isActive = (activeKey || firstSectionName) === sectionName;
-
-                    return (
-                        <JumboTabs.Tab
-                            title={sectionName}
-                            key={sectionName}
-                            description={
-                                <span style={{color: isActive ? theme.colorLightGreen : "inherit"}}>
-                {getSectionIcon(sectionName)}
-              </span>
-                            }
-                        >
-                            <table
-                                style={{
-                                    width: "100%",
-                                    color: "#3a3a3a",
-                                    marginTop: 8
-                                }}
-                            >
-                                <tbody>
-                                {Object.entries(sectionValues ?? {}).map(([key, value]) => (
-                                    <tr key={key}>
-                                        <td
-                                            style={{
-                                                fontWeight: "bold",
-                                                padding: "4px 8px",
-                                                width: "40%",
-
-                                            }}
-                                        >
-                                            {key}
-                                        </td>
-                                        <td
-                                            style={{
-                                                padding: "4px 8px",
-                                            }}
-                                        >
-                                            {value}
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        </JumboTabs.Tab>
-                    );
-                })}
-            </JumboTabs>
-        </div>
-    );
-
 
     if (!hasPros && !hasCons && hasInfo) {
-        return (
-            <div style={{flex: 1, display: "flex", flexDirection: "column"}}>
-                <div style={{justifyContent: "center", display: "flex", marginTop: 12}}>
-                    <Switch checked={showInfo} onChange={setShowInfo} uncheckedText='Кратко' checkedText='Подробно'/>
-                </div>
-
-                <div style={{flex: 1, overflowY: "auto", padding: "12px"}} className={styles.FeatureBlock}>
-                    {showInfo ? renderInfo() : <ShortFeaturesComponent blocks={featuresBlocks}/>}
-                </div>
+        return (<div style={{flex: 1, display: "flex", flexDirection: "column"}}>
+            <div style={{justifyContent: "center", display: "flex", marginTop: 12}}>
+                <Switch checked={showInfo} onChange={setShowInfo} uncheckedText='Кратко' checkedText='Подробно'/>
             </div>
-        );
+
+            <div style={{overflowY: "auto"}} className={styles.FeatureBlock}>
+                {showInfo ?
+                    <FeaturesComponentDetailed info={info} activeKey={activeKey} setActiveKey={setActiveKey}
+                                               theme={theme}/> :
+                    <FeaturesComponentShort blocks={featuresBlocks}/>}
+            </div>
+        </div>);
     }
 
-    const options = [
-        {
-            label: (
-                <div style={{padding: 4}}>
-                    <Switch checked={showInfo} onChange={setShowInfo}/>
-                    <div style={{width: 70, textAlign: "center"}}>{showInfo ? "Подробно" : "Кратко"}</div>
-                </div>
-            ),
-            value: "info",
-        },
-        hasPros && {
-            label: (
-                <div style={{padding: 4, marginTop: 3}}>
-                    <LikeOutlined style={{fontSize: 20}}/>
-                    <div>Преимущества</div>
-                </div>
-            ),
-            value: "pros",
-        },
-        hasCons && {
-            label: (
-                <div style={{padding: 4, marginTop: 3}}>
-                    <DislikeOutlined style={{fontSize: 20}}/>
-                    <div>Недостатки</div>
-                </div>
-            ),
-            value: "cons",
-        },
-    ].filter(Boolean);
 
-    return (
-        <div style={{flex: 1, display: "flex", flexDirection: "column"}}>
-            <div style={{justifyContent: "center", display: "flex"}} className={styles.Segmented}>
-                <Segmented
-                    options={options}
-                    value={tab}
-                    onChange={setTab}
-                    style={{borderRadius: 14}}
-                />
+    const options = [{
+        label: (<div style={{padding: 4}}>
+            <Switch checked={showInfo} onChange={setShowInfo}/>
+            <div style={{width: 70, textAlign: "center"}}>
+                {showInfo ? "Подробно" : "Кратко"}
             </div>
+        </div>), value: "info",
+    }, hasPros && {
+        label: (<div style={{padding: 4, marginTop: 3}}>
+            <LikeOutlined style={{fontSize: 20}}/>
+            <div>Преимущества</div>
+        </div>), value: "pros",
+    }, hasCons && {
+        label: (<div style={{padding: 4, marginTop: 3}}>
+            <DislikeOutlined style={{fontSize: 20}}/>
+            <div>Недостатки</div>
+        </div>), value: "cons",
+    },].filter(Boolean);
 
-            <div style={{flex: 1, overflowY: "auto", padding: "16px"}} className={styles.FeatureBlock}>
-                {tab === "pros" && hasPros && renderList(prosCons.advantage)}
-                {tab === "cons" && hasCons && renderList(prosCons.disadvantage)}
-                {tab === "info" && hasInfo && (showInfo ? renderInfo() : <ShortFeaturesComponent blocks={featuresBlocks}/>)}
-            </div>
+
+    return (<div style={{flex: 1, display: "flex", flexDirection: "column"}}>
+        <div style={{justifyContent: "center", display: "flex"}} className={styles.Segmented}>
+            <Segmented
+                options={options}
+                value={tab}
+                onChange={setTab}
+                style={{borderRadius: 14}}
+            />
         </div>
-    );
+
+        <div style={{flex: 1, overflowY: "auto"}} className={styles.FeatureBlock}>
+            {tab === "pros" && hasPros && renderList(prosCons.advantage)}
+            {tab === "cons" && hasCons && renderList(prosCons.disadvantage)}
+
+            {tab === "info" && hasInfo && (showInfo ?
+                <FeaturesComponentDetailed info={info} activeKey={activeKey} setActiveKey={setActiveKey}
+                                           theme={theme}/> :
+                <FeaturesComponentShort blocks={featuresBlocks}/>)}
+        </div>
+    </div>);
 }
+
