@@ -71,6 +71,7 @@
     font-weight: 800;
     font-size: 20px;
 }
+
 .FeatureBlock {
     margin-right: 12px;
 }
@@ -118,8 +119,77 @@
     bottom: 0 !important;
 }
 
+
 .shortFeaturesIcon {
     padding: 8px;
+    font-size: 17px;
+}
+
+.shortFeaturesTitle {
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'TT Firs Neue', sans-serif;
+}
+
+.detailedFeaturesTitle {
     font-size: 14px;
-    border-radius: 8px;
+    font-weight: 600;
+    font-family: 'TT Firs Neue', sans-serif;
+}
+
+.detailedFeaturesIcon {
+    padding: 8px;
+    font-size: 17px;
+}
+
+.shortFeaturesRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+
+.shortFeaturesRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+
+.featuresDetailedContainer {
+    padding: 12px 0 0 18px;
+}
+
+.detailedFeaturesRow {
+    display: flex;
+    align-items: center;
+    padding: 3px 0 3px 0;
+}
+
+
+.featuresDetailedContainer :global(.adm-list-item) {
+    padding: 0 !important;
+}
+
+.FeatureBlock :global(.adm-list-body) {
+    border-bottom: none !important;
+}
+
+.featuresDetailedContainer :global(.adm-list-item-content-main) {
+    padding: 0 !important;
+}
+
+.featuresDetailedContainer :global(.adm-collapse-panel) {
+    margin: 0 !important;
+}
+
+.shortFeatures .adm-collapse-panel-header .adm-list-item-content {
+    padding: 0 !important;
+}
+
+.shortFeatures .adm-collapse-panel-header .adm-list-item {
+    padding: 0 !important;
+    border: none !important;
 }

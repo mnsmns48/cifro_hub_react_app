@@ -1,70 +1,51 @@
+import {Collapse} from 'antd-mobile';
 import {getSectionIcon} from "./SectionIconMap.jsx";
+import styles from "../../css/features.module.css";
+import {useContext} from "react";
+import {ThemeContext} from "../../context.js";
 
-function SidebarItem({sectionName, isActive, onClick, theme}) {
+function SidebarItem({sectionName, theme}) {
     return (
-        <div
-            onClick={onClick}
-            style={{
-                flexDirection: "column",
-                padding: "6px",
-                cursor: "pointer",
-                display: "flex",
-                background: isActive ? "black" : "transparent",
-                color: isActive ? theme.colorLightGreen : "#333",
-            }}
-        >
-            {getSectionIcon(sectionName)}
+        <div className={styles.detailedFeaturesRow}>
+
+            <span
+                className={styles.detailedFeaturesIcon}
+                style={{color: theme.colorPrimary}}
+            >
+                {getSectionIcon(sectionName)}
+            </span>
+
+            <span
+                className={styles.detailedFeaturesTitle}
+                style={{
+                    paddingLeft: "8px", fontSize: 14, fontWeight: 501,
+                    fontFamily: theme.fontFamily, color: theme.colorPrimary
+                }}
+            >
+                {sectionName}
+            </span>
         </div>
     );
 }
 
-function SidebarContainer({info, currentKey, setActiveKey, theme}) {
-    return (
-        <div
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                background: "#296fd5",
-                overflowX: "auto",
-                borderRadius: "14px",
-            }}
-        >
-            {info.map((section) => {
-                const sectionName = Object.keys(section)[0];
-                const isActive = currentKey === sectionName;
 
-                return (
-                    <SidebarItem
-                        key={sectionName}
-                        sectionName={sectionName}
-                        isActive={isActive}
-                        theme={theme}
-                        onClick={() => setActiveKey(sectionName)}
-                    />
-                );
-            })}
-        </div>
-    );
-}
-
-function SectionTable({values}) {
+function SectionTable({values, theme}) {
     return (
-        <table style={{width: "100%", color: "#3a3a3a"}}>
+        <table style={{color: theme.colorText, width: '100%',
+            backgroundColor: theme.colorCard, borderRadius: '6px'}}>
             <tbody>
             {Object.entries(values).map(([key, value]) => (
                 <tr key={key}>
                     <td
                         style={{
                             fontWeight: "bold",
-                            padding: "6px 8px",
-                            width: "40%",
+                            padding: "4px",
                             verticalAlign: "top",
                         }}
                     >
                         {key}
                     </td>
-                    <td style={{padding: "6px 8px"}}>{value}</td>
+                    <td >{value}</td>
                 </tr>
             ))}
             </tbody>
@@ -72,35 +53,31 @@ function SectionTable({values}) {
     );
 }
 
-function FeaturesComponentDetailed({info, activeKey, setActiveKey, theme}) {
-    const firstSectionName = info.length > 0 ? Object.keys(info[0])[0] : "";
-    const currentKey = activeKey || firstSectionName;
+function FeaturesComponentDetailed({info}) {
 
-    const activeSection = info.find(
-        (section) => Object.keys(section)[0] === currentKey
-    );
-
-    const [, activeValues] = activeSection
-        ? Object.entries(activeSection)[0]
-        : ["", {}];
+    const theme = useContext(ThemeContext);
 
     return (
-        <>
-            <div style={{ display: "flex", width: "100%", padding: "12px 0 0 18px" }}>
-                <div style={{ alignSelf: "flex-start" }}>
-                    <SidebarContainer
-                        info={info}
-                        currentKey={currentKey}
-                        setActiveKey={setActiveKey}
-                        theme={theme}
-                    />
-                </div>
+        <div className={styles.featuresDetailedContainer}>
+            <Collapse accordion>
+                {info.map((section) => {
+                    const sectionName = Object.keys(section)[0];
+                    const values = section[sectionName];
 
-                <div style={{ flex: 1, padding: "12px", overflowY: "auto" }}>
-                    <SectionTable values={activeValues} />
-                </div>
-            </div>
-        </>
+                    return (
+                        <Collapse.Panel
+                            accordion
+                            style={{width: "100%"}}
+                            key={sectionName}
+                            arrowIcon={null}
+                            title={<SidebarItem sectionName={sectionName} theme={theme}/>}
+                        >
+                            <SectionTable values={values} theme={theme}/>
+                        </Collapse.Panel>
+                    );
+                })}
+            </Collapse>
+        </div>
     );
 }
 

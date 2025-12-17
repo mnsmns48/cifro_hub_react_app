@@ -41,7 +41,7 @@ export default function FeaturesSegmented({features}) {
                 <Switch checked={showInfo} onChange={setShowInfo} uncheckedText='Кратко' checkedText='Подробно'/>
             </div>
 
-            <div style={{overflowY: "auto"}} className={styles.FeatureBlock}>
+            <div className={styles.FeatureBlock}>
                 {showInfo ?
                     <FeaturesComponentDetailed info={info} activeKey={activeKey} setActiveKey={setActiveKey}
                                                theme={theme}/> :

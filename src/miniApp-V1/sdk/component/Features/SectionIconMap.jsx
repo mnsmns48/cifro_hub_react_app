@@ -6,7 +6,14 @@ import {
     CalculatorOutlined,
     SaveOutlined,
     SoundOutlined,
-    SyncOutlined, FunctionOutlined, ThunderboltOutlined, StarOutlined, HolderOutlined
+    SyncOutlined,
+    FunctionOutlined,
+    ThunderboltOutlined,
+    StarOutlined,
+    HolderOutlined,
+    ClockCircleOutlined,
+    EyeOutlined,
+    DashboardOutlined
 } from '@ant-design/icons'
 
 export const getSectionIcon = (sectionName) => {
@@ -17,12 +24,16 @@ export const getSectionIcon = (sectionName) => {
             return <FundProjectionScreenOutlined/>
 
         case 'Основная камера':
-        case 'Фронтальная камера':
         case 'Camera':
         case 'Main Camera':
-        case 'Selfie camera':
 
             return <CameraOutlined/>
+
+        case 'Selfie camera':
+        case 'Фронтальная камера':
+
+            return <EyeOutlined />
+
 
         case 'Дизайн и корпус':
         case 'Design and build':
@@ -32,7 +43,6 @@ export const getSectionIcon = (sectionName) => {
 
         case 'Коммуникации':
         case 'Network':
-        case 'Comms':
 
             return <WifiOutlined/>
 
@@ -65,6 +75,9 @@ export const getSectionIcon = (sectionName) => {
 
         case 'Misc':
             return <StarOutlined/>
+
+        case 'Comms':
+            return <DashboardOutlined />
 
         default:
             return <HolderOutlined/>
