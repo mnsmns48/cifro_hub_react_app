@@ -171,25 +171,36 @@
 
 .featuresDetailedContainer :global(.adm-list-item) {
     padding: 0 !important;
+    background-color: transparent !important;
 }
 
 .FeatureBlock :global(.adm-list-body) {
     border-bottom: none !important;
+
 }
 
 .featuresDetailedContainer :global(.adm-list-item-content-main) {
     padding: 0 !important;
+
 }
 
 .featuresDetailedContainer :global(.adm-collapse-panel) {
     margin: 0 !important;
+
 }
 
 .shortFeatures .adm-collapse-panel-header .adm-list-item-content {
     padding: 0 !important;
+
 }
 
 .shortFeatures .adm-collapse-panel-header .adm-list-item {
     padding: 0 !important;
     border: none !important;
+
+}
+
+
+.featuresDetailedContainer :global(.adm-list-item::after) {
+    display: none !important;
 }

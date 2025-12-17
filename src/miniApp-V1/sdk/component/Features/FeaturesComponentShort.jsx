@@ -13,7 +13,7 @@ export default function FeaturesComponentShort({blocks}) {
                     <tr key={title}>
 
                         <td style={{width: '12%', padding: "10px 0 4px 0"}}>
-                            <span style={{color: theme.colorPrimary}}
+                            <span style={{color: theme.colorMuted}}
                                   className={styles.shortFeaturesIcon}>
                                 {icon}
                             </span>
