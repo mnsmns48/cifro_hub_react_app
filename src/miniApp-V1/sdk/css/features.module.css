@@ -74,6 +74,7 @@
 
 .FeatureBlock {
     margin-right: 12px;
+    overflow-y: hidden !important;
 }
 
 
@@ -203,4 +204,8 @@
 
 .featuresDetailedContainer :global(.adm-list-item::after) {
     display: none !important;
+}
+
+.tableSection {
+    box-shadow: 0 2px 3px #999999;
 }

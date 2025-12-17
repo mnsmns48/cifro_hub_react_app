@@ -37,8 +37,9 @@ function SectionTable({values, theme}) {
     return (
         <table style={{
             color: theme.colorText, width: '100%', marginTop: '8px',
-            backgroundColor: theme.colorCard, borderRadius: '6px'
-        }}>
+            backgroundColor: theme.colorCard, borderRadius: '6px',
+            marginBottom: '8px', marginLeft: '8px',}}
+               className={styles.tableSection}>
             <tbody>
             {Object.entries(values).map(([key, value]) => (
                 <tr key={key}>

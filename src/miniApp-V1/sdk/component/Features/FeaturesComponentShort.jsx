@@ -12,7 +12,7 @@ export default function FeaturesComponentShort({blocks}) {
                 {blocks.map(({icon, title, specs}) => (
                     <tr key={title}>
 
-                        <td style={{width: '12%', padding: "10px 0 4px 0"}}>
+                        <td style={{width: '12%'}}>
                             <span style={{color: theme.colorMuted}}
                                   className={styles.shortFeaturesIcon}>
                                 {icon}
