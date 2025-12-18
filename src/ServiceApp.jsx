@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Spin, Tabs } from "antd";
 import "./ServiceApp.css";
+import Spinner from "./Cifrotech-app/components/Spinner.jsx";
 
 const CONCURRENCY_LIMIT = 1;
 
@@ -74,7 +75,9 @@ const ServiceApp = () => {
                     onChange={handleTabChange}
                 />
             ) : (
-                <Spin />
+                <div style={{position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1000}}>
+                    <Spinner/>
+                </div>
             )}
         </div>
     );
