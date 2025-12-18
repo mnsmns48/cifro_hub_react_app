@@ -105,7 +105,6 @@ export const UrlSelectionTableColumns = ({
         dataIndex: 'url',
         key: 'url',
         align: 'left',
-        onCell: () => ({style: {backgroundColor: '#ffffff'}}),
         render: (text, record) => editingKey === record.id ? (
             <Input
                 value={editedValues.url || ''}

@@ -25,7 +25,7 @@ import FeatureFilterModal from "./FeatureFilterModal.jsx";
 const {Search} = Input;
 
 
-const ParsingResults = ({result, vslId, onRangeChange}) => {
+const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     const [rows, setRows] = useState(result.data ?? []);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [expandedRows, setExpandedRows] = useState(null);
@@ -41,6 +41,7 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
     const [dependencySelection, setDependencySelection] = useState(null);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [featureFilter, setFeatureFilter] = useState([]);
+
 
     useEffect(() => {
         setRows(Array.isArray(result.parsing_result) ? result.parsing_result : []);
@@ -242,7 +243,9 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
             <div>
                 <p>
                     <strong>Собрано:</strong> {formatDate(result.dt_parsed)} <br/>
-                    <strong>Количество:</strong> {Array.isArray(result.parsing_result) ? result.parsing_result.length : 0}
+                    <strong>Количество:</strong> {Array.isArray(result.parsing_result) ? result.parsing_result.length : 0}<br/>
+                    <strong>Ссылка:</strong> <a href={url} target="_blank" rel="noopener noreferrer"
+                                                style={{ color: '#999999', cursor: 'default'}}>{url}</a>
                 </p>
             </div>
 
@@ -323,7 +326,6 @@ const ParsingResults = ({result, vslId, onRangeChange}) => {
                     }}
                 />
             )}
-
             <Table className="parsing-result-table"
                    dataSource={filteredData}
                    columns={columns}

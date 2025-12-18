@@ -47,7 +47,7 @@ const ServiceApp = () => {
         <div className="service-app-container">
             {services.length ? (
                 <Tabs className="service-app-tabs"
-                      tabPosition="left" items={services} activeKey={activeKey} onChange={handleTabChange}/>
+                      tabPlacement="left" items={services} activeKey={activeKey} onChange={handleTabChange} />
             ) : (
                 <Spin/>
             )}

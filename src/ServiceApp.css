@@ -20,6 +20,14 @@
     padding-left: 0px !important;
 }
 
+.service-app-tabs .ant-tabs-ink-bar {
+    display: none !important;
+}
+
+.ant-tabs-content-holder {
+    border-left: none !important;
+}
+
 .service-app-tabs .ant-tabs-tab-btn {
     text-align: left !important;
     padding-left: 0px !important;
