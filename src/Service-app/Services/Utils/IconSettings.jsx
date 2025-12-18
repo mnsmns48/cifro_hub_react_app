@@ -1,20 +1,40 @@
-import style from './utils.module.css'
+import {Row, Col, Collapse} from "antd";
 import PathTable from "./PathTable.jsx";
 import {tableConfig} from "./tableconf.js";
+import {useState} from "react";
 
+const IconSettings = () => {
+    const [hubConfigIsOpen, setHubConfigIsOpen] = useState(false);
+    const [homeConfigIsOpen, setHomeConfigIsOpen] = useState(false);
 
-const IconSettings = ({table}) => {
-    const config = tableConfig[table]
+    const hubConfig = tableConfig["hub"];
+    const homeConfig = tableConfig["home"];
 
-    return (<>
+    return (
+        <Collapse >
+            <Collapse.Panel header="Иконки пунктов меню" key="1" style={{fontFamily: 'TT Firs Neue'}}>
+                <Row gutter={10} justify="center">
+                    <Col span={12}>
+                        <Collapse onChange={(keys) => setHubConfigIsOpen(keys.length > 0)}>
+                            <Collapse.Panel header={hubConfig.title} key="hub">
+                                <PathTable config={hubConfig} isOpen={hubConfigIsOpen}/>
+                            </Collapse.Panel>
+                        </Collapse>
+                    </Col>
 
-            <div className={style.topContainer}>
-                {config.title}
-            </div>
-            <PathTable config={config}/>
-        </>
+                    <Col span={11}>
+                        <Collapse onChange={(keys) => setHomeConfigIsOpen(keys.length > 0)}>
+                            <Collapse.Panel header={homeConfig.title} key="home">
+                                <PathTable config={homeConfig} isOpen={homeConfigIsOpen}/>
+                            </Collapse.Panel>
+                        </Collapse>
+                    </Col>
 
-    )
-}
+                </Row>
 
-export default IconSettings
+            </Collapse.Panel>
+        </Collapse>
+    );
+};
+
+export default IconSettings;

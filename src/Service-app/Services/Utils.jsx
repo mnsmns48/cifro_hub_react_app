@@ -1,30 +1,19 @@
 import {PictureOutlined} from "@ant-design/icons";
-import {Col, Row} from "antd";
 import IconSettings from "./Utils/IconSettings.jsx";
 import {ServiceImageBlock} from "./Utils/ServiceImageBlock.jsx";
+import {useState} from "react";
 
 
 const Utils = () => {
+    const [serviceImageBlockIsOpen, setServiceImageBlockIsOpen] = useState(false);
 
 
     return (
         <>
-            <div style={{paddingBottom: 20}}>
-                <ServiceImageBlock/>
+            <div style={{display: "flex", flexDirection: "column", gap: 12}}>
+                <ServiceImageBlock isOpen={serviceImageBlockIsOpen} setIsOpen={setServiceImageBlockIsOpen}/>
+                <IconSettings/>
             </div>
-            <Row>
-                <Col span={11}>
-                    <IconSettings table='hub'/>
-                </Col>
-
-                <Col span={1}>
-
-                </Col>
-
-                <Col span={11}>
-                    <IconSettings table='home'/>
-                </Col>
-            </Row>
         </>
     );
 };

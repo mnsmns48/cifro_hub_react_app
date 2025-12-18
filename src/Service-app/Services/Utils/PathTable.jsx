@@ -4,13 +4,16 @@ import {DownloadOutlined, FileUnknownOutlined, SaveOutlined} from "@ant-design/i
 import {fetchLevelsFunction, updateAndDeleteIcon, uploadIcon} from "./crud.js";
 
 
-const PathTable = ({config}) => {
+const PathTable = ({ config, isOpen }) => {
     const [data, setData] = useState([]);
     const [links, setLinks] = useState({});
 
     useEffect(() => {
-        void loadData();
-    }, [config]);
+        if (isOpen) {
+            void loadData();
+        }
+    }, [isOpen, config]);
+
 
     const loadData = async () => {
         const result = await fetchLevelsFunction(config);

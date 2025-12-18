@@ -4,12 +4,11 @@ import {useEffect, useState} from "react";
 import {fetchApiGet, createServiceImage, updateServiceImage, deleteServiceImage} from "./api.js";
 import styles from "../Css/serviceimage.module.css"
 
-export function ServiceImageBlock() {
+export function ServiceImageBlock({isOpen, setIsOpen}) {
     const [data, setData] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const [formValue, setFormValue] = useState({var: "", value: ""});
-    const [isOpen, setIsOpen] = useState(false);
 
     async function loadData() {
         try {
@@ -91,7 +90,7 @@ export function ServiceImageBlock() {
     return (
         <div style={{display: "inline-block"}}>
             <Collapse onChange={(keys) => setIsOpen(keys.length > 0)}>
-                <Collapse.Panel header="Сервисные изображения, Промо-картинки" key="1">
+                <Collapse.Panel header="Промо и Сервисные изображения" key="1" style={{fontFamily: 'TT Firs Neue'}}>
 
 
                     <div style={{display: "inline-block"}}>
