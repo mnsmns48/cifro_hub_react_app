@@ -1,4 +1,4 @@
-import {ToolOutlined} from "@ant-design/icons";
+import {PictureOutlined} from "@ant-design/icons";
 import {Col, Row} from "antd";
 import IconSettings from "./Utils/IconSettings.jsx";
 import {ServiceImageBlock} from "./Utils/ServiceImageBlock.jsx";
@@ -29,6 +29,6 @@ const Utils = () => {
     );
 };
 
-Utils.componentTitle = "Обслуживание"
-Utils.componentIcon = <div className="circle-container"><ToolOutlined className="icon-style"/></div>
+Utils.componentTitle = "Изображения"
+Utils.componentIcon = <div className="circle-container"><PictureOutlined className="icon-style"/></div>
 export default Utils;
