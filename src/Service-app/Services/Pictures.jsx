@@ -4,7 +4,7 @@ import {ServiceImageBlock} from "./Utils/ServiceImageBlock.jsx";
 import {useState} from "react";
 
 
-const Utils = () => {
+const Pictures = () => {
     const [serviceImageBlockIsOpen, setServiceImageBlockIsOpen] = useState(false);
 
 
@@ -18,6 +18,6 @@ const Utils = () => {
     );
 };
 
-Utils.componentTitle = "Изображения"
-Utils.componentIcon = <div className="circle-container"><PictureOutlined className="icon-style"/></div>
-export default Utils;
+Pictures.componentTitle = "Изображения"
+Pictures.componentIcon = <div className="circle-container"><PictureOutlined className="icon-style"/></div>
+export default Pictures;
