@@ -1,14 +1,15 @@
 import {Segmented} from 'antd';
 import {useState} from "react";
-import KeysTab from "./KeysTab.jsx";
+import TabKeys from "./TabKeys.jsx";
+import TabAttributeValues from "./TabAttributeValues.jsx";
 
 
 const renderTabContent = (tab) => {
     switch (tab) {
         case "keys":
-            return <KeysTab/>;
+            return <TabKeys/>;
         case "attrs":
-            return (<div> Здесь будут все атрибуты </div>);
+            return <TabAttributeValues/>;
         case "link_types":
             return (<div> Здесь будут зависимости атрибутов от типов продуктов </div>);
         case "links_model":
@@ -18,7 +19,7 @@ const renderTabContent = (tab) => {
     }
 };
 
-const TabAttributes = () => {
+const AttributesMain = () => {
     const [tab, setTab] = useState(null);
 
     const options = [
@@ -29,10 +30,10 @@ const TabAttributes = () => {
     ]
 
     return (<div style={{padding: 16}}>
-        <Segmented value={tab} onChange={setTab} options={options} style={{marginBottom: 24}}/>
+        <Segmented value={tab} onChange={setTab} options={options} style={{marginBottom: 12}}/>
 
         {renderTabContent(tab)}
     </div>);
 };
 
-export default TabAttributes;
+export default AttributesMain;
