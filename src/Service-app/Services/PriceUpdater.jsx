@@ -252,7 +252,7 @@ const PriceUpdater = () => {
                 <>
                     <Button onClick={handleNewSearch}>Новый поиск</Button>
                     <ParsingResults
-                        url={selectedVSLRow.url}
+                        url={selectedVSLRow?.url}
                         result={parsedData}
                         vslId={selectedVSLRow?.id}
                         onRangeChange={handleRangeChange}

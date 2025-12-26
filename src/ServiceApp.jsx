@@ -3,7 +3,7 @@ import { Spin, Tabs } from "antd";
 import "./ServiceApp.css";
 import Spinner from "./Cifrotech-app/components/Spinner.jsx";
 
-const CONCURRENCY_LIMIT = 1;
+const CONCURRENCY_LIMIT = 2;
 
 const loadServices = async () => {
     const modules = import.meta.glob("./Service-app/Services/*.jsx");
