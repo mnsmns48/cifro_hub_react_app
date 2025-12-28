@@ -7,6 +7,8 @@ import {
     fetchPutData,
     fetchDeleteData
 } from "./api.js";
+import styles from ".//css/TabAttributeValues.module.css"
+
 
 const TabKeys = () => {
     const [keys, setKeys] = useState([]);
@@ -126,7 +128,7 @@ const TabKeys = () => {
     return (
         <div>
             <Table columns={columns} dataSource={keys} rowKey="id" pagination={false} showHeader={false}
-                   style={{marginBottom: 16}}/>
+                   style={{marginBottom: 16}} className={styles.table}/>
 
             <div style={{textAlign: "start"}}>
                 <a style={{fontSize: 16, cursor: "default"}} onClick={addEmptyRow}>Добавить ключ</a>
