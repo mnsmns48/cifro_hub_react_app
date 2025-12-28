@@ -42,23 +42,18 @@ const TabAttributeValues = () => {
 
     const saveValue = async (record) => {
         const trimmedValue = record.value.trim();
+        if (!trimmedValue) return;
 
-        if (!trimmedValue) {
-            return;
-        }
-
-        const payload = {
-            key: record.attr_key_id,
-            attribute_name: record.value,
-            alias: record.alias
-        };
-
+        let payload;
         let result;
 
         if (record.id === "new") {
+            payload = {key: record.attr_key_id, attribute_name: trimmedValue, alias: record.alias};
             result = await fetchPostData("/service/attributes/create_attribute", payload);
+
         } else {
-            result = await fetchPutData(`/service/attributes/update_attribute?value_id=${record.id}`, payload);
+            payload = {id: record.id, attribute_name: trimmedValue, alias: record.alias};
+            result = await fetchPutData("/service/attributes/update_attribute", payload);
         }
 
         if (result) {
@@ -67,8 +62,10 @@ const TabAttributeValues = () => {
                 setValues(res.values);
             });
         }
+
         setEditingId(null);
     };
+
 
     const deleteValue = async (record) => {
         const result = await fetchDeleteData(`/service/attributes/delete_attribute?value_id=${record.id}`);
