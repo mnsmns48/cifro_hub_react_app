@@ -2,6 +2,7 @@ import {Segmented} from 'antd';
 import {useState} from "react";
 import TabKeys from "./TabKeys.jsx";
 import TabAttributeValues from "./TabAttributeValues.jsx";
+import TabTypesDependencies from "./TabTypesDependencies.jsx";
 
 
 const renderTabContent = (tab) => {
@@ -11,7 +12,7 @@ const renderTabContent = (tab) => {
         case "attrs":
             return <TabAttributeValues/>;
         case "link_types":
-            return (<div> Здесь будут зависимости атрибутов от типов продуктов </div>);
+            return <TabTypesDependencies />;
         case "links_model":
             return (<div> Здесь будут зависимости атрибутов от моделей </div>);
         default:
