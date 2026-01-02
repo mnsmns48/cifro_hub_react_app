@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
-import {Button, Modal, Select, Table} from "antd";
-import {fetchDeleteData, fetchGetData, fetchPostData} from "./api.js";
-import {EllipsisOutlined, LoadingOutlined} from "@ant-design/icons";
+import {Button, Input, Modal, Select, Table} from "antd";
+import {fetchGetData, fetchPostData} from "./api.js";
+import {ClearOutlined, LinkOutlined} from "@ant-design/icons";
 
 const TabModelsDependencies = () => {
     const [types, setTypes] = useState([]);
@@ -12,7 +12,7 @@ const TabModelsDependencies = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [scheme, setScheme] = useState(null);
     const [selectedValues, setSelectedValues] = useState({});
-
+    const [searchText, setSearchText] = useState("");
 
 
     useEffect(() => {
@@ -62,11 +62,49 @@ const TabModelsDependencies = () => {
         </div>
     );
 
+    const filteredModels = models.filter(m =>
+        m.title.toLowerCase().includes(searchText.toLowerCase())
+    );
+
 
     const columns = [
-        {dataIndex: "title", key: "title"},
-        {title: brandFilterHeader, dataIndex: "brand", key: "brand", width: 150, align: "center"},
+        {
+            title: (
+                <div style={{display: "flex", flexDirection: "column"}}>
+                    <Input
+                        size="middle"
+                        placeholder="Поиск"
+                        value={searchText}
+                        onChange={(e) => {
+                            setSearchText(e.target.value);
+                            setSelectedRowKeys([]);
+                        }}
+                        suffix={
+                            searchText && (
+                                <ClearOutlined
+                                    onClick={() => {
+                                        setSearchText("");
+                                        setSelectedRowKeys([]);
+                                    }}
+                                    style={{color: "#999"}}
+                                />
+                            )
+                        }
+                    />
+
+                </div>),
+            dataIndex: "title",
+            key: "title"
+        },
+        {
+            title: brandFilterHeader,
+            dataIndex: "brand",
+            key: "brand",
+            width: 150,
+            align: "center"
+        }
     ];
+
 
     const rowSelection = {
         selectedRowKeys, onChange: (keys) => {
@@ -124,14 +162,13 @@ const TabModelsDependencies = () => {
     };
 
 
-
     return (
         <div style={{padding: 12, display: "flex", flexDirection: "column", gap: 16}}>
             <div style={{fontWeight: 500}}>Тип продукта</div>
 
             <div style={{display: "flex", alignItems: "center", gap: 12}}>
                 <Select
-                    style={{width: 300}}
+                    style={{width: 200}}
                     placeholder="Тип продукта"
                     value={selectedTypeId}
                     onChange={handleTypeChange}
@@ -140,14 +177,13 @@ const TabModelsDependencies = () => {
 
                 {selectedRowKeys.length > 0 && (
                     <Button style={{padding: "4px 12px", cursor: "default"}}
-                            onClick={showSelectedInfo}>Связать атрибуты
+                            onClick={showSelectedInfo}><LinkOutlined/> атрибуты
                     </Button>
                 )}
             </div>
-
             {models.length > 0 && (
                 <Table
-                    dataSource={models}
+                    dataSource={filteredModels}
                     columns={columns}
                     rowKey="id"
                     pagination={false}
@@ -160,20 +196,19 @@ const TabModelsDependencies = () => {
                 <div style={{display: "flex", flexDirection: "column", gap: 16}}>
 
                     {selectedRowKeys.length > 0 && (
-                        <div >
+                        <div>
                             <div style={{display: "flex", flexDirection: "column", gap: 4}}>
                                 {models
                                     .filter(m => selectedRowKeys.includes(m.id))
                                     .map(m => (
                                         <div key={m.id} style={{fontSize: 13}}>
-                                            <LoadingOutlined /> {m.title}
+                                            <LinkOutlined /> {m.title}
                                         </div>
                                     ))}
                             </div>
                         </div>
                     )}
 
-                    {/* Список ключей */}
                     {scheme && scheme.keys.map(key => (
                         <div key={key.key_id} style={{display: "flex", flexDirection: "column", gap: 6}}>
                             <div style={{fontWeight: 500}}>{key.key}</div>
@@ -192,8 +227,6 @@ const TabModelsDependencies = () => {
                     ))}
                 </div>
             </Modal>
-
-
 
 
         </div>
