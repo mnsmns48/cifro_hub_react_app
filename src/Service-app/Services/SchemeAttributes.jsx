@@ -1,14 +1,12 @@
 import {AppstoreAddOutlined} from "@ant-design/icons";
-import TabAttributes from "./SchemeAttributes/TabAttributes.jsx";
-
+import AttributesMain from "./SchemeAttributes/AttributesMain.jsx";
 
 
 const SchemeAttributes = () => {
 
-
     return (
         <>
-            <TabAttributes />
+            <AttributesMain/>
         </>
     );
 };

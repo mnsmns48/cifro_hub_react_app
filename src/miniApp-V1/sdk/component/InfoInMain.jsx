@@ -1,4 +1,4 @@
-import {Collapse, Image, Space} from "antd";
+import {Collapse} from "antd";
 import styles from "../css/infoinmain.module.css"
 import '/fonts/ttfirsneue/stylesheet.css';
 import {DownCircleOutlined, UserOutlined} from "@ant-design/icons";
