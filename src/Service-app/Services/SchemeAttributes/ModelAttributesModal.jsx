@@ -75,24 +75,33 @@ const ModelAttributesModal = ({open, onClose, data, onUpdated}) => {
                             {key.key}
                         </div>
 
-                        <Select
-                            mode="multiple"
-                            style={{width: "100%"}}
-                            placeholder={`Выберите значения для ${key.key}`}
-                            value={selectedValues[key.key_id] || []}
-                            onChange={(vals) => handleValueChange(key.key_id, vals)}
-                            options={key.attr_value_ids.map(v => ({
-                                value: v.id,
-                                label: (
+                        <Select mode="multiple"
+                                showSearch
+                                style={{width: "100%"}}
+                                placeholder={`Выберите значения для ${key.key}`}
+                                value={selectedValues[key.key_id] || []}
+                                onChange={(vals) => handleValueChange(key.key_id, vals)}
+                                filterOption={(input, option) => {
+                                    const label =
+                                        option?.label ??
+                                        option?.children?.props?.children?.join?.(" ") ??
+                                        "";
+                                    return label.toLowerCase().includes(input.toLowerCase());
+                                }}
+                        >
+                            {key.attr_value_ids.map(v => (
+                                <Select.Option key={v.id}
+                                               value={v.id}
+                                               label={v.alias ? `${v.value} ${v.alias}` : v.value}
+                                >
                                     <div style={{display: "flex", gap: 6}}>
                                         <span>{v.value}</span>
-                                        {v.alias && (
-                                            <span style={{color: "#999"}}>{v.alias}</span>
-                                        )}
+                                        {v.alias && <span style={{color: "#999"}}>{v.alias}</span>}
                                     </div>
-                                )
-                            }))}
-                        />
+                                </Select.Option>
+                            ))}
+                        </Select>
+
                     </div>
                 ))}
             </div>
