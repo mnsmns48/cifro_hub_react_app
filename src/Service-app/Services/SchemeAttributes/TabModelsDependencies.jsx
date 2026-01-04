@@ -6,8 +6,7 @@ import {
     DisconnectOutlined,
     HolderOutlined,
     LinkOutlined,
-    MoreOutlined,
-    SearchOutlined
+    MoreOutlined
 } from "@ant-design/icons";
 import ModelAttributesModal from "./ModelAttributesModal.jsx";
 
@@ -191,7 +190,7 @@ const TabModelsDependencies = () => {
                 value={selectedBrand}
                 onChange={(value) => {
                     setSelectedBrand(value || null);
-                    setSelectedRowKeys([]);
+                    setSelectedRowKeys([])
                 }}
                 options={uniqueBrands.map(b => ({label: b, value: b}))}
         />
@@ -217,7 +216,10 @@ const TabModelsDependencies = () => {
         {title: titleHeader, dataIndex: "title", width: 300, key: "title"},
         {title: brandHeader, dataIndex: "brand", width: 80, key: "brand", align: "center"},
         {
-            title: attributeHeader, width: 50, key: "attributes", align: "center",
+            title: attributeHeader,
+            width: 100,
+            key: "attributes",
+            align: "center",
             render: (_, record) => {
                 const hasAttrs = record.model_attribute_values?.length > 0;
 
@@ -230,15 +232,33 @@ const TabModelsDependencies = () => {
                     );
                 }
 
+                const keys = record.model_attribute_values.map(k => k.key);
+
                 return (
-                    <Button onClick={() => handleOptionOpen(record)}>
-                        <SearchOutlined style={{color: "#17ae78"}}/> {record.model_attribute_values.length}
+                    <Button onClick={() => handleOptionOpen(record)}
+                            style={{
+                                display: "flex", flexDirection: "row",
+                                alignItems: "center", justifyContent: "flex-start",
+                                gap: 6, height: "auto", lineHeight: 1, width: "100%"
+                            }}
+                    >
+                        <div style={{display: "flex", fontSize: "17px", alignItems: "center", whiteSpace: "nowrap"}}>
+                            {record.model_attribute_values.length}
+                        </div>
+
+                        <div style={{
+                            fontSize: "9px", opacity: 0.7, display: "flex", flexDirection: "column",
+                            textAlign: "left", overflow: "hidden"
+                        }}
+                        >
+                            {keys.map((k, i) => (
+                                <span key={i}>{k}</span>
+                            ))}
+                        </div>
                     </Button>
                 );
             }
-
         }
-
     ];
 
     return (
@@ -254,16 +274,13 @@ const TabModelsDependencies = () => {
                 {selectedRowKeys.length > 0 && (
                     <Button style={{padding: "4px 12px"}} onClick={handleBulkOpen}><LinkOutlined/> атрибуты</Button>
                 )}
-
             </div>
-
             {models.length > 0 && (
                 <Table dataSource={filteredModels}
                        columns={columns} rowKey="model_id"
                        pagination={false} size="small"
                        style={{width: 650}} rowSelection={rowSelection}/>
             )}
-
             <ModelAttributesModal
                 open={modalOpen} onClose={() => setModalOpen(false)} data={modalData} onUpdated={refreshModels}/>
         </div>
