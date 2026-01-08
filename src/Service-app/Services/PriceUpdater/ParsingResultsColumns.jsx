@@ -1,10 +1,12 @@
 import {Image, Button} from "antd";
-import {InstagramOutlined, PercentageOutlined, PlusOutlined} from "@ant-design/icons";
+import {InstagramOutlined, LinkOutlined, PercentageOutlined, PlusOutlined} from "@ant-design/icons";
 import {updateParsingItem} from "./api.js";
 import InfoSelect from "./InfoSelect.jsx";
 import "../Css/ParsingResults.css";
 
-export const createParsingColumns = ({setRows, showInputPrice, expandedRows, toggleExpand, openUploadModal}) => [
+export const createParsingColumns = (
+    {setRows, showInputPrice, expandedRows, toggleExpand, openUploadModal, openAttributesModal}
+) => [
     {
         dataIndex: "preview",
         key: "preview",
@@ -66,13 +68,47 @@ export const createParsingColumns = ({setRows, showInputPrice, expandedRows, tog
         )
     },
     {
+        key: "attributes",
+        dataIndex: "attributes",
+        width: 38,
+        render: (_, row) => {
+            const attributes = row.attributes;
+
+            const hasAttributes =
+                attributes &&
+                attributes.model_id &&
+                Array.isArray(attributes.attr_value_ids) &&
+                attributes.attr_value_ids.length > 0;
+
+            return (
+                <Button
+                    type="text"
+                    icon={<LinkOutlined />}
+                    style={{
+                        color: hasAttributes ? "#52c41a" : "#dcdcdc",
+                        fontSize: hasAttributes ? 20 : 14
+                    }}
+                    onClick={() =>
+                        openAttributesModal({
+                            origin: row.origin,
+                            model_id: attributes?.model_id,
+                            title: row.title
+                        })
+                    }
+                />
+            );
+        }
+
+    }
+    ,
+    {
         key: "details",
         width: 38,
         align: "center",
         render: (_, record) => (
             <Button
                 type="text"
-                icon={<PercentageOutlined />}
+                icon={<PercentageOutlined/>}
                 style={{fontSize: 9}}
 
                 onClick={() => toggleExpand(record.origin)}

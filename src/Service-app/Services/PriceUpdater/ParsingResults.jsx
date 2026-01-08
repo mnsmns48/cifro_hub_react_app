@@ -20,6 +20,7 @@ import InHubDownloader from "./InHubDownloader.jsx";
 import {deleteStockItems} from "../HubMenuLevels/api.js";
 import InfoSelect from "./InfoSelect.jsx";
 import FeatureFilterModal from "./FeatureFilterModal.jsx";
+import AttributesModal from "./AttributesModal.jsx";
 
 
 const {Search} = Input;
@@ -41,8 +42,10 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     const [dependencySelection, setDependencySelection] = useState(null);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [featureFilter, setFeatureFilter] = useState([]);
+    const [attributesModalData, setAttributesModalData] = useState(null);
+    const [isAttributesModalOpen, setIsAttributesModalOpen] = useState(false);
 
-
+    ``
     useEffect(() => {
         setRows(Array.isArray(result.parsing_result) ? result.parsing_result : []);
         setSelectedRowKeys([]);
@@ -105,6 +108,11 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
         });
     }, [rows, activeFilter, searchText, featureFilter]);
 
+    const openAttributesModal = useCallback((data) => {
+        setAttributesModalData(data);
+        setIsAttributesModalOpen(true);
+    }, []);
+
 
     const columns = useMemo(
         () =>
@@ -113,9 +121,10 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                 showInputPrice,
                 expandedRows,
                 toggleExpand,
-                openUploadModal
+                openUploadModal,
+                openAttributesModal
             }),
-        [setRows, showInputPrice, expandedRows, toggleExpand]
+        [setRows, showInputPrice, expandedRows, toggleExpand, openAttributesModal]
     );
 
     const handleDelete = async () => {
@@ -243,9 +252,15 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
             <div>
                 <p>
                     <strong>Собрано:</strong> {formatDate(result.dt_parsed)} <br/>
+                    {result.duration && (
+                        <>
+                            <strong>Время:</strong> {Number(result.duration).toFixed(1)} сек<br/>
+                        </>
+                    )}
+
                     <strong>Количество:</strong> {Array.isArray(result.parsing_result) ? result.parsing_result.length : 0}<br/>
                     <strong>Ссылка:</strong> <a href={url} target="_blank" rel="noopener noreferrer"
-                                                style={{ color: '#999999', cursor: 'default'}}>{url}</a>
+                                                style={{color: '#999999', cursor: 'default'}}>{url}</a>
                 </p>
             </div>
 
@@ -372,6 +387,14 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                 onClose={() => setIsFilterModalOpen(false)}
                 rows={rows}
                 onApply={(selected) => setFeatureFilter(selected)}
+            />
+            <AttributesModal
+                open={isAttributesModalOpen}
+                data={attributesModalData}
+                onClose={() => {
+                    setIsAttributesModalOpen(false);
+                    setAttributesModalData(null);
+                }}
             />
         </>
     );
