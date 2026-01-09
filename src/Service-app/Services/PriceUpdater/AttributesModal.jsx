@@ -3,7 +3,7 @@ import {fetchGetData, fetchPostData} from "../SchemeAttributes/api.js";
 import {Button, Col, Modal, Radio, Row, Select, message} from "antd";
 import {SaveOutlined} from "@ant-design/icons";
 
-const AttributesModal = ({open, data, onClose}) => {
+const AttributesModal = ({open, data, onClose, onSaved}) => {
     const [loading, setLoading] = useState(false);
     const [allowable, setAllowable] = useState([]);
     const [exists, setExists] = useState([]);
@@ -106,7 +106,7 @@ const AttributesModal = ({open, data, onClose}) => {
 
         const result = await fetchPostData(
             `/service/formula-expression/${selectedFormula}/preview`,
-            { context }
+            {context}
         );
 
         const value = result?.result;
@@ -121,7 +121,6 @@ const AttributesModal = ({open, data, onClose}) => {
             setGeneratedName(value);
         }
     }, [formulas, selectedFormula, exists, data]);
-
 
 
     useEffect(() => {
@@ -164,6 +163,33 @@ const AttributesModal = ({open, data, onClose}) => {
             );
         });
     }, []);
+
+    const saveAttributesValues = useCallback(async () => {
+        if (!data) return;
+
+        const values = exists.map(e => e.attr_value_ids[0].id);
+
+        const payload = {
+            origin: data.origin,
+            values,
+            title: generatedName || data.title
+        };
+
+        const result = await fetchPostData("/service/add_attributes_values", payload);
+
+        if (result?.status) {
+            message.success("Атрибуты успешно сохранены");
+            onSaved?.({
+                origin: payload.origin,
+                title: payload.title,
+                attributes: exists.map(e => e.attr_value_ids[0])
+            });
+            onClose();
+            return;
+        }
+        message.error(result?.message || "Ошибка при сохранении атрибутов");
+    }, [data, exists, generatedName, onClose, onSaved]);
+
 
     const renderAttribute = useCallback(
         attr => {
@@ -281,12 +307,11 @@ const AttributesModal = ({open, data, onClose}) => {
                     </Row>
                     <div style={{display: "flex", justifyContent: "center"}}>
                         {generatedName && (
-                            <Button type="primary">
+                            <Button onClick={saveAttributesValues} type="primary">
                                 <SaveOutlined style={{fontSize: 20}}/>
                             </Button>
                         )}
                     </div>
-
                 </>
             )}
         </Modal>

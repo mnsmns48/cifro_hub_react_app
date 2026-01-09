@@ -86,7 +86,9 @@ export const createParsingColumns = (
                     icon={<LinkOutlined />}
                     style={{
                         color: hasAttributes ? "#52c41a" : "#dcdcdc",
-                        fontSize: hasAttributes ? 20 : 14
+                        fontSize: hasAttributes ? 20 : 14,
+                        border: hasAttributes ? "1px solid #52c41a" : "1px solid transparent",
+                        borderRadius: 9
                     }}
                     onClick={() =>
                         openAttributesModal({

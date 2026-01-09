@@ -11,7 +11,7 @@ import {
     CalculatorOutlined,
     CalendarOutlined, ClearOutlined, DeleteRowOutlined,
     EyeInvisibleOutlined,
-    FileExcelOutlined, LoadingOutlined, PlusSquareOutlined,
+    FileExcelOutlined, LinkOutlined, LoadingOutlined, PlusSquareOutlined,
     ReloadOutlined, RestOutlined, ShareAltOutlined,
     WarningOutlined
 } from "@ant-design/icons";
@@ -87,7 +87,15 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
         const q = searchText.toLowerCase().trim();
 
         return rows.filter(row => {
-            const hasFeatures = Array.isArray(row.features_title) && row.features_title.length > 0;
+            const hasFeatures =
+                Array.isArray(row.features_title) && row.features_title.length > 0;
+
+            const hasAttributes =
+                row.attributes &&
+                Array.isArray(row.attributes.attr_value_ids) &&
+                row.attributes.attr_value_ids.length > 0;
+
+            if (activeFilter === "NoAttributes" && hasAttributes) return false;
 
             if (activeFilter === "noPreview" && row.preview) return false;
             if (activeFilter === "noFeatures" && hasFeatures) return false;
@@ -96,7 +104,11 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                 const isNoFeatureSelected = featureFilter.includes("-------");
 
                 if (isNoFeatureSelected && hasFeatures) return false;
-                if (!isNoFeatureSelected && (!hasFeatures || !featureFilter.some(f => row.features_title.includes(f)))) {
+                if (
+                    !isNoFeatureSelected &&
+                    (!hasFeatures ||
+                        !featureFilter.some(f => row.features_title.includes(f)))
+                ) {
                     return false;
                 }
             }
@@ -107,6 +119,17 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
             return titleMatch || originMatch;
         });
     }, [rows, activeFilter, searchText, featureFilter]);
+
+    const countNoAttributes = useMemo(() => {
+        return rows.filter(row => {
+            const hasAttributes =
+                row.attributes &&
+                Array.isArray(row.attributes.attr_value_ids) &&
+                row.attributes.attr_value_ids.length > 0;
+            return !hasAttributes;
+        }).length;
+    }, [rows]);
+
 
     const openAttributesModal = useCallback((data) => {
         setAttributesModalData(data);
@@ -277,6 +300,11 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                 <Badge count={countNoFeatures} offset={[-8, -6]}>
                     <Button onClick={() => setActiveFilter("noFeatures")}><DeleteRowOutlined/></Button>
                 </Badge>
+                <Badge count={countNoAttributes} offset={[-8, -6]}>
+                    <Button onClick={() => setActiveFilter("NoAttributes")}><LinkOutlined/>
+                    </Button>
+                </Badge>
+
                 <Search placeholder="Поиск по названию / коду товара" allowClear style={{maxWidth: 500}}
                         value={searchText} onChange={e => setSearchText(e.target.value)}/>
                 <Tooltip title={"Профиль вознаграждения"}>
@@ -394,6 +422,19 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                 onClose={() => {
                     setIsAttributesModalOpen(false);
                     setAttributesModalData(null);
+                }}
+                onSaved={({origin, title, attributes}) => {
+                    setRows(prev =>
+                        prev.map(row =>
+                            row.origin === origin
+                                ? {
+                                    ...row,
+                                    title,
+                                    attributes: {model_id: row.attributes?.model_id, attr_value_ids: attributes},
+                                }
+                                : row
+                        )
+                    );
                 }}
             />
         </>

@@ -36,7 +36,6 @@ const FormulaList = () => {
     const columns = [
         {title: "ID", dataIndex: "id", width: 60},
         {title: "Название", dataIndex: "name"},
-        {title: "Тип", dataIndex: "entity_type"},
         {title: "is_default", align: "center", dataIndex: "is_default", render: (v) => v ? (<CheckOutlined/>) : (null)},
         {
             title: "Активна?",
