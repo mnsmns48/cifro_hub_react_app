@@ -92,7 +92,8 @@ export const createParsingColumns = (
                         openAttributesModal({
                             origin: row.origin,
                             model_id: attributes?.model_id,
-                            title: row.title
+                            title: row.title,
+                            features_title: row.features_title,
                         })
                     }
                 />

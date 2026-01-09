@@ -10,6 +10,8 @@ import FormulaList from "./FormulaList.jsx";
 
 const renderTabContent = (tab) => {
     switch (tab) {
+        case "formula_list":
+            return <FormulaList/>;
         case "keys":
             return <TabKeys/>;
         case "attrs":
@@ -18,8 +20,6 @@ const renderTabContent = (tab) => {
             return <TabTypesDependencies/>;
         case "links_model":
             return <TabModelsDependencies/>;
-        case "formula_list":
-            return <FormulaList/>;
         default:
             return null;
     }
@@ -29,11 +29,11 @@ const AttributesMain = () => {
     const [tab, setTab] = useState(null);
 
     const options = [
+        {label: "Формулы", value: "formula_list"},
         {label: "Ключи", value: "keys"},
         {label: "Атрибуты", value: "attrs"},
         {label: "Зависимости типов", value: "link_types"},
         {label: "Зависимости моделей", value: "links_model"},
-        {label: "Формулы", value: "formula_list"},
     ]
 
     return (<div style={{padding: 16}}>
