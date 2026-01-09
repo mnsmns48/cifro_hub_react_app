@@ -250,7 +250,25 @@ const AttributesModal = ({open, data, onClose, onSaved}) => {
 
             {!loading && (
                 <>
-                    <div style={{paddingBottom: 10}}>{data?.title ?? ""}</div>
+                    <div style={{
+                        fontWeight: 600,
+                        fontSize: 18,
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center"
+                    }}>
+                        Формула
+                        <Select
+                            style={{width: 240, margin: 12}}
+                            placeholder="Выберите формулу"
+                            value={selectedFormula}
+                            onChange={setSelectedFormula}
+                            options={formulas.map(f => ({
+                                label: f.name,
+                                value: f.id
+                            }))}
+                        />
+                    </div>
 
                     {allowable.length > 0 && (
                         <div>{allowable.map(renderAttribute)}</div>
@@ -258,51 +276,34 @@ const AttributesModal = ({open, data, onClose, onSaved}) => {
 
                     <Row gutter={10} justify="center">
                         <Col span={12}>
-                            Тут будут картинки а сейчас эта заглушка
+                            {/*Тут будут картинки а сейчас эта заглушка*/}
                         </Col>
 
                         <Col span={12}>
-                            <div style={{padding: 10}}>
-                                {Array.isArray(data?.features_title) &&
-                                data.features_title.length > 0 ? (
-                                    <>
-                                        <div style={{marginBottom: 6, fontWeight: 600}}>
-                                            Формула
-                                        </div>
 
-                                        <Select
-                                            style={{width: "100%"}}
-                                            placeholder="Выберите формулу"
-                                            value={selectedFormula}
-                                            onChange={setSelectedFormula}
-                                            options={formulas.map(f => ({
-                                                label: f.name,
-                                                value: f.id
-                                            }))}
-                                        />
+                            {Array.isArray(data?.features_title) &&
+                            data.features_title.length > 0 ? (
+                                <>
+                                    <div style={{padding: 10, fontWeight: 500}}>{data?.title ?? ""}</div>
 
-                                        <div style={{marginTop: 16, fontWeight: 600}}>
-                                            Название
-                                        </div>
-
-                                        <input
-                                            style={{
-                                                width: "100%",
-                                                padding: "6px 10px",
-                                                borderRadius: 6,
-                                                border: "1px solid #d9d9d9",
-                                                fontSize: 14
-                                            }}
-                                            value={generatedName}
-                                            onChange={e => setGeneratedName(e.target.value)}
-                                        />
-                                    </>
-                                ) : (
-                                    <div style={{color: "#999", fontStyle: "italic"}}>
-                                        Не выставлена зависимость модели
-                                    </div>
-                                )}
-                            </div>
+                                    <input
+                                        style={{
+                                            width: "90%",
+                                            padding: "6px 10px",
+                                            marginBottom: 12,
+                                            borderRadius: 6,
+                                            border: "1px solid #d9d9d9",
+                                            fontSize: 13
+                                        }}
+                                        value={generatedName}
+                                        onChange={e => setGeneratedName(e.target.value)}
+                                    />
+                                </>
+                            ) : (
+                                <div style={{color: "#999", fontStyle: "italic"}}>
+                                    Не выставлена зависимость модели
+                                </div>
+                            )}
                         </Col>
                     </Row>
                     <div style={{display: "flex", justifyContent: "center"}}>
