@@ -11,7 +11,7 @@ import {
     CalculatorOutlined,
     CalendarOutlined, ClearOutlined, DeleteRowOutlined,
     EyeInvisibleOutlined,
-    FileExcelOutlined, LoadingOutlined, PlusSquareOutlined,
+    FileExcelOutlined, LinkOutlined, LoadingOutlined, PlusSquareOutlined,
     ReloadOutlined, RestOutlined, ShareAltOutlined,
     WarningOutlined
 } from "@ant-design/icons";
@@ -20,6 +20,7 @@ import InHubDownloader from "./InHubDownloader.jsx";
 import {deleteStockItems} from "../HubMenuLevels/api.js";
 import InfoSelect from "./InfoSelect.jsx";
 import FeatureFilterModal from "./FeatureFilterModal.jsx";
+import AttributesModal from "./AttributesModal.jsx";
 
 
 const {Search} = Input;
@@ -41,8 +42,10 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     const [dependencySelection, setDependencySelection] = useState(null);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [featureFilter, setFeatureFilter] = useState([]);
+    const [attributesModalData, setAttributesModalData] = useState(null);
+    const [isAttributesModalOpen, setIsAttributesModalOpen] = useState(false);
 
-
+    ``
     useEffect(() => {
         setRows(Array.isArray(result.parsing_result) ? result.parsing_result : []);
         setSelectedRowKeys([]);
@@ -84,7 +87,15 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
         const q = searchText.toLowerCase().trim();
 
         return rows.filter(row => {
-            const hasFeatures = Array.isArray(row.features_title) && row.features_title.length > 0;
+            const hasFeatures =
+                Array.isArray(row.features_title) && row.features_title.length > 0;
+
+            const hasAttributes =
+                row.attributes &&
+                Array.isArray(row.attributes.attr_value_ids) &&
+                row.attributes.attr_value_ids.length > 0;
+
+            if (activeFilter === "NoAttributes" && hasAttributes) return false;
 
             if (activeFilter === "noPreview" && row.preview) return false;
             if (activeFilter === "noFeatures" && hasFeatures) return false;
@@ -93,7 +104,11 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                 const isNoFeatureSelected = featureFilter.includes("-------");
 
                 if (isNoFeatureSelected && hasFeatures) return false;
-                if (!isNoFeatureSelected && (!hasFeatures || !featureFilter.some(f => row.features_title.includes(f)))) {
+                if (
+                    !isNoFeatureSelected &&
+                    (!hasFeatures ||
+                        !featureFilter.some(f => row.features_title.includes(f)))
+                ) {
                     return false;
                 }
             }
@@ -105,6 +120,22 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
         });
     }, [rows, activeFilter, searchText, featureFilter]);
 
+    const countNoAttributes = useMemo(() => {
+        return rows.filter(row => {
+            const hasAttributes =
+                row.attributes &&
+                Array.isArray(row.attributes.attr_value_ids) &&
+                row.attributes.attr_value_ids.length > 0;
+            return !hasAttributes;
+        }).length;
+    }, [rows]);
+
+
+    const openAttributesModal = useCallback((data) => {
+        setAttributesModalData(data);
+        setIsAttributesModalOpen(true);
+    }, []);
+
 
     const columns = useMemo(
         () =>
@@ -113,9 +144,10 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                 showInputPrice,
                 expandedRows,
                 toggleExpand,
-                openUploadModal
+                openUploadModal,
+                openAttributesModal
             }),
-        [setRows, showInputPrice, expandedRows, toggleExpand]
+        [setRows, showInputPrice, expandedRows, toggleExpand, openAttributesModal]
     );
 
     const handleDelete = async () => {
@@ -243,9 +275,15 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
             <div>
                 <p>
                     <strong>Собрано:</strong> {formatDate(result.dt_parsed)} <br/>
+                    {result.duration && (
+                        <>
+                            <strong>Время:</strong> {Number(result.duration).toFixed(1)} сек<br/>
+                        </>
+                    )}
+
                     <strong>Количество:</strong> {Array.isArray(result.parsing_result) ? result.parsing_result.length : 0}<br/>
                     <strong>Ссылка:</strong> <a href={url} target="_blank" rel="noopener noreferrer"
-                                                style={{ color: '#999999', cursor: 'default'}}>{url}</a>
+                                                style={{color: '#999999', cursor: 'default'}}>{url}</a>
                 </p>
             </div>
 
@@ -262,6 +300,11 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                 <Badge count={countNoFeatures} offset={[-8, -6]}>
                     <Button onClick={() => setActiveFilter("noFeatures")}><DeleteRowOutlined/></Button>
                 </Badge>
+                <Badge count={countNoAttributes} offset={[-8, -6]}>
+                    <Button onClick={() => setActiveFilter("NoAttributes")}><LinkOutlined/>
+                    </Button>
+                </Badge>
+
                 <Search placeholder="Поиск по названию / коду товара" allowClear style={{maxWidth: 500}}
                         value={searchText} onChange={e => setSearchText(e.target.value)}/>
                 <Tooltip title={"Профиль вознаграждения"}>
@@ -372,6 +415,27 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                 onClose={() => setIsFilterModalOpen(false)}
                 rows={rows}
                 onApply={(selected) => setFeatureFilter(selected)}
+            />
+            <AttributesModal
+                open={isAttributesModalOpen}
+                data={attributesModalData}
+                onClose={() => {
+                    setIsAttributesModalOpen(false);
+                    setAttributesModalData(null);
+                }}
+                onSaved={({origin, title, attributes}) => {
+                    setRows(prev =>
+                        prev.map(row =>
+                            row.origin === origin
+                                ? {
+                                    ...row,
+                                    title,
+                                    attributes: {model_id: row.attributes?.model_id, attr_value_ids: attributes},
+                                }
+                                : row
+                        )
+                    );
+                }}
             />
         </>
     );

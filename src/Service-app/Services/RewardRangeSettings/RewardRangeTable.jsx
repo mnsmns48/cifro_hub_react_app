@@ -220,10 +220,11 @@ const RewardRangeTable = ({selectedProfile, isAddingNewLine, setIsAddingNewLine}
         <div>
             <Table
                 dataSource={newLine ? [...rangeData, newLine] : rangeData}
+                pagination={false}
                 columns={columns}
                 rowKey="id"
             />
-            <Button icon={<PlusOutlined/>} onClick={() => setIsAddingNewLine(true)}>
+            <Button icon={<PlusOutlined/>} onClick={() => setIsAddingNewLine(true)} style={{marginTop: 12}}>
                 Добавить
             </Button>
         </div>

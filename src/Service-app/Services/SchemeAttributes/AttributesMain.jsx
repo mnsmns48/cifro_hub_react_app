@@ -4,10 +4,14 @@ import TabKeys from "./TabKeys.jsx";
 import TabAttributeValues from "./TabAttributeValues.jsx";
 import TabTypesDependencies from "./TabTypesDependencies.jsx";
 import TabModelsDependencies from "./TabModelsDependencies.jsx";
+import FormulaList from "./FormulaList.jsx";
+
 
 
 const renderTabContent = (tab) => {
     switch (tab) {
+        case "formula_list":
+            return <FormulaList/>;
         case "keys":
             return <TabKeys/>;
         case "attrs":
@@ -25,6 +29,7 @@ const AttributesMain = () => {
     const [tab, setTab] = useState(null);
 
     const options = [
+        {label: "Формулы", value: "formula_list"},
         {label: "Ключи", value: "keys"},
         {label: "Атрибуты", value: "attrs"},
         {label: "Зависимости типов", value: "link_types"},
@@ -33,7 +38,6 @@ const AttributesMain = () => {
 
     return (<div style={{padding: 16}}>
         <Segmented value={tab} onChange={setTab} options={options} style={{marginBottom: 12}}/>
-
         {renderTabContent(tab)}
     </div>);
 };
