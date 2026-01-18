@@ -35,7 +35,7 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     const [searchText, setSearchText] = useState("");
     const [activeFilter, setActiveFilter] = useState("all");
     const [uploadModalOpen, setUploadModalOpen] = useState(false);
-    const [currentOrigin, setCurrentOrigin] = useState(null);
+    const [currentOriginAndTitle, setCurrentOriginAndTitle] = useState(null);
     const [rewardOptions, setRewardOptions] = useState([]);
     const [addToHubModalVisible, setAddToHubModalVisible] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -73,8 +73,8 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
         await onRangeChange(vslId, rangeId);
     };
 
-    const openUploadModal = useCallback(origin => {
-        setCurrentOrigin(origin);
+    const openUploadModal = useCallback((origin, title) => {
+        setCurrentOriginAndTitle({origin, title});
         setUploadModalOpen(true);
     }, []);
 
@@ -395,9 +395,10 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
             />
             <InHubDownloader vslId={vslId} isOpen={addToHubModalVisible} items={selectedItems}
                              onCancel={() => setAddToHubModalVisible(false)} onConfirm={handleAddToHub}/>
-            <UploadImagesModal isOpen={uploadModalOpen} originCode={currentOrigin}
+            <UploadImagesModal isOpen={uploadModalOpen} originCode={currentOriginAndTitle?.origin}
+                               originTitle={currentOriginAndTitle?.title}
                                onClose={() => setUploadModalOpen(false)}
-                               onUploaded={(data) => handleImageUploaded(data, currentOrigin)}/>
+                               onUploaded={(data) => handleImageUploaded(data, currentOriginAndTitle.origin)}/>
             {isRefreshing ? (
                 <div className="circle-float-button refresh-float-button">
                     <Spin indicator={spinIcon}/>

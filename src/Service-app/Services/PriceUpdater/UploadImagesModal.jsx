@@ -6,7 +6,7 @@ import MyModal from "../../../Ui/MyModal.jsx";
 import {getUploadedImages, uploadImageToS3, deleteImageFromS3, markImageAsPreview} from "./api.js";
 import UploadedImageItem from "./UploadImagesElement.jsx";
 
-const UploadImagesModal = ({ isOpen, onClose, originCode, onUploaded  }) => {
+const UploadImagesModal = ({ isOpen, onClose, originCode, originTitle, onUploaded  }) => {
     const [existingFiles, setExistingFiles] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -67,7 +67,7 @@ const UploadImagesModal = ({ isOpen, onClose, originCode, onUploaded  }) => {
         <MyModal
             isOpen={isOpen}
             onCancel={onClose}
-            title={`Изображения для origin: ${originCode}`}
+            title={`Изображения для origin: ${originCode} ${originTitle}`}
             closable
             footer={null}
             content={

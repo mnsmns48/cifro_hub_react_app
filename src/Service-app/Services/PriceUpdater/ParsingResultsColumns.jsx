@@ -25,7 +25,7 @@ export const createParsingColumns = (
                 ) : (
                     <Button type="dashed" icon={<PlusOutlined/>}
                             className="preview-dashed-button"
-                            onClick={() => openUploadModal(record.origin)}/>
+                            onClick={() => openUploadModal(record.origin, record.title)}/>
                 )}
 
                 {url && (
@@ -33,7 +33,7 @@ export const createParsingColumns = (
                         type="text"
                         icon={<InstagramOutlined style={{fontSize: 18, color: "#818181"}}/>}
                         className="add-pic-button"
-                        onClick={() => openUploadModal(record.origin)}
+                        onClick={() => openUploadModal(record.origin, record.title)}
                     />
                 )}
             </div>
