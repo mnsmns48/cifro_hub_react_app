@@ -32,7 +32,6 @@ const TabModelsDependencies = () => {
         const res = await fetchGetData(
             `/service/attributes/load_model_attribute_options/${id}`);
         setModels(res);
-        setSelectedBrand(null);
     };
 
     const refreshModels = async () => {
