@@ -1,7 +1,8 @@
 import {useEffect, useState, useCallback} from "react";
 import {fetchGetData, fetchPostData} from "../SchemeAttributes/api.js";
-import {Button, Col, Modal, Radio, Row, Select, message} from "antd";
+import {Button, Col, Modal, Radio, Row, Select, message, Input} from "antd";
 import {SaveOutlined} from "@ant-design/icons";
+import AttributesImageContainer from "./AttributeImageConteiner.jsx";
 
 const AttributesModal = ({open, data, onClose, onSaved}) => {
     const [loading, setLoading] = useState(false);
@@ -230,16 +231,15 @@ const AttributesModal = ({open, data, onClose, onSaved}) => {
             {allowable.length > 0 && (<div>{allowable.map(renderAttribute)}</div>)}
 
             <Row gutter={10} justify="center">
+
                 <Col span={12}>
-                    {/*Тут будут картинки а сейчас эта заглушка*/}
+                    <AttributesImageContainer data={data}/>
                 </Col>
 
                 <Col span={12}>
-
                     {Array.isArray(data?.features_title) && data.features_title.length > 0 ? (<>
                         <div style={{padding: 10, fontWeight: 500}}>{data?.title ?? ""}</div>
-
-                        <input
+                        <Input
                             style={{
                                 width: "90%",
                                 padding: "6px 10px",
