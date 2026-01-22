@@ -1,84 +1,86 @@
-import {useCallback, useEffect, useState} from "react";
-import {fetchGetData} from "../SchemeAttributes/api.js";
-import {Image, Spin} from "antd";
-import {LoadingOutlined} from "@ant-design/icons";
+import { useEffect, useState } from "react";
+import { Image } from "antd";
+import UploadedImageItem from "./UploadImagesElement.jsx";
+import { useImagesActions } from "../Hook/useImagesActions.js";
 
-const AttributesImageContainer = ({data}) => {
-    const [images, setImages] = useState([]);
+const AttributesImageContainer = ({ data, onUploaded }) => {
+    const originCode = data?.origin;
+
+    const {
+        fetchImages,
+        deleteImage,
+        markAsPreview
+    } = useImagesActions(originCode, onUploaded);
+
+    const [existingFiles, setExistingFiles] = useState([]);
     const [preview, setPreview] = useState(null);
-    const [loading, setLoading] = useState(false);
-
-    const loadImages = useCallback(async () => {
-        if (!data) return;
-
-        setLoading(true);
-
-        const result = await fetchGetData(`service/fetch_images_62701/${data?.origin}`);
-
-        setPreview(result?.preview ?? null);
-        setImages(result?.images ?? []);
-
-        setLoading(false);
-    }, [data]);
 
     useEffect(() => {
-        void loadImages();
-    }, [data, loadImages]);
+        if (!originCode) return;
+
+        fetchImages().then(result => {
+            setExistingFiles(result);
+            setPreview(result.find(i => i.is_preview)?.url ?? null);
+        });
+    }, [originCode, fetchImages]);
+
+    const handleDelete = async (filename) => {
+        const res = await deleteImage(filename);
+        if (!res) return;
+
+        setExistingFiles(res.images);
+        setPreview(res.preview);
+
+        if (onUploaded) {
+            onUploaded({ images: res.images, preview: res.preview }, originCode);
+        }
+    };
+
+    const handleMakePreview = async (filename) => {
+        const res = await markAsPreview(filename);
+        if (!res) return;
+
+        setExistingFiles(res.images);
+        setPreview(res.preview);
+
+        if (onUploaded) {
+            onUploaded({ images: res.images, preview: res.preview }, originCode);
+        }
+    };
 
     return (
-        <>
-            {loading && (
-                <div style={{display: "flex", justifyContent: "center", padding: 20, marginTop: 30}}>
-                    <Spin indicator={<LoadingOutlined spin/>} size="large"/>
+        <div>
+            <div
+                style={{
+                    justifyContent: "center",
+                    display: "flex",
+                    alignItems: "center",
+                    paddingBottom: 10
+                }}
+            >
+                <div style={{ width: "30%" }}>
+                    {preview && (
+                        <Image
+                            src={preview}
+                            style={{ borderRadius: 6, objectFit: "contain" }}
+                        />
+                    )}
                 </div>
-            )}
+            </div>
 
-            {!loading && (
-                <Image.PreviewGroup>
-                    <div style={{justifyContent: 'center', display: 'flex', alignItems: 'center', paddingBottom: 10}}>
-                        <div style={{width: '30%'}}>
-                            {preview && (
-                                <Image
-                                    src={preview}
-                                    style={{borderRadius: 6, objectFit: "contain"}}
-                                />
-                            )}
-                        </div>
-                    </div>
-
-                    <div style={{display: "flex", flexWrap: "wrap", gap: 8}}>
-                        {images.map(img => (
-                            <div
-                                key={img.filename}
-                                style={{
-                                    width: 80,
-                                    height: 80,
-                                    borderRadius: 6,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    overflow: "hidden"
-                                }}
-                            >
-                                <Image
-                                    src={img.url}
-                                    preview={true}
-                                    width="100%"
-                                    height="100%"
-                                    style={{
-                                        width: "100%",
-                                        height: "auto",
-                                    }}
-                                    imgStyle={{
-                                        objectFit: "contain",
-                                    }}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </Image.PreviewGroup>
-            )}
-        </>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {existingFiles.map(img => (
+                    <UploadedImageItem
+                        key={img.filename}
+                        filename={img.filename}
+                        url={img.url}
+                        isPreview={img.is_preview}
+                        onDelete={handleDelete}
+                        onMakePreview={handleMakePreview}
+                    />
+                ))}
+            </div>
+        </div>
     );
 };
 

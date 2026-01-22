@@ -4,7 +4,7 @@ import {Button, Col, Modal, Radio, Row, Select, message, Input} from "antd";
 import {SaveOutlined} from "@ant-design/icons";
 import AttributesImageContainer from "./AttributeImageConteiner.jsx";
 
-const AttributesModal = ({open, data, onClose, onSaved}) => {
+const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     const [loading, setLoading] = useState(false);
     const [allowable, setAllowable] = useState([]);
     const [exists, setExists] = useState([]);
@@ -233,7 +233,7 @@ const AttributesModal = ({open, data, onClose, onSaved}) => {
             <Row gutter={10} justify="center">
 
                 <Col span={12}>
-                    <AttributesImageContainer data={data}/>
+                    <AttributesImageContainer data={data} onUploaded={onUploaded}/>
                 </Col>
 
                 <Col span={12}>

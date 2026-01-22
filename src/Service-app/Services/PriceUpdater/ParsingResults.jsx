@@ -45,7 +45,6 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     const [attributesModalData, setAttributesModalData] = useState(null);
     const [isAttributesModalOpen, setIsAttributesModalOpen] = useState(false);
 
-    ``
     useEffect(() => {
         setRows(Array.isArray(result.parsing_result) ? result.parsing_result : []);
         setSelectedRowKeys([]);
@@ -73,10 +72,6 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
         await onRangeChange(vslId, rangeId);
     };
 
-    const openUploadModal = useCallback((origin, title) => {
-        setCurrentOriginAndTitle({origin, title});
-        setUploadModalOpen(true);
-    }, []);
 
     const toggleExpand = useCallback(
         key => setExpandedRows(prev => (prev === key ? null : key)),
@@ -137,19 +132,6 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     }, []);
 
 
-    const columns = useMemo(
-        () =>
-            createParsingColumns({
-                setRows,
-                showInputPrice,
-                expandedRows,
-                toggleExpand,
-                openUploadModal,
-                openAttributesModal
-            }),
-        [setRows, showInputPrice, expandedRows, toggleExpand, openAttributesModal]
-    );
-
     const handleDelete = async () => {
         if (!selectedRowKeys.length) return;
         try {
@@ -174,6 +156,26 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
             );
         },
         [setRows]
+    );
+
+
+    const openUploadModal = useCallback((origin, title) => {
+        setCurrentOriginAndTitle({origin, title});
+        setUploadModalOpen(true);
+    }, []);
+
+
+    const columns = useMemo(
+        () =>
+            createParsingColumns({
+                setRows,
+                showInputPrice,
+                expandedRows,
+                toggleExpand,
+                openUploadModal,
+                openAttributesModal
+            }),
+        [rows, setRows, showInputPrice, expandedRows, toggleExpand, openUploadModal, openAttributesModal]
     );
 
     const downloadExcel = async () => {
@@ -264,6 +266,17 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
             setRows
         });
     };
+
+    const updateRow = useCallback((origin, patch) => {
+        setRows(prev =>
+            prev.map(row =>
+                row.origin === origin
+                    ? {...row, ...patch}
+                    : row
+            )
+        );
+    }, []);
+
 
     const countNoPreview = rows.filter(r => r.preview == null).length;
     const countNoFeatures = rows.filter(r => Array.isArray(r.features_title) && r.features_title.length === 0).length;
@@ -395,10 +408,18 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
             />
             <InHubDownloader vslId={vslId} isOpen={addToHubModalVisible} items={selectedItems}
                              onCancel={() => setAddToHubModalVisible(false)} onConfirm={handleAddToHub}/>
-            <UploadImagesModal isOpen={uploadModalOpen} originCode={currentOriginAndTitle?.origin}
-                               originTitle={currentOriginAndTitle?.title}
-                               onClose={() => setUploadModalOpen(false)}
-                               onUploaded={(data) => handleImageUploaded(data, currentOriginAndTitle.origin)}/>
+            <UploadImagesModal
+                isOpen={uploadModalOpen}
+                originCode={currentOriginAndTitle?.origin}
+                originTitle={currentOriginAndTitle?.title}
+                onClose={() => setUploadModalOpen(false)}
+                onUploaded={(data) => {
+                    if (!currentOriginAndTitle) return;
+                    handleImageUploaded(data, currentOriginAndTitle.origin);
+                }}
+            />
+
+
             {isRefreshing ? (
                 <div className="circle-float-button refresh-float-button">
                     <Spin indicator={spinIcon}/>
@@ -424,18 +445,19 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                     setIsAttributesModalOpen(false);
                     setAttributesModalData(null);
                 }}
+
+                onUploaded={(uploaded, origin) => {
+                    updateRow(origin, {preview: uploaded.preview});
+                }}
+
                 onSaved={({origin, title, attributes}) => {
-                    setRows(prev =>
-                        prev.map(row =>
-                            row.origin === origin
-                                ? {
-                                    ...row,
-                                    title,
-                                    attributes: {model_id: row.attributes?.model_id, attr_value_ids: attributes},
-                                }
-                                : row
-                        )
-                    );
+                    updateRow(origin, {
+                        title,
+                        attributes: {
+                            model_id: rows.find(r => r.origin === origin)?.attributes?.model_id,
+                            attr_value_ids: attributes
+                        }
+                    });
                 }}
             />
         </>

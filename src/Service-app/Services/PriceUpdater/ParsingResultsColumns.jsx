@@ -73,7 +73,6 @@ export const createParsingColumns = (
         width: 38,
         render: (_, row) => {
             const attributes = row.attributes;
-
             const hasAttributes =
                 attributes &&
                 attributes.model_id &&
@@ -83,7 +82,7 @@ export const createParsingColumns = (
             return (
                 <Button
                     type="text"
-                    icon={<LinkOutlined />}
+                    icon={<LinkOutlined/>}
                     style={{
                         color: hasAttributes ? "#52c41a" : "#dcdcdc",
                         fontSize: hasAttributes ? 20 : 14,
@@ -101,9 +100,7 @@ export const createParsingColumns = (
                 />
             );
         }
-
-    }
-    ,
+    },
     {
         key: "details",
         width: 38,

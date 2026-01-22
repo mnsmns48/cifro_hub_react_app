@@ -15,8 +15,6 @@ const UploadedImageItem = ({ filename, url, isPreview, onDelete, onMakePreview  
         <Image
             src={url}
             alt={filename}
-            width={80}
-            height={80}
             style={{ objectFit: "cover" }}
         />
         {isPreview ? (
