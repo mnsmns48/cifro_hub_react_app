@@ -1,36 +1,36 @@
 import {useState, useMemo, useCallback, useEffect} from "react";
-import {Table, Button, Input, Select, Popconfirm, Spin, Badge, Tooltip} from "antd";
-import "../Css/ParsingResults.css";
-import {createParsingColumns} from "./ParsingResultsColumns.jsx";
-import {clearMediaData, deleteParsingItems, exportParsingToExcel, reCalcOutputPrices} from "./api.js";
-import UploadImagesModal from "./UploadImagesModal.jsx";
-import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
+
+import {Table, Button, Spin} from "antd";
+import {AlignRightOutlined, LoadingOutlined, ReloadOutlined} from "@ant-design/icons";
+
 import {
-    AlignRightOutlined,
-    BarsOutlined,
-    CalculatorOutlined,
-    CalendarOutlined, ClearOutlined, DeleteRowOutlined,
-    EyeInvisibleOutlined,
-    FileExcelOutlined, LinkOutlined, LoadingOutlined, PlusSquareOutlined,
-    ReloadOutlined, RestOutlined, ShareAltOutlined,
-    WarningOutlined
-} from "@ant-design/icons";
-import {formatDate} from "../../../../utils.js";
-import InHubDownloader from "./InHubDownloader.jsx";
+    clearMediaData,
+    deleteParsingItems,
+    exportParsingToExcel,
+    reCalcOutputPrices
+} from "./api.js";
+import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
 import {deleteStockItems} from "../HubMenuLevels/api.js";
-import InfoSelect from "./InfoSelect.jsx";
-import FeatureFilterModal from "./FeatureFilterModal.jsx";
-import AttributesModal from "./AttributesModal.jsx";
 
 
-const {Search} = Input;
+import {createParsingColumns} from "./ParsingResultsBlocks/ParsingResultsColumns.jsx";
+import UploadImagesModal from "./ParsingResultsBlocks/UploadImagesModal.jsx";
+import InHubDownloader from "./ParsingResultsBlocks/InHubDownloader.jsx";
+import InfoSelect from "./ParsingResultsBlocks/InfoSelect.jsx";
+import FeatureFilterModal from "./ParsingResultsBlocks/FeatureFilterModal.jsx";
+import AttributesModal from "./ParsingResultsBlocks/AttributesModal.jsx";
+import ParsingHeader from "./ParsingResultsBlocks/ParsingHeader.jsx";
+import ParsingToolbar from "./ParsingResultsBlocks/ParsingToolbar.jsx";
+import ParsingBulkActions from "./ParsingResultsBlocks/ParsingBulkActions.jsx";
+
+import "../Css/ParsingResults.css";
+import ParsingFloatingActions from "./ParsingResultsBlocks/ParsingFloatingActions.jsx";
 
 
 const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     const [rows, setRows] = useState(result.data ?? []);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [expandedRows, setExpandedRows] = useState(null);
-    const [pageSize, setPageSize] = useState(100);
     const [showInputPrice, setShowInputPrice] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [activeFilter, setActiveFilter] = useState("all");
@@ -281,94 +281,45 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     const countNoPreview = rows.filter(r => r.preview == null).length;
     const countNoFeatures = rows.filter(r => Array.isArray(r.features_title) && r.features_title.length === 0).length;
 
-    const spinIcon = <LoadingOutlined style={{fontSize: 18, color: "#e2fc2a"}} spin/>;
 
     return (
         <>
-            <div>
-                <p>
-                    <strong>Собрано:</strong> {formatDate(result.dt_parsed)} <br/>
-                    {result.duration && (
-                        <>
-                            <strong>Время:</strong> {Number(result.duration).toFixed(1)} сек<br/>
-                        </>
-                    )}
+            <ParsingHeader url={url} result={result}/>
 
-                    <strong>Количество:</strong> {Array.isArray(result.parsing_result) ? result.parsing_result.length : 0}<br/>
-                    <strong>Ссылка:</strong> <a href={url} target="_blank" rel="noopener noreferrer"
-                                                style={{color: '#999999', cursor: 'default'}}>{url}</a>
-                </p>
-            </div>
+            <ParsingToolbar
+                showInputPrice={showInputPrice}
+                onTogglePrice={() => setShowInputPrice(v => !v)}
 
-            <div style={{display: "flex", gap: 5, flexWrap: "wrap", padding: "12px 0"}}>
-                <Button onClick={() => setShowInputPrice(v => !v)}>
-                    {showInputPrice ? <CalendarOutlined/> : <CalculatorOutlined/>}</Button>
-                <Button onClick={() => {
+                onResetFilters={() => {
                     setActiveFilter("all");
                     setFeatureFilter([]);
-                }}><BarsOutlined/></Button>
-                <Badge count={countNoPreview} offset={[-8, -6]}>
-                    <Button onClick={() => setActiveFilter("noPreview")}><EyeInvisibleOutlined/></Button>
-                </Badge>
-                <Badge count={countNoFeatures} offset={[-8, -6]}>
-                    <Button onClick={() => setActiveFilter("noFeatures")}><DeleteRowOutlined/></Button>
-                </Badge>
-                <Badge count={countNoAttributes} offset={[-8, -6]}>
-                    <Button onClick={() => setActiveFilter("NoAttributes")}><LinkOutlined/>
-                    </Button>
-                </Badge>
+                }}
 
-                <Search placeholder="Поиск по названию / коду товара" allowClear style={{maxWidth: 500}}
-                        value={searchText} onChange={e => setSearchText(e.target.value)}/>
-                <Tooltip title={"Профиль вознаграждения"}>
-                    <Select style={{minWidth: 200}}
-                            options={rewardOptions} defaultValue={result.profit_range_id} onChange={handleSelectRange}/>
-                </Tooltip>
-                <Button onClick={downloadExcel}><FileExcelOutlined/></Button>
-            </div>
+                onFilterChange={setActiveFilter}
 
-            {selectedRowKeys.length > 0 && (
-                <div style={{display: "flex", gap: 10, marginBottom: 15}}>
-                    <Popconfirm
-                        title="Вы уверены, что хотите удалить выбранные позиции?"
-                        onConfirm={handleDelete}
-                        okText="Да"
-                        cancelText="Нет"
-                        placement="left"
-                    >
-                        <Button danger className="fixed-hub-button fixed-hub-button-delete">
-                            Удалить навсегда ({selectedRowKeys.length}) <WarningOutlined/>
-                        </Button>
-                    </Popconfirm>
+                countNoPreview={countNoPreview}
+                countNoFeatures={countNoFeatures}
+                countNoAttributes={countNoAttributes}
 
-                    <Button onClick={() => handleAddDependenceMulti(selectedRowKeys)}
-                            className="fixed-hub-button fixed-hub-button-dependency">
-                        Зависимость ({selectedRowKeys.length}) <ShareAltOutlined/>
-                    </Button>
+                searchText={searchText}
+                onSearchChange={setSearchText}
 
-                    <Button onClick={() => setAddToHubModalVisible(true)}
-                            className="fixed-hub-button fixed-hub-button-add">
-                        Добавить в Хаб ({selectedRowKeys.length}) <PlusSquareOutlined/>
-                    </Button>
+                rewardOptions={rewardOptions}
+                selectedRangeId={result.profit_range_id}
+                onRangeChange={handleSelectRange}
 
-                    <Popconfirm title="Очистить медиа у выбранных позиций?"
-                                description={`Будут удалены картинки и превью.`}
-                                okText="Да, очистить" cancelText="Отмена"
-                                onConfirm={() => handleClearMedia(selectedRowKeys)}
-                                disabled={!selectedRowKeys.length}>
-                        <Button
-                            className="fixed-hub-button fixed-hub-button-clear-media" icon={<ClearOutlined/>}
-                            disabled={!selectedRowKeys.length}>
-                            Очистить медиа ({selectedRowKeys.length})
-                        </Button>
-                    </Popconfirm>
+                onExportExcel={downloadExcel}
+            />
 
-                    <Button onClick={() => handleClearFromHub(selectedRowKeys)}
-                            className="fixed-hub-button fixed-hub-button-remove">
-                        Убрать из хаба ({selectedRowKeys.length}) <RestOutlined/>
-                    </Button>
-                </div>
-            )}
+            <ParsingBulkActions
+                selectedCount={selectedRowKeys.length}
+                onDelete={handleDelete}
+                onAddDependence={() => handleAddDependenceMulti(selectedRowKeys)}
+                onAddToHub={() => setAddToHubModalVisible(true)}
+                onClearMedia={() => handleClearMedia(selectedRowKeys)}
+                onRemoveFromHub={() => handleClearFromHub(selectedRowKeys)}
+            />
+
             {dependencySelection && (
                 <InfoSelect
                     titles={dependencySelection.titles}
@@ -382,20 +333,13 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                     }}
                 />
             )}
+
             <Table className="parsing-result-table"
                    dataSource={filteredData}
                    columns={columns}
+                   pagination={false}
                    rowKey="origin" tableLayout="fixed"
-                   rowSelection={{
-                       selectedRowKeys,
-                       onChange: setSelectedRowKeys
-                   }}
-                   pagination={{
-                       pageSize,
-                       showSizeChanger: true,
-                       pageSizeOptions: ["10", "25", "50", "100"],
-                       onShowSizeChange: (_, size) => setPageSize(size)
-                   }}
+                   rowSelection={{selectedRowKeys, onChange: setSelectedRowKeys}}
                    rowClassName={rec => {
                        const noF =
                            Array.isArray(rec.features_title) &&
@@ -408,57 +352,51 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
             />
             <InHubDownloader vslId={vslId} isOpen={addToHubModalVisible} items={selectedItems}
                              onCancel={() => setAddToHubModalVisible(false)} onConfirm={handleAddToHub}/>
-            <UploadImagesModal
-                isOpen={uploadModalOpen}
-                originCode={currentOriginAndTitle?.origin}
-                originTitle={currentOriginAndTitle?.title}
-                onClose={() => setUploadModalOpen(false)}
-                onUploaded={(data) => {
-                    if (!currentOriginAndTitle) return;
-                    handleImageUploaded(data, currentOriginAndTitle.origin);
-                }}
+            <UploadImagesModal isOpen={uploadModalOpen}
+                               originCode={currentOriginAndTitle?.origin}
+                               originTitle={currentOriginAndTitle?.title}
+                               onClose={() => setUploadModalOpen(false)}
+                               onUploaded={(data) => {
+                                   if (!currentOriginAndTitle) return;
+                                   handleImageUploaded(data, currentOriginAndTitle.origin);
+                               }}
+            />
+
+            <ParsingFloatingActions
+                isRefreshing={isRefreshing}
+                onRefresh={refreshParsingResult}
+                onOpenFilter={() => setIsFilterModalOpen(true)}
             />
 
 
-            {isRefreshing ? (
-                <div className="circle-float-button refresh-float-button">
-                    <Spin indicator={spinIcon}/>
-                </div>
-            ) : (
-                <Button onClick={refreshParsingResult} className="circle-float-button refresh-float-button">
-                    <ReloadOutlined style={{fontSize: 20}}/>
-                </Button>
-            )}
             <Button onClick={() => setIsFilterModalOpen(true)} className="circle-float-button filter-button">
                 <AlignRightOutlined style={{fontSize: 20}}/>
             </Button>
-            <FeatureFilterModal
-                visible={isFilterModalOpen}
-                onClose={() => setIsFilterModalOpen(false)}
-                rows={rows}
-                onApply={(selected) => setFeatureFilter(selected)}
+            <FeatureFilterModal visible={isFilterModalOpen}
+                                onClose={() => setIsFilterModalOpen(false)}
+                                rows={rows}
+                                onApply={(selected) => setFeatureFilter(selected)}
             />
-            <AttributesModal
-                open={isAttributesModalOpen}
-                data={attributesModalData}
-                onClose={() => {
-                    setIsAttributesModalOpen(false);
-                    setAttributesModalData(null);
-                }}
+            <AttributesModal open={isAttributesModalOpen}
+                             data={attributesModalData}
+                             onClose={() => {
+                                 setIsAttributesModalOpen(false);
+                                 setAttributesModalData(null)
+                             }}
 
-                onUploaded={(uploaded, origin) => {
-                    updateRow(origin, {preview: uploaded.preview});
-                }}
+                             onUploaded={(uploaded, origin) => {
+                                 updateRow(origin, {preview: uploaded.preview});
+                             }}
 
-                onSaved={({origin, title, attributes}) => {
-                    updateRow(origin, {
-                        title,
-                        attributes: {
-                            model_id: rows.find(r => r.origin === origin)?.attributes?.model_id,
-                            attr_value_ids: attributes
-                        }
-                    });
-                }}
+                             onSaved={({origin, title, attributes}) => {
+                                 updateRow(origin, {
+                                     title,
+                                     attributes: {
+                                         model_id: rows.find(r => r.origin === origin)?.attributes?.model_id,
+                                         attr_value_ids: attributes
+                                     }
+                                 });
+                             }}
             />
         </>
     );

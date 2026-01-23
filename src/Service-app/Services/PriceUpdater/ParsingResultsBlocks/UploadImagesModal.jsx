@@ -2,9 +2,9 @@ import {useCallback, useEffect, useState} from "react";
 import {Upload, Image, Space, Spin} from "antd";
 import InboxOutlined from "@ant-design/icons";
 
-import MyModal from "../../../Ui/MyModal.jsx";
-import UploadedImageItem from "./UploadImagesElement.jsx";
-import {useImagesActions} from "../Hook/useImagesActions.js";
+import MyModal from "../../../../Ui/MyModal.jsx";
+import UploadedImageItem from "../UploadImagesElement.jsx";
+import {useImagesActions} from "../../Hook/useImagesActions.js";
 
 const UploadImagesModal = ({isOpen, onClose, originCode, originTitle, onUploaded}) => {
     const [existingFiles, setExistingFiles] = useState([]);

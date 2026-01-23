@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Image } from "antd";
-import UploadedImageItem from "./UploadImagesElement.jsx";
-import { useImagesActions } from "../Hook/useImagesActions.js";
+import UploadedImageItem from "../UploadImagesElement.jsx";
+import { useImagesActions } from "../../Hook/useImagesActions.js";
 
 const AttributesImageContainer = ({ data, onUploaded }) => {
     const originCode = data?.origin;

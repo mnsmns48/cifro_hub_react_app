@@ -1,8 +1,8 @@
 import {Image, Button} from "antd";
 import {InstagramOutlined, LinkOutlined, PercentageOutlined, PlusOutlined} from "@ant-design/icons";
-import {updateParsingItem} from "./api.js";
+import {updateParsingItem} from "../api.js";
 import InfoSelect from "./InfoSelect.jsx";
-import "../Css/ParsingResults.css";
+import "../../Css/ParsingResults.css";
 
 export const createParsingColumns = (
     {setRows, showInputPrice, expandedRows, toggleExpand, openUploadModal, openAttributesModal}
