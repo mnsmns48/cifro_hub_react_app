@@ -1,7 +1,7 @@
 import {useState, useMemo, useCallback, useEffect} from "react";
 
-import {Table, Button, Spin} from "antd";
-import {AlignRightOutlined, LoadingOutlined, ReloadOutlined} from "@ant-design/icons";
+import {Table, Button} from "antd";
+import {AlignRightOutlined} from "@ant-design/icons";
 
 import {
     clearMediaData,
@@ -9,6 +9,7 @@ import {
     exportParsingToExcel,
     reCalcOutputPrices
 } from "./api.js";
+
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
 import {deleteStockItems} from "../HubMenuLevels/api.js";
 
@@ -22,9 +23,9 @@ import AttributesModal from "./ParsingResultsBlocks/AttributesModal.jsx";
 import ParsingHeader from "./ParsingResultsBlocks/ParsingHeader.jsx";
 import ParsingToolbar from "./ParsingResultsBlocks/ParsingToolbar.jsx";
 import ParsingBulkActions from "./ParsingResultsBlocks/ParsingBulkActions.jsx";
+import ParsingFloatingActions from "./ParsingResultsBlocks/ParsingFloatingActions.jsx";
 
 import "../Css/ParsingResults.css";
-import ParsingFloatingActions from "./ParsingResultsBlocks/ParsingFloatingActions.jsx";
 
 
 const ParsingResults = ({url, result, vslId, onRangeChange}) => {
