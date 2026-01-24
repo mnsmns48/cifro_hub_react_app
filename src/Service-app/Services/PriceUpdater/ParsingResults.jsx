@@ -3,16 +3,12 @@ import {useState, useMemo, useCallback, useEffect} from "react";
 import {Table, Button} from "antd";
 import {AlignRightOutlined} from "@ant-design/icons";
 
-import {
-    clearMediaData,
-    deleteParsingItems,
-    exportParsingToExcel,
-    reCalcOutputPrices
-} from "./api.js";
+import {exportParsingToExcel} from "./api.js";
 
 import {fetchRangeRewardsProfiles} from "../RewardRangeSettings/api.js";
-import {deleteStockItems} from "../HubMenuLevels/api.js";
 
+import {useParsingFilters} from "../Hook/useParsingFilters.js";
+import {useParsingActions} from "../Hook/useParsingActions.js";
 
 import {createParsingColumns} from "./ParsingResultsBlocks/ParsingResultsColumns.jsx";
 import UploadImagesModal from "./ParsingResultsBlocks/UploadImagesModal.jsx";
@@ -73,48 +69,17 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
         await onRangeChange(vslId, rangeId);
     };
 
-
     const toggleExpand = useCallback(
         key => setExpandedRows(prev => (prev === key ? null : key)),
         []
     );
 
-    const filteredData = useMemo(() => {
-        const q = searchText.toLowerCase().trim();
-
-        return rows.filter(row => {
-            const hasFeatures =
-                Array.isArray(row.features_title) && row.features_title.length > 0;
-
-            const hasAttributes =
-                row.attributes &&
-                Array.isArray(row.attributes.attr_value_ids) &&
-                row.attributes.attr_value_ids.length > 0;
-
-            if (activeFilter === "NoAttributes" && hasAttributes) return false;
-
-            if (activeFilter === "noPreview" && row.preview) return false;
-            if (activeFilter === "noFeatures" && hasFeatures) return false;
-
-            if (featureFilter.length > 0) {
-                const isNoFeatureSelected = featureFilter.includes("-------");
-
-                if (isNoFeatureSelected && hasFeatures) return false;
-                if (
-                    !isNoFeatureSelected &&
-                    (!hasFeatures ||
-                        !featureFilter.some(f => row.features_title.includes(f)))
-                ) {
-                    return false;
-                }
-            }
-
-            const titleMatch = (row.title ?? "").toLowerCase().includes(q);
-            const originMatch = String(row.origin).includes(q);
-
-            return titleMatch || originMatch;
-        });
-    }, [rows, activeFilter, searchText, featureFilter]);
+    const {filteredData} = useParsingFilters({
+        rows,
+        searchText,
+        activeFilter,
+        featureFilter
+    });
 
     const countNoAttributes = useMemo(() => {
         return rows.filter(row => {
@@ -131,33 +96,6 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
         setAttributesModalData(data);
         setIsAttributesModalOpen(true);
     }, []);
-
-
-    const handleDelete = async () => {
-        if (!selectedRowKeys.length) return;
-        try {
-            await deleteParsingItems(selectedRowKeys);
-            setRows(prev =>
-                prev.filter(r => !selectedRowKeys.includes(r.origin))
-            );
-            setSelectedRowKeys([]);
-        } catch {
-            console.error("Ошибка при удалении");
-        }
-    };
-
-    const handleImageUploaded = useCallback(
-        ({images, preview}, origin) => {
-            setRows(prev =>
-                prev.map(r =>
-                    r.origin !== origin
-                        ? r
-                        : {...r, images, preview}
-                )
-            );
-        },
-        [setRows]
-    );
 
 
     const openUploadModal = useCallback((origin, title) => {
@@ -183,72 +121,18 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
         try {
             const payload = {
                 ...result,
-                dt_parsed: result.dt_parsed ? new Date(result.dt_parsed).toISOString() : null
+                parsing_result: filteredData,
+                dt_parsed: result.dt_parsed
+                    ? new Date(result.dt_parsed).toISOString()
+                    : null
             };
+
             await exportParsingToExcel(payload);
         } catch (error) {
             console.error("Ошибка при экспорте Excel:", error);
         }
     };
 
-    const selectedItems = rows.filter(r => selectedRowKeys.includes(r.origin));
-
-    const handleAddToHub = (msg, updatedOrigins) => {
-        setAddToHubModalVisible(false);
-        setSelectedRowKeys([])
-        setRows(prev =>
-            prev.map(row =>
-                updatedOrigins.includes(row.origin)
-                    ? {...row, in_hub: true}
-                    : row
-            )
-        );
-    };
-
-    const handleClearFromHub = async (originsToClear) => {
-        if (!originsToClear.length) return;
-        try {
-            const deletedOrigins = await deleteStockItems({origins: originsToClear});
-            if (!Array.isArray(deletedOrigins) || deletedOrigins.length === 0) return;
-            setRows(prev =>
-                prev.map(row =>
-                    deletedOrigins.includes(row.origin)
-                        ? {...row, in_hub: false}
-                        : row
-                )
-            );
-            setSelectedRowKeys(prev =>
-                prev.filter(origin => !deletedOrigins.includes(origin))
-            );
-        } catch (error) {
-            console.error("Ошибка при удалении", error);
-        }
-    };
-
-    const handleClearMedia = async (selectedOrigins) => {
-        const cleared = await clearMediaData(selectedOrigins);
-        setRows(prev =>
-            prev.map(row =>
-                cleared.includes(row.origin)
-                    ? {...row, pics: [], preview: null}
-                    : row
-            )
-        );
-
-    };
-
-    const refreshParsingResult = async () => {
-        setIsRefreshing(true);
-        setSelectedRowKeys([])
-        try {
-            const updated = await reCalcOutputPrices(vslId, result.profit_range_id);
-            setRows(Array.isArray(updated.parsing_result) ? updated.parsing_result : []);
-        } catch (error) {
-            console.error("Ошибка при обновлении результатов:", error);
-        } finally {
-            setIsRefreshing(false);
-        }
-    };
 
     const handleAddDependenceMulti = (selectedKeys) => {
         if (!selectedKeys.length) return;
@@ -268,20 +152,26 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
         });
     };
 
-    const updateRow = useCallback((origin, patch) => {
-        setRows(prev =>
-            prev.map(row =>
-                row.origin === origin
-                    ? {...row, ...patch}
-                    : row
-            )
-        );
-    }, []);
-
+    const {
+        updateRow,
+        applyImageUpdate,
+        handleDelete,
+        handleClearMedia,
+        handleClearFromHub,
+        handleAddToHub,
+        refreshParsingResult
+    } = useParsingActions(
+        {
+            setRows,
+            setSelectedRowKeys,
+            vslId,
+            profitRangeId: result.profit_range_id,
+            setIsRefreshing
+        });
 
     const countNoPreview = rows.filter(r => r.preview == null).length;
     const countNoFeatures = rows.filter(r => Array.isArray(r.features_title) && r.features_title.length === 0).length;
-
+    const selectedItems = rows.filter(r => selectedRowKeys.includes(r.origin));
 
     return (
         <>
@@ -314,7 +204,7 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
 
             <ParsingBulkActions
                 selectedCount={selectedRowKeys.length}
-                onDelete={handleDelete}
+                onDelete={() => handleDelete(selectedRowKeys)}
                 onAddDependence={() => handleAddDependenceMulti(selectedRowKeys)}
                 onAddToHub={() => setAddToHubModalVisible(true)}
                 onClearMedia={() => handleClearMedia(selectedRowKeys)}
@@ -352,16 +242,12 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                    }}
             />
             <InHubDownloader vslId={vslId} isOpen={addToHubModalVisible} items={selectedItems}
-                             onCancel={() => setAddToHubModalVisible(false)} onConfirm={handleAddToHub}/>
-            <UploadImagesModal isOpen={uploadModalOpen}
-                               originCode={currentOriginAndTitle?.origin}
-                               originTitle={currentOriginAndTitle?.title}
-                               onClose={() => setUploadModalOpen(false)}
-                               onUploaded={(data) => {
-                                   if (!currentOriginAndTitle) return;
-                                   handleImageUploaded(data, currentOriginAndTitle.origin);
-                               }}
-            />
+                             onCancel={() => setAddToHubModalVisible(false)}
+                             onConfirm={(msg, updatedOrigins) => {
+                                 handleAddToHub(updatedOrigins);
+                                 setAddToHubModalVisible(false);
+                             }}/>
+
 
             <ParsingFloatingActions
                 isRefreshing={isRefreshing}
@@ -373,31 +259,40 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
             <Button onClick={() => setIsFilterModalOpen(true)} className="circle-float-button filter-button">
                 <AlignRightOutlined style={{fontSize: 20}}/>
             </Button>
+
             <FeatureFilterModal visible={isFilterModalOpen}
                                 onClose={() => setIsFilterModalOpen(false)}
                                 rows={rows}
                                 onApply={(selected) => setFeatureFilter(selected)}
             />
-            <AttributesModal open={isAttributesModalOpen}
-                             data={attributesModalData}
-                             onClose={() => {
-                                 setIsAttributesModalOpen(false);
-                                 setAttributesModalData(null)
-                             }}
 
-                             onUploaded={(uploaded, origin) => {
-                                 updateRow(origin, {preview: uploaded.preview});
-                             }}
+            <UploadImagesModal
+                isOpen={uploadModalOpen}
+                originCode={currentOriginAndTitle?.origin}
+                originTitle={currentOriginAndTitle?.title}
+                onClose={() => setUploadModalOpen(false)}
+                onUploaded={applyImageUpdate}
+            />
 
-                             onSaved={({origin, title, attributes}) => {
-                                 updateRow(origin, {
-                                     title,
-                                     attributes: {
-                                         model_id: rows.find(r => r.origin === origin)?.attributes?.model_id,
-                                         attr_value_ids: attributes
-                                     }
-                                 });
-                             }}
+            <AttributesModal
+                open={isAttributesModalOpen}
+                data={attributesModalData}
+                onClose={() => {
+                    setIsAttributesModalOpen(false);
+                    setAttributesModalData(null);
+                }}
+                onUploaded={(uploaded, origin) => {
+                    updateRow(origin, {preview: uploaded.preview});
+                }}
+                onSaved={({origin, title, attributes}) => {
+                    updateRow(origin, {
+                        title,
+                        attributes: {
+                            model_id: rows.find(r => r.origin === origin)?.attributes?.model_id,
+                            attr_value_ids: attributes
+                        }
+                    });
+                }}
             />
         </>
     );

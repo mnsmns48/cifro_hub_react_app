@@ -15,7 +15,7 @@ const UploadedImageItem = ({ filename, url, isPreview, onDelete, onMakePreview  
         <Image
             src={url}
             alt={filename}
-            style={{ objectFit: "cover" }}
+            style={{ objectFit: "contain", borderRadius: 4 }}
         />
         {isPreview ? (
             <StarFilled

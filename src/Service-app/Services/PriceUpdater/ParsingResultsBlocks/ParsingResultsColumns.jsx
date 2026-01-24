@@ -19,7 +19,7 @@ export const createParsingColumns = (
                         height={60}
                         src={url}
                         alt={record.title}
-                        style={{objectFit: "cover", borderRadius: 4}}
+                        style={{objectFit: "contain", borderRadius: 4}}
                         preview={true}
                     />
                 ) : (
