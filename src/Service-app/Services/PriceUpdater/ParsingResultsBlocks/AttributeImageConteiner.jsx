@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
-import { Image } from "antd";
+import {useEffect, useState} from "react";
+import {Image, Spin} from "antd";
 import UploadedImageItem from "../UploadImagesElement.jsx";
-import { useImagesActions } from "../../Hook/useImagesActions.js";
+import {useImagesActions} from "../../Hook/useImagesActions.js";
+import Spinner from "../../../../Cifrotech-app/components/Spinner.jsx";
 
-const AttributesImageContainer = ({ data, onUploaded }) => {
+const AttributesImageContainer = ({data, onUploaded}) => {
     const originCode = data?.origin;
 
     const {
@@ -14,14 +15,18 @@ const AttributesImageContainer = ({ data, onUploaded }) => {
 
     const [existingFiles, setExistingFiles] = useState([]);
     const [preview, setPreview] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!originCode) return;
 
-        fetchImages().then(result => {
-            setExistingFiles(result);
-            setPreview(result.find(i => i.is_preview)?.url ?? null);
-        });
+        setLoading(true);
+        fetchImages()
+            .then(result => {
+                setExistingFiles(result);
+                setPreview(result.find(i => i.is_preview)?.url ?? null);
+            })
+            .finally(() => setLoading(false));
     }, [originCode, fetchImages]);
 
     const handleDelete = async (filename) => {
@@ -31,9 +36,7 @@ const AttributesImageContainer = ({ data, onUploaded }) => {
         setExistingFiles(res.images);
         setPreview(res.preview);
 
-        if (onUploaded) {
-            onUploaded({ images: res.images, preview: res.preview }, originCode);
-        }
+        onUploaded?.({images: res.images, preview: res.preview}, originCode);
     };
 
     const handleMakePreview = async (filename) => {
@@ -43,32 +46,32 @@ const AttributesImageContainer = ({ data, onUploaded }) => {
         setExistingFiles(res.images);
         setPreview(res.preview);
 
-        if (onUploaded) {
-            onUploaded({ images: res.images, preview: res.preview }, originCode);
-        }
+        onUploaded?.({images: res.images, preview: res.preview}, originCode);
     };
 
+    if (loading) {
+        return (<Spinner/>)
+    }
+
     return (
-        <div>
-            <div
-                style={{
-                    justifyContent: "center",
-                    display: "flex",
-                    alignItems: "center",
-                    paddingBottom: 10
-                }}
-            >
-                <div style={{ width: "30%" }}>
+        <>
+            <div style={{
+                justifyContent: "center",
+                display: "flex",
+                alignItems: "center",
+                paddingBottom: 10
+            }}>
+                <div style={{width: "30%"}}>
                     {preview && (
                         <Image
                             src={preview}
-                            style={{ borderRadius: 6, objectFit: "contain" }}
+                            style={{borderRadius: 6, objectFit: "contain"}}
                         />
                     )}
                 </div>
             </div>
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            <div style={{display: "flex", flexWrap: "wrap", gap: 8}}>
                 {existingFiles.map(img => (
                     <UploadedImageItem
                         key={img.filename}
@@ -80,7 +83,7 @@ const AttributesImageContainer = ({ data, onUploaded }) => {
                     />
                 ))}
             </div>
-        </div>
+        </>
     );
 };
 

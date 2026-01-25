@@ -12,7 +12,6 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     const [selectedFormula, setSelectedFormula] = useState(null);
     const [generatedName, setGeneratedName] = useState("");
 
-
     const loadAttributes = useCallback(async () => {
         if (!data) return;
 
@@ -173,96 +172,79 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     const renderAttribute = useCallback(attr => {
         const selected = getSelectedValue(attr.key_id);
 
-        return (<div key={attr.key_id} style={{marginBottom: 16, textAlign: "center"}}>
-            <Radio.Group
-                value={selected}
-                onChange={e => handleSelect(attr, e.target.value)}
-            >
-                <div
-                    style={{
-                        display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap"
-                    }}
-                >
-                    {attr.attr_value_ids.map(v => (<Radio.Button
-                        size="small"
-                        key={v.id}
-                        value={v.id}
-                        style={{
-                            borderRadius: 6, cursor: "pointer", textAlign: "center"
-                        }}
-                    >
-                        <div
-                            style={{
-                                display: "flex", flexDirection: "column", lineHeight: 1
-                            }}
-                        >
-                                        <span style={{fontSize: 16, fontWeight: 600}}>
-                                            {v.value}
-                                        </span>
-                            <span style={{fontSize: 13, color: "#a8a8a8"}}>
-                                            {v.alias}
-                                        </span>
-                        </div>
-                    </Radio.Button>))}
-                </div>
-            </Radio.Group>
-        </div>);
+        return (
+            <div key={attr.key_id} style={{marginBottom: 16, textAlign: "center"}}>
+                <Radio.Group value={selected}
+                             onChange={e => handleSelect(attr, e.target.value)}>
+                    <div style={{display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap"}}>
+                        {attr.attr_value_ids.map(v => (<Radio.Button
+                            size="small"
+                            key={v.id}
+                            value={v.id}
+                            style={{borderRadius: 6, cursor: "pointer", textAlign: "center"}}>
+                            <div style={{display: "flex", flexDirection: "column", lineHeight: 1}}>
+                                <span style={{fontSize: 16, fontWeight: 600}}>{v.value}</span>
+                                <span style={{fontSize: 13, color: "#a8a8a8"}}>{v.alias}</span>
+                            </div>
+                        </Radio.Button>))}
+                    </div>
+                </Radio.Group>
+            </div>);
     }, [getSelectedValue, handleSelect]);
 
-    return (<Modal open={open} onCancel={onClose} width={700} footer={null}>
-        {loading && <div>Загрузка...</div>}
+    return (
+        <Modal open={open} onCancel={onClose} width={700} footer={null}>
+            {!loading && (<>
+                <div style={{
+                    fontWeight: 600, fontSize: 18, display: "flex", flexDirection: "row", alignItems: "center"
+                }}>
+                    Формула
+                    <Select
+                        style={{width: 240, margin: 12}}
+                        placeholder="Выберите формулу"
+                        value={selectedFormula}
+                        onChange={handleFormulaChange}
+                        options={formulas.map(f => ({
+                            label: f.name + (f.is_default ? " ⭐" : ""), value: f.id
+                        }))}
+                    />
+                </div>
 
-        {!loading && (<>
-            <div style={{
-                fontWeight: 600, fontSize: 18, display: "flex", flexDirection: "row", alignItems: "center"
-            }}>
-                Формула
-                <Select
-                    style={{width: 240, margin: 12}}
-                    placeholder="Выберите формулу"
-                    value={selectedFormula}
-                    onChange={handleFormulaChange}
-                    options={formulas.map(f => ({
-                        label: f.name + (f.is_default ? " ⭐" : ""), value: f.id
-                    }))}
-                />
-            </div>
+                {allowable.length > 0 && (<div>{allowable.map(renderAttribute)}</div>)}
 
-            {allowable.length > 0 && (<div>{allowable.map(renderAttribute)}</div>)}
+                <Row gutter={10} justify="center">
 
-            <Row gutter={10} justify="center">
+                    <Col span={12}>
+                        <AttributesImageContainer data={data} onUploaded={onUploaded}/>
+                    </Col>
 
-                <Col span={12}>
-                    <AttributesImageContainer data={data} onUploaded={onUploaded}/>
-                </Col>
-
-                <Col span={12}>
-                    {Array.isArray(data?.features_title) && data.features_title.length > 0 ? (<>
-                        <div style={{padding: 10, fontWeight: 500}}>{data?.title ?? ""}</div>
-                        <Input
-                            style={{
-                                width: "90%",
-                                padding: "6px 10px",
-                                marginBottom: 12,
-                                borderRadius: 6,
-                                border: "1px solid #d9d9d9",
-                                fontSize: 13
-                            }}
-                            value={generatedName}
-                            onChange={e => setGeneratedName(e.target.value)}
-                        />
-                    </>) : (<div style={{color: "#999", fontStyle: "italic"}}>
-                        Не выставлена зависимость модели
-                    </div>)}
-                </Col>
-            </Row>
-            <div style={{display: "flex", justifyContent: "center"}}>
-                {generatedName && (<Button onClick={saveAttributesValues} type="primary">
-                    <SaveOutlined style={{fontSize: 20}}/>
-                </Button>)}
-            </div>
-        </>)}
-    </Modal>);
+                    <Col span={12}>
+                        {Array.isArray(data?.features_title) && data.features_title.length > 0 ? (<>
+                            <div style={{padding: 10, fontWeight: 500}}>{data?.title ?? ""}</div>
+                            <Input
+                                style={{
+                                    width: "90%",
+                                    padding: "6px 10px",
+                                    marginBottom: 12,
+                                    borderRadius: 6,
+                                    border: "1px solid #d9d9d9",
+                                    fontSize: 13
+                                }}
+                                value={generatedName}
+                                onChange={e => setGeneratedName(e.target.value)}
+                            />
+                        </>) : (<div style={{color: "#999", fontStyle: "italic"}}>
+                            Не выставлена зависимость модели
+                        </div>)}
+                    </Col>
+                </Row>
+                <div style={{display: "flex", justifyContent: "center"}}>
+                    {generatedName && (<Button onClick={saveAttributesValues} type="primary">
+                        <SaveOutlined style={{fontSize: 20}}/>
+                    </Button>)}
+                </div>
+            </>)}
+        </Modal>);
 };
 
 export default AttributesModal;
