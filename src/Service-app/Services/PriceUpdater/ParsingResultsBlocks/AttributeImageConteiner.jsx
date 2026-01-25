@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Image, Spin} from "antd";
+import {Image} from "antd";
 import UploadedImageItem from "../UploadImagesElement.jsx";
 import {useImagesActions} from "../../Hook/useImagesActions.js";
 import Spinner from "../../../../Cifrotech-app/components/Spinner.jsx";
