@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
-import { Upload, Image, message, Space, Spin } from "antd";
-import { InboxOutlined } from "@ant-design/icons";
+import {useCallback, useEffect, useState} from "react";
+import {Upload, Image, message, Space} from "antd";
+import {InboxOutlined} from "@ant-design/icons";
 
 import UploadedImageItem from "../UploadImagesElement.jsx";
 import MyModal from "../../../../Ui/MyModal.jsx";
@@ -10,6 +10,7 @@ import {
     markImageAsPreview,
     uploadImageToS3
 } from "../api.js";
+import Spinner from "../../../../Cifrotech-app/components/Spinner.jsx";
 
 const UploadImagesModal = ({
                                isOpen,
@@ -21,7 +22,6 @@ const UploadImagesModal = ({
     const [existingFiles, setExistingFiles] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    /** 🔹 загрузка списка */
     const fetchImages = useCallback(async () => {
         if (!originCode) return;
 
@@ -38,23 +38,21 @@ const UploadImagesModal = ({
 
     useEffect(() => {
         if (isOpen) fetchImages();
-    }, [isOpen, fetchImages]);
+    }, [isOpen]);
 
-    /** 🔹 единая точка обновления */
     const propagate = useCallback(
-        ({ origin, images, preview }) => {
+        ({origin, images, preview}) => {
             if (!origin) {
                 console.warn("UploadImagesModal: origin is missing");
                 return;
             }
 
             setExistingFiles(images);
-            onUploaded?.({ origin, images, preview });
+            onUploaded?.({origin, images, preview});
         },
         [onUploaded]
     );
 
-    /** 🔹 удаление */
     const deleteImage = useCallback(
         async (filename) => {
             try {
@@ -67,7 +65,6 @@ const UploadImagesModal = ({
         [originCode, propagate]
     );
 
-    /** 🔹 загрузка */
     const customUpload = useCallback(
         async (opts) => {
             try {
@@ -82,7 +79,6 @@ const UploadImagesModal = ({
         [originCode, propagate]
     );
 
-    /** 🔹 установка превью */
     const markAsPreview = useCallback(
         async (filename) => {
             try {
@@ -103,12 +99,14 @@ const UploadImagesModal = ({
             closable
             footer={null}
             content={
-                <Spin spinning={loading}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                loading ? (
+                        <Spinner/>
+                ) : (
+                    <div style={{display: "flex", flexDirection: "column", gap: 16}}>
                         {!!existingFiles.length && (
                             <Image.PreviewGroup>
                                 <Space wrap size={[12, 12]}>
-                                    {existingFiles.map(({ filename, url, is_preview }) => (
+                                    {existingFiles.map(({filename, url, is_preview}) => (
                                         <UploadedImageItem
                                             key={filename}
                                             filename={filename}
@@ -130,12 +128,12 @@ const UploadImagesModal = ({
                             showUploadList={false}
                         >
                             <div className="ant-upload-drag-icon">
-                                <InboxOutlined />
+                                <InboxOutlined/>
                             </div>
                             Перетащи файл сюда или кликни для выбора
                         </Upload.Dragger>
                     </div>
-                </Spin>
+                )
             }
         />
     );
