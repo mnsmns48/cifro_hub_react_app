@@ -5,7 +5,7 @@ import {consentDataApiLoad, deleteStockItems} from "./api.js";
 import getConsentTableColumns from "./ConsentTableColumns.jsx";
 import {
     DeleteOutlined,
-    ExclamationCircleOutlined,
+    ExclamationCircleOutlined, MinusCircleOutlined,
     RedoOutlined,
     ShopOutlined,
     TagOutlined
@@ -111,6 +111,25 @@ const Consent = ({
         setShowUpdateComponent(false);
     };
 
+    const handleSelectNullItems = () => {
+        const keys = [];
+
+        tabsData.forEach(tab => {
+            (tab.items || []).forEach(item => {
+                if (
+                    item.parsing_input_price == null &&
+                    item.parsing_output_price == null &&
+                    item.dt_parsed == null
+                ) {
+                    keys.push(item.origin);
+                }
+            });
+        });
+
+        setSelectedRowKeys(keys);
+    };
+
+
     const renderContent = () => {
         if (loading) {
             return (
@@ -162,11 +181,11 @@ const Consent = ({
                 >
                     <div style={{display: "flex", alignItems: "center", gap: 20}}>
                         <div style={{flex: "0 0 340px"}}>
-                            <Button
-                                icon={updateButtonIcon} onClick={handleUpdateClick} className="smart-update-button"
+                            <Button icon={updateButtonIcon} onClick={handleUpdateClick} className="smart-update-button"
                             >{updateButtonLabel}</Button>
-                        </div>
 
+                        </div>
+                        <Button onClick={handleSelectNullItems} icon={<MinusCircleOutlined/>}>Отсутствующие</Button>
                         <div style={{flex: "0 0 180px"}}>
                             <Tooltip
                                 title={
