@@ -1,10 +1,10 @@
 import {useEffect, useState} from "react";
 import {Button, Typography, Input} from "antd";
 import {DeleteRowOutlined, ScissorOutlined, SelectOutlined} from "@ant-design/icons";
-import MyModal from "../../../Ui/MyModal.jsx";
-import {deleteDependencies, fetchDependencyDetails, fetchItemDependencies, postDependencyUpdate} from "./api.js";
-import DependencyModal from "./DetailDependencyModal.jsx";
-import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
+import MyModal from "../../../../Ui/MyModal.jsx";
+import {deleteDependencies, fetchDependencyDetails, fetchItemDependencies, postDependencyUpdate} from "../api.js";
+import DependencyModal from "../DetailDependencyModal.jsx";
+import Spinner from "../../../../Cifrotech-app/components/Spinner.jsx";
 
 const {Text} = Typography;
 const {Search} = Input;

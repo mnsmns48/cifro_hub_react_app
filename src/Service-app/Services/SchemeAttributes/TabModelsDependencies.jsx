@@ -9,9 +9,14 @@ import {
     MoreOutlined
 } from "@ant-design/icons";
 import ModelAttributesModal from "./ModelAttributesModal.jsx";
+import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 
 
 const TabModelsDependencies = () => {
+
+    const [loading, setLoading] = useState(false);
+
+
     const [types, setTypes] = useState([]);
     const [selectedTypeId, setSelectedTypeId] = useState(null);
     const [models, setModels] = useState([]);
@@ -29,9 +34,15 @@ const TabModelsDependencies = () => {
 
 
     const loadModels = async (id) => {
-        const res = await fetchGetData(
-            `/service/attributes/load_model_attribute_options/${id}`);
-        setModels(res);
+        setLoading(true);
+        try {
+            const res = await fetchGetData(
+                `/service/attributes/load_model_attribute_options/${id}`
+            );
+            setModels(res);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const refreshModels = async () => {
@@ -138,6 +149,7 @@ const TabModelsDependencies = () => {
 
     const handleTypeChange = async (id) => {
         setSelectedTypeId(id);
+        setSelectedRowKeys([]);
         await loadModels(id);
     };
 
@@ -274,12 +286,32 @@ const TabModelsDependencies = () => {
                     <Button style={{padding: "4px 12px"}} onClick={handleBulkOpen}><LinkOutlined/> атрибуты</Button>
                 )}
             </div>
-            {models.length > 0 && (
-                <Table dataSource={filteredModels}
-                       columns={columns} rowKey="model_id"
-                       pagination={false} size="small"
-                       style={{width: 650}} rowSelection={rowSelection}/>
+            {selectedTypeId && (
+                loading ? (
+                    <div
+                        style={{
+                            padding: 24,
+                            display: "flex",
+                            justifyContent: "center"
+                        }}
+                    >
+                        <Spinner />
+                    </div>
+                ) : (
+                    models.length > 0 && (
+                        <Table
+                            dataSource={filteredModels}
+                            columns={columns}
+                            rowKey="model_id"
+                            pagination={false}
+                            size="small"
+                            style={{width: 650}}
+                            rowSelection={rowSelection}
+                        />
+                    )
+                )
             )}
+
             <ModelAttributesModal
                 open={modalOpen} onClose={() => setModalOpen(false)} data={modalData} onUpdated={refreshModels}/>
         </div>

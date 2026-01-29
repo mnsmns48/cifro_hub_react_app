@@ -1,8 +1,8 @@
 import {Image, Button} from "antd";
 import {InstagramOutlined, LinkOutlined, PercentageOutlined, PlusOutlined} from "@ant-design/icons";
-import {updateParsingItem} from "./api.js";
+import {updateParsingItem} from "../api.js";
 import InfoSelect from "./InfoSelect.jsx";
-import "../Css/ParsingResults.css";
+import "../../Css/ParsingResults.css";
 
 export const createParsingColumns = (
     {setRows, showInputPrice, expandedRows, toggleExpand, openUploadModal, openAttributesModal}
@@ -19,7 +19,7 @@ export const createParsingColumns = (
                         height={60}
                         src={url}
                         alt={record.title}
-                        style={{objectFit: "cover", borderRadius: 4}}
+                        style={{objectFit: "contain", borderRadius: 4}}
                         preview={true}
                     />
                 ) : (
@@ -73,7 +73,6 @@ export const createParsingColumns = (
         width: 38,
         render: (_, row) => {
             const attributes = row.attributes;
-
             const hasAttributes =
                 attributes &&
                 attributes.model_id &&
@@ -83,7 +82,7 @@ export const createParsingColumns = (
             return (
                 <Button
                     type="text"
-                    icon={<LinkOutlined />}
+                    icon={<LinkOutlined/>}
                     style={{
                         color: hasAttributes ? "#52c41a" : "#dcdcdc",
                         fontSize: hasAttributes ? 20 : 14,
@@ -101,9 +100,7 @@ export const createParsingColumns = (
                 />
             );
         }
-
-    }
-    ,
+    },
     {
         key: "details",
         width: 38,

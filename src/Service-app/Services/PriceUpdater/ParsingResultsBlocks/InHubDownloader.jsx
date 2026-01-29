@@ -1,8 +1,8 @@
 import {List, Button, Spin} from "antd";
-import MyModal from "../../../Ui/MyModal.jsx";
+import MyModal from "../../../../Ui/MyModal.jsx";
 import {Suspense, useState} from "react";
-import {createHubLoading} from "../HubMenuLevels/api.js";
-import HubMenuLevels from "../HubMenuLevels.jsx";
+import {createHubLoading} from "../../HubMenuLevels/api.js";
+import HubMenuLevels from "../../HubMenuLevels.jsx";
 
 
 const InHubDownloader = ({

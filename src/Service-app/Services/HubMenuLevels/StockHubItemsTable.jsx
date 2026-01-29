@@ -3,8 +3,8 @@ import {Table, Spin, Space, Button, Popconfirm} from "antd";
 import {deleteStockItems, fetchStockHubItems, recalcHubStockItems, renameHubObj} from "./api.js";
 import "./Css/Tree.css";
 import {EditOutlined, SaveOutlined, RedoOutlined, FileJpgOutlined, DeleteOutlined} from "@ant-design/icons";
-import UploadImagesModal from "../PriceUpdater/UploadImagesModal.jsx";
-import InfoSelect from "../PriceUpdater/InfoSelect.jsx";
+import UploadImagesModal from "../PriceUpdater/ParsingResultsBlocks/UploadImagesModal.jsx";
+import InfoSelect from "../PriceUpdater/ParsingResultsBlocks/InfoSelect.jsx";
 import OneItemProfileRewardSelector from "../../../Ui/OneItemProfileRewardSelector.jsx";
 
 

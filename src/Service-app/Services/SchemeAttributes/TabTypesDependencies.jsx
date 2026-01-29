@@ -2,8 +2,12 @@ import {useEffect, useState} from "react";
 import {Select, Table, Button} from "antd";
 import {fetchGetData, fetchPostData, fetchDeleteData} from "./api.js";
 import {CloseOutlined, PlusOutlined} from "@ant-design/icons";
+import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 
 const TabTypesDependencies = () => {
+    const [loading, setLoading] = useState(false);
+
+
     const [types, setTypes] = useState([]);
     const [keys, setKeys] = useState([]);
     const [brands, setBrands] = useState([]);
@@ -29,12 +33,14 @@ const TabTypesDependencies = () => {
 
     const handleTypeChange = (id) => {
         setSelectedTypeId(id);
+        setLoading(true);
 
         const type = types.find((t) => t.id === id);
         if (type) {
             const baseKeys = type.attr_link.map((l) => l.attr_key.key);
             setSelectedAttrKeys(baseKeys);
         }
+        setLoading(false);
     };
 
     const handleKeysChange = async (newKeys) => {
@@ -193,22 +199,25 @@ const TabTypesDependencies = () => {
             />
 
             {selectedType && (
-                <>
-                    <Select
-                        mode="multiple"
-                        style={{width: 400}}
-                        placeholder="Ключи"
-                        value={selectedAttrKeys}
-                        onChange={handleKeysChange}
-                        options={allKeyOptions}
-                    />
+                loading ? (
+                    <div style={{ padding: 24, display: "flex", justifyContent: "center" }}>
+                        <Spinner />
+                    </div>
+                ) : (
+                    <>
+                        <Select
+                            mode="multiple"
+                            style={{ width: 400 }}
+                            placeholder="Ключи"
+                            value={selectedAttrKeys}
+                            onChange={handleKeysChange}
+                            options={allKeyOptions}
+                        />
 
-                    {selectedAttrKeys.length > 0 && (
-                        <>
-
-                            <div style={{display: "flex", gap: 12}}>
+                        {selectedAttrKeys.length > 0 && (
+                            <div style={{ display: "flex", gap: 12 }}>
                                 <Select
-                                    style={{width: 150}}
+                                    style={{ width: 150 }}
                                     placeholder="Бренд"
                                     value={ruleBrandId}
                                     onChange={setRuleBrandId}
@@ -219,32 +228,29 @@ const TabTypesDependencies = () => {
                                 />
 
                                 <Select
-                                    style={{width: 150}}
+                                    style={{ width: 150 }}
                                     placeholder="Правило"
                                     value={ruleType}
                                     onChange={setRuleType}
                                     options={[
-                                        {label: "Добавляет", value: "include"},
-                                        {label: "Исключает", value: "exclude"},
+                                        { label: "Добавляет", value: "include" },
+                                        { label: "Исключает", value: "exclude" },
                                     ]}
                                 />
 
                                 <Select
-                                    style={{width: 150}}
+                                    style={{ width: 150 }}
                                     placeholder="Ключ"
                                     value={ruleKey}
                                     onChange={setRuleKey}
                                     options={ruleKeyOptions}
                                 />
 
-                                <Button onClick={handleAddRule} icon={<PlusOutlined/>}>
-                                </Button>
+                                <Button onClick={handleAddRule} icon={<PlusOutlined />} />
                             </div>
-                        </>
-                    )}
+                        )}
 
-                    {selectedType.rule_overrides.length > 0 && (
-                        <>
+                        {selectedType.rule_overrides.length > 0 && (
                             <Table
                                 dataSource={selectedType.rule_overrides}
                                 columns={columns}
@@ -253,12 +259,13 @@ const TabTypesDependencies = () => {
                                 }
                                 pagination={false}
                                 size="small"
-                                style={{width: 500}}
+                                style={{ width: 500 }}
                             />
-                        </>
-                    )}
-                </>
+                        )}
+                    </>
+                )
             )}
+
         </div>
     );
 };
