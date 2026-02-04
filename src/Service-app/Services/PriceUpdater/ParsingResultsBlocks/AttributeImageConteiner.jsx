@@ -2,32 +2,44 @@ import {useEffect, useState} from "react";
 import {Image} from "antd";
 import UploadedImageItem from "../UploadImagesElement.jsx";
 import {useImagesActions} from "../../Hook/useImagesActions.js";
-import Spinner from "../../../../Cifrotech-app/components/Spinner.jsx";
 
-const AttributesImageContainer = ({data, onUploaded}) => {
-    const originCode = data?.origin;
-
-    const {
-        fetchImages,
-        deleteImage,
-        markAsPreview
-    } = useImagesActions(originCode, onUploaded);
-
+const AttributesImageContainer = ({data, onUploaded, onLoadingChange}) => {
     const [existingFiles, setExistingFiles] = useState([]);
     const [preview, setPreview] = useState(null);
-    const [loading, setLoading] = useState(false);
+
+    const originCode = data?.origin;
+
+    const {fetchImages, deleteImage, markAsPreview} = useImagesActions(originCode, onUploaded);
+
+
+    useEffect(() => {
+        if (!data) return;
+        setExistingFiles(data.images || []);
+        setPreview(data.preview || null);
+    }, [data]);
 
     useEffect(() => {
         if (!originCode) return;
 
-        setLoading(true);
+        let cancelled = false;
+        onLoadingChange?.(true);
+
         fetchImages()
             .then(result => {
+                if (cancelled) return;
+
                 setExistingFiles(result);
                 setPreview(result.find(i => i.is_preview)?.url ?? null);
+
             })
-            .finally(() => setLoading(false));
-    }, [originCode, fetchImages]);
+            .finally(() => {
+                if (!cancelled) onLoadingChange?.(false);
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [originCode]);
 
     const handleDelete = async (filename) => {
         const res = await deleteImage(filename);
@@ -48,10 +60,6 @@ const AttributesImageContainer = ({data, onUploaded}) => {
 
         onUploaded?.({images: res.images, preview: res.preview}, originCode);
     };
-
-    if (loading) {
-        return (<Spinner/>)
-    }
 
     return (
         <>

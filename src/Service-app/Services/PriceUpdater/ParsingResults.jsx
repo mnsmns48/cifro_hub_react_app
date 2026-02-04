@@ -283,7 +283,13 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                 }}
                 onUploaded={(uploaded, origin) => {
                     updateRow(origin, {preview: uploaded.preview});
+                    setAttributesModalData(prev => ({
+                        ...prev,
+                        images: uploaded.images,
+                        preview: uploaded.preview
+                    }));
                 }}
+
                 onSaved={({origin, title, attributes}) => {
                     updateRow(origin, {
                         title,
