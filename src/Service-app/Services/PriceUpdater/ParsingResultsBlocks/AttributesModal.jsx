@@ -1,8 +1,10 @@
 import {useEffect, useState, useCallback} from "react";
 import {fetchGetData, fetchPostData} from "../../SchemeAttributes/api.js";
-import {Button, Col, Modal, Radio, Row, Select, message, Input} from "antd";
-import {SaveOutlined} from "@ant-design/icons";
+import {Button, Col, Modal, Radio, Row, Select, message, Input, Spin, Popconfirm} from "antd";
+import {FileImageOutlined, LoadingOutlined, SaveOutlined} from "@ant-design/icons";
 import AttributesImageContainer from "./AttributeImageConteiner.jsx";
+import MultiUploadDropzone from "./MultiUploadDropzone.jsx";
+
 
 const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     const [loading, setLoading] = useState(false);
@@ -11,9 +13,15 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     const [formulas, setFormulas] = useState([]);
     const [selectedFormula, setSelectedFormula] = useState(null);
     const [generatedName, setGeneratedName] = useState("");
+    const [showImages, setShowImages] = useState(false);
+    const [dependencyList, setDependencyList] = useState([]);
+    const [selectedDependencyOrigin, setSelectedDependencyOrigin] = useState(null);
+    const [popConfirmOpen, setPopConfirmOpen] = useState(false);
+    const [haveImages, setHaveImages] = useState(false);
+
 
     const loadAttributes = useCallback(async () => {
-        if (!data) return;
+        if (!open || !data) return null
 
         setLoading(true);
 
@@ -23,6 +31,11 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
 
         setAllowable(result?.attributes_allowable ?? []);
         setExists(result?.attributes_exists ?? []);
+        setHaveImages(result?.have_images ?? false);
+        if (result?.have_images) {
+            setShowImages(true);
+        }
+
         setLoading(false);
     }, [data]);
 
@@ -36,6 +49,18 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
             setSelectedFormula(defaultFormula.id);
         }
     }, []);
+
+
+    const loadDependencyList = async () => {
+        if (!data?.origin) return;
+
+        try {
+            const resp = await fetchGetData(`/service/load_dependency_images_list/${data.origin}`);
+            setDependencyList(resp);
+        } catch (e) {
+            console.error("Ошибка загрузки зависимых изображений", e);
+        }
+    };
 
 
     useEffect(() => {
@@ -68,6 +93,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
             setFormulas([]);
             setSelectedFormula(null);
             setGeneratedName("");
+            setShowImages(false);
         }
     }, [open]);
 
@@ -76,6 +102,9 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
         if (open) {
             void loadAttributes();
             void loadFormulas();
+            setSelectedDependencyOrigin(null);
+
+
         }
     }, [open, loadAttributes, loadFormulas]);
 
@@ -168,6 +197,27 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
         message.error(result?.message || "Ошибка при сохранении атрибутов");
     }, [data, exists, generatedName, onClose, onSaved]);
 
+    const handleImplementDependencyImages = async () => {
+        if (!selectedDependencyOrigin || !data?.origin) return;
+
+        const payload = {
+            target_origin: data.origin,
+            image_same_origin: selectedDependencyOrigin
+        };
+
+        try {
+            const resp = await fetchPostData("/service/implement_dependency_images", payload);
+            onUploaded({
+                    images: resp,
+                    preview: resp.find(i => i.is_preview)?.url || resp[0]?.url || null
+                },
+                data.origin);
+        } catch (e) {
+            console.error(e);
+            message.error("Ошибка при переносе картинок");
+        }
+    };
+
 
     const renderAttribute = useCallback(attr => {
         const selected = getSelectedValue(attr.key_id);
@@ -193,8 +243,14 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     }, [getSelectedValue, handleSelect]);
 
     return (
-        <Modal open={open} onCancel={onClose} width={700} footer={null}>
-            {!loading && (<>
+        <Modal
+            open={open}
+            onCancel={onClose}
+            width={700}
+            footer={null}
+            // styles={{body: {height: 750, overflowY: "auto", padding: 20}}}
+        >
+            <>
                 <div style={{
                     fontWeight: 600, fontSize: 18, display: "flex", flexDirection: "row", alignItems: "center"
                 }}>
@@ -214,37 +270,135 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
 
                 <Row gutter={10} justify="center">
 
-                    <Col span={12}>
-                        <AttributesImageContainer data={data} onUploaded={onUploaded}/>
+                    <Col span={12} style={{position: "relative"}}>
+
+                        {loading && (
+                            <div
+                                style={{
+                                    position: "absolute",
+                                    top: 0,
+                                    left: 0,
+                                    zIndex: 20
+                                }}
+                            >
+                                <Spin size="small"/>
+                            </div>
+                        )}
+
+                        {!showImages && !haveImages && (
+                            <Button onClick={() => setShowImages(true)} style={{marginTop: 4}}>
+                                Синхронизировать картинки <FileImageOutlined style={{fontSize: 20}}/>
+                            </Button>
+                        )}
+
+
+                        {showImages && data?.origin && (
+                            <div style={{margin: 10}}>
+                                <div style={{margin: 10}}>
+                                    <MultiUploadDropzone
+                                        origin={data.origin}
+                                        onUploaded={onUploaded}
+                                        onLoadingChange={setLoading}
+                                    />
+                                </div>
+                                <AttributesImageContainer
+                                    data={data}
+                                    onUploaded={onUploaded}
+                                    onLoadingChange={setLoading}
+                                />
+                            </div>
+                        )}
+                        <div style={{marginTop: 20, display: "flex", gap: 8}}>
+                            <Popconfirm
+                                title="Перенести картинки?"
+                                description="Все картинки у товара будут заменены"
+                                open={popConfirmOpen}
+                                onConfirm={async () => {
+                                    await handleImplementDependencyImages();
+                                    setPopConfirmOpen(false);
+                                }}
+                                onCancel={() => {
+                                    setPopConfirmOpen(false);
+                                }}
+                                okText="Да"
+                                cancelText="Нет"
+                            >
+                                <Select
+                                    dropdownStyle={{fontSize: 12}}
+                                    style={{width: "100%"}}
+                                    showSearch
+                                    optionFilterProp="label"
+                                    value={selectedDependencyOrigin}
+                                    placeholder="Картинки из"
+                                    onFocus={loadDependencyList}
+                                    options={dependencyList.map(item => ({
+                                        label: (
+                                            <span style={{fontSize: 10}}>
+                                                <span style={{color: "red"}}>{item.qnt_images} </span>
+                                                {item.title}</span>),
+                                        value: item.origin
+                                    }))}
+                                    onChange={(value) => {
+                                        setSelectedDependencyOrigin(value);
+                                        setPopConfirmOpen(true);
+                                    }}
+                                />
+                            </Popconfirm>
+                        </div>
+
+
                     </Col>
 
                     <Col span={12}>
-                        {Array.isArray(data?.features_title) && data.features_title.length > 0 ? (<>
-                            <div style={{padding: 10, fontWeight: 500}}>{data?.title ?? ""}</div>
-                            <Input
-                                style={{
-                                    width: "90%",
-                                    padding: "6px 10px",
-                                    marginBottom: 12,
-                                    borderRadius: 6,
-                                    border: "1px solid #d9d9d9",
-                                    fontSize: 13
-                                }}
-                                value={generatedName}
-                                onChange={e => setGeneratedName(e.target.value)}
-                            />
-                        </>) : (<div style={{color: "#999", fontStyle: "italic"}}>
-                            Не выставлена зависимость модели
-                        </div>)}
+                        {Array.isArray(data?.features_title) && data.features_title.length > 0 ? (
+                            <>
+                                <div style={{padding: 10, fontWeight: 500}}>
+                                    {data?.title ?? ""}
+                                </div>
+
+                                <Input
+                                    style={{
+                                        width: "90%",
+                                        padding: "6px 10px",
+                                        marginBottom: 12,
+                                        borderRadius: 6,
+                                        border: "1px solid #d9d9d9",
+                                        fontSize: 13
+                                    }}
+                                    value={generatedName}
+                                    onChange={e => setGeneratedName(e.target.value)}
+                                />
+
+                                {generatedName && (
+                                    <Button onClick={saveAttributesValues}
+                                            type="primary"
+                                            style={{marginTop: 4}}
+                                    >
+                                        <SaveOutlined style={{fontSize: 20}}/>
+                                    </Button>
+                                )}
+                            </>
+                        ) : (
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: 8
+                            }}>
+                                <LoadingOutlined/>
+                                <div style={{color: "#801313", fontStyle: "Bold"}}>
+                                    Не выставлена зависимость модели
+                                </div>
+                            </div>
+
+                        )}
                     </Col>
+
                 </Row>
-                <div style={{display: "flex", justifyContent: "center"}}>
-                    {generatedName && (<Button onClick={saveAttributesValues} type="primary">
-                        <SaveOutlined style={{fontSize: 20}}/>
-                    </Button>)}
-                </div>
-            </>)}
-        </Modal>);
+            </>
+        </Modal>
+    );
+
 };
 
 export default AttributesModal;

@@ -11,7 +11,7 @@ import {useParsingFilters} from "../Hook/useParsingFilters.js";
 import {useParsingActions} from "../Hook/useParsingActions.js";
 
 import {createParsingColumns} from "./ParsingResultsBlocks/ParsingResultsColumns.jsx";
-import UploadImagesModal from "./ParsingResultsBlocks/UploadImagesModal.jsx";
+// import UploadImagesModal from "./ParsingResultsBlocks/UploadImagesModal.jsx";
 import InHubDownloader from "./ParsingResultsBlocks/InHubDownloader.jsx";
 import InfoSelect from "./ParsingResultsBlocks/InfoSelect.jsx";
 import FeatureFilterModal from "./ParsingResultsBlocks/FeatureFilterModal.jsx";
@@ -31,8 +31,8 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     const [showInputPrice, setShowInputPrice] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [activeFilter, setActiveFilter] = useState("all");
-    const [uploadModalOpen, setUploadModalOpen] = useState(false);
-    const [currentOriginAndTitle, setCurrentOriginAndTitle] = useState(null);
+    // const [uploadModalOpen, setUploadModalOpen] = useState(false);
+    // const [currentOriginAndTitle, setCurrentOriginAndTitle] = useState(null);
     const [rewardOptions, setRewardOptions] = useState([]);
     const [addToHubModalVisible, setAddToHubModalVisible] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -98,10 +98,10 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     }, []);
 
 
-    const openUploadModal = useCallback((origin, title) => {
-        setCurrentOriginAndTitle({origin, title});
-        setUploadModalOpen(true);
-    }, []);
+    // const openUploadModal = useCallback((origin, title) => {
+    //     setCurrentOriginAndTitle({origin, title});
+    //     setUploadModalOpen(true);
+    // }, []);
 
 
     const columns = useMemo(
@@ -111,10 +111,10 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                 showInputPrice,
                 expandedRows,
                 toggleExpand,
-                openUploadModal,
+                // openUploadModal,
                 openAttributesModal
             }),
-        [rows, setRows, showInputPrice, expandedRows, toggleExpand, openUploadModal, openAttributesModal]
+        [rows, setRows, showInputPrice, expandedRows, toggleExpand, openAttributesModal]
     );
 
     const downloadExcel = async () => {
@@ -154,7 +154,7 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
 
     const {
         updateRow,
-        applyImageUpdate,
+        // applyImageUpdate,
         handleDelete,
         handleClearMedia,
         handleClearFromHub,
@@ -266,13 +266,13 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                                 onApply={(selected) => setFeatureFilter(selected)}
             />
 
-            <UploadImagesModal
-                isOpen={uploadModalOpen}
-                originCode={currentOriginAndTitle?.origin}
-                originTitle={currentOriginAndTitle?.title}
-                onClose={() => setUploadModalOpen(false)}
-                onUploaded={applyImageUpdate}
-            />
+            {/*<UploadImagesModal*/}
+            {/*    isOpen={uploadModalOpen}*/}
+            {/*    originCode={currentOriginAndTitle?.origin}*/}
+            {/*    originTitle={currentOriginAndTitle?.title}*/}
+            {/*    onClose={() => setUploadModalOpen(false)}*/}
+            {/*    onUploaded={applyImageUpdate}*/}
+            {/*/>*/}
 
             <AttributesModal
                 open={isAttributesModalOpen}
@@ -283,7 +283,13 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                 }}
                 onUploaded={(uploaded, origin) => {
                     updateRow(origin, {preview: uploaded.preview});
+                    setAttributesModalData(prev => ({
+                        ...prev,
+                        images: uploaded.images,
+                        preview: uploaded.preview
+                    }));
                 }}
+
                 onSaved={({origin, title, attributes}) => {
                     updateRow(origin, {
                         title,

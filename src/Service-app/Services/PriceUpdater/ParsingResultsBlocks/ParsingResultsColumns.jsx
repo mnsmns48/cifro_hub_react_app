@@ -1,49 +1,63 @@
 import {Image, Button} from "antd";
-import {InstagramOutlined, LinkOutlined, PercentageOutlined, PlusOutlined} from "@ant-design/icons";
+import {FileUnknownOutlined, LinkOutlined, PercentageOutlined,} from "@ant-design/icons";
 import {updateParsingItem} from "../api.js";
 import InfoSelect from "./InfoSelect.jsx";
 import "../../Css/ParsingResults.css";
 
 export const createParsingColumns = (
-    {setRows, showInputPrice, expandedRows, toggleExpand, openUploadModal, openAttributesModal}
+    {setRows, showInputPrice, expandedRows, toggleExpand, openAttributesModal}
 ) => [
     {
         dataIndex: "preview",
         key: "preview",
+        width: 60,
         align: "center",
-        render: (url, record) => (
-            <div className="preview-container">
-                {url ? (
-                    <Image
-                        width={60}
-                        height={60}
-                        src={url}
-                        alt={record.title}
-                        style={{objectFit: "contain", borderRadius: 4}}
-                        preview={true}
-                    />
-                ) : (
-                    <Button type="dashed" icon={<PlusOutlined/>}
-                            className="preview-dashed-button"
-                            onClick={() => openUploadModal(record.origin, record.title)}/>
-                )}
+        render: (url, record) => (url ? (
+            <Image width={45} height={45} src={url} alt={record.title}
+                   style={{objectFit: "contain"}}
+                   preview={true}/>
+        ) : (<FileUnknownOutlined style={{fontSize: 24, color: "#cfcfcf"}}/>))
+    },
+    {
+        key: "attributes",
+        dataIndex: "attributes",
+        width: 50,
+        align: "center",
+        render: (_, row) => {
+            const attributes = row.attributes;
+            const hasAttributes =
+                attributes &&
+                attributes.model_id &&
+                Array.isArray(attributes.attr_value_ids) &&
+                attributes.attr_value_ids.length > 0;
 
-                {url && (
-                    <Button
-                        type="text"
-                        icon={<InstagramOutlined style={{fontSize: 18, color: "#818181"}}/>}
-                        className="add-pic-button"
-                        onClick={() => openUploadModal(record.origin, record.title)}
-                    />
-                )}
-            </div>
-        ),
+            return (
+                <Button
+                    type="text"
+                    icon={<LinkOutlined/>}
+                    style={{
+                        color: hasAttributes ? "#52c41a" : "#dcdcdc",
+                        fontSize: hasAttributes ? 18 : 14,
+                        border: hasAttributes ? "1px solid #52c41a" : "1px solid transparent",
+                        borderRadius: 9
+                    }}
+                    onClick={() =>
+                        openAttributesModal({
+                            origin: row.origin,
+                            model_id: attributes?.model_id,
+                            title: row.title,
+                            features_title: row.features_title,
+                        })
+                    }
+                />
+            );
+        }
     },
     {
         title: "Название",
         dataIndex: "title",
         key: "title",
-        width: 230,
+        width: 240,
         render: (text, record, index) => (
             <div
                 contentEditable
@@ -66,40 +80,6 @@ export const createParsingColumns = (
                 {text}
             </div>
         )
-    },
-    {
-        key: "attributes",
-        dataIndex: "attributes",
-        width: 38,
-        render: (_, row) => {
-            const attributes = row.attributes;
-            const hasAttributes =
-                attributes &&
-                attributes.model_id &&
-                Array.isArray(attributes.attr_value_ids) &&
-                attributes.attr_value_ids.length > 0;
-
-            return (
-                <Button
-                    type="text"
-                    icon={<LinkOutlined/>}
-                    style={{
-                        color: hasAttributes ? "#52c41a" : "#dcdcdc",
-                        fontSize: hasAttributes ? 20 : 14,
-                        border: hasAttributes ? "1px solid #52c41a" : "1px solid transparent",
-                        borderRadius: 9
-                    }}
-                    onClick={() =>
-                        openAttributesModal({
-                            origin: row.origin,
-                            model_id: attributes?.model_id,
-                            title: row.title,
-                            features_title: row.features_title,
-                        })
-                    }
-                />
-            );
-        }
     },
     {
         key: "details",

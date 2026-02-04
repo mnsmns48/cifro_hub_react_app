@@ -100,7 +100,7 @@ const UploadImagesModal = ({
             footer={null}
             content={
                 loading ? (
-                        <Spinner/>
+                    <Spinner/>
                 ) : (
                     <div style={{display: "flex", flexDirection: "column", gap: 16}}>
                         {!!existingFiles.length && (
@@ -120,16 +120,12 @@ const UploadImagesModal = ({
                             </Image.PreviewGroup>
                         )}
 
-                        <Upload.Dragger
-                            name="file"
-                            multiple={false}
-                            listType="picture-card"
-                            customRequest={customUpload}
-                            showUploadList={false}
-                        >
-                            <div className="ant-upload-drag-icon">
-                                <InboxOutlined/>
-                            </div>
+                        <Upload.Dragger name="file"
+                                        multiple={false}
+                                        listType="picture-card"
+                                        customRequest={customUpload}
+                                        showUploadList={false}>
+                            <div className="ant-upload-drag-icon"><InboxOutlined/></div>
                             Перетащи файл сюда или кликни для выбора
                         </Upload.Dragger>
                     </div>
