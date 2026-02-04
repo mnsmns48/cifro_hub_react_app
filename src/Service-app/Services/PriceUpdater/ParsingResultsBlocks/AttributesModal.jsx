@@ -1,7 +1,7 @@
 import {useEffect, useState, useCallback} from "react";
 import {fetchGetData, fetchPostData} from "../../SchemeAttributes/api.js";
 import {Button, Col, Modal, Radio, Row, Select, message, Input, Spin, Popconfirm} from "antd";
-import {FileImageOutlined, SaveOutlined} from "@ant-design/icons";
+import {FileImageOutlined, LoadingOutlined, SaveOutlined} from "@ant-design/icons";
 import AttributesImageContainer from "./AttributeImageConteiner.jsx";
 import MultiUploadDropzone from "./MultiUploadDropzone.jsx";
 
@@ -17,6 +17,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     const [dependencyList, setDependencyList] = useState([]);
     const [selectedDependencyOrigin, setSelectedDependencyOrigin] = useState(null);
     const [popConfirmOpen, setPopConfirmOpen] = useState(false);
+    const [haveImages, setHaveImages] = useState(false);
 
 
     const loadAttributes = useCallback(async () => {
@@ -30,6 +31,11 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
 
         setAllowable(result?.attributes_allowable ?? []);
         setExists(result?.attributes_exists ?? []);
+        setHaveImages(result?.have_images ?? false);
+        if (result?.have_images) {
+            setShowImages(true);
+        }
+
         setLoading(false);
     }, [data]);
 
@@ -88,7 +94,6 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
             setSelectedFormula(null);
             setGeneratedName("");
             setShowImages(false);
-
         }
     }, [open]);
 
@@ -243,7 +248,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
             onCancel={onClose}
             width={700}
             footer={null}
-            styles={{body: {height: 750, overflowY: "auto", padding: 20}}}
+            // styles={{body: {height: 750, overflowY: "auto", padding: 20}}}
         >
             <>
                 <div style={{
@@ -280,13 +285,12 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                             </div>
                         )}
 
-                        {!showImages && (
-                            <Button
-                                onClick={() => setShowImages(true)}
-                                style={{marginTop: 4}}
-                            >Синхронизировать картинки <FileImageOutlined style={{fontSize: 20}}/>
+                        {!showImages && !haveImages && (
+                            <Button onClick={() => setShowImages(true)} style={{marginTop: 4}}>
+                                Синхронизировать картинки <FileImageOutlined style={{fontSize: 20}}/>
                             </Button>
                         )}
+
 
                         {showImages && data?.origin && (
                             <div style={{margin: 10}}>
@@ -366,19 +370,27 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                                 />
 
                                 {generatedName && (
-                                    <Button
-                                        onClick={saveAttributesValues}
-                                        type="primary"
-                                        style={{marginTop: 4}}
+                                    <Button onClick={saveAttributesValues}
+                                            type="primary"
+                                            style={{marginTop: 4}}
                                     >
                                         <SaveOutlined style={{fontSize: 20}}/>
                                     </Button>
                                 )}
                             </>
                         ) : (
-                            <div style={{color: "#999", fontStyle: "italic"}}>
-                                Не выставлена зависимость модели
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: 8
+                            }}>
+                                <LoadingOutlined/>
+                                <div style={{color: "#801313", fontStyle: "Bold"}}>
+                                    Не выставлена зависимость модели
+                                </div>
                             </div>
+
                         )}
                     </Col>
 
