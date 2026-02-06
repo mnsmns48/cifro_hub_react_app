@@ -324,20 +324,26 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                                 cancelText="Нет"
                             >
                                 <Select
-                                    dropdownStyle={{fontSize: 12}}
-                                    style={{width: "100%"}}
+                                    style={{width: '100%'}}
                                     showSearch
-                                    optionFilterProp="label"
                                     value={selectedDependencyOrigin}
                                     placeholder="Картинки из"
                                     onFocus={loadDependencyList}
                                     options={dependencyList.map(item => ({
                                         label: (
                                             <span style={{fontSize: 10}}>
-                                                <span style={{color: "red"}}>{item.qnt_images} </span>
-                                                {item.title}</span>),
-                                        value: item.origin
+                                                <span style={{color: 'red'}}>{item.qnt_images} </span>
+                                                {item.title}
+                                            </span>
+                                        ),
+                                        value: item.origin,
+                                        searchValue: item.title,
                                     }))}
+                                    filterOption={(input, option) =>
+                                        option?.searchValue
+                                            ?.toLowerCase()
+                                            .includes(input.toLowerCase())
+                                    }
                                     onChange={(value) => {
                                         setSelectedDependencyOrigin(value);
                                         setPopConfirmOpen(true);
@@ -345,7 +351,6 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                                 />
                             </Popconfirm>
                         </div>
-
 
                     </Col>
 

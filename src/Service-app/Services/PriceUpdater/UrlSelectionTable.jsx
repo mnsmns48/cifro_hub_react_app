@@ -16,6 +16,8 @@ export const UrlSelectionTableColumns = ({
         title: "Title",
         dataIndex: "title",
         key: "title",
+        width: 250,
+        ellipsis: true,
         render: (text, record) =>
             editingKey === record.id ? (
                 <Input
@@ -41,6 +43,7 @@ export const UrlSelectionTableColumns = ({
     {
         key: "isSyncFeatures",
         align: "center",
+        width: 30,
         render: (_, record) => (
             <Checkbox
                 className={styles.checkBoxSync}
@@ -58,6 +61,7 @@ export const UrlSelectionTableColumns = ({
     {
         key: "startParsing",
         align: "center",
+        width: 50,
         render: (_, record) => (
             <Popconfirm
                 title="Вы уверены, что хотите обновить данные в этой таблице?"
@@ -82,6 +86,7 @@ export const UrlSelectionTableColumns = ({
         dataIndex: 'dt_parsed',
         key: 'dt_parsed',
         align: 'center',
+        width: 100,
         render: (text) => <TimeDateBlock isoString={text}/>
     },
     {
@@ -105,6 +110,8 @@ export const UrlSelectionTableColumns = ({
         dataIndex: 'url',
         key: 'url',
         align: 'left',
+        width: 350,
+        ellipsis: true,
         render: (text, record) => editingKey === record.id ? (
             <Input
                 value={editedValues.url || ''}
