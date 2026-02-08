@@ -12,8 +12,7 @@ import {
     EditOutlined,
     PlusOutlined,
     CheckCircleOutlined,
-    SelectOutlined,
-    DollarOutlined
+    SelectOutlined
 } from "@ant-design/icons";
 import RewardRangeTable from "./RewardRangeSettings/RewardRangeTable.jsx";
 import MyModal from "../../Ui/MyModal.jsx";
@@ -187,13 +186,5 @@ const RewardRangeSettings = () => {
     </div>);
 }
 
-export const meta = {
-    title: "Вознаграждения",
-    icon: (
-        <div className="circle-container">
-            <DollarOutlined className="icon-style"/>
-        </div>
-    ),
-};
 
 export default RewardRangeSettings;

@@ -1,5 +1,3 @@
-import {PrinterOutlined} from "@ant-design/icons";
-
 const BillPrinter = () => {
     const today = new Date();
     const formattedDate = String(today.getDate()).padStart(2, '0') + '.' +
@@ -61,14 +59,5 @@ const BillPrinter = () => {
         </div>
     );
 }
-
-export const meta = {
-    title: "Товарный чек",
-    icon: (
-        <div className="circle-container">
-            <PrinterOutlined className="icon-style" />
-        </div>
-    ),
-};
 
 export default BillPrinter;

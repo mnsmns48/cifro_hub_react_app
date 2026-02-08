@@ -1,5 +1,4 @@
 import {Button, Flex, Input} from "antd";
-import {FileSearchOutlined} from "@ant-design/icons";
 import MyModal from "../../Ui/MyModal.jsx";
 import {useEffect, useState} from "react";
 import VendorSourceSelector from "./PriceUpdater/VendorSourceSelector.jsx";
@@ -262,16 +261,6 @@ const PriceUpdater = () => {
         </>
     );
 
-};
-
-
-export const meta = {
-    title: "Данные",
-    icon: (
-        <div className="circle-container">
-            <FileSearchOutlined className="icon-style"/>
-        </div>
-    ),
 };
 
 export default PriceUpdater;

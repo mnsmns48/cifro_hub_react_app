@@ -1,4 +1,3 @@
-import {PictureOutlined} from "@ant-design/icons";
 import IconSettings from "./Utils/IconSettings.jsx";
 import {ServiceImageBlock} from "./Utils/ServiceImageBlock.jsx";
 import {useState} from "react";
@@ -18,13 +17,5 @@ const Pictures = () => {
     );
 };
 
-export const meta = {
-    title: "Изображения",
-    icon: (
-        <div className="circle-container">
-            <PictureOutlined className="icon-style"/>
-        </div>
-    ),
-};
 
 export default Pictures;

@@ -5,7 +5,7 @@ import {
 } from "./HubMenuLevels/api.js";
 import StockHubItemsTable from "./HubMenuLevels/StockHubItemsTable.jsx";
 import TreeDataRender from "./HubMenuLevels/TreeRender.jsx";
-import {ReloadOutlined, StarOutlined} from "@ant-design/icons";
+import {ReloadOutlined} from "@ant-design/icons";
 import ComparisonModal from "./HubMenuLevels/ComparisonModal.jsx";
 import Consent from "./HubMenuLevels/Consent.jsx";
 import {fetchRangeRewardsProfiles} from "./RewardRangeSettings/api.js";
@@ -212,14 +212,4 @@ const HubMenuLevels = (
         </>
     );
 };
-
-export const meta = {
-    title: "Хаб",
-    icon: (
-        <div className="circle-container">
-            <StarOutlined className="icon-style" />
-        </div>
-    ),
-};
-
 export default HubMenuLevels;

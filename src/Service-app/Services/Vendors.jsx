@@ -3,9 +3,8 @@ import {
     EditOutlined,
     DeleteOutlined,
     SaveOutlined,
-    TruckOutlined,
     PlusSquareOutlined,
-    } from '@ant-design/icons';
+} from '@ant-design/icons';
 import {useEffect, useState} from 'react';
 import axios from 'axios';
 import './Css/Vendors.css'
@@ -200,13 +199,5 @@ const Vendors = () => {
     );
 };
 
-export const meta = {
-    title: "Поставщики",
-    icon: (
-        <div className="circle-container">
-            <TruckOutlined className="icon-style"/>
-        </div>
-    ),
-};
 
 export default Vendors;

@@ -1,84 +1,66 @@
-import React, {useState, useEffect, Suspense} from "react";
-import {Tabs} from "antd";
+import React, { useState, useEffect, Suspense } from "react";
+import { Tabs } from "antd";
 import "./ServiceApp.css";
 import Spinner from "./Cifrotech-app/components/Spinner.jsx";
+import { serviceRegistry } from "./Service-app/serviceRegistry.jsx";
 
 const ServiceApp = () => {
-    const [services, setServices] = useState([]);
     const [activeKey, setActiveKey] = useState(
-        localStorage.getItem("activeTab")
+        localStorage.getItem("activeTab") || serviceRegistry[0]?.key
     );
+    const [loadedComponents, setLoadedComponents] = useState({});
+
+    const loadComponent = (key) => {
+        if (loadedComponents[key]) return; // уже загружен
+
+        const registryItem = serviceRegistry.find((s) => s.key === key);
+        if (!registryItem) return;
+
+        const LazyComp = React.lazy(registryItem.loader);
+
+        setLoadedComponents((prev) => ({
+            ...prev,
+            [key]: <LazyComp />
+        }));
+    };
 
     useEffect(() => {
-        requestIdleCallback(() => {
-            const metaModules = import.meta.glob(
-                "./Service-app/Services/*.jsx",
-                {eager: true}
-            );
-
-            const lazyModules = import.meta.glob(
-                "./Service-app/Services/*.jsx"
-            );
-
-            const items = Object.keys(metaModules).map((path) => {
-                const serviceKey = path
-                    .split("/")
-                    .pop()
-                    .replace(".jsx", "");
-
-                const meta = metaModules[path].meta || {};
-                const LazyComponent = React.lazy(lazyModules[path]);
-
-                return {
-                    key: serviceKey,
-                    label: (
-                        <div style={{display: "flex", alignItems: "center", gap: 8}}>
-                            {meta.icon && <>{meta.icon}</>}
-                            <span>{meta.title || serviceKey}</span>
-                        </div>
-                    ),
-                    children: (
-                        <Suspense fallback={<Spinner />}>
-                            <LazyComponent key={activeKey} />
-                        </Suspense>
-                    )
-                };
-            });
-
-            setServices(items);
-
-            if (!activeKey && items.length) {
-                setActiveKey(items[0].key);
-            }
-        });
-    }, []);
+        loadComponent(activeKey);
+    }, [activeKey]);
 
     const handleTabChange = (key) => {
         setActiveKey(key);
         localStorage.setItem("activeTab", key);
     };
 
+    const items = serviceRegistry.map((service) => ({
+        key: service.key,
+        label: (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {service.icon}
+                <span>{service.title}</span>
+            </div>
+        ),
+        children: loadedComponents[service.key] ? (
+            <Suspense fallback={<Spinner />}>
+                {loadedComponents[service.key]}
+            </Suspense>
+        ) : (
+            <div style={{ padding: 20 }}>
+                <Spinner />
+            </div>
+        )
+    }));
+
     return (
         <div className="service-app-container">
-            {services.length && services.find(s => s.key === activeKey) ? (
-                <Tabs
-                    className="service-app-tabs"
-                    tabPlacement="left"
-                    items={services}
-                    activeKey={activeKey}
-                    onChange={handleTabChange}
-                />
-            ) : (
-                <div style={{
-                    position: "fixed",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    zIndex: 1000,
-                }}>
-                    <Spinner/>
-                </div>
-            )}
+            <Tabs
+                className="service-app-tabs"
+                tabPlacement="left"
+                items={items}
+                activeKey={activeKey}
+                onChange={handleTabChange}
+            />
         </div>
     );
 };
