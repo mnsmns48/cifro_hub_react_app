@@ -62,6 +62,13 @@ const BillPrinter = () => {
     );
 }
 
-BillPrinter.componentTitle = "Товарный чек"
-BillPrinter.componentIcon = <div className="circle-container"><PrinterOutlined className="icon-style"/></div>
+export const meta = {
+    title: "Товарный чек",
+    icon: (
+        <div className="circle-container">
+            <PrinterOutlined className="icon-style" />
+        </div>
+    ),
+};
+
 export default BillPrinter;

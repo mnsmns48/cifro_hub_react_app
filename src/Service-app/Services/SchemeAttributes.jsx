@@ -11,6 +11,14 @@ const SchemeAttributes = () => {
     );
 };
 
-SchemeAttributes.componentTitle = "Атрибуты"
-SchemeAttributes.componentIcon = <div className="circle-container"><AppstoreAddOutlined className="icon-style"/></div>
+
+export const meta = {
+    title: "Атрибуты",
+    icon: (
+        <div className="circle-container">
+            <AppstoreAddOutlined className="icon-style"/>
+        </div>
+    ),
+};
+
 export default SchemeAttributes;

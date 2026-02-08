@@ -18,6 +18,13 @@ const Pictures = () => {
     );
 };
 
-Pictures.componentTitle = "Изображения"
-Pictures.componentIcon = <div className="circle-container"><PictureOutlined className="icon-style"/></div>
+export const meta = {
+    title: "Изображения",
+    icon: (
+        <div className="circle-container">
+            <PictureOutlined className="icon-style"/>
+        </div>
+    ),
+};
+
 export default Pictures;

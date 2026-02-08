@@ -264,6 +264,14 @@ const PriceUpdater = () => {
 
 };
 
-PriceUpdater.componentTitle = "Данные"
-PriceUpdater.componentIcon = <div className="circle-container"><FileSearchOutlined className="icon-style"/></div>
+
+export const meta = {
+    title: "Данные",
+    icon: (
+        <div className="circle-container">
+            <FileSearchOutlined className="icon-style"/>
+        </div>
+    ),
+};
+
 export default PriceUpdater;

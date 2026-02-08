@@ -213,7 +213,13 @@ const HubMenuLevels = (
     );
 };
 
-HubMenuLevels.componentTitle = "Хаб";
-HubMenuLevels.componentIcon = <div className="circle-container"><StarOutlined className="icon-style"/></div>
+export const meta = {
+    title: "Хаб",
+    icon: (
+        <div className="circle-container">
+            <StarOutlined className="icon-style" />
+        </div>
+    ),
+};
 
 export default HubMenuLevels;

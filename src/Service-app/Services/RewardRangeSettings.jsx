@@ -186,6 +186,14 @@ const RewardRangeSettings = () => {
         </div>
     </div>);
 }
-RewardRangeSettings.componentTitle = "Вознаграждения"
-RewardRangeSettings.componentIcon = <div className="circle-container"><DollarOutlined className="icon-style"/></div>
+
+export const meta = {
+    title: "Вознаграждения",
+    icon: (
+        <div className="circle-container">
+            <DollarOutlined className="icon-style"/>
+        </div>
+    ),
+};
+
 export default RewardRangeSettings;
