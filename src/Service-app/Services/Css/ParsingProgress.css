@@ -1,0 +1,14 @@
+.progress-message {
+    text-align: center;
+    margin-top: 50px;
+    min-height: 20px;
+}
+
+.ant-progress-indicator,
+.ant-progress-text {
+    color: #e1e0e0 !important;
+}
+
+.ant-progress-rail {
+    background: #e1e0e0 !important;
+}

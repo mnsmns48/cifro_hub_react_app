@@ -16,8 +16,8 @@ const ProgressIndicator = ({progress_obj}) => {
         >
             <div
                 style={{
-                    background: "white",
-                    borderRadius: "0.625em",
+                    background: "rgba(73,72,72,0.9)",
+                    borderRadius: "3.125em",
                     boxShadow: "0 0.5em 1.5em rgba(0,0,0,0.2)",
                     width: "90vw",
                     maxWidth: "20em",
@@ -28,7 +28,9 @@ const ProgressIndicator = ({progress_obj}) => {
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "1em",
-                    padding: "1.25em"
+                    padding: "1.2em",
+                    color: "#e1e0e0",
+                    fontSize: "1rem",
                 }}
             >
                 <style>
@@ -38,7 +40,6 @@ const ProgressIndicator = ({progress_obj}) => {
                 <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
                     <Spinner />
                 </div>
-
                 <ParsingProgress progress_obj={progress_obj} />
             </div>
         </div>

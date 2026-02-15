@@ -1,7 +1,8 @@
-import { Progress } from "antd";
-import { useEffect, useState } from "react";
+import {Progress} from "antd";
+import {useEffect, useState} from "react";
+import "..//Css/ParsingProgress.css"
 
-const ParsingProgress = ({ progress_obj }) => {
+const ParsingProgress = ({progress_obj}) => {
     const [progress, setProgress] = useState(0);
     const [message, setMessage] = useState("");
     const [totalTasks, setTotalTasks] = useState(0);
@@ -46,8 +47,8 @@ const ParsingProgress = ({ progress_obj }) => {
     return (
         <div>
             <Progress percent={progress} status={progress < 100 ? "active" : "success"}
-                      strokeColor={progress < 100 ? "#FFD700" : undefined} />
-            <div style={{ marginTop: "50px", minHeight: "20px" }}>{message}</div>
+                      strokeColor={progress < 100 ? "#e2fc2a" : undefined}/>
+            <div className="progress-message">{message}</div>
         </div>
     );
 };
