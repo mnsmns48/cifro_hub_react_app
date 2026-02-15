@@ -103,8 +103,6 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
             void loadAttributes();
             void loadFormulas();
             setSelectedDependencyOrigin(null);
-
-
         }
     }, [open, loadAttributes, loadFormulas]);
 
@@ -114,22 +112,28 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
         if (!formulaObj) return;
 
         const context = {
-            model: data?.features_title?.[0] ?? "", attributes: {}
+            model: data?.features_title?.[0] ?? "",
+            attributes: {}
         };
 
         exists.forEach(e => {
             const v = e.attr_value_ids[0];
             context.attributes[e.key] = {
-                alias: v.alias, value: v.value
+                alias: v.alias,
+                value: v.value
             };
         });
 
-        const result = await fetchPostData(`/service/formula-expression/${selectedFormula}/preview`, {context});
+        const result = await fetchPostData(
+            `/service/formula-expression/${selectedFormula}/preview`,
+            { context }
+        );
 
         const value = result?.result;
 
-        if (typeof value === "string" && value.startsWith("__MISSING_ATTRIBUTE__")) {
-            message.error("Выбрана наверная формула, проверь");
+        if (typeof value === "string" && value.startsWith("__MISSING_ATTRIBUTES__")) {
+            const missing = value.replace("__MISSING_ATTRIBUTES__:", "").trim();
+            message.error(`В формуле отсутствуют переменные: ${missing}`);
             setGeneratedName("");
             return;
         }
@@ -138,6 +142,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
             setGeneratedName(value);
         }
     }, [formulas, selectedFormula, exists, data]);
+
 
     useEffect(() => {
         const allSelected = allowable.length > 0 && exists.length === allowable.length;
@@ -248,7 +253,6 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
             onCancel={onClose}
             width={700}
             footer={null}
-            // styles={{body: {height: 750, overflowY: "auto", padding: 20}}}
         >
             <>
                 <div style={{
@@ -256,7 +260,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                 }}>
                     Формула
                     <Select
-                        style={{width: 240, margin: 12}}
+                        style={{width: 380, margin: 12}}
                         placeholder="Выберите формулу"
                         value={selectedFormula}
                         onChange={handleFormulaChange}
