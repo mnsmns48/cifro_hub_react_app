@@ -126,7 +126,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
 
         const result = await fetchPostData(
             `/service/formula-expression/${selectedFormula}/preview`,
-            { context }
+            {context}
         );
 
         const value = result?.result;
@@ -228,24 +228,63 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
         const selected = getSelectedValue(attr.key_id);
 
         return (
-            <div key={attr.key_id} style={{marginBottom: 16, textAlign: "center"}}>
-                <Radio.Group value={selected}
-                             onChange={e => handleSelect(attr, e.target.value)}>
-                    <div style={{display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap"}}>
-                        {attr.attr_value_ids.map(v => (<Radio.Button
-                            size="small"
-                            key={v.id}
-                            value={v.id}
-                            style={{borderRadius: 6, cursor: "pointer", textAlign: "center"}}>
-                            <div style={{display: "flex", flexDirection: "column", lineHeight: 1}}>
-                                <span style={{fontSize: 16, fontWeight: 600}}>{v.value}</span>
-                                <span style={{fontSize: 13, color: "#a8a8a8"}}>{v.alias}</span>
+            <div key={attr.key_id} style={{marginBottom: 16}}>
+                <Row align="middle">
+                    <Col span={6}>
+                        <div style={{
+                            fontSize: 11, textAlign: "left",
+                            padding: "2px 6px", borderRadius: 4,
+                            backgroundColor: "black", color: "#e2fc2a",
+                            display: "inline-block", maxWidth: "100%",
+                            whiteSpace: "nowrap"
+                        }}>{attr.key.replace(/_/g, " ")}</div>
+                    </Col>
+
+                    <Col span={18}>
+                        <Radio.Group
+                            value={selected}
+                            onChange={e => handleSelect(attr, e.target.value)}
+                        >
+                            <div style={{
+                                display: "flex",
+                                gap: 8,
+                                flexWrap: "wrap",
+                                justifyContent: "flex-start"
+                            }}>
+                                {attr.attr_value_ids.map(v => (
+                                    <Radio.Button
+                                        key={v.id}
+                                        value={v.id}
+                                        style={{
+                                            borderRadius: 12,
+                                            cursor: "pointer",
+                                            padding: "4px 10px",
+                                            minWidth: 60,
+                                            textAlign: "center"
+                                        }}>
+                                        <div style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            lineHeight: 1
+                                        }}>
+                                        <span style={{fontSize: 14, fontWeight: 600}}>
+                                            {v.value}
+                                        </span>
+                                            <span style={{fontSize: 12, color: "#989898"}}>
+                                            {v.alias}
+                                        </span>
+                                        </div>
+                                    </Radio.Button>
+                                ))}
                             </div>
-                        </Radio.Button>))}
-                    </div>
-                </Radio.Group>
-            </div>);
+                        </Radio.Group>
+                    </Col>
+
+                </Row>
+            </div>
+        );
     }, [getSelectedValue, handleSelect]);
+
 
     return (
         <Modal
