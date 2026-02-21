@@ -1,7 +1,7 @@
 import {
     AppstoreAddOutlined,
     DollarOutlined,
-    FileSearchOutlined,
+    FileSearchOutlined, IdcardOutlined,
     PictureOutlined,
     PrinterOutlined,
     StarOutlined,
@@ -45,6 +45,12 @@ export const serviceRegistry = [
         title: "Атрибуты",
         icon: makeIcon(AppstoreAddOutlined),
         loader: () => import("./Services/SchemeAttributes.jsx"),
+    },
+    {
+        key: "FeaturesGlobal",
+        title: "Описания продуктов",
+        icon: makeIcon(IdcardOutlined),
+        loader: () => import("./Services/FeaturesGlobal.jsx"),
     },
     {
         key: "RewardRangeSettings",
