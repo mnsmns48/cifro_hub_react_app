@@ -9,7 +9,6 @@ import {
 
 const ParsingBulkActions = ({
                                 selectedCount,
-
                                 onDelete,
                                 onAddDependence,
                                 onAddToHub,

@@ -1,5 +1,4 @@
 import {useCallback} from "react";
-
 import {deleteStockItems} from "../HubMenuLevels/api.js";
 import {clearMediaData, deleteParsingItems, reCalcOutputPrices} from "../PriceUpdater/api.js";
 
@@ -18,17 +17,17 @@ export const useParsingActions = ({
         setRows(prev =>
             prev.map(row =>
                 row.origin === origin
-                    ? { ...row, ...patch }
+                    ? {...row, ...patch}
                     : row
             )
         );
     }, [setRows]);
 
     const applyImageUpdate = useCallback((payload) => {
-        const { origin, images, preview } = payload ?? {};
+        const {origin, images, preview} = payload ?? {};
         if (!origin) return;
 
-        updateRow(origin, { images, preview });
+        updateRow(origin, {images, preview});
     }, [updateRow]);
 
     const handleDelete = useCallback(async (selectedRowKeys) => {
@@ -86,7 +85,6 @@ export const useParsingActions = ({
                     : row
             )
         );
-
         setSelectedRowKeys([]);
     }, []);
 

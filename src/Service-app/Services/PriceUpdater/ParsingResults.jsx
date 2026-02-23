@@ -1,6 +1,6 @@
 import {useState, useMemo, useCallback, useEffect} from "react";
 
-import {Table, Button} from "antd";
+import {Table, Button, Spin} from "antd";
 import {AlignRightOutlined} from "@ant-design/icons";
 
 import {exportParsingToExcel} from "./api.js";
@@ -11,7 +11,6 @@ import {useParsingFilters} from "../Hook/useParsingFilters.js";
 import {useParsingActions} from "../Hook/useParsingActions.js";
 
 import {createParsingColumns} from "./ParsingResultsBlocks/ParsingResultsColumns.jsx";
-// import UploadImagesModal from "./ParsingResultsBlocks/UploadImagesModal.jsx";
 import InHubDownloader from "./ParsingResultsBlocks/InHubDownloader.jsx";
 import InfoSelect from "./ParsingResultsBlocks/InfoSelect.jsx";
 import FeatureFilterModal from "./ParsingResultsBlocks/FeatureFilterModal.jsx";
@@ -22,6 +21,8 @@ import ParsingBulkActions from "./ParsingResultsBlocks/ParsingBulkActions.jsx";
 import ParsingFloatingActions from "./ParsingResultsBlocks/ParsingFloatingActions.jsx";
 
 import "../Css/ParsingResults.css";
+import {fetchPostData} from "../SchemeAttributes/api.js";
+import {createHubLoading} from "../HubMenuLevels/api.js";
 
 
 const ParsingResults = ({url, result, vslId, onRangeChange}) => {
@@ -31,8 +32,6 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     const [showInputPrice, setShowInputPrice] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [activeFilter, setActiveFilter] = useState("all");
-    // const [uploadModalOpen, setUploadModalOpen] = useState(false);
-    // const [currentOriginAndTitle, setCurrentOriginAndTitle] = useState(null);
     const [rewardOptions, setRewardOptions] = useState([]);
     const [addToHubModalVisible, setAddToHubModalVisible] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -41,6 +40,8 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     const [featureFilter, setFeatureFilter] = useState([]);
     const [attributesModalData, setAttributesModalData] = useState(null);
     const [isAttributesModalOpen, setIsAttributesModalOpen] = useState(false);
+    const [isAutoLoading, setIsAutoLoading] = useState(false);
+
 
     useEffect(() => {
         setRows(Array.isArray(result.parsing_result) ? result.parsing_result : []);
@@ -98,12 +99,6 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     }, []);
 
 
-    // const openUploadModal = useCallback((origin, title) => {
-    //     setCurrentOriginAndTitle({origin, title});
-    //     setUploadModalOpen(true);
-    // }, []);
-
-
     const columns = useMemo(
         () =>
             createParsingColumns({
@@ -111,7 +106,6 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                 showInputPrice,
                 expandedRows,
                 toggleExpand,
-                // openUploadModal,
                 openAttributesModal
             }),
         [rows, setRows, showInputPrice, expandedRows, toggleExpand, openAttributesModal]
@@ -126,7 +120,6 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                     ? new Date(result.dt_parsed).toISOString()
                     : null
             };
-
             await exportParsingToExcel(payload);
         } catch (error) {
             console.error("Ошибка при экспорте Excel:", error);
@@ -154,7 +147,6 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
 
     const {
         updateRow,
-        // applyImageUpdate,
         handleDelete,
         handleClearMedia,
         handleClearFromHub,
@@ -173,80 +165,131 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     const countNoFeatures = rows.filter(r => Array.isArray(r.features_title) && r.features_title.length === 0).length;
     const selectedItems = rows.filter(r => selectedRowKeys.includes(r.origin));
 
+
+    const handleAddToHubClick = async () => {
+
+        const origins = selectedItems.map(i => i.origin);
+
+        const resp = await fetchPostData(
+            "/service/features/check_features_path_label_link",
+            {origins}
+        );
+
+        const map = resp?.origin_hub_level_map ?? {};
+
+        const allHavePath = selectedItems.every(item =>
+            Number.isInteger(map[item.origin])
+        );
+
+        if (allHavePath) {
+            setIsAutoLoading(true);
+
+            try {
+                const payload = {
+                    vsl_id: vslId,
+                    stocks: selectedItems.map(item => ({
+                        origin: item.origin,
+                        path_id: map[item.origin],
+                        warranty: item.warranty ?? null,
+                        input_price: Number(item.input_price ?? 0),
+                        output_price: Number(item.output_price ?? 0),
+                        profit_range: item.profit_range ?? null
+                    }))
+                };
+
+                const result = await createHubLoading(payload);
+
+                if (result?.status === true) {
+                    handleAddToHub(result.updated_origins);
+                }
+
+                setSelectedRowKeys([]);
+            } finally {
+                setIsAutoLoading(false);
+            }
+
+            return;
+        }
+
+        setAddToHubModalVisible(true);
+    };
+
+
     return (
         <>
             <ParsingHeader url={url} result={result}/>
 
-            <ParsingToolbar
-                showInputPrice={showInputPrice}
-                onTogglePrice={() => setShowInputPrice(v => !v)}
+            <ParsingToolbar showInputPrice={showInputPrice}
+                            onTogglePrice={() => setShowInputPrice(v => !v)}
 
-                onResetFilters={() => {
-                    setActiveFilter("all");
-                    setFeatureFilter([]);
-                }}
+                            onResetFilters={() => {
+                                setActiveFilter("all");
+                                setFeatureFilter([]);
+                            }}
 
-                onFilterChange={setActiveFilter}
+                            onFilterChange={setActiveFilter}
 
-                countNoPreview={countNoPreview}
-                countNoFeatures={countNoFeatures}
-                countNoAttributes={countNoAttributes}
+                            countNoPreview={countNoPreview}
+                            countNoFeatures={countNoFeatures}
+                            countNoAttributes={countNoAttributes}
 
-                searchText={searchText}
-                onSearchChange={setSearchText}
+                            searchText={searchText}
+                            onSearchChange={setSearchText}
 
-                rewardOptions={rewardOptions}
-                selectedRangeId={result.profit_range_id}
-                onRangeChange={handleSelectRange}
+                            rewardOptions={rewardOptions}
+                            selectedRangeId={result.profit_range_id}
+                            onRangeChange={handleSelectRange}
 
-                onExportExcel={downloadExcel}
+                            onExportExcel={downloadExcel}
             />
 
-            <ParsingBulkActions
-                selectedCount={selectedRowKeys.length}
-                onDelete={() => handleDelete(selectedRowKeys)}
-                onAddDependence={() => handleAddDependenceMulti(selectedRowKeys)}
-                onAddToHub={() => setAddToHubModalVisible(true)}
-                onClearMedia={() => handleClearMedia(selectedRowKeys)}
-                onRemoveFromHub={() => handleClearFromHub(selectedRowKeys)}
+            <ParsingBulkActions selectedCount={selectedRowKeys.length}
+                                onDelete={() => handleDelete(selectedRowKeys)}
+                                onAddDependence={() => handleAddDependenceMulti(selectedRowKeys)}
+                                onAddToHub={handleAddToHubClick}
+                                onClearMedia={() => handleClearMedia(selectedRowKeys)}
+                                onRemoveFromHub={() => handleClearFromHub(selectedRowKeys)}
             />
 
             {dependencySelection && (
-                <InfoSelect
-                    titles={dependencySelection.titles}
-                    origin={dependencySelection.origin}
-                    record={dependencySelection.record}
-                    setRows={dependencySelection.setRows}
-                    autoOpen={true}
-                    onClose={() => {
-                        setSelectedRowKeys([]);
-                        setDependencySelection(null);
-                    }}
+                <InfoSelect titles={dependencySelection.titles}
+                            origin={dependencySelection.origin}
+                            record={dependencySelection.record}
+                            setRows={dependencySelection.setRows}
+                            autoOpen={true}
+                            onClose={() => {
+                                setSelectedRowKeys([]);
+                                setDependencySelection(null);
+                            }}
                 />
             )}
-
-            <Table className="parsing-result-table"
-                   dataSource={filteredData}
-                   columns={columns}
-                   pagination={false}
-                   rowKey="origin" tableLayout="fixed"
-                   rowSelection={{selectedRowKeys, onChange: setSelectedRowKeys}}
-                   rowClassName={rec => {
-                       const noF =
-                           Array.isArray(rec.features_title) &&
-                           rec.features_title.length === 0;
-                       const noP = !rec.preview;
-                       if (noF) return "row-no-features";
-                       if (noP) return "row-no-image";
-                       return "";
-                   }}
-            />
-            <InHubDownloader vslId={vslId} isOpen={addToHubModalVisible} items={selectedItems}
+            <Spin spinning={isAutoLoading} tip="Добавляем в хаб...">
+                <Table className="parsing-result-table"
+                       dataSource={filteredData}
+                       columns={columns}
+                       pagination={false}
+                       rowKey="origin" tableLayout="fixed"
+                       rowSelection={{selectedRowKeys, onChange: setSelectedRowKeys}}
+                       rowClassName={rec => {
+                           const noF =
+                               Array.isArray(rec.features_title) &&
+                               rec.features_title.length === 0;
+                           const noP = !rec.preview;
+                           if (noF) return "row-no-features";
+                           if (noP) return "row-no-image";
+                           return "";
+                       }}
+                />
+            </Spin>
+            <InHubDownloader vslId={vslId}
+                             isOpen={addToHubModalVisible}
+                             items={selectedItems}
                              onCancel={() => setAddToHubModalVisible(false)}
                              onConfirm={(msg, updatedOrigins) => {
                                  handleAddToHub(updatedOrigins);
                                  setAddToHubModalVisible(false);
-                             }}/>
+                             }}
+            />
 
 
             <ParsingFloatingActions
@@ -266,39 +309,31 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                                 onApply={(selected) => setFeatureFilter(selected)}
             />
 
-            {/*<UploadImagesModal*/}
-            {/*    isOpen={uploadModalOpen}*/}
-            {/*    originCode={currentOriginAndTitle?.origin}*/}
-            {/*    originTitle={currentOriginAndTitle?.title}*/}
-            {/*    onClose={() => setUploadModalOpen(false)}*/}
-            {/*    onUploaded={applyImageUpdate}*/}
-            {/*/>*/}
 
-            <AttributesModal
-                open={isAttributesModalOpen}
-                data={attributesModalData}
-                onClose={() => {
-                    setIsAttributesModalOpen(false);
-                    setAttributesModalData(null);
-                }}
-                onUploaded={(uploaded, origin) => {
-                    updateRow(origin, {preview: uploaded.preview});
-                    setAttributesModalData(prev => ({
-                        ...prev,
-                        images: uploaded.images,
-                        preview: uploaded.preview
-                    }));
-                }}
+            <AttributesModal open={isAttributesModalOpen}
+                             data={attributesModalData}
+                             onClose={() => {
+                                 setIsAttributesModalOpen(false);
+                                 setAttributesModalData(null);
+                             }}
+                             onUploaded={(uploaded, origin) => {
+                                 updateRow(origin, {preview: uploaded.preview});
+                                 setAttributesModalData(prev => ({
+                                     ...prev,
+                                     images: uploaded.images,
+                                     preview: uploaded.preview
+                                 }));
+                             }}
 
-                onSaved={({origin, title, attributes}) => {
-                    updateRow(origin, {
-                        title,
-                        attributes: {
-                            model_id: rows.find(r => r.origin === origin)?.attributes?.model_id,
-                            attr_value_ids: attributes
-                        }
-                    });
-                }}
+                             onSaved={({origin, title, attributes}) => {
+                                 updateRow(origin, {
+                                     title,
+                                     attributes: {
+                                         model_id: rows.find(r => r.origin === origin)?.attributes?.model_id,
+                                         attr_value_ids: attributes
+                                     }
+                                 });
+                             }}
             />
         </>
     );
