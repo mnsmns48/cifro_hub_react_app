@@ -65,3 +65,16 @@
 .ant-table-cell {
     border-bottom: none !important;
 }
+
+.back-to-list-btn {
+    background-color: #e2fc2a !important;
+    border-color: transparent !important;
+    cursor: default
+}
+
+.back-to-list-btn:hover {
+    background-color: #e2fc2a !important;
+    border-color: transparent !important;
+    cursor: default;
+    color: #6c6c6c !important;
+}

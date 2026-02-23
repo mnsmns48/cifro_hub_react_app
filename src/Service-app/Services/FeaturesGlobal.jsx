@@ -135,11 +135,9 @@ const FeaturesGlobal = () => {
                 {routes.map((routeObj, idx) => {
                     const steps = routeObj.rotes.slice(1);
                     const pretty = steps.map(s => s.label).join(" → ");
-
                     const last = routeObj.rotes.at(-1);
                     const hubLevel = last.path_id;
                     const label = last.label;
-
                     return (
                         <Button key={idx}
                                 type="default"

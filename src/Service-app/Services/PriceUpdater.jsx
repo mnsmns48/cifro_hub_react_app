@@ -14,6 +14,7 @@ import {
 } from "./PriceUpdater/api.js";
 import ParsingResults from "./PriceUpdater/ParsingResults.jsx";
 import ProgressIndicator from "./PriceUpdater/ProgressIndicator.jsx";
+import {RollbackOutlined} from "@ant-design/icons";
 
 
 const PriceUpdater = () => {
@@ -249,7 +250,10 @@ const PriceUpdater = () => {
             />
             {isParsingDone && parsedData && (
                 <>
-                    <Button onClick={handleNewSearch}>Новый поиск</Button>
+                    <Button onClick={handleNewSearch} className="back-to-list-btn">
+                        <RollbackOutlined/> Назад к списку
+                    </Button>
+
                     <ParsingResults
                         url={selectedVSLRow?.url}
                         result={parsedData}
