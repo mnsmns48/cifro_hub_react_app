@@ -56,7 +56,7 @@ export const featuresColumns = (typeFilters,
 
         ),
         key: "hub_level",
-        width: 100,
+        width: 150,
         align: "center",
         render: (_, record) =>
             record.hub_level ? (

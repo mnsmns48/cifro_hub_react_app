@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
-import {Table} from "antd";
-import {fetchGetData} from "./SchemeAttributes/api.js";
+import {Button, Modal, Table} from "antd";
+import {fetchGetData, fetchPostData} from "./SchemeAttributes/api.js";
 import {featuresColumns} from "./FeaturesGlobal/featuresColumns.jsx";
-
+import './FeaturesGlobal/FeaturesGlobal.css'
 
 const buildFilters = (data) => {
     const typeSet = new Map();
@@ -35,6 +35,8 @@ const FeaturesGlobal = () => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [search, setSearch] = useState("");
     const [onlyNoLevel, setOnlyNoLevel] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [routes, setRoutes] = useState([]);
 
 
     useEffect(() => {
@@ -46,9 +48,53 @@ const FeaturesGlobal = () => {
         void load();
     }, []);
 
+    const openHubPathModal = async () => {
+        const response = await fetchGetData("service/features/hub_level_routes");
+        setRoutes(response.routes || []);
+        setIsModalOpen(true);
+    };
+
+
+    const applyRouteToSelected = async (hubLevel, label) => {
+        const payload = {
+            feature_ids: selectedRowKeys,
+            hub_level_id: hubLevel,
+            label: label
+        };
+
+        const response = await fetchPostData(
+            "service/features/set_level_routes",
+            payload
+        );
+
+        if (!response || !response.updated) return;
+
+        setData(prev =>
+            prev.map(item =>
+                response.updated[item.id]
+                    ? {
+                        ...item,
+                        hub_level: {
+                            path_id: response.updated[item.id].path_id,
+                            label: response.updated[item.id].label
+                        }
+                    }
+                    : item
+            )
+        );
+
+        setIsModalOpen(false);
+        setSelectedRowKeys([]);
+    };
+
 
     const noLevelCount = data.filter(item => !item.hub_level).length;
-    const filteredData = filterData(data, search);
+
+    const filteredData = filterData(
+        onlyNoLevel ? data.filter(item => !item.hub_level) : data,
+        search
+    );
+
     const {typeFilters, brandFilters} = buildFilters(data);
     const rowSelection = {selectedRowKeys, onChange: (keys) => setSelectedRowKeys(keys),};
 
@@ -63,14 +109,55 @@ const FeaturesGlobal = () => {
     );
 
     return (
-        <Table
-            rowKey="id"
-            columns={columns}
-            dataSource={filteredData}
-            rowSelection={rowSelection}
-            pagination={false}
-            size={"small"}
-        />
+        <>
+            {selectedRowKeys.length > 0 && (
+                <div style={{marginBottom: 12}}>
+                    <Button type="primary" onClick={openHubPathModal}>
+                        Установить папку выгрузки Hub Path
+                    </Button>
+                </div>
+            )}
+
+            <Table rowKey="id"
+                   columns={columns}
+                   dataSource={filteredData}
+                   rowSelection={rowSelection}
+                   pagination={false}
+                   size={"small"}
+                   rowClassName={(record) => (!record.hub_level ? "no-level-row" : "")}
+            />
+            <Modal
+                width={450}
+                open={isModalOpen}
+                onCancel={() => setIsModalOpen(false)}
+                footer={null}
+            >
+                {routes.map((routeObj, idx) => {
+                    const steps = routeObj.rotes.slice(1);
+                    const pretty = steps.map(s => s.label).join(" → ");
+
+                    const last = routeObj.rotes.at(-1);
+                    const hubLevel = last.path_id;
+                    const label = last.label;
+
+                    return (
+                        <Button key={idx}
+                                type="default"
+                                style={{
+                                    width: "100%",
+                                    display: "flex",
+                                    justifyContent: "flex-start",
+                                    textAlign: "left",
+                                    marginBottom: 8
+                                }}
+                                onClick={() => applyRouteToSelected(hubLevel, label)}
+                        >
+                            {pretty}
+                        </Button>
+                    );
+                })}
+            </Modal>
+        </>
     );
 };
 
