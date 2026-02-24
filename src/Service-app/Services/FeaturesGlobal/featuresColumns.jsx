@@ -1,4 +1,4 @@
-import {Badge, Input} from "antd";
+import {Badge, Button, Input} from "antd";
 
 
 export const featuresColumns = (typeFilters,
@@ -37,6 +37,10 @@ export const featuresColumns = (typeFilters,
         key: "title",
         width: 200,
         sorter: (a, b) => a.title.localeCompare(b.title),
+        render: (_, record) => (
+            <Button type="link"
+                    style={{padding: 0}}
+                    onClick={() => descriptionClick(record)}> {record.title} </Button> )
     },
     {
         title: () => (

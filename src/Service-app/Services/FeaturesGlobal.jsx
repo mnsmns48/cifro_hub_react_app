@@ -98,6 +98,11 @@ const FeaturesGlobal = () => {
     const {typeFilters, brandFilters} = buildFilters(data);
     const rowSelection = {selectedRowKeys, onChange: (keys) => setSelectedRowKeys(keys),};
 
+    const descriptionClick = (record) => {
+        console.log("Клик по:", record);
+    };
+
+
     const columns = featuresColumns(
         typeFilters,
         brandFilters,
@@ -105,7 +110,8 @@ const FeaturesGlobal = () => {
         setSearch,
         noLevelCount,
         onlyNoLevel,
-        setOnlyNoLevel
+        setOnlyNoLevel,
+        descriptionClick
     );
 
     return (
@@ -126,12 +132,10 @@ const FeaturesGlobal = () => {
                    size={"small"}
                    rowClassName={(record) => (!record.hub_level ? "no-level-row" : "")}
             />
-            <Modal
-                width={450}
-                open={isModalOpen}
-                onCancel={() => setIsModalOpen(false)}
-                footer={null}
-            >
+            <Modal width={450}
+                   open={isModalOpen}
+                   onCancel={() => setIsModalOpen(false)}
+                   footer={null}>
                 {routes.map((routeObj, idx) => {
                     const steps = routeObj.rotes.slice(1);
                     const pretty = steps.map(s => s.label).join(" → ");
