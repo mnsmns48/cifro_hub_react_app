@@ -7,7 +7,8 @@ export const featuresColumns = (typeFilters,
                                 setSearch,
                                 noLevelCount,
                                 onlyNoLevel,
-                                setOnlyNoLevel) => [
+                                setOnlyNoLevel,
+                                descriptionClick) => [
     {
         title: "Тип",
         dataIndex: ["type", "type"],
@@ -40,7 +41,7 @@ export const featuresColumns = (typeFilters,
         render: (_, record) => (
             <Button type="link"
                     style={{padding: 0}}
-                    onClick={() => descriptionClick(record)}> {record.title} </Button> )
+                    onClick={() => descriptionClick(record)}> {record.title} </Button>)
     },
     {
         title: () => (

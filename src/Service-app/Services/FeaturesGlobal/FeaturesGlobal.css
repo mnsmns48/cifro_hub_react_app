@@ -1,3 +1,7 @@
 .no-level-row {
     color: #a1a1a1 !important;
 }
+
+.top-align-row .ant-table-cell {
+    vertical-align: top !important;
+}

@@ -1,8 +1,9 @@
 import {useEffect, useState} from "react";
 import {Button, Modal, Table} from "antd";
 import {fetchGetData, fetchPostData} from "./SchemeAttributes/api.js";
-import {featuresColumns} from "./FeaturesGlobal/featuresColumns.jsx";
+import {featuresColumns} from "./FeaturesGlobal/FeaturesColumns.jsx";
 import './FeaturesGlobal/FeaturesGlobal.css'
+import FeaturesComponent from "./FeaturesGlobal/FeaturesComponent.jsx";
 
 const buildFilters = (data) => {
     const typeSet = new Map();
@@ -37,6 +38,8 @@ const FeaturesGlobal = () => {
     const [onlyNoLevel, setOnlyNoLevel] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [routes, setRoutes] = useState([]);
+    const [featureData, setFeatureData] = useState(null);
+    const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
 
 
     useEffect(() => {
@@ -98,8 +101,10 @@ const FeaturesGlobal = () => {
     const {typeFilters, brandFilters} = buildFilters(data);
     const rowSelection = {selectedRowKeys, onChange: (keys) => setSelectedRowKeys(keys),};
 
-    const descriptionClick = (record) => {
-        console.log("Клик по:", record);
+    const descriptionClick = async (record) => {
+        const response = await fetchGetData(`service/features/get_features_by_feature_id/${record.id}`);
+        setFeatureData(response);
+        setIsFeatureModalOpen(true);
     };
 
 
@@ -159,6 +164,14 @@ const FeaturesGlobal = () => {
                     );
                 })}
             </Modal>
+
+            <FeaturesComponent open={isFeatureModalOpen}
+                               onClose={() => setIsFeatureModalOpen(false)}
+                               data={featureData}
+
+            />
+
+
         </>
     );
 };
