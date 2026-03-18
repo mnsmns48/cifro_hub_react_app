@@ -1,4 +1,4 @@
-import {Table, Input, Button} from "antd";
+import {Table, Input, Button, Popconfirm} from "antd";
 import {useState} from "react";
 import {EditOutlined, DeleteOutlined, PlusOutlined} from "@ant-design/icons";
 import {fetchPostData} from "../SchemeAttributes/api.js";
@@ -63,19 +63,17 @@ const InfoTable = ({featureId, info}) => {
     };
 
 
-
     const addCategory = () => {
         const newIndex = data.length;
         const newData = [
             ...data,
-            { "": {} }
+            {"": {}}
         ];
 
         setData(newData);
         setEditingCategory(newIndex);
         setEditValue("");
     };
-
 
 
     const deleteCategory = async (categoryTitle) => {
@@ -127,6 +125,7 @@ const InfoTable = ({featureId, info}) => {
 
                 return (
                     <div style={{display: "flex", alignItems: "center", justifyContent: "center", gap: 8}}>
+
                         {editingCategory === index ? (
                             <Input
                                 value={editValue}
@@ -140,15 +139,28 @@ const InfoTable = ({featureId, info}) => {
                             <span>{text}</span>
                         )}
 
-                        <EditOutlined
-                            style={{cursor: "pointer", color: "blue"}}
-                            onClick={() => startEdit(index, text)}
-                        />
+                        <Popconfirm
+                            title="Редактировать категорию? Это небезопасно"
+                            okText="Да"
+                            cancelText="Нет"
+                            onConfirm={() => startEdit(index, text)}
+                        >
+                            <EditOutlined
+                                style={{cursor: "pointer", color: "blue"}}
+                            />
+                        </Popconfirm>
 
-                        <DeleteOutlined
-                            style={{cursor: "pointer", color: "red"}}
-                            onClick={() => deleteCategory(text)}
-                        />
+                        <Popconfirm
+                            title="Удалить категорию? Это небезопасно"
+                            description="Это действие необратимо"
+                            okText="Удалить"
+                            cancelText="Отмена"
+                            onConfirm={() => deleteCategory(text)}
+                        >
+                            <DeleteOutlined
+                                style={{cursor: "pointer", color: "red"}}
+                            />
+                        </Popconfirm>
 
                     </div>
                 );
