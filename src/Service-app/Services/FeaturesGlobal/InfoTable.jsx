@@ -1,27 +1,158 @@
-import { Table } from "antd";
+import {Table, Input, Button} from "antd";
+import {useState} from "react";
+import {EditOutlined, DeleteOutlined, PlusOutlined} from "@ant-design/icons";
+import {fetchPostData} from "../SchemeAttributes/api.js";
 
-const InfoTable = ({ info }) => {
-    const data = info.map((block, index) => {
-        const key = Object.keys(block)[0];
-        const values = block[key];
+const InfoTable = ({featureId, info}) => {
+    const [data, setData] = useState(info);
+    const [editingCategory, setEditingCategory] = useState(null);
+    const [editValue, setEditValue] = useState("");
 
-        const innerData = Object.entries(values).map(([k, v], i) => (
-            {key: i, param: k, value: v}));
 
-        return {key: index, category: key, details: innerData};
+    const startEdit = (index, currentName) => {
+        setEditingCategory(index);
+        setEditValue(currentName);
+    };
+
+
+    const saveEditCategory = async (index) => {
+        const newName = editValue.trim();
+        if (!newName) {
+            setData(prev => prev.filter((_, i) => i !== index));
+            setEditingCategory(null);
+            return;
+        }
+
+        const oldKey = Object.keys(data[index])[0];
+
+        if (oldKey === "") {
+            const result = await fetchPostData(
+                "service/features/create_new_info_category",
+                {
+                    id: featureId,
+                    category_title: newName
+                }
+            );
+
+            if (result?.status === "created") {
+                setData(result.info);
+            }
+
+            setEditingCategory(null);
+            return;
+        }
+
+        if (oldKey === newName) {
+            setEditingCategory(null);
+            return;
+        }
+        const result = await fetchPostData(
+            "service/features/Update_info_category",
+            {
+                id: featureId,
+                old_category_title: oldKey,
+                new_category_title: newName
+            }
+        );
+
+        if (result?.status === "updated") {
+            setData(result.info);
+        }
+
+        setEditingCategory(null);
+    };
+
+
+
+    const addCategory = () => {
+        const newIndex = data.length;
+        const newData = [
+            ...data,
+            { "": {} }
+        ];
+
+        setData(newData);
+        setEditingCategory(newIndex);
+        setEditValue("");
+    };
+
+
+
+    const deleteCategory = async (categoryTitle) => {
+        const result = await fetchPostData(
+            "service/features/delete_info_category",
+            {
+                id: featureId,
+                category_title: categoryTitle
+            }
+        );
+
+        if (!result) return;
+
+        if (result.status === "deleted") {
+            setData(result.info);
+        }
+    };
+
+
+    const tableData = data.map((block, index) => {
+        const category = Object.keys(block)[0];
+        const values = block[category];
+
+        const innerData = Object.entries(values).map(([k, v], i) => ({
+            key: i,
+            param: k,
+            value: v
+        }));
+
+        return {
+            key: index,
+            category,
+            details: innerData
+        };
     });
 
     const innerColumns = [
-        { dataIndex: "param", key: "param", width: "40%" },
-        { dataIndex: "value", key: "value" }
+        {dataIndex: "param", key: "param", width: "40%"},
+        {dataIndex: "value", key: "value"}
     ];
 
     const columns = [
         {
             dataIndex: "category",
             key: "category",
-            width: 200,
-            align: "center"
+            width: 250,
+            render: (text, record) => {
+                const index = record.key;
+
+                return (
+                    <div style={{display: "flex", alignItems: "center", justifyContent: "center", gap: 8}}>
+                        {editingCategory === index ? (
+                            <Input
+                                value={editValue}
+                                autoFocus
+                                onChange={(e) => setEditValue(e.target.value)}
+                                onPressEnter={() => saveEditCategory(index)}
+                                onBlur={() => saveEditCategory(index)}
+                                style={{width: "100%"}}
+                            />
+                        ) : (
+                            <span>{text}</span>
+                        )}
+
+                        <EditOutlined
+                            style={{cursor: "pointer", color: "blue"}}
+                            onClick={() => startEdit(index, text)}
+                        />
+
+                        <DeleteOutlined
+                            style={{cursor: "pointer", color: "red"}}
+                            onClick={() => deleteCategory(text)}
+                        />
+
+                    </div>
+                );
+            }
         },
         {
             dataIndex: "details",
@@ -39,14 +170,24 @@ const InfoTable = ({ info }) => {
     ];
 
     return (
-        <Table
-            showHeader={false}
-            dataSource={data}
-            columns={columns}
-            pagination={false}
-            size="small"
-            bordered
-        />
+        <div>
+            <Table
+                showHeader={false}
+                dataSource={tableData}
+                columns={columns}
+                pagination={false}
+                size="small"
+                bordered
+            />
+            <Button
+                icon={<PlusOutlined/>}
+                style={{marginTop: 10}}
+                onClick={addCategory}
+            >
+                Добавить категорию
+            </Button>
+
+        </div>
     );
 };
 
