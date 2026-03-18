@@ -12,7 +12,6 @@ const FeaturesComponent = ({open, onClose, data}) => {
     return (
         <Modal width={800} open={open} onCancel={onClose} footer={null}>
             <Title level={4}>{title}</Title>
-            <br/>
             <InfoTable info={info}/>
             <br/>
             <ProsConsTable prosCons={pros_cons} featureId={data.id}/>
