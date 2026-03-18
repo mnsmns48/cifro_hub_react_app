@@ -5,17 +5,10 @@ const InfoTable = ({ info }) => {
         const key = Object.keys(block)[0];
         const values = block[key];
 
-        const innerData = Object.entries(values).map(([k, v], i) => ({
-            key: i,
-            param: k,
-            value: v
-        }));
+        const innerData = Object.entries(values).map(([k, v], i) => (
+            {key: i, param: k, value: v}));
 
-        return {
-            key: index,
-            category: key,
-            details: innerData
-        };
+        return {key: index, category: key, details: innerData};
     });
 
     const innerColumns = [
