@@ -4,4 +4,14 @@
 
 .top-align-row .ant-table-cell {
     vertical-align: top !important;
+
+}
+
+.compact-table .ant-table {
+    font-size: 0.7rem !important;
+
+}
+
+.compact-table .ant-table-cell {
+    padding: 0.35em 0.15em !important;
 }

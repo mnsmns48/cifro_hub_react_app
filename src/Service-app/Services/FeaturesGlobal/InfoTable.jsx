@@ -2,6 +2,7 @@ import {Table, Input, Button, Popconfirm} from "antd";
 import {useState} from "react";
 import {EditOutlined, DeleteOutlined, PlusOutlined} from "@ant-design/icons";
 import {fetchPostData} from "../SchemeAttributes/api.js";
+import './FeaturesGlobal.css'
 
 const InfoTable = ({featureId, info}) => {
     const [data, setData] = useState(info);
@@ -184,6 +185,7 @@ const InfoTable = ({featureId, info}) => {
     return (
         <div>
             <Table
+                className="compact-table"
                 showHeader={false}
                 dataSource={tableData}
                 columns={columns}
@@ -198,7 +200,6 @@ const InfoTable = ({featureId, info}) => {
             >
                 Добавить категорию
             </Button>
-
         </div>
     );
 };

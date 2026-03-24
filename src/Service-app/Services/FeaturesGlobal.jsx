@@ -130,6 +130,7 @@ const FeaturesGlobal = () => {
             )}
 
             <Table rowKey="id"
+                   className="compact-table"
                    columns={columns}
                    dataSource={filteredData}
                    rowSelection={rowSelection}
