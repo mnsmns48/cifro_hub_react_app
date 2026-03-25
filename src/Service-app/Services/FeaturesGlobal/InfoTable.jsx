@@ -4,7 +4,7 @@ import {
     EditOutlined,
     DeleteOutlined,
     CloseOutlined,
-    DashOutlined, AppstoreAddOutlined, HddOutlined, CheckOutlined
+    DashOutlined, AppstoreAddOutlined, HddOutlined, CheckOutlined, UndoOutlined
 } from "@ant-design/icons";
 import {fetchPostData} from "../SchemeAttributes/api.js";
 import './FeaturesGlobal.css'
@@ -14,6 +14,12 @@ const InfoTable = ({featureId, info}) => {
     const [editingCategory, setEditingCategory] = useState(null);
     const [editValue, setEditValue] = useState("");
     const [editingInner, setEditingInner] = useState(null);
+
+
+    const fadeStyle = {
+        transition: "all 0.5s ease",
+        opacity: editingInner ? 1 : 0.9,
+    };
 
 
     const startEdit = (index, currentName) => {
@@ -144,49 +150,6 @@ const InfoTable = ({featureId, info}) => {
         });
     };
 
-    const saveInnerRow = async () => {
-        if (!editingInner) return;
-        const {category, param, value} = editingInner;
-        const trimmedParam = param.trim();
-        const trimmedValue = value.trim();
-
-        if (!trimmedParam || !trimmedValue) {
-            console.warn("Param и Value должны быть заполнены");
-            return;
-        }
-
-        const categoryBlock = data.find(block => Object.keys(block)[0] === category);
-        const categoryData = categoryBlock ? categoryBlock[category] : {};
-        const existingParams = Object.keys(categoryData);
-
-        if (existingParams.includes(trimmedParam)) {
-            console.warn("Такой param уже существует в этой категории");
-            return;
-        }
-
-        const result = await fetchPostData(
-            "service/features/add_new_inner_row",
-            {
-                id: featureId,
-                category_title: category,
-                new_param: trimmedParam,
-                new_value: trimmedValue
-            }
-        );
-
-        if (!result) {
-            console.error("Ошибка при сохранении строки");
-            return;
-        }
-
-        if (result.status === "created") {
-            setData(result.info);
-        }
-
-        setEditingInner(null);
-    };
-
-
     const cancelInnerEdit = () => {
         if (!editingInner) return;
 
@@ -214,12 +177,7 @@ const InfoTable = ({featureId, info}) => {
     const deleteInnerRow = async (category, param) => {
         const result = await fetchPostData(
             "service/features/delete_inner_row",
-            {
-                id: featureId,
-                category_title: category,
-                new_param: param,
-                new_value: ""
-            }
+            {id: featureId, category_title: category, new_param: param, new_value: ""}
         );
 
         if (!result || result.status !== "deleted") {
@@ -228,6 +186,42 @@ const InfoTable = ({featureId, info}) => {
         }
 
         setData(result.info);
+    };
+
+
+    const saveInnerRow = async () => {
+        if (!editingInner) return;
+
+        const {category, param, value, oldParam, oldValue} = editingInner;
+
+        const trimmedParam = param.trim();
+        const trimmedValue = value.trim();
+
+        const isNewRow = oldParam === undefined;
+
+        if (isNewRow) {
+            const result = await fetchPostData("service/features/add_new_inner_row", {
+                id: featureId,
+                category_title: category,
+                new_param: trimmedParam,
+                new_value: trimmedValue
+            });
+
+            if (result?.status === "created") setData(result.info);
+        } else {
+            const result = await fetchPostData("service/features/update_inner_row", {
+                id: featureId,
+                category_title: category,
+                old_param: oldParam,
+                old_value: oldValue,
+                new_param: trimmedParam,
+                new_value: trimmedValue
+            });
+
+            if (result?.status === "updated") setData(result.info);
+        }
+
+        setEditingInner(null);
     };
 
 
@@ -243,17 +237,20 @@ const InfoTable = ({featureId, info}) => {
                     editingInner.key === rowIndex;
 
                 return isEditing ? (
-                    <Input
-                        value={editingInner.param}
-                        autoFocus
-                        onChange={(e) =>
-                            setEditingInner(prev => ({...prev, param: e.target.value}))
-                        }
-                        onPressEnter={saveInnerRow}
-                    />
+                    <div style={fadeStyle}>
+                        <Input
+                            value={editingInner.param}
+                            autoFocus
+                            onChange={(e) =>
+                                setEditingInner(prev => ({...prev, param: e.target.value}))
+                            }
+                            onPressEnter={saveInnerRow}
+                        />
+                    </div>
                 ) : (
-                    text
+                    <div style={fadeStyle}>{text}</div>
                 );
+
             }
         },
         {
@@ -297,9 +294,9 @@ const InfoTable = ({featureId, info}) => {
                                 style={{color: "green", cursor: "pointer"}}
                             />
 
-                            <CloseOutlined
+                            <UndoOutlined
                                 onClick={cancelInnerEdit}
-                                style={{color: "red", cursor: "pointer"}}
+                                style={{color: "orange", cursor: "pointer"}}
                             />
                         </div>
 
@@ -309,21 +306,19 @@ const InfoTable = ({featureId, info}) => {
 
                 return (
                     <div style={{display: "flex", gap: 6, justifyContent: "center"}}>
-                        <Popconfirm
-                            title="Редактировать параметр?"
-                            okText="Да"
-                            cancelText="Нет"
-                            // onConfirm={() => {
-                            //     setEditingInner({
-                            //         category: record.category,
-                            //         key: rowIndex,
-                            //         param: record.param,
-                            //         value: record.value
-                            //     });
-                            // }}
-                        >
-                            <DashOutlined style={{cursor: "pointer"}}/>
-                        </Popconfirm>
+                        <DashOutlined
+                            style={{cursor: "pointer"}}
+                            onClick={() => {
+                                setEditingInner({
+                                    category: record.category,
+                                    key: rowIndex,
+                                    param: record.param,
+                                    value: record.value,
+                                    oldParam: record.param,
+                                    oldValue: record.value
+                                });
+                            }}
+                        />
 
                         <Popconfirm
                             title="Удалить параметр?"
@@ -352,29 +347,25 @@ const InfoTable = ({featureId, info}) => {
                 return (
                     <div style={{display: "flex", alignItems: "center", justifyContent: "center", gap: 8}}>
 
-                        {editingCategory === index ? (
-                            <Input
-                                value={editValue}
-                                autoFocus
-                                onChange={(e) => setEditValue(e.target.value)}
-                                onPressEnter={() => saveEditCategory(index)}
-                                onBlur={() => saveEditCategory(index)}
-                                style={{width: "100%"}}
-                            />
-                        ) : (
-                            <span>{text}</span>
-                        )}
+                        <div style={fadeStyle}>
+                            {editingCategory === index ? (
+                                <Input
+                                    value={editValue}
+                                    autoFocus
+                                    onChange={(e) => setEditValue(e.target.value)}
+                                    onPressEnter={() => saveEditCategory(index)}
+                                    onBlur={() => saveEditCategory(index)}
+                                    style={{width: "100%"}}
+                                />
+                            ) : (
+                                <span>{text}</span>
+                            )}
+                        </div>
 
-                        <Popconfirm
-                            title="Редактировать категорию? Это небезопасно"
-                            okText="Да"
-                            cancelText="Нет"
-                            onConfirm={() => startEdit(index, text)}
-                        >
-                            <EditOutlined
-                                style={{cursor: "pointer", color: "blue"}}
-                            />
-                        </Popconfirm>
+                        <EditOutlined
+                            style={{cursor: "pointer", color: "blue"}}
+                            onClick={() => startEdit(index, text)}
+                        />
 
                         <Popconfirm
                             title="Удалить категорию? Это небезопасно"
@@ -399,6 +390,7 @@ const InfoTable = ({featureId, info}) => {
                             onClick={() => addInnerRow(record.category)}
                         />
                     </div>
+
                 );
             }
         },
