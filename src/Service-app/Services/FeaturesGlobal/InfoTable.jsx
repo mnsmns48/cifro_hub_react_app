@@ -264,6 +264,7 @@ const InfoTable = ({featureId, info}) => {
 
                 return isEditing ? (
                     <Input
+                        size="small"
                         value={editingInner.value}
                         onChange={(e) =>
                             setEditingInner(prev => ({...prev, value: e.target.value}))
@@ -338,33 +339,52 @@ const InfoTable = ({featureId, info}) => {
 
     const mainColumns = [
         {
+            title: "Категория",
             dataIndex: "category",
             key: "category",
-            width: 250,
+            width: "28%",
+            align: "center",
             render: (text, record) => {
                 const index = record.key;
 
                 return (
-                    <div style={{display: "flex", alignItems: "center", justifyContent: "center", gap: 8}}>
+                    <div>
+                        {editingCategory === index ? (
+                            <Input
+                                size="small"
+                                value={editValue}
+                                autoFocus
+                                onChange={(e) => setEditValue(e.target.value)}
+                                onPressEnter={() => saveEditCategory(index)}
+                                onBlur={() => saveEditCategory(index)}
+                            />
+                        ) : (
+                            <span>{text}</span>
+                        )}
+                    </div>
+                );
+            }
+        },
+        {
+            title: "Действия",
+            key: "actions",
+            width: "5%",
+            render: (_, record) => {
+                const index = record.key;
 
-                        <div style={fadeStyle}>
-                            {editingCategory === index ? (
-                                <Input
-                                    value={editValue}
-                                    autoFocus
-                                    onChange={(e) => setEditValue(e.target.value)}
-                                    onPressEnter={() => saveEditCategory(index)}
-                                    onBlur={() => saveEditCategory(index)}
-                                    style={{width: "100%"}}
-                                />
-                            ) : (
-                                <span>{text}</span>
-                            )}
-                        </div>
-
+                return (
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 8
+                        }}
+                    >
                         <EditOutlined
-                            style={{cursor: "pointer", color: "blue"}}
-                            onClick={() => startEdit(index, text)}
+                            style={{cursor: "pointer", color: "#8F8F8FEA"}}
+                            onClick={() => startEdit(index, record.category)}
                         />
 
                         <Popconfirm
@@ -372,25 +392,21 @@ const InfoTable = ({featureId, info}) => {
                             description="Это действие необратимо"
                             okText="Удалить"
                             cancelText="Отмена"
-                            onConfirm={() => deleteCategory(text)}
+                            onConfirm={() => deleteCategory(record.category)}
                         >
                             <DeleteOutlined
-                                style={{cursor: "pointer", color: "red"}}
+                                style={{cursor: "pointer", color: "#8F8F8FEA"}}
                             />
                         </Popconfirm>
 
                         <AppstoreAddOutlined
                             style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 6,
                                 cursor: "pointer",
-                                color: "#00804BEA"
+                                color: "#8F8F8FEA"
                             }}
                             onClick={() => addInnerRow(record.category)}
                         />
                     </div>
-
                 );
             }
         },
