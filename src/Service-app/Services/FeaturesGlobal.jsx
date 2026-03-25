@@ -1,9 +1,10 @@
 import {useEffect, useState} from "react";
-import {Button, Modal, Table} from "antd";
+import {Button, Modal, Popconfirm, Table} from "antd";
 import {fetchGetData, fetchPostData} from "./SchemeAttributes/api.js";
 import {featuresColumns} from "./FeaturesGlobal/FeaturesColumns.jsx";
 import './FeaturesGlobal/FeaturesGlobal.css'
 import FeaturesComponent from "./FeaturesGlobal/FeaturesComponent.jsx";
+import axios from "axios";
 
 const buildFilters = (data) => {
     const typeSet = new Map();
@@ -108,6 +109,28 @@ const FeaturesGlobal = () => {
     };
 
 
+    const deleteFeatures = async () => {
+        try {
+            const response = await axios.post(
+                "/service/features/delete_features",
+                {
+                    feature_ids: selectedRowKeys
+                }
+            );
+
+            if (!response.data || !response.data.ids) return;
+
+            setData(prev =>
+                prev.filter(item => !response.data.ids.includes(item.id))
+            );
+
+            setSelectedRowKeys([]);
+        } catch (error) {
+            console.error("Ошибка при удалении:", error);
+        }
+    };
+
+
     const columns = featuresColumns(
         typeFilters,
         brandFilters,
@@ -122,12 +145,28 @@ const FeaturesGlobal = () => {
     return (
         <>
             {selectedRowKeys.length > 0 && (
-                <div style={{marginBottom: 12}}>
+                <div style={{marginBottom: 12, display: "flex", gap: 8}}>
                     <Button type="primary" onClick={openHubPathModal}>
                         Установить папку выгрузки Hub Path
                     </Button>
+
+                    <Popconfirm
+                        title="Удалить зависимость?"
+                        description="Это действие необратимо и может повлиять на структуру данных.
+                        Сломается атрибутика, связи с папкой хабом. Перед тем как удалить, подумай ещё 10 раз!"
+                        okText="Удалить"
+                        cancelText="Отмена"
+                        okButtonProps={{ danger: true }}
+                        onConfirm={deleteFeatures}
+                    >
+                        <Button danger>
+                            Удалить зависимость
+                        </Button>
+                    </Popconfirm>
+
                 </div>
             )}
+
 
             <Table rowKey="id"
                    className="compact-table"
