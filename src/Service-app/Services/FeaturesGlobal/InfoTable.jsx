@@ -1,6 +1,11 @@
 import {Table, Input, Button, Popconfirm} from "antd";
 import {useState} from "react";
-import {EditOutlined, DeleteOutlined, PlusOutlined} from "@ant-design/icons";
+import {
+    EditOutlined,
+    DeleteOutlined,
+    CloseOutlined,
+    DashOutlined, AppstoreAddOutlined, HddOutlined, CheckOutlined
+} from "@ant-design/icons";
 import {fetchPostData} from "../SchemeAttributes/api.js";
 import './FeaturesGlobal.css'
 
@@ -8,6 +13,7 @@ const InfoTable = ({featureId, info}) => {
     const [data, setData] = useState(info);
     const [editingCategory, setEditingCategory] = useState(null);
     const [editValue, setEditValue] = useState("");
+    const [editingInner, setEditingInner] = useState(null);
 
 
     const startEdit = (index, currentName) => {
@@ -101,7 +107,8 @@ const InfoTable = ({featureId, info}) => {
         const innerData = Object.entries(values).map(([k, v], i) => ({
             key: i,
             param: k,
-            value: v
+            value: v,
+            category
         }));
 
         return {
@@ -111,12 +118,212 @@ const InfoTable = ({featureId, info}) => {
         };
     });
 
+    const addInnerRow = (categoryTitle) => {
+        setData(prevData => {
+            return prevData.map(block => {
+                const key = Object.keys(block)[0];
+
+                if (key !== categoryTitle) return block;
+
+                const updated = {
+                    ...block[key],
+                    "": ""
+                };
+
+                const newKey = Object.keys(updated).length - 1;
+
+                setEditingInner({
+                    category: categoryTitle,
+                    key: newKey,
+                    param: "",
+                    value: ""
+                });
+
+                return {[key]: updated};
+            });
+        });
+    };
+
+    const saveInnerRow = async () => {
+        if (!editingInner) return;
+        const { category, param, value } = editingInner;
+        const trimmedParam = param.trim();
+        const trimmedValue = value.trim();
+
+        if (!trimmedParam || !trimmedValue) {
+            console.warn("Param и Value должны быть заполнены");
+            return;
+        }
+
+        const categoryBlock = data.find(block => Object.keys(block)[0] === category);
+        const categoryData = categoryBlock ? categoryBlock[category] : {};
+        const existingParams = Object.keys(categoryData);
+
+        if (existingParams.includes(trimmedParam)) {
+            console.warn("Такой param уже существует в этой категории");
+            return;
+        }
+
+        const result = await fetchPostData(
+            "service/features/add_new_inner_row",
+            {
+                id: featureId,
+                category_title: category,
+                new_param: trimmedParam,
+                new_value: trimmedValue
+            }
+        );
+
+        if (!result) {
+            console.error("Ошибка при сохранении строки");
+            return;
+        }
+
+        if (result.status === "created") {
+            setData(result.info);
+        }
+
+        setEditingInner(null);
+    };
+
+
+    const cancelInnerEdit = () => {
+        if (!editingInner) return;
+
+        const { category, key, param, value } = editingInner;
+        const isNewRow = param.trim() === "" && value.trim() === "";
+
+        if (isNewRow) {
+            setData(prevData =>
+                prevData.map(block => {
+                    const blockKey = Object.keys(block)[0];
+                    if (blockKey !== category) return block;
+
+                    const entries = Object.entries(block[blockKey]);
+                    const updatedEntries = entries.filter((_, idx) => idx !== key);
+                    const updatedObj = Object.fromEntries(updatedEntries);
+                    return { [blockKey]: updatedObj };
+                })
+            );
+        }
+
+        setEditingInner(null);
+    };
+
+
+
     const innerColumns = [
-        {dataIndex: "param", key: "param", width: "40%"},
-        {dataIndex: "value", key: "value"}
+        {
+            dataIndex: "param",
+            key: "param",
+            width: "40%",
+            render: (text, record, rowIndex) => {
+                const isEditing =
+                    editingInner &&
+                    editingInner.category === record.category &&
+                    editingInner.key === rowIndex;
+
+                return isEditing ? (
+                    <Input
+                        value={editingInner.param}
+                        autoFocus
+                        onChange={(e) =>
+                            setEditingInner(prev => ({ ...prev, param: e.target.value }))
+                        }
+                        onPressEnter={saveInnerRow}
+                    />
+                ) : (
+                    text
+                );
+            }
+        },
+        {
+            dataIndex: "value",
+            key: "value",
+            render: (text, record, rowIndex) => {
+                const isEditing =
+                    editingInner &&
+                    editingInner.category === record.category &&
+                    editingInner.key === rowIndex;
+
+                return isEditing ? (
+                    <Input
+                        value={editingInner.value}
+                        onChange={(e) =>
+                            setEditingInner(prev => ({ ...prev, value: e.target.value }))
+                        }
+                        onPressEnter={saveInnerRow}
+                    />
+                ) : (
+                    text
+                );
+            }
+        }
+        ,
+        {
+            key: "actions",
+            width: 50,
+            align: "center",
+            render: (_, record, rowIndex) => {
+                const isEditing =
+                    editingInner &&
+                    editingInner.category === record.category &&
+                    editingInner.key === rowIndex;
+
+                if (isEditing) {
+                    // 🔥 показываем кнопку "Сохранить"
+                    return (
+                        <div style={{display: "flex", gap: 8, justifyContent: "center"}}>
+                            <CheckOutlined
+                                onClick={saveInnerRow}
+                                style={{color: "green", cursor: "pointer"}}
+                            />
+
+                            <CloseOutlined
+                                onClick={cancelInnerEdit}
+                                style={{color: "red", cursor: "pointer"}}
+                            />
+                        </div>
+
+                    );
+                }
+
+
+                return (
+                    <div style={{display: "flex", gap: 6, justifyContent: "center"}}>
+                        <Popconfirm
+                            title="Редактировать параметр?"
+                            okText="Да"
+                            cancelText="Нет"
+                            // onConfirm={() => {
+                            //     setEditingInner({
+                            //         category: record.category,
+                            //         key: rowIndex,
+                            //         param: record.param,
+                            //         value: record.value
+                            //     });
+                            // }}
+                        >
+                            <DashOutlined style={{ cursor: "pointer" }} />
+                        </Popconfirm>
+
+                        <Popconfirm
+                            title="Удалить параметр?"
+                            okText="Удалить"
+                            cancelText="Отмена"
+                            // onConfirm={() => deleteInnerRow(record.category, record.param)}
+                        >
+                            <CloseOutlined style={{ cursor: "pointer", color: "red" }} />
+                        </Popconfirm>
+                    </div>
+                );
+            }
+        }
+
     ];
 
-    const columns = [
+
+    const mainColumns = [
         {
             dataIndex: "category",
             key: "category",
@@ -163,6 +370,10 @@ const InfoTable = ({featureId, info}) => {
                             />
                         </Popconfirm>
 
+                        <AppstoreAddOutlined
+                            style={{display: "flex", alignItems: "center", gap: 6, cursor: "pointer", color: "#00804BEA"}}
+                            onClick={() => addInnerRow(record.category)}
+                        />
                     </div>
                 );
             }
@@ -170,8 +381,10 @@ const InfoTable = ({featureId, info}) => {
         {
             dataIndex: "details",
             key: "details",
+            className: "gray-table-background",
             render: (details) => (
                 <Table
+                    className="compact-table"
                     dataSource={details}
                     columns={innerColumns}
                     showHeader={false}
@@ -180,22 +393,22 @@ const InfoTable = ({featureId, info}) => {
                 />
             )
         }
+
     ];
 
     return (
         <div>
             <Table
-                className="compact-table"
                 showHeader={false}
                 dataSource={tableData}
-                columns={columns}
+                columns={mainColumns}
                 pagination={false}
                 size="small"
                 bordered
             />
             <Button
-                icon={<PlusOutlined/>}
-                style={{marginTop: 10}}
+                icon={<HddOutlined />}
+                className="add-category-button"
                 onClick={addCategory}
             >
                 Добавить категорию

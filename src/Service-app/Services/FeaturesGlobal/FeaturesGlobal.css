@@ -9,9 +9,28 @@
 
 .compact-table .ant-table {
     font-size: 0.7rem !important;
+    background: #f8f8fc;
+    margin-inline: 0 !important;
 
 }
 
 .compact-table .ant-table-cell {
-    padding: 0.35em 0.15em !important;
+    padding: 0.25em 0.15em !important;
+    background: #f8f8fc;
+}
+
+.gray-table-background {
+    background: #f8f8fc;
+}
+
+.add-category-button {
+    margin-top: 10px;
+    background: #00804BEA;
+    color: white;
+}
+
+.add-category-button:hover {
+    border: 1px solid transparent !important;
+    background: #00804BEA !important;
+    color: white !important;
 }

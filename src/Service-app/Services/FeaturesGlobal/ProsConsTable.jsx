@@ -1,6 +1,6 @@
 import {Table, Button, Modal, Input, Popconfirm} from "antd";
 import {useState, useEffect} from "react";
-import {DiffOutlined} from "@ant-design/icons";
+import {FileAddOutlined} from "@ant-design/icons";
 import {fetchPostData} from "../SchemeAttributes/api.js";
 
 const ProsConsTable = ({prosCons, featureId}) => {
@@ -133,11 +133,11 @@ const ProsConsTable = ({prosCons, featureId}) => {
 
                         </div>
                     ))}
-                    <DiffOutlined
+                    <FileAddOutlined
                         onClick={() => startAdd(record.key, "advantage")}
                         style={{
                             fontSize: 25,
-                            color: "#52c41a",
+                            color: "#00804BEA",
                             cursor: "pointer",
                             display: "flex",
                             justifyContent: "center"
@@ -183,7 +183,7 @@ const ProsConsTable = ({prosCons, featureId}) => {
                         </div>
                     ))}
 
-                    <DiffOutlined
+                    <FileAddOutlined
                         onClick={() => startAdd(record.key, "disadvantage")}
                         style={{
                             fontSize: 25,
