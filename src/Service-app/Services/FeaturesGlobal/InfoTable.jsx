@@ -146,7 +146,7 @@ const InfoTable = ({featureId, info}) => {
 
     const saveInnerRow = async () => {
         if (!editingInner) return;
-        const { category, param, value } = editingInner;
+        const {category, param, value} = editingInner;
         const trimmedParam = param.trim();
         const trimmedValue = value.trim();
 
@@ -190,7 +190,7 @@ const InfoTable = ({featureId, info}) => {
     const cancelInnerEdit = () => {
         if (!editingInner) return;
 
-        const { category, key, param, value } = editingInner;
+        const {category, key, param, value} = editingInner;
         const isNewRow = param.trim() === "" && value.trim() === "";
 
         if (isNewRow) {
@@ -202,7 +202,7 @@ const InfoTable = ({featureId, info}) => {
                     const entries = Object.entries(block[blockKey]);
                     const updatedEntries = entries.filter((_, idx) => idx !== key);
                     const updatedObj = Object.fromEntries(updatedEntries);
-                    return { [blockKey]: updatedObj };
+                    return {[blockKey]: updatedObj};
                 })
             );
         }
@@ -210,6 +210,25 @@ const InfoTable = ({featureId, info}) => {
         setEditingInner(null);
     };
 
+
+    const deleteInnerRow = async (category, param) => {
+        const result = await fetchPostData(
+            "service/features/delete_inner_row",
+            {
+                id: featureId,
+                category_title: category,
+                new_param: param,
+                new_value: ""
+            }
+        );
+
+        if (!result || result.status !== "deleted") {
+            console.error("Ошибка при удалении параметра");
+            return;
+        }
+
+        setData(result.info);
+    };
 
 
     const innerColumns = [
@@ -228,7 +247,7 @@ const InfoTable = ({featureId, info}) => {
                         value={editingInner.param}
                         autoFocus
                         onChange={(e) =>
-                            setEditingInner(prev => ({ ...prev, param: e.target.value }))
+                            setEditingInner(prev => ({...prev, param: e.target.value}))
                         }
                         onPressEnter={saveInnerRow}
                     />
@@ -250,7 +269,7 @@ const InfoTable = ({featureId, info}) => {
                     <Input
                         value={editingInner.value}
                         onChange={(e) =>
-                            setEditingInner(prev => ({ ...prev, value: e.target.value }))
+                            setEditingInner(prev => ({...prev, value: e.target.value}))
                         }
                         onPressEnter={saveInnerRow}
                     />
@@ -271,7 +290,6 @@ const InfoTable = ({featureId, info}) => {
                     editingInner.key === rowIndex;
 
                 if (isEditing) {
-                    // 🔥 показываем кнопку "Сохранить"
                     return (
                         <div style={{display: "flex", gap: 8, justifyContent: "center"}}>
                             <CheckOutlined
@@ -304,16 +322,16 @@ const InfoTable = ({featureId, info}) => {
                             //     });
                             // }}
                         >
-                            <DashOutlined style={{ cursor: "pointer" }} />
+                            <DashOutlined style={{cursor: "pointer"}}/>
                         </Popconfirm>
 
                         <Popconfirm
                             title="Удалить параметр?"
                             okText="Удалить"
                             cancelText="Отмена"
-                            // onConfirm={() => deleteInnerRow(record.category, record.param)}
+                            onConfirm={() => deleteInnerRow(record.category, record.param)}
                         >
-                            <CloseOutlined style={{ cursor: "pointer", color: "red" }} />
+                            <CloseOutlined style={{cursor: "pointer", color: "red"}}/>
                         </Popconfirm>
                     </div>
                 );
@@ -371,7 +389,13 @@ const InfoTable = ({featureId, info}) => {
                         </Popconfirm>
 
                         <AppstoreAddOutlined
-                            style={{display: "flex", alignItems: "center", gap: 6, cursor: "pointer", color: "#00804BEA"}}
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 6,
+                                cursor: "pointer",
+                                color: "#00804BEA"
+                            }}
                             onClick={() => addInnerRow(record.category)}
                         />
                     </div>
@@ -407,7 +431,7 @@ const InfoTable = ({featureId, info}) => {
                 bordered
             />
             <Button
-                icon={<HddOutlined />}
+                icon={<HddOutlined/>}
                 className="add-category-button"
                 onClick={addCategory}
             >
