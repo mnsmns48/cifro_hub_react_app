@@ -5,6 +5,7 @@ import {featuresColumns} from "./FeaturesGlobal/FeaturesColumns.jsx";
 import './FeaturesGlobal/FeaturesGlobal.css'
 import FeaturesComponent from "./FeaturesGlobal/FeaturesComponent.jsx";
 import axios from "axios";
+import FeaturesAddNew from "./FeaturesGlobal/FeaturesAddNew.jsx";
 
 const buildFilters = (data) => {
     const typeSet = new Map();
@@ -37,10 +38,11 @@ const FeaturesGlobal = () => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [search, setSearch] = useState("");
     const [onlyNoLevel, setOnlyNoLevel] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isHubLevelModalOpen, setIsHubLevelModalOpen] = useState(false);
     const [routes, setRoutes] = useState([]);
     const [featureData, setFeatureData] = useState(null);
     const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
+    const [isNewFeaturesProductModalOpen, setIsNewFeaturesProductModalOpen] = useState(false);
 
 
     useEffect(() => {
@@ -55,7 +57,7 @@ const FeaturesGlobal = () => {
     const openHubPathModal = async () => {
         const response = await fetchGetData("service/features/hub_level_routes");
         setRoutes(response.routes || []);
-        setIsModalOpen(true);
+        setIsHubLevelModalOpen(true);
     };
 
 
@@ -87,7 +89,7 @@ const FeaturesGlobal = () => {
             )
         );
 
-        setIsModalOpen(false);
+        setIsHubLevelModalOpen(false);
         setSelectedRowKeys([]);
     };
 
@@ -130,6 +132,17 @@ const FeaturesGlobal = () => {
         }
     };
 
+    const newFeaturesProductClick = () => {
+        setIsNewFeaturesProductModalOpen(true)
+    }
+
+    const handleFeatureCreated = async (newFeature) => {
+        setData(prev => [...prev, newFeature]);
+        const full = await fetchGetData(`service/features/get_features_by_feature_id/${newFeature.id}`);
+        setFeatureData(full);
+        setIsFeatureModalOpen(true);
+    };
+
 
     const columns = featuresColumns(
         typeFilters,
@@ -144,9 +157,14 @@ const FeaturesGlobal = () => {
 
     return (
         <>
+            {selectedRowKeys.length === 0 && (
+                <Button size="small" style={{marginBottom: 12, display: "flex", gap: 8}} type="primary"
+                        onClick={newFeaturesProductClick}>Новый
+                    продукт</Button>)
+            }
             {selectedRowKeys.length > 0 && (
                 <div style={{marginBottom: 12, display: "flex", gap: 8}}>
-                    <Button type="primary" onClick={openHubPathModal}>
+                    <Button type="primary" onClick={openHubPathModal} size="small">
                         Установить папку выгрузки Hub Path
                     </Button>
 
@@ -156,10 +174,10 @@ const FeaturesGlobal = () => {
                         Сломается атрибутика, связи с папкой хабом. Перед тем как удалить, подумай ещё 10 раз!"
                         okText="Удалить"
                         cancelText="Отмена"
-                        okButtonProps={{ danger: true }}
+                        okButtonProps={{danger: true}}
                         onConfirm={deleteFeatures}
                     >
-                        <Button danger>
+                        <Button danger size="small">
                             Удалить зависимость
                         </Button>
                     </Popconfirm>
@@ -178,8 +196,8 @@ const FeaturesGlobal = () => {
                    rowClassName={(record) => (!record.hub_level ? "no-level-row" : "")}
             />
             <Modal width={450}
-                   open={isModalOpen}
-                   onCancel={() => setIsModalOpen(false)}
+                   open={isHubLevelModalOpen}
+                   onCancel={() => setIsHubLevelModalOpen(false)}
                    footer={null}>
                 {routes.map((routeObj, idx) => {
                     const steps = routeObj.rotes.slice(1);
@@ -188,15 +206,13 @@ const FeaturesGlobal = () => {
                     const hubLevel = last.path_id;
                     const label = last.label;
                     return (
-                        <Button key={idx}
-                                type="default"
-                                style={{
-                                    width: "100%",
-                                    display: "flex",
-                                    justifyContent: "flex-start",
-                                    textAlign: "left",
-                                    marginBottom: 8
-                                }}
+                        <Button key={idx} type="default" style={{
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "flex-start",
+                            textAlign: "left",
+                            marginBottom: 8
+                        }}
                                 onClick={() => applyRouteToSelected(hubLevel, label)}
                         >
                             {pretty}
@@ -205,13 +221,14 @@ const FeaturesGlobal = () => {
                 })}
             </Modal>
 
-            <FeaturesComponent open={isFeatureModalOpen}
-                               onClose={() => setIsFeatureModalOpen(false)}
-                               data={featureData}
-
+            <FeaturesAddNew
+                open={isNewFeaturesProductModalOpen}
+                onClose={() => setIsNewFeaturesProductModalOpen(false)}
+                onCreated={handleFeatureCreated}
             />
 
-
+            <FeaturesComponent
+                open={isFeatureModalOpen} onClose={() => setIsFeatureModalOpen(false)} data={featureData}/>
         </>
     );
 };
