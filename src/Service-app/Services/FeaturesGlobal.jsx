@@ -20,34 +20,36 @@ const buildFilters = (data) => {
         typeFilters: Array.from(typeSet, ([value, text]) => ({text, value})),
         brandFilters: Array.from(brandSet, ([value, text]) => ({text, value})),
     };
-}
+};
+
 
 const filterData = (data, search) => {
     if (!search) return data;
 
     const s = search.toLowerCase();
 
-    return data.filter(item =>
-        item.title.toLowerCase().includes(s)
-    );
+    return data.filter(item => item.title.toLowerCase().includes(s));
 }
 
 
 const FeaturesGlobal = () => {
     const [data, setData] = useState([]);
+    const [isNewFeaturesProductModalOpen, setIsNewFeaturesProductModalOpen] = useState(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [search, setSearch] = useState("");
     const [onlyNoLevel, setOnlyNoLevel] = useState(false);
+    const [onlyNoFormula, setOnlyNoFormula] = useState(false);
     const [isHubLevelModalOpen, setIsHubLevelModalOpen] = useState(false);
     const [routes, setRoutes] = useState([]);
     const [featureData, setFeatureData] = useState(null);
     const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
-    const [isNewFeaturesProductModalOpen, setIsNewFeaturesProductModalOpen] = useState(false);
+    const [formulas, setFormulas] = useState([]);
+    const [isFormulaModalOpen, setIsFormulaModalOpen] = useState(false);
 
 
     useEffect(() => {
         async function load() {
-            const response = await fetchGetData("service/features/features_hub_level_link_fetch");
+            const response = await fetchGetData("service/features/product_features_depps");
             setData(response.features || []);
         }
 
@@ -60,34 +62,26 @@ const FeaturesGlobal = () => {
         setIsHubLevelModalOpen(true);
     };
 
+    const openFormulaModal = async () => {
+        const response = await fetchGetData("service/formula-expression/");
+        setFormulas(response || []);
+        setIsFormulaModalOpen(true);
+    }
 
     const applyRouteToSelected = async (hubLevel, label) => {
         const payload = {
-            feature_ids: selectedRowKeys,
-            hub_level_id: hubLevel,
-            label: label
+            feature_ids: selectedRowKeys, hub_level_id: hubLevel, label: label
         };
 
-        const response = await fetchPostData(
-            "service/features/set_level_routes",
-            payload
-        );
+        const response = await fetchPostData("service/features/set_level_routes", payload);
 
         if (!response || !response.updated) return;
 
-        setData(prev =>
-            prev.map(item =>
-                response.updated[item.id]
-                    ? {
-                        ...item,
-                        hub_level: {
-                            path_id: response.updated[item.id].path_id,
-                            label: response.updated[item.id].label
-                        }
-                    }
-                    : item
-            )
-        );
+        setData(prev => prev.map(item => response.updated[item.id] ? {
+            ...item, hub_level: {
+                path_id: response.updated[item.id].path_id, label: response.updated[item.id].label
+            }
+        } : item));
 
         setIsHubLevelModalOpen(false);
         setSelectedRowKeys([]);
@@ -95,13 +89,21 @@ const FeaturesGlobal = () => {
 
 
     const noLevelCount = data.filter(item => !item.hub_level).length;
+    const noFormulaCount = data.filter(item => !item.formula).length;
 
-    const filteredData = filterData(
+
+    let filteredData = filterData(
         onlyNoLevel ? data.filter(item => !item.hub_level) : data,
         search
     );
 
+    if (onlyNoFormula) {
+        filteredData = filteredData.filter(item => !item.formula);
+    }
+
+
     const {typeFilters, brandFilters} = buildFilters(data);
+
     const rowSelection = {selectedRowKeys, onChange: (keys) => setSelectedRowKeys(keys),};
 
     const descriptionClick = async (record) => {
@@ -113,18 +115,13 @@ const FeaturesGlobal = () => {
 
     const deleteFeatures = async () => {
         try {
-            const response = await axios.post(
-                "/service/features/delete_features",
-                {
-                    feature_ids: selectedRowKeys
-                }
-            );
+            const response = await axios.post("/service/features/delete_features", {
+                feature_ids: selectedRowKeys
+            });
 
             if (!response.data || !response.data.ids) return;
 
-            setData(prev =>
-                prev.filter(item => !response.data.ids.includes(item.id))
-            );
+            setData(prev => prev.filter(item => !response.data.ids.includes(item.id)));
 
             setSelectedRowKeys([]);
         } catch (error) {
@@ -152,16 +149,19 @@ const FeaturesGlobal = () => {
         noLevelCount,
         onlyNoLevel,
         setOnlyNoLevel,
-        descriptionClick
+        descriptionClick,
+        noFormulaCount,
+        onlyNoFormula,
+        setOnlyNoFormula
     );
+
 
     return (
         <>
             {selectedRowKeys.length === 0 && (
                 <Button size="small" style={{marginBottom: 12, display: "flex", gap: 8}} type="primary"
                         onClick={newFeaturesProductClick}>Новый
-                    продукт</Button>)
-            }
+                    продукт</Button>)}
             {selectedRowKeys.length > 0 && (
                 <div style={{marginBottom: 12, display: "flex", gap: 8}}>
                     <Button type="primary" onClick={openHubPathModal} size="small">
@@ -177,13 +177,11 @@ const FeaturesGlobal = () => {
                         okButtonProps={{danger: true}}
                         onConfirm={deleteFeatures}
                     >
-                        <Button danger size="small">
-                            Удалить зависимость
-                        </Button>
-                    </Popconfirm>
+                        <Button danger size="small">Удалить зависимость</Button>
 
-                </div>
-            )}
+                    </Popconfirm>
+                    <Button size="small" onClick={openFormulaModal}>Формула</Button>
+                </div>)}
 
 
             <Table rowKey="id"
@@ -195,31 +193,67 @@ const FeaturesGlobal = () => {
                    size={"small"}
                    rowClassName={(record) => (!record.hub_level ? "no-level-row" : "")}
             />
-            <Modal width={450}
-                   open={isHubLevelModalOpen}
-                   onCancel={() => setIsHubLevelModalOpen(false)}
-                   footer={null}>
-                {routes.map((routeObj, idx) => {
-                    const steps = routeObj.rotes.slice(1);
-                    const pretty = steps.map(s => s.label).join(" → ");
-                    const last = routeObj.rotes.at(-1);
-                    const hubLevel = last.path_id;
-                    const label = last.label;
-                    return (
-                        <Button key={idx} type="default" style={{
-                            width: "100%",
-                            display: "flex",
-                            justifyContent: "flex-start",
-                            textAlign: "left",
-                            marginBottom: 8
-                        }}
+            <Modal
+                width={450}
+                open={isHubLevelModalOpen}
+                onCancel={() => setIsHubLevelModalOpen(false)}
+                footer={null}
+            >
+                <div style={{paddingTop: 25}}>
+                    {routes.map((routeObj, idx) => {
+                        const steps = routeObj.rotes.slice(1);
+                        const pretty = steps.map(s => s.label).join(" → ");
+                        const last = routeObj.rotes.at(-1);
+                        const hubLevel = last.path_id;
+                        const label = last.label;
+
+                        return (
+                            <Button
+                                key={idx}
+                                type="default"
                                 onClick={() => applyRouteToSelected(hubLevel, label)}
-                        >
-                            {pretty}
-                        </Button>
-                    );
-                })}
+                                style={{
+                                    width: "100%",
+                                    display: "flex",
+                                    justifyContent: "flex-start",
+                                    textAlign: "left",
+                                    marginBottom: 8,
+                                }}
+                            >
+                                {pretty}
+                            </Button>
+                        );
+                    })}
+                </div>
             </Modal>
+
+
+            <Modal
+                width={650}
+                open={isFormulaModalOpen}
+                onCancel={() => setIsFormulaModalOpen(false)}
+                footer={null}
+            >
+                <div style={{paddingTop: 25}}>
+                    {formulas.map((f) => (
+                        <Button
+                            key={f.id}
+                            type="default"
+                            // onClick={() => applyFormulaToSelected(f.id)}
+                            style={{
+                                width: "100%",
+                                display: "flex",
+                                justifyContent: "flex-start",
+                                textAlign: "left",
+                                marginBottom: 8,
+                            }}
+                        >
+                            {f.name}
+                        </Button>
+                    ))}
+                </div>
+            </Modal>
+
 
             <FeaturesAddNew
                 open={isNewFeaturesProductModalOpen}
