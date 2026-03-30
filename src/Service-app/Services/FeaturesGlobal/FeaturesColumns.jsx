@@ -32,8 +32,7 @@ export const featuresColumns = (
     },
     {
         title: () => (
-            <Input placeholder="Поиск по названию"
-                   value={search}
+            <Input value={search}
                    onChange={(e) => setSearch(e.target.value)}
                    allowClear
                    size="small"

@@ -140,6 +140,41 @@ const FeaturesGlobal = () => {
         setIsFeatureModalOpen(true);
     };
 
+    const applyFormulaToSelected = async (formulaId) => {
+        const formula = formulas.find(f => f.id === formulaId);
+        if (!formula) return;
+
+        const payload = {
+            feature_ids: selectedRowKeys,
+            formula_id: formulaId,
+            formula_name: formula.name
+        };
+
+        const response = await fetchPostData(
+            "service/features/set_formula_dependency",
+            payload
+        );
+
+        if (!response || !response.updated) return;
+
+        setData(prev =>
+            prev.map(item =>
+                response.updated[item.id]
+                    ? {
+                        ...item,
+                        formula: {
+                            id: response.updated[item.id].id,
+                            name: response.updated[item.id].name
+                        }
+                    }
+                    : item
+            )
+        );
+
+        setIsFormulaModalOpen(false);
+        setSelectedRowKeys([]);
+    };
+
 
     const columns = featuresColumns(
         typeFilters,
@@ -239,7 +274,7 @@ const FeaturesGlobal = () => {
                         <Button
                             key={f.id}
                             type="default"
-                            // onClick={() => applyFormulaToSelected(f.id)}
+                            onClick={() => applyFormulaToSelected(f.id)}
                             style={{
                                 width: "100%",
                                 display: "flex",

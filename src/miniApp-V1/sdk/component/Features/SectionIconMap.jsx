@@ -11,7 +11,6 @@ import {
     ThunderboltOutlined,
     StarOutlined,
     HolderOutlined,
-    ClockCircleOutlined,
     EyeOutlined,
     DashboardOutlined
 } from '@ant-design/icons'
