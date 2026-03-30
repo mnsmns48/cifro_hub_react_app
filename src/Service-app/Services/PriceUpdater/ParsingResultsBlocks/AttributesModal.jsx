@@ -1,6 +1,6 @@
 import {useEffect, useState, useCallback} from "react";
 import {fetchGetData, fetchPostData} from "../../SchemeAttributes/api.js";
-import {Button, Col, Modal, Radio, Row, Select, message, Input, Spin, Popconfirm} from "antd";
+import {Button, Col, Modal, Radio, Row, Select, message, Input, Spin, Popconfirm, Dropdown} from "antd";
 import {FileImageOutlined, LoadingOutlined, SaveOutlined} from "@ant-design/icons";
 import AttributesImageContainer from "./AttributeImageConteiner.jsx";
 import MultiUploadDropzone from "./MultiUploadDropzone.jsx";
@@ -10,7 +10,6 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     const [loading, setLoading] = useState(false);
     const [allowable, setAllowable] = useState([]);
     const [exists, setExists] = useState([]);
-    const [formulas, setFormulas] = useState([]);
     const [selectedFormula, setSelectedFormula] = useState(null);
     const [generatedName, setGeneratedName] = useState("");
     const [showImages, setShowImages] = useState(false);
@@ -18,6 +17,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     const [selectedDependencyOrigin, setSelectedDependencyOrigin] = useState(null);
     const [popConfirmOpen, setPopConfirmOpen] = useState(false);
     const [haveImages, setHaveImages] = useState(false);
+    const [formulas, setFormulas] = useState([]);
 
 
     const loadAttributes = useCallback(async () => {
@@ -25,31 +25,28 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
 
         setLoading(true);
 
-        const result = await fetchPostData("service/attributes/attributes_origin_value_check_request", {
-            origin: data.origin, model_id: data.model_id, title: data.title
-        });
-
+        const result = await fetchPostData("service/attributes/attributes_origin_value_check_request",
+            {
+                origin: data.origin,
+                model_id: data.model_id,
+                title: data.title
+            });
         setAllowable(result?.attributes_allowable ?? []);
         setExists(result?.attributes_exists ?? []);
         setHaveImages(result?.have_images ?? false);
         if (result?.have_images) {
-            setShowImages(true);
+            setShowImages(true)
         }
-
+        setSelectedFormula(result?.formula ?? null)
         setLoading(false);
     }, [data]);
 
-
-    const loadFormulas = useCallback(async () => {
-        const result = await fetchGetData("/service/formula-expression/");
-        setFormulas(result ?? []);
-
-        const defaultFormula = result?.find(f => f.is_default);
-        if (defaultFormula) {
-            setSelectedFormula(defaultFormula.id);
+    useEffect(() => {
+        if (open) {
+            void loadAttributes();
+            setSelectedDependencyOrigin(null);
         }
-    }, []);
-
+    }, [open, loadAttributes]);
 
     const loadDependencyList = async () => {
         if (!data?.origin) return;
@@ -86,30 +83,8 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
         });
     }, [allowable, open]);
 
-    useEffect(() => {
-        if (!open) {
-            setAllowable([]);
-            setExists([]);
-            setFormulas([]);
-            setSelectedFormula(null);
-            setGeneratedName("");
-            setShowImages(false);
-        }
-    }, [open]);
-
-
-    useEffect(() => {
-        if (open) {
-            void loadAttributes();
-            void loadFormulas();
-            setSelectedDependencyOrigin(null);
-        }
-    }, [open, loadAttributes, loadFormulas]);
-
 
     const renderFormulaName = useCallback(async () => {
-        const formulaObj = formulas.find(f => f.id === selectedFormula);
-        if (!formulaObj) return;
 
         const context = {
             model: data?.features_title?.[0] ?? "",
@@ -123,9 +98,8 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                 value: v.value
             };
         });
-
         const result = await fetchPostData(
-            `/service/formula-expression/${selectedFormula}/preview`,
+            `/service/formula-expression/${selectedFormula.id}/preview`,
             {context}
         );
 
@@ -141,7 +115,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
         if (value) {
             setGeneratedName(value);
         }
-    }, [formulas, selectedFormula, exists, data]);
+    }, [selectedFormula, exists, data]);
 
 
     useEffect(() => {
@@ -153,14 +127,13 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     }, [open, selectedFormula, exists, allowable, renderFormulaName]);
 
 
-    const handleFormulaChange = useCallback(async (formulaId) => {
-        setSelectedFormula(formulaId);
+    const handleDropdownOpen = async (open) => {
+        if (!open) return;
+        if (formulas.length > 0) return;
 
-        await fetchPostData(`/service/formula-expression/is_default?formula_id=${formulaId}`);
-
-        setFormulas(prev => prev.map(f => f.id === formulaId ? {...f, is_default: true} : {...f, is_default: false}));
-    }, []);
-
+        const result = await fetchGetData("/service/formula-expression/");
+        setFormulas(result ?? []);
+    };
 
     const getSelectedValue = useCallback(key_id => exists.find(e => e.key_id === key_id)?.attr_value_ids?.[0]?.id ?? null, [exists]);
 
@@ -202,6 +175,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
         message.error(result?.message || "Ошибка при сохранении атрибутов");
     }, [data, exists, generatedName, onClose, onSaved]);
 
+
     const handleImplementDependencyImages = async () => {
         if (!selectedDependencyOrigin || !data?.origin) return;
 
@@ -223,6 +197,26 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
         }
     };
 
+    const applyFormulaToSelected = async (formulaId) => {
+        const formula = formulas.find(f => f.id === formulaId);
+        if (!formula) return;
+
+        const payload = {
+            feature_ids: [data.model_id],
+            formula_id: formulaId,
+            formula_name: formula.name
+        };
+
+        const response = await fetchPostData("/service/features/set_formula_dependency", payload);
+
+        if (!response || !response.updated) return;
+
+        setSelectedFormula({
+            id: formulaId,
+            name: formula.name
+        });
+
+    };
 
     const renderAttribute = useCallback(attr => {
         const selected = getSelectedValue(attr.key_id);
@@ -294,21 +288,35 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
             footer={null}
         >
             <>
-                <div style={{
-                    fontWeight: 600, fontSize: 18, display: "flex", flexDirection: "row", alignItems: "center"
-                }}>
-                    Формула
-                    <Select
-                        style={{width: 380, margin: 12}}
-                        placeholder="Выберите формулу"
-                        value={selectedFormula}
-                        onChange={handleFormulaChange}
-                        options={formulas.map(f => ({
-                            label: f.name + (f.is_default ? " ⭐" : ""), value: f.id
-                        }))}
-                    />
-                </div>
-
+                {data?.model_id && (
+                    <div
+                        style={{
+                            fontWeight: 600,
+                            fontSize: 18,
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            paddingBottom: 10
+                        }}>
+                        <span style={{
+                            color: selectedFormula ? "green" : "red",
+                            paddingRight: 6
+                        }}
+                        >Формула</span>
+                        <span style={{paddingLeft: 6, color: "#686868"}}>{selectedFormula?.name ?? null}</span>
+                        <Dropdown trigger={["click"]} onOpenChange={handleDropdownOpen}
+                                  menu={{
+                                      items: formulas.map(f => ({
+                                          key: f.id,
+                                          label: f.name,
+                                          onClick: () => applyFormulaToSelected(f.id)
+                                      }))
+                                  }}
+                        >
+                            <Button style={{marginLeft: 12}}>Выбрать формулу названия</Button>
+                        </Dropdown>
+                    </div>
+                )}
                 {allowable.length > 0 && (<div>{allowable.map(renderAttribute)}</div>)}
 
                 <Row gutter={10} justify="center">
@@ -441,7 +449,6 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
 
                         )}
                     </Col>
-
                 </Row>
             </>
         </Modal>
