@@ -11,7 +11,7 @@ import Consent from "./HubMenuLevels/Consent.jsx";
 import {fetchRangeRewardsProfiles} from "./RewardRangeSettings/api.js";
 import "./HubMenuLevels/Css/ComparisonModal.css";
 import StockHubSimplified from "./HubMenuLevels/StockHubSimplified.jsx";
-import StebystepComponent from "./HubMenuLevels/StebystepComponent.jsx";
+import StebystepComponent from "./HubMenuLevels/UnidentifiedOriginsComponent.jsx";
 
 
 const HubMenuLevels = (

@@ -6,7 +6,6 @@ import {startParsing} from "./api.js";
 import getComparisonTableColumns from "./ComparisonTableColumns.jsx";
 import "./Css/ComparisonModal.css";
 import {MoreOutlined} from "@ant-design/icons";
-import {fetchPostData} from "../SchemeAttributes/api.js";
 
 
 const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent, onStepbystep}) => {
@@ -28,6 +27,13 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent, onStepbyste
             setRows(enriched);
         }
     }, [vslList]);
+
+    useEffect(() => {
+        if (rows.length > 0) {
+            setSelectedRowKeys(rows.map(r => r.id));
+        }
+    }, [rows]);
+
 
     useEffect(() => {
         if (!isUpdating && Object.values(progressMap).length > 0) {
