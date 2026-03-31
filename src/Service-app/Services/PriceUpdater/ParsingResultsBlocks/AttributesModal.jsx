@@ -20,9 +20,27 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     const [formulas, setFormulas] = useState([]);
 
 
+    const resetState = () => {
+        setLoading(false);
+        setAllowable([]);
+        setExists([]);
+        setSelectedFormula(null);
+        setGeneratedName("");
+        setShowImages(false);
+        setDependencyList([]);
+        setSelectedDependencyOrigin(null);
+        setPopConfirmOpen(false);
+        setHaveImages(false);
+    };
+
+    const handleClose = () => {
+        resetState();
+        onClose();
+    };
+
+
     const loadAttributes = useCallback(async () => {
         if (!open || !data) return null
-
         setLoading(true);
 
         const result = await fetchPostData("service/attributes/attributes_origin_value_check_request",
@@ -44,7 +62,6 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     useEffect(() => {
         if (open) {
             void loadAttributes();
-            setSelectedDependencyOrigin(null);
         }
     }, [open, loadAttributes]);
 
@@ -85,7 +102,6 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
 
 
     const renderFormulaName = useCallback(async () => {
-
         const context = {
             model: data?.features_title?.[0] ?? "",
             attributes: {}
@@ -165,11 +181,10 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
         const result = await fetchPostData("/service/add_attributes_values", payload);
 
         if (result?.status) {
-            message.success("Атрибуты успешно сохранены");
             onSaved?.({
                 origin: payload.origin, title: payload.title, attributes: exists.map(e => e.attr_value_ids[0])
             });
-            onClose();
+            handleClose()
             return;
         }
         message.error(result?.message || "Ошибка при сохранении атрибутов");
@@ -283,7 +298,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     return (
         <Modal
             open={open}
-            onCancel={onClose}
+            onCancel={handleClose}
             width={700}
             footer={null}
         >
