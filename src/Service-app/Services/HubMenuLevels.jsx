@@ -11,6 +11,7 @@ import Consent from "./HubMenuLevels/Consent.jsx";
 import {fetchRangeRewardsProfiles} from "./RewardRangeSettings/api.js";
 import "./HubMenuLevels/Css/ComparisonModal.css";
 import StockHubSimplified from "./HubMenuLevels/StockHubSimplified.jsx";
+import StebystepComponent from "./HubMenuLevels/StebystepComponent.jsx";
 
 
 const HubMenuLevels = (
@@ -32,7 +33,7 @@ const HubMenuLevels = (
     const [comparisonResult, setComparisonResult] = useState({});
     const [consentVisible, setConsentVisible] = useState(false);
     const [ProfitRangesProfiles, setProfitRangesProfiles] = useState([]);
-
+    const [stepbystepVisible, setStepbystepVisible] = useState(false);
 
     const loadLevels = useCallback(async () => {
         const data = await fetchHubLevels();
@@ -46,14 +47,13 @@ const HubMenuLevels = (
     }, []);
 
     useEffect(() => {
-        loadLevels();
+        void loadLevels();
     }, [loadLevels]);
 
     const handleSelect = useCallback((selectedKeys) => {
         const key = selectedKeys.length ? parseInt(selectedKeys[0], 10) : null;
         setActivePathId(key);
         setSelectedItems([]);
-
         onSelectPath(key);
     }, [onSelectPath]);
 
@@ -145,7 +145,6 @@ const HubMenuLevels = (
 
     const treeData = useMemo(() => TreeDataRender({menuData, treeContext}), [menuData, treeContext]);
 
-
     const handleUpdateDataBtn = async () => {
         if (!activePathId) return;
         const origins = selectedItems.map(item => item.origin);
@@ -201,6 +200,10 @@ const HubMenuLevels = (
                         setModalVisible(false);
                         setConsentVisible(true)
                     }}
+                    onStepbystep={() => {
+                        setModalVisible(false);
+                        setStepbystepVisible(true);
+                    }}
                 />
             )}
             {consentVisible && simplified && (
@@ -209,6 +212,13 @@ const HubMenuLevels = (
                 />
             )}
 
+            {stepbystepVisible && (
+                <StebystepComponent
+                    comparisonObj={comparisonResult} isOpen={stepbystepVisible}
+                    onClose={() => setStepbystepVisible(false)}
+                />
+            )
+            }
         </>
     );
 };

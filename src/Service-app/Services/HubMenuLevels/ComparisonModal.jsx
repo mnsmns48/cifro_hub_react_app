@@ -5,9 +5,11 @@ import {getProgressLine} from "../PriceUpdater/api.js";
 import {startParsing} from "./api.js";
 import getComparisonTableColumns from "./ComparisonTableColumns.jsx";
 import "./Css/ComparisonModal.css";
+import {MoreOutlined} from "@ant-design/icons";
+import {fetchPostData} from "../SchemeAttributes/api.js";
 
 
-const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent}) => {
+const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent, onStepbystep}) => {
 
     const {vsl_list: vslList} = comparisonObj || {};
 
@@ -82,10 +84,6 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent}) => {
         }
     };
 
-    const handleConsent = async () => {
-        onConsent?.();
-    };
-
 
     const renderTable = () => {
         if (rows.length === 0) {
@@ -99,22 +97,25 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent}) => {
         return (
             <div>
                 <div style={{marginBottom: 12, textAlign: "left"}}>
-                    {!isUpdating && !isUpdateFinished && (
-                        <Button
-                            type="default"
-                            onClick={handleUpdateClick}
-                            disabled={selectedRowKeys.length === 0}
-                            className="comparison-button comparison-update-button">
+                    {selectedRowKeys.length > 0 && !isUpdating && !isUpdateFinished && (
+                        <Button type="primary" onClick={handleUpdateClick}>
                             Запустить обновление
                         </Button>
                     )}
                     {!isUpdating && (
-                        <Button type="default"
-                                onClick={handleConsent}
-                                className="comparison-button comparison-active-button">
-                            Сверка
-                        </Button>
+                        <div style={{display: "flex", gap: 10, paddingTop: 10}}>
+                            <Button onClick={() => onConsent?.()}
+                                    className="comparison-button comparison-active-button">
+                                Сверка
+                            </Button>
+
+                            <Button className="comparison-button comparison-active-button" icon={<MoreOutlined/>}
+                                    onClick={() => onStepbystep?.()}>
+                                Пошаговое внедрение изменений
+                            </Button>
+                        </div>
                     )}
+
                 </div>
                 <Table
                     columns={getComparisonTableColumns(setRows, progressMap, setProgressMap, isUpdating)}
