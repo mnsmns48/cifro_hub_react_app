@@ -1,68 +1,194 @@
-import {Tag} from "antd";
+import {Button, Tag} from "antd";
+import {
+    CarryOutOutlined,
+    LinkOutlined,
+    PictureOutlined
+} from "@ant-design/icons";
 
-export const getUnidentifiedOriginsColumns = ({ onOpenOrigin }) => [
+const cell = (content) => (
+    <div
+        style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "start",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis"
+        }}
+    >
+        {content}
+    </div>
+);
+
+
+export const getUnidentifiedOriginsColumns = (filters, filtersState) => [
     {
-        title: "Origin",
         dataIndex: "origin",
         key: "origin",
-        width: 120,
         render: (_, record) => {
-            if (record.isGroup) {
+            if (record.children) {
                 return {
-                    children: <strong style={{ fontSize: 16 }}>{record.vsl_title}</strong>,
-                    props: { colSpan: 8 }
+                    children: cell(
+                        <strong style={{
+                            background: "#ececec", borderRadius: "5px", padding: "7px"
+                        }}>
+                            {record.vsl_title}
+                        </strong>
+                    ),
+                    props: {colSpan: 999},
+
                 };
             }
-            return (
-                <a onClick={() => onOpenOrigin?.(record.origin)}>
-                    {record.origin}
-                </a>
+
+            return cell(
+                <span style={{color: "#555"}}>
+                {record.origin}
+            </span>
             );
         }
-    },
+    }
+    ,
     {
         dataIndex: "title",
         key: "title",
-        render: (_, record) => record.isGroup ? { props: { colSpan: 0 } } : record.title
+        render: (_, record) => {
+            if (record.children) {
+                return {props: {colSpan: 0}};
+            }
+            return record.title;
+        }
     },
     {
         title: "Цена",
         dataIndex: "price",
         key: "price",
-        render: (_, record) => record.isGroup ? { props: { colSpan: 0 } } : (record.price ?? "—")
+        render: (_, record) => {
+            if (record.children) {
+                return {props: {colSpan: 0}};
+            }
+            return record.price ?? "—";
+        }
     },
     {
         title: "Модель",
         dataIndex: "feature",
         key: "feature",
-        render: (_, record) => record.isGroup ? { props: { colSpan: 0 } } : (record.feature ?? "—")
+        filters: filters.features,
+        filteredValue: filtersState.feature || null,
+        onFilter: () => true,
+        render: (_, record) => {
+            if (record.children) {
+                return {props: {colSpan: 0}};
+            }
+            return record.feature ?? "—";
+        }
     },
     {
         title: "Тип",
         dataIndex: "type_",
         key: "type_",
-        render: (_, record) => record.isGroup ? { props: { colSpan: 0 } } : (record.type_?.type ?? "—")
+        filters: filters.types,
+        filteredValue: filtersState.type_ || null,
+        onFilter: () => true,
+        render: (_, record) => {
+            if (record.children) {
+                return {props: {colSpan: 0}};
+            }
+            return record.type_?.type ?? "—";
+        }
     },
     {
         title: "Бренд",
         dataIndex: "brand",
         key: "brand",
-        render: (_, record) => record.isGroup ? { props: { colSpan: 0 } } : (record.brand?.brand ?? "—")
+        filters: filters.brands,
+        filteredValue: filtersState.brand || null,
+        onFilter: () => true,
+        render: (_, record) => {
+            if (record.children) {
+                return {props: {colSpan: 0}};
+            }
+            return record.brand?.brand ?? "—";
+        }
     },
     {
-        title: "Атрибуты",
-        dataIndex: "have_attributes",
-        key: "have_attributes",
-        render: (_, record) => record.isGroup ? { props: { colSpan: 0 } } :
-            (record.have_attributes?.length
-                ? record.have_attributes.map(a => <Tag key={a.id}>{a.value}</Tag>)
-                : "—")
+        title: "attrs",
+        dataIndex: "attributes",
+        key: "attributes",
+        width: 50,
+        align: "center",
+        render: (_, record) => {
+            if (record.children) {
+                return {props: {colSpan: 0}};
+            }
+
+            const a = record.attributes;
+            const hasAttributes =
+                a?.model_id &&
+                Array.isArray(a.attr_value_ids) &&
+                a.attr_value_ids.length > 0;
+
+            return (
+                <Button
+                    type="text"
+                    icon={<LinkOutlined/>}
+                    style={{
+                        color: hasAttributes ? "#52c41a" : "#dcdcdc",
+                        fontSize: hasAttributes ? 18 : 14,
+                        border: hasAttributes
+                            ? "1px solid #52c41a"
+                            : "1px solid transparent",
+                        borderRadius: 9
+                    }}
+                />
+            );
+        }
     },
     {
-        title: "Изображения?",
+        title: <PictureOutlined style={{opacity: 0.7, fontSize: 20}}/>,
         dataIndex: "have_images",
         key: "have_images",
-        render: (_, record) => record.isGroup ? { props: { colSpan: 0 } } :
-            (record.have_images ? <Tag color="green">Да</Tag> : <Tag color="red">Нет</Tag>)
+        align: "center",
+        filters: [
+            {text: "Есть фото", value: true},
+            {text: "Нет фото", value: false}
+        ],
+        filteredValue: filtersState.have_images || null,
+        onFilter: () => true,
+        render: (_, record) => {
+            if (record.children) {
+                return {props: {colSpan: 0}};
+            }
+
+            return record.have_images ? (
+                <Tag color="green">
+                    <PictureOutlined/>
+                </Tag>
+            ) : "";
+        }
+    },
+    {
+        title: <CarryOutOutlined style={{opacity: 0.7, fontSize: 20}}/>,
+        dataIndex: "model_in_hub",
+        key: "model_in_hub",
+        align: "center",
+        filters: [
+            {text: "Есть в хабе", value: true},
+            {text: "Нет в хабе", value: false}
+        ],
+        filteredValue: filtersState.model_in_hub || null,
+        onFilter: () => true,
+        render: (_, record) => {
+            if (record.children) {
+                return {props: {colSpan: 0}};
+            }
+
+            return record.model_in_hub ? (
+                <Tag color="green">
+                    <CarryOutOutlined/>
+                </Tag>
+            ) : "";
+        }
     }
+
 ];
