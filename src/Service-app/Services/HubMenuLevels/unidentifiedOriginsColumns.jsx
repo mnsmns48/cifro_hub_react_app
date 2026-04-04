@@ -2,7 +2,7 @@ import {Button, Tag} from "antd";
 import {
     CarryOutOutlined,
     LinkOutlined,
-    PictureOutlined
+    PictureOutlined, QuestionOutlined
 } from "@ant-design/icons";
 
 const cell = (content) => (
@@ -21,10 +21,11 @@ const cell = (content) => (
 );
 
 
-export const getUnidentifiedOriginsColumns = (filters, filtersState) => [
+export const getUnidentifiedOriginsColumns = (filters, filtersState, modelColumnTitle, attrsColumnTitle) => [
     {
         dataIndex: "origin",
         key: "origin",
+        width: 105,
         render: (_, record) => {
             if (record.children) {
                 return {
@@ -51,6 +52,7 @@ export const getUnidentifiedOriginsColumns = (filters, filtersState) => [
     {
         dataIndex: "title",
         key: "title",
+        width: "40%",
         render: (_, record) => {
             if (record.children) {
                 return {props: {colSpan: 0}};
@@ -62,6 +64,7 @@ export const getUnidentifiedOriginsColumns = (filters, filtersState) => [
         title: "Цена",
         dataIndex: "price",
         key: "price",
+        align: "center",
         render: (_, record) => {
             if (record.children) {
                 return {props: {colSpan: 0}};
@@ -70,9 +73,11 @@ export const getUnidentifiedOriginsColumns = (filters, filtersState) => [
         }
     },
     {
-        title: "Модель",
+        title: modelColumnTitle,
         dataIndex: "feature",
         key: "feature",
+        width: "20%",
+        align: "center",
         filters: filters.features,
         filteredValue: filtersState.feature || null,
         onFilter: () => true,
@@ -80,7 +85,7 @@ export const getUnidentifiedOriginsColumns = (filters, filtersState) => [
             if (record.children) {
                 return {props: {colSpan: 0}};
             }
-            return record.feature ?? "—";
+            return record.feature ?? <Button type="text" icon={<QuestionOutlined style={{color: "#919191"}}/>}/>;
         }
     },
     {
@@ -112,10 +117,10 @@ export const getUnidentifiedOriginsColumns = (filters, filtersState) => [
         }
     },
     {
-        title: "attrs",
+        title: attrsColumnTitle,
         dataIndex: "attributes",
         key: "attributes",
-        width: 50,
+        width: 80,
         align: "center",
         render: (_, record) => {
             if (record.children) {
