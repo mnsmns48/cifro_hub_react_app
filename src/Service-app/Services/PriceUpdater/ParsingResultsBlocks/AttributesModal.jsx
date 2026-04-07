@@ -20,6 +20,8 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     const [formulas, setFormulas] = useState([]);
 
 
+    console.log("data from AttributesModal--", data)
+
     const resetState = () => {
         setLoading(false);
         setAllowable([]);

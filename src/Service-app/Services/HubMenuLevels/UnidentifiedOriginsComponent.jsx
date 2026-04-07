@@ -9,6 +9,7 @@ const UnidentifiedOriginsComponent = ({
                                           isOpen,
                                           onClose
                                       }) => {
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [loading, setLoading] = useState(false);
     const [originalData, setOriginalData] = useState([]);
     const [data, setData] = useState([]);
@@ -17,7 +18,6 @@ const UnidentifiedOriginsComponent = ({
     const [filters, setFilters] = useState({features: [], types: [], brands: []});
     const [missingModelFilterActive, setMissingModelFilterActive] = useState(false);
     const [missingAttrsFilterActive, setMissingAttrsFilterActive] = useState(false);
-
 
 
     useEffect(() => {
@@ -83,7 +83,13 @@ const UnidentifiedOriginsComponent = ({
     const groupByVsl = (origins, vslList) => {
         return vslList
             .map(vsl => {
-                const children = origins.filter(o => o.vsl_id === vsl.id);
+                const children = origins
+                    .filter(o => o.vsl_id === vsl.id)
+                    .map((o, idx) => ({
+                        ...o,
+                        key: `origin-${vsl.id}-${idx}`
+                    }));
+
                 if (!children.length) return null;
 
                 const missingFeatureCount = children.filter(c => !c.feature).length;
@@ -112,49 +118,27 @@ const UnidentifiedOriginsComponent = ({
             .map(group => {
                 let children = [...group.children];
 
-                if (filters.feature?.length) {
-                    children = children.filter(c =>
-                        filters.feature.includes(c.feature)
-                    );
+                const filterRules = [
+                    [filters.feature, c => filters.feature.includes(c.feature)],
+                    [filters.type_, c => filters.type_.includes(c.type_?.type)],
+                    [filters.brand, c => filters.brand.includes(c.brand?.brand)],
+                    [filters.have_images, c => filters.have_images.includes(c.have_images)],
+                    [filters.model_in_hub, c => filters.model_in_hub.includes(c.model_in_hub)]
+                ];
+                for (const [filterValue, predicate] of filterRules) {
+                    if (filterValue?.length) {
+                        children = children.filter(predicate);
+                    }
                 }
-
-                if (filters.type_?.length) {
-                    children = children.filter(c =>
-                        filters.type_.includes(c.type_?.type)
-                    );
-                }
-
-                if (filters.brand?.length) {
-                    children = children.filter(c =>
-                        filters.brand.includes(c.brand?.brand)
-                    );
-                }
-
-                if (filters.have_images?.length) {
-                    children = children.filter(c =>
-                        filters.have_images.includes(c.have_images)
-                    );
-                }
-
-                if (filters.model_in_hub?.length) {
-                    children = children.filter(c =>
-                        filters.model_in_hub.includes(c.model_in_hub)
-                    );
-                }
-
                 if (missingFeatureOnly) {
                     children = children.filter(c => !c.feature);
                 }
-
                 if (missingAttrsOnly) {
-                    children = children.filter(
-                        c => !c.attributes?.attr_value_ids?.length
-                    );
+                    children = children.filter(c => !c.attributes?.attr_value_ids?.length);
                 }
-
                 if (!children.length) return null;
 
-                return { ...group, children };
+                return {...group, children};
             })
             .filter(Boolean);
     };
@@ -230,7 +214,7 @@ const UnidentifiedOriginsComponent = ({
 
 
     const attrsColumnTitle = (
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{display: "flex", alignItems: "center", gap: 8}}>
             <span>Attrs</span>
 
             <div
@@ -268,12 +252,25 @@ const UnidentifiedOriginsComponent = ({
     );
 
 
-
     return (
         <Modal open={isOpen} onCancel={onClose} width={1280} footer={null}>
             <div style={{marginTop: 20}}>
                 <Table
-                    columns={getUnidentifiedOriginsColumns(filters, filtersState, modelColumnTitle, attrsColumnTitle)}
+                    rowSelection={{
+                        selectedRowKeys,
+                        onChange: setSelectedRowKeys,
+                        getCheckboxProps: record => ({
+                            disabled: !!record.children
+                        })
+                    }}
+                    columns={
+                        getUnidentifiedOriginsColumns(
+                            filters,
+                            filtersState,
+                            modelColumnTitle,
+                            attrsColumnTitle,
+                            selectedRowKeys
+                        )}
                     dataSource={data}
                     loading={loading}
                     size="small"
@@ -286,6 +283,7 @@ const UnidentifiedOriginsComponent = ({
                         expandIcon: () => null
                     }}
                 />
+
             </div>
         </Modal>
     );

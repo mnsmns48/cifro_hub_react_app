@@ -21,7 +21,11 @@ const cell = (content) => (
 );
 
 
-export const getUnidentifiedOriginsColumns = (filters, filtersState, modelColumnTitle, attrsColumnTitle) => [
+export const getUnidentifiedOriginsColumns = (filters,
+                                              filtersState,
+                                              modelColumnTitle,
+                                              attrsColumnTitle,
+                                              selectedRowKeys) => [
     {
         dataIndex: "origin",
         key: "origin",
@@ -82,11 +86,14 @@ export const getUnidentifiedOriginsColumns = (filters, filtersState, modelColumn
         filteredValue: filtersState.feature || null,
         onFilter: () => true,
         render: (_, record) => {
-            if (record.children) {
-                return {props: {colSpan: 0}};
-            }
-            return record.feature ?? <Button type="text" icon={<QuestionOutlined style={{color: "#919191"}}/>}/>;
+            if (record.children) return {props: {colSpan: 0}};
+            if (record.feature) return record.feature;
+            if (selectedRowKeys.length > 0) return null;
+            return (
+                <Button icon={<QuestionOutlined style={{color: "#919191"}}/>}/>
+            );
         }
+
     },
     {
         title: "Тип",
@@ -99,7 +106,7 @@ export const getUnidentifiedOriginsColumns = (filters, filtersState, modelColumn
             if (record.children) {
                 return {props: {colSpan: 0}};
             }
-            return record.type_?.type ?? "—";
+            return record.type_?.type ?? "";
         }
     },
     {
@@ -113,7 +120,7 @@ export const getUnidentifiedOriginsColumns = (filters, filtersState, modelColumn
             if (record.children) {
                 return {props: {colSpan: 0}};
             }
-            return record.brand?.brand ?? "—";
+            return record.brand?.brand ?? "";
         }
     },
     {
@@ -125,6 +132,10 @@ export const getUnidentifiedOriginsColumns = (filters, filtersState, modelColumn
         render: (_, record) => {
             if (record.children) {
                 return {props: {colSpan: 0}};
+            }
+
+            if (!record.feature) {
+                return "";
             }
 
             const a = record.attributes;
