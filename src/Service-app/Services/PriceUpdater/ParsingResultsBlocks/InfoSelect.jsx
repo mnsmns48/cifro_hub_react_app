@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {Button, Typography, Input} from "antd";
-import {DeleteRowOutlined, ScissorOutlined, SelectOutlined} from "@ant-design/icons";
+import {ScissorOutlined, SelectOutlined} from "@ant-design/icons";
 import MyModal from "../../../../Ui/MyModal.jsx";
 import {deleteDependencies, fetchDependencyDetails, fetchItemDependencies, postDependencyUpdate} from "../api.js";
 import DependencyModal from "../DetailDependencyModal.jsx";
@@ -89,10 +89,16 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
             setRows(prev =>
                 prev.map(row =>
                     originList.includes(row.origin)
-                        ? {...row, features_title: [item.title]}
+                        ? {
+                            ...row,
+                            features_title: [item.title],
+                            brand: { brand: item.brand },
+                            type_: { type: item.product_type }
+                        }
                         : row
                 )
             );
+
 
             closeModal();
         } catch (err) {

@@ -33,7 +33,7 @@
 
 .fixed-hub-button {
     position: fixed;
-    left: 31%;
+    left: 21%;
     transform: translate(-100%, -50%);
     z-index: 1000;
     font-weight: bold;
@@ -82,7 +82,7 @@
 
 .circle-float-button {
     position: fixed;
-    left: calc(28.5%);
+    left: calc(18.5%);
     transform: translateY(-50%);
     z-index: 1000;
     width: 50px;

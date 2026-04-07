@@ -86,13 +86,13 @@ export const getUnidentifiedOriginsColumns = (filters,
         filteredValue: filtersState.feature || null,
         onFilter: () => true,
         render: (_, record) => {
-            if (record.children) return {props: {colSpan: 0}};
-            if (record.feature) return record.feature;
+            if (record.children) return { props: { colSpan: 0 } };
+            const feature = record.feature;
+            if (feature) return feature;
             if (selectedRowKeys.length > 0) return null;
-            return (
-                <Button icon={<QuestionOutlined style={{color: "#919191"}}/>}/>
-            );
+            return <QuestionOutlined style={{ color: "#ff0000" }} />;
         }
+
 
     },
     {
@@ -149,7 +149,7 @@ export const getUnidentifiedOriginsColumns = (filters,
                     type="text"
                     icon={<LinkOutlined/>}
                     style={{
-                        color: hasAttributes ? "#52c41a" : "#dcdcdc",
+                        color: hasAttributes ? "#52c41a" : "#737373",
                         fontSize: hasAttributes ? 18 : 14,
                         border: hasAttributes
                             ? "1px solid #52c41a"

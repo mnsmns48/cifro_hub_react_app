@@ -1,0 +1,23 @@
+
+.fixed-button {
+    position: fixed;
+    left: 11%;
+    transform: translate(-100%, -50%);
+    z-index: 1000;
+    font-weight: bold;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    color: #212121 !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+.fixed-button-dependency {
+    position: fixed;
+    top: 60%;
+}
+
+
+.fixed-button-dependency:hover {
+    color: #b5b5b4 !important;
+}

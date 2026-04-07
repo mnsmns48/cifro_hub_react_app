@@ -1,8 +1,11 @@
 import {useEffect, useState} from "react";
-import {Badge, Modal, Table} from "antd";
+import {Badge, Button, Modal, Table} from "antd";
 import {fetchPostData} from "../SchemeAttributes/api.js";
 import {getUnidentifiedOriginsColumns} from "./unidentifiedOriginsColumns.jsx";
-import {RollbackOutlined} from "@ant-design/icons";
+import {RollbackOutlined, ShareAltOutlined} from "@ant-design/icons";
+import "./Css/UnidentifiedOriginsComponent.css";
+import InfoSelect from "../PriceUpdater/ParsingResultsBlocks/InfoSelect.jsx";
+
 
 const UnidentifiedOriginsComponent = ({
                                           comparisonObj: {vsl_list, path_ids},
@@ -18,6 +21,8 @@ const UnidentifiedOriginsComponent = ({
     const [filters, setFilters] = useState({features: [], types: [], brands: []});
     const [missingModelFilterActive, setMissingModelFilterActive] = useState(false);
     const [missingAttrsFilterActive, setMissingAttrsFilterActive] = useState(false);
+    const [dependencySelection, setDependencySelection] = useState(null);
+    const [rows, setRows] = useState([]);
 
 
     useEffect(() => {
@@ -26,19 +31,15 @@ const UnidentifiedOriginsComponent = ({
         const loadData = async () => {
             setLoading(true);
 
-            const payload = {vsl_list, path_ids};
-            const response = await fetchPostData(
-                "/service/fetch_unidentified_origins",
-                payload
-            );
+            const payload = { vsl_list, path_ids };
+            const response = await fetchPostData("/service/fetch_unidentified_origins", payload);
 
             if (response?.origins) {
                 const origins = response.origins;
                 const grouped = groupByVsl(origins, vsl_list);
 
                 setOriginalData(grouped);
-                setData(grouped);
-
+                setRows(origins);
                 setExpandedRowKeys(grouped.map(g => g.key));
 
                 const featureSet = new Set();
@@ -52,9 +53,9 @@ const UnidentifiedOriginsComponent = ({
                 }
 
                 setFilters({
-                    features: [...featureSet].map(v => ({text: v, value: v})),
-                    types: [...typeSet].map(v => ({text: v, value: v})),
-                    brands: [...brandSet].map(v => ({text: v, value: v}))
+                    features: [...featureSet].map(v => ({ text: v, value: v })),
+                    types: [...typeSet].map(v => ({ text: v, value: v })),
+                    brands: [...brandSet].map(v => ({ text: v, value: v }))
                 });
             }
 
@@ -69,15 +70,40 @@ const UnidentifiedOriginsComponent = ({
     }, [data]);
 
     useEffect(() => {
+        const synced = rows.map(row => {
+            const hasFeatureArray = Array.isArray(row.features_title);
+            const hasSelectedFeature = hasFeatureArray && row.features_title.length > 0;
+
+            return {
+                ...row,
+                feature: hasSelectedFeature
+                    ? row.features_title[0]
+                    : hasFeatureArray
+                        ? null
+                        : row.feature,
+                brand: hasFeatureArray && !hasSelectedFeature ? null : row.brand,
+                type_: hasFeatureArray && !hasSelectedFeature ? null : row.type_
+            };
+        });
+
+        const grouped = groupByVsl(synced, vsl_list);
         const filtered = applyFilters(
-            originalData,
+            grouped,
             filtersState,
             missingModelFilterActive,
             missingAttrsFilterActive
         );
 
         setData(filtered);
-    }, [originalData, filtersState, missingModelFilterActive, missingAttrsFilterActive]);
+    }, [rows, filtersState, missingModelFilterActive, missingAttrsFilterActive]);
+
+
+
+
+    useEffect(() => {
+        const flat = originalData.flatMap(g => g.children);
+        setRows(flat);
+    }, [originalData]);
 
 
     const groupByVsl = (origins, vslList) => {
@@ -122,23 +148,25 @@ const UnidentifiedOriginsComponent = ({
                     [filters.feature, c => filters.feature.includes(c.feature)],
                     [filters.type_, c => filters.type_.includes(c.type_?.type)],
                     [filters.brand, c => filters.brand.includes(c.brand?.brand)],
-                    [filters.have_images, c => filters.have_images.includes(c.have_images)],
-                    [filters.model_in_hub, c => filters.model_in_hub.includes(c.model_in_hub)]
                 ];
+
                 for (const [filterValue, predicate] of filterRules) {
                     if (filterValue?.length) {
                         children = children.filter(predicate);
                     }
                 }
+
                 if (missingFeatureOnly) {
                     children = children.filter(c => !c.feature);
                 }
+
                 if (missingAttrsOnly) {
                     children = children.filter(c => !c.attributes?.attr_value_ids?.length);
                 }
+
                 if (!children.length) return null;
 
-                return {...group, children};
+                return { ...group, children };
             })
             .filter(Boolean);
     };
@@ -251,9 +279,44 @@ const UnidentifiedOriginsComponent = ({
         </div>
     );
 
+    const handleAddDependenceMulti = (selectedKeys) => {
+        if (!selectedKeys.length) return;
+
+        const selectedRecords = rows.filter(r => selectedKeys.includes(r.key));
+
+        const originList = selectedRecords.map(r => r.origin);
+        const titleList = selectedRecords.map(r => String(r.title ?? "??"));
+
+        setDependencySelection({
+            origin: originList,
+            titles: titleList,
+            record: {title: titleList.join(", ")},
+            setRows
+        });
+    };
+
 
     return (
         <Modal open={isOpen} onCancel={onClose} width={1280} footer={null}>
+            {selectedRowKeys.length > 0 && (
+                <Button className="fixed-button fixed-button-dependency"
+                        onClick={() => handleAddDependenceMulti(selectedRowKeys)}>
+                    Зависимость ({selectedRowKeys.length}) <ShareAltOutlined/>
+                </Button>
+            )}
+
+            {dependencySelection && (
+                <InfoSelect
+                    titles={dependencySelection.titles}
+                    origin={dependencySelection.origin}
+                    record={dependencySelection.record}
+                    setRows={setRows}
+                    onClose={() => setDependencySelection(null)}
+                    autoOpen
+                />
+            )}
+
+
             <div style={{marginTop: 20}}>
                 <Table
                     rowSelection={{
