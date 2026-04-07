@@ -31,7 +31,7 @@ const UnidentifiedOriginsComponent = ({
         const loadData = async () => {
             setLoading(true);
 
-            const payload = { vsl_list, path_ids };
+            const payload = {vsl_list, path_ids};
             const response = await fetchPostData("/service/fetch_unidentified_origins", payload);
 
             if (response?.origins) {
@@ -53,9 +53,9 @@ const UnidentifiedOriginsComponent = ({
                 }
 
                 setFilters({
-                    features: [...featureSet].map(v => ({ text: v, value: v })),
-                    types: [...typeSet].map(v => ({ text: v, value: v })),
-                    brands: [...brandSet].map(v => ({ text: v, value: v }))
+                    features: [...featureSet].map(v => ({text: v, value: v})),
+                    types: [...typeSet].map(v => ({text: v, value: v})),
+                    brands: [...brandSet].map(v => ({text: v, value: v}))
                 });
             }
 
@@ -95,9 +95,8 @@ const UnidentifiedOriginsComponent = ({
         );
 
         setData(filtered);
+        setSelectedRowKeys([])
     }, [rows, filtersState, missingModelFilterActive, missingAttrsFilterActive]);
-
-
 
 
     useEffect(() => {
@@ -166,7 +165,7 @@ const UnidentifiedOriginsComponent = ({
 
                 if (!children.length) return null;
 
-                return { ...group, children };
+                return {...group, children};
             })
             .filter(Boolean);
     };
