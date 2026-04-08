@@ -29,16 +29,16 @@ export const serviceRegistry = [
         loader: () => import("./Services/HubMenuLevels.jsx"),
     },
     {
-        key: "Pictures",
-        title: "Изображения",
-        icon: makeIcon(PictureOutlined),
-        loader: () => import("./Services/Pictures.jsx"),
-    },
-    {
         key: "PriceUpdater",
-        title: "Данные",
+        title: "Сбор данных",
         icon: makeIcon(FileSearchOutlined),
         loader: () => import("./Services/PriceUpdater.jsx"),
+    },
+    {
+        key: "FeaturesGlobal",
+        title: "Модели продуктов",
+        icon: makeIcon(IdcardOutlined),
+        loader: () => import("./Services/FeaturesGlobal.jsx"),
     },
     {
         key: "SchemeAttributes",
@@ -47,16 +47,16 @@ export const serviceRegistry = [
         loader: () => import("./Services/SchemeAttributes.jsx"),
     },
     {
-        key: "FeaturesGlobal",
-        title: "Описания продуктов",
-        icon: makeIcon(IdcardOutlined),
-        loader: () => import("./Services/FeaturesGlobal.jsx"),
-    },
-    {
         key: "RewardRangeSettings",
         title: "Вознаграждение",
         icon: makeIcon(DollarOutlined),
         loader: () => import("./Services/RewardRangeSettings.jsx"),
+    },
+    {
+        key: "Pictures",
+        title: "Изображения",
+        icon: makeIcon(PictureOutlined),
+        loader: () => import("./Services/Pictures.jsx"),
     },
     {
         key: "Vendors",

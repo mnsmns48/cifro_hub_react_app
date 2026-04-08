@@ -2,9 +2,10 @@ import {useEffect, useState} from "react";
 import {Badge, Button, Modal, Table} from "antd";
 import {fetchPostData} from "../SchemeAttributes/api.js";
 import {getUnidentifiedOriginsColumns} from "./unidentifiedOriginsColumns.jsx";
-import {RollbackOutlined, ShareAltOutlined} from "@ant-design/icons";
+import {LinkOutlined, QuestionOutlined, ShareAltOutlined} from "@ant-design/icons";
 import "./Css/UnidentifiedOriginsComponent.css";
 import InfoSelect from "../PriceUpdater/ParsingResultsBlocks/InfoSelect.jsx";
+import AttributesModal from "../PriceUpdater/ParsingResultsBlocks/AttributesModal.jsx";
 
 
 const UnidentifiedOriginsComponent = ({
@@ -14,56 +15,55 @@ const UnidentifiedOriginsComponent = ({
                                       }) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [originalData, setOriginalData] = useState([]);
     const [data, setData] = useState([]);
     const [filtersState, setFiltersState] = useState({});
     const [expandedRowKeys, setExpandedRowKeys] = useState([]);
-    const [filters, setFilters] = useState({features: [], types: [], brands: []});
+    const [filters, setFilters] = useState({models: [], types: [], brands: []});
     const [missingModelFilterActive, setMissingModelFilterActive] = useState(false);
     const [missingAttrsFilterActive, setMissingAttrsFilterActive] = useState(false);
     const [dependencySelection, setDependencySelection] = useState(null);
     const [rows, setRows] = useState([]);
+    const [attributesModalData, setAttributesModalData] = useState(null);
+
+
+    const reloadData = async () => {
+        setLoading(true);
+
+        const payload = {vsl_list, path_ids};
+        const response = await fetchPostData("/service/fetch_unidentified_origins", payload);
+
+        if (response?.origins) {
+            const origins = response.origins;
+            const grouped = groupByVsl(origins, vsl_list);
+
+            setRows(origins);
+            setExpandedRowKeys(grouped.map(g => g.key));
+
+            const modelSet = new Set();
+            const typeSet = new Set();
+            const brandSet = new Set();
+
+            for (const item of origins) {
+                if (item.model_title) modelSet.add(item.model_title);
+                if (item.type_?.type) typeSet.add(item.type_.type);
+                if (item.brand?.brand) brandSet.add(item.brand.brand);
+            }
+
+            setFilters({
+                models: [...modelSet].map(v => ({text: v, value: v})),
+                types: [...typeSet].map(v => ({text: v, value: v})),
+                brands: [...brandSet].map(v => ({text: v, value: v}))
+            });
+        }
+
+        setLoading(false);
+    };
 
 
     useEffect(() => {
-        if (!isOpen) return;
-
-        const loadData = async () => {
-            setLoading(true);
-
-            const payload = {vsl_list, path_ids};
-            const response = await fetchPostData("/service/fetch_unidentified_origins", payload);
-
-            if (response?.origins) {
-                const origins = response.origins;
-                const grouped = groupByVsl(origins, vsl_list);
-
-                setOriginalData(grouped);
-                setRows(origins);
-                setExpandedRowKeys(grouped.map(g => g.key));
-
-                const featureSet = new Set();
-                const typeSet = new Set();
-                const brandSet = new Set();
-
-                for (const item of origins) {
-                    if (item.feature) featureSet.add(item.feature);
-                    if (item.type_?.type) typeSet.add(item.type_.type);
-                    if (item.brand?.brand) brandSet.add(item.brand.brand);
-                }
-
-                setFilters({
-                    features: [...featureSet].map(v => ({text: v, value: v})),
-                    types: [...typeSet].map(v => ({text: v, value: v})),
-                    brands: [...brandSet].map(v => ({text: v, value: v}))
-                });
-            }
-
-            setLoading(false);
-        };
-
-        void loadData();
+        if (isOpen) void reloadData();
     }, [isOpen, vsl_list, path_ids]);
+
 
     useEffect(() => {
         setExpandedRowKeys(data.map(g => g.key));
@@ -76,15 +76,19 @@ const UnidentifiedOriginsComponent = ({
 
             return {
                 ...row,
-                feature: hasSelectedFeature
-                    ? row.features_title[0]
+                model: hasSelectedFeature
+                    ? {
+                        model_id: row.model?.model_id ?? null,
+                        model_title: row.features_title[0]
+                    }
                     : hasFeatureArray
                         ? null
-                        : row.feature,
+                        : row.model,
                 brand: hasFeatureArray && !hasSelectedFeature ? null : row.brand,
                 type_: hasFeatureArray && !hasSelectedFeature ? null : row.type_
             };
         });
+
 
         const grouped = groupByVsl(synced, vsl_list);
         const filtered = applyFilters(
@@ -99,10 +103,20 @@ const UnidentifiedOriginsComponent = ({
     }, [rows, filtersState, missingModelFilterActive, missingAttrsFilterActive]);
 
 
-    useEffect(() => {
-        const flat = originalData.flatMap(g => g.children);
-        setRows(flat);
-    }, [originalData]);
+    const updateRow = (origin, patch) => {
+        setRows(prev =>
+            prev.map(row =>
+                row.origin === origin
+                    ? {
+                        ...row,
+                        ...patch,
+                        model: patch.model ?? row.model,
+                        features_title: patch.features_title ?? row.features_title
+                    }
+                    : row
+            )
+        );
+    };
 
 
     const groupByVsl = (origins, vslList) => {
@@ -117,7 +131,7 @@ const UnidentifiedOriginsComponent = ({
 
                 if (!children.length) return null;
 
-                const missingFeatureCount = children.filter(c => !c.feature).length;
+                const missingFeatureCount = children.filter(c => !c.model?.model_title).length;
 
                 return {
                     key: `vsl-${vsl.id}`,
@@ -144,10 +158,13 @@ const UnidentifiedOriginsComponent = ({
                 let children = [...group.children];
 
                 const filterRules = [
-                    [filters.feature, c => filters.feature.includes(c.feature)],
+                    [filters.models, c => filters.models.includes(c.model?.model_title)],
                     [filters.type_, c => filters.type_.includes(c.type_?.type)],
                     [filters.brand, c => filters.brand.includes(c.brand?.brand)],
+                    [filters.have_images, c => filters.have_images.includes(c.have_images)],
+                    [filters.model_in_hub, c => filters.model_in_hub.includes(c.model_in_hub)],
                 ];
+
 
                 for (const [filterValue, predicate] of filterRules) {
                     if (filterValue?.length) {
@@ -155,12 +172,14 @@ const UnidentifiedOriginsComponent = ({
                     }
                 }
 
-                if (missingFeatureOnly) {
-                    children = children.filter(c => !c.feature);
+                if (missingAttrsOnly) {
+                    children = children.filter(c => c.model?.model_title);
                 }
 
-                if (missingAttrsOnly) {
-                    children = children.filter(c => !c.attributes?.attr_value_ids?.length);
+                if (missingFeatureOnly) {
+                    children = children.filter(
+                        c => !c.model?.model_title
+                    );
                 }
 
                 if (!children.length) return null;
@@ -171,16 +190,12 @@ const UnidentifiedOriginsComponent = ({
     };
 
 
-    const missingFeatureTotal =
-        originalData
-            .flatMap(g => g.children)
-            .filter(c => !c.feature).length;
+    const missingFeatureTotal = rows.filter(c => !c.model?.model_title).length;
 
-    const missingAttrsTotal =
-        originalData
-            .flatMap(g => g.children)
-            .filter(c => !c.attributes?.attr_value_ids?.length)
-            .length;
+
+    const missingAttrsTotal = rows.filter(
+        c => !c.attributes?.attr_value_ids?.length
+    ).length;
 
 
     const toggleMissingModelFilter = () => {
@@ -215,10 +230,10 @@ const UnidentifiedOriginsComponent = ({
                 }}
             >
                 {missingModelFilterActive ? (
-                    <RollbackOutlined
+                    <QuestionOutlined
                         style={{
                             fontSize: 16,
-                            color: "#dfdfdf",
+                            color: "#ff4d4f",
                             cursor: "pointer"
                         }}
                         onClick={toggleMissingModelFilter}
@@ -239,10 +254,9 @@ const UnidentifiedOriginsComponent = ({
         </div>
     );
 
-
     const attrsColumnTitle = (
         <div style={{display: "flex", alignItems: "center", gap: 8}}>
-            <span>Attrs</span>
+            <span>Атрибуты</span>
 
             <div
                 style={{
@@ -254,10 +268,10 @@ const UnidentifiedOriginsComponent = ({
                 }}
             >
                 {missingAttrsFilterActive ? (
-                    <RollbackOutlined
+                    <LinkOutlined
                         style={{
                             fontSize: 16,
-                            color: "#dfdfdf",
+                            color: "#ff4d4f",
                             cursor: "pointer"
                         }}
                         onClick={toggleMissingAttrsFilter}
@@ -282,7 +296,6 @@ const UnidentifiedOriginsComponent = ({
         if (!selectedKeys.length) return;
 
         const selectedRecords = rows.filter(r => selectedKeys.includes(r.key));
-
         const originList = selectedRecords.map(r => r.origin);
         const titleList = selectedRecords.map(r => String(r.title ?? "??"));
 
@@ -304,7 +317,7 @@ const UnidentifiedOriginsComponent = ({
                 </Button>
             )}
 
-            {dependencySelection && (
+            {!!dependencySelection && (
                 <InfoSelect
                     titles={dependencySelection.titles}
                     origin={dependencySelection.origin}
@@ -312,6 +325,32 @@ const UnidentifiedOriginsComponent = ({
                     setRows={setRows}
                     onClose={() => setDependencySelection(null)}
                     autoOpen
+                />
+            )}
+
+            {!!attributesModalData && (
+                <AttributesModal
+                    open={true}
+                    data={attributesModalData}
+                    onClose={() => setAttributesModalData(null)}
+
+                    onSaved={(patch) => {
+                        const normalizedPatch = {
+                            title: patch.title,
+                            attributes: {
+                                attr_value_ids: patch.attributes ?? []
+                            },
+                            have_attributes: (patch.attributes?.length ?? 0) > 0
+                        };
+
+                        updateRow(patch.origin, normalizedPatch);
+                        setAttributesModalData(null);
+                    }}
+
+
+                    onUploaded={(patch) => {
+                        updateRow(attributesModalData.origin, patch);
+                    }}
                 />
             )}
 
@@ -331,7 +370,8 @@ const UnidentifiedOriginsComponent = ({
                             filtersState,
                             modelColumnTitle,
                             attrsColumnTitle,
-                            selectedRowKeys
+                            setAttributesModalData,
+                            missingAttrsFilterActive
                         )}
                     dataSource={data}
                     loading={loading}

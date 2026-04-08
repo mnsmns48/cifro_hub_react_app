@@ -25,7 +25,8 @@ export const getUnidentifiedOriginsColumns = (filters,
                                               filtersState,
                                               modelColumnTitle,
                                               attrsColumnTitle,
-                                              selectedRowKeys) => [
+                                              setAttributesModalData,
+                                              missingAttrsFilterActive) => [
     {
         dataIndex: "origin",
         key: "origin",
@@ -34,11 +35,7 @@ export const getUnidentifiedOriginsColumns = (filters,
             if (record.children) {
                 return {
                     children: cell(
-                        <strong style={{
-                            background: "#ececec", borderRadius: "5px", padding: "7px"
-                        }}>
-                            {record.vsl_title}
-                        </strong>
+                        <strong>{record.vsl_title} </strong>
                     ),
                     props: {colSpan: 999},
 
@@ -86,11 +83,10 @@ export const getUnidentifiedOriginsColumns = (filters,
         filteredValue: filtersState.feature || null,
         onFilter: () => true,
         render: (_, record) => {
-            if (record.children) return { props: { colSpan: 0 } };
-            const feature = record.feature;
-            if (feature) return feature;
-            if (selectedRowKeys.length > 0) return null;
-            return <QuestionOutlined style={{ color: "#ff0000" }} />;
+            if (record.children) return {props: {colSpan: 0}};
+
+            if (record.model) return record.model?.model_title;
+            return <QuestionOutlined style={{color: "#ff0000"}}/>;
         }
 
 
@@ -129,33 +125,43 @@ export const getUnidentifiedOriginsColumns = (filters,
         key: "attributes",
         width: 80,
         align: "center",
-        render: (_, record) => {
-            if (record.children) {
-                return {props: {colSpan: 0}};
-            }
 
-            if (!record.feature) {
+        render: (_, record) => {
+            if (!record.model) {
                 return "";
             }
-
             const a = record.attributes;
             const hasAttributes =
-                a?.model_id &&
-                Array.isArray(a.attr_value_ids) &&
+                Array.isArray(a?.attr_value_ids) &&
                 a.attr_value_ids.length > 0;
+
+
+            const isGreenBtn = missingAttrsFilterActive
+                ? hasAttributes
+                : hasAttributes;
 
             return (
                 <Button
                     type="text"
                     icon={<LinkOutlined/>}
                     style={{
-                        color: hasAttributes ? "#52c41a" : "#737373",
-                        fontSize: hasAttributes ? 18 : 14,
-                        border: hasAttributes
+                        color: isGreenBtn ? "#52c41a" : "#454545",
+                        fontSize: isGreenBtn ? 18 : 16,
+                        border: isGreenBtn
                             ? "1px solid #52c41a"
                             : "1px solid transparent",
                         borderRadius: 9
                     }}
+                    onClick={() =>
+                        setAttributesModalData({
+                            origin: record.origin,
+                            title: record.title,
+                            model_id: record.model?.model_id ?? null,
+                            features_title: record.model?.model_title
+                                ? [record.model.model_title]
+                                : []
+                        })
+                    }
                 />
             );
         }
@@ -198,7 +204,6 @@ export const getUnidentifiedOriginsColumns = (filters,
             if (record.children) {
                 return {props: {colSpan: 0}};
             }
-
             return record.model_in_hub ? (
                 <Tag color="green">
                     <CarryOutOutlined/>
