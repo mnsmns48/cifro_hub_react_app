@@ -130,11 +130,12 @@ export async function fetchItemDependencies(origin) {
 export async function postDependencyUpdate(data) {
     try {
         const payload = Array.isArray(data) ? data : [data];
-        await axios.post(
+        const res = await axios.post(
             "/service/update_parsing_item_dependency/",
             {items: payload},
             {headers: {"Content-Type": "application/json"}}
         );
+        return res.data.success;
     } catch (err) {
         const msg = err.response?.data?.detail || err.message;
         throw new Error(msg);

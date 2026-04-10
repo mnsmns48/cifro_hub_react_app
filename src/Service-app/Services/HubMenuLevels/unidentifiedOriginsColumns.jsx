@@ -75,21 +75,22 @@ export const getUnidentifiedOriginsColumns = (filters,
     },
     {
         title: modelColumnTitle,
-        dataIndex: "feature",
-        key: "feature",
+        dataIndex: "model_title",
+        key: "model_title",
         width: "20%",
         align: "center",
-        filters: filters.features,
-        filteredValue: filtersState.feature || null,
-        onFilter: () => true,
+        filters: filters.models,
+        filteredValue: filtersState.model_title || null,
+
         render: (_, record) => {
             if (record.children) return {props: {colSpan: 0}};
 
-            if (record.model) return record.model?.model_title;
-            return <QuestionOutlined style={{color: "#ff0000"}}/>;
+            if (!record.model_title) {
+                return <QuestionOutlined style={{color: "#ff0000"}}/>;
+            }
+
+            return record.model_title;
         }
-
-
     },
     {
         title: "Тип",
@@ -127,7 +128,7 @@ export const getUnidentifiedOriginsColumns = (filters,
         align: "center",
 
         render: (_, record) => {
-            if (!record.model) {
+            if (!record.model_title) {
                 return "";
             }
             const a = record.attributes;
@@ -156,9 +157,9 @@ export const getUnidentifiedOriginsColumns = (filters,
                         setAttributesModalData({
                             origin: record.origin,
                             title: record.title,
-                            model_id: record.model?.model_id ?? null,
-                            features_title: record.model?.model_title
-                                ? [record.model.model_title]
+                            model_id: record.model_id,
+                            features_title: record?.model_title
+                                ? [record.model_title]
                                 : []
                         })
                     }
@@ -211,5 +212,4 @@ export const getUnidentifiedOriginsColumns = (filters,
             ) : "";
         }
     }
-
 ];

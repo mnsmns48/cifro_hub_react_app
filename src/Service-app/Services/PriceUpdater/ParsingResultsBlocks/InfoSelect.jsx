@@ -19,9 +19,10 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
     const [dependencyResult, setDependencyResult] = useState(null);
     const [isDependencyModalOpen, setIsDependencyModalOpen] = useState(false);
 
+
     useEffect(() => {
         if (autoOpen) {
-            openModal();
+            void openModal();
         }
     }, [autoOpen]);
 
@@ -84,16 +85,18 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
                 pros_cons
             }));
 
-            await postDependencyUpdate(payload);
-
+            const result = await postDependencyUpdate(payload);
+            const modelId = result.find(r => r.origin === originList[0])?.model_id;
             setRows(prev =>
                 prev.map(row =>
                     originList.includes(row.origin)
                         ? {
                             ...row,
                             features_title: [item.title],
-                            brand: { brand: item.brand },
-                            type_: { type: item.product_type }
+                            brand: {brand: item.brand},
+                            type_: {type: item.product_type},
+                            model_title: item.title,
+                            model_id: modelId
                         }
                         : row
                 )
@@ -114,10 +117,16 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
             setRows(prev =>
                 prev.map(row =>
                     result.deleted.includes(row.origin)
-                        ? {...row, features_title: []}
+                        ? {
+                            ...row,
+                            features_title: [],
+                            model_title: null,
+                            model_id: null
+                        }
                         : row
                 )
             );
+
 
             closeModal();
         } catch (err) {
@@ -169,6 +178,7 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
             }
             setDependencyResult(result);
             setIsDependencyModalOpen(true);
+
         } catch (e) {
             alert(`Проблема с получением данных: ${e}`);
         }

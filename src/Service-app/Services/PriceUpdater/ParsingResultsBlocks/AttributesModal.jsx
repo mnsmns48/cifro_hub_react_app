@@ -19,6 +19,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     const [haveImages, setHaveImages] = useState(false);
     const [formulas, setFormulas] = useState([]);
 
+    console.log("data from AttributesModal", data)
 
     const resetState = () => {
         setLoading(false);
