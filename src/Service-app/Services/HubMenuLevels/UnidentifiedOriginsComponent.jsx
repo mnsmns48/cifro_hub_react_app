@@ -6,6 +6,7 @@ import {LinkOutlined, QuestionOutlined, ShareAltOutlined} from "@ant-design/icon
 import "./Css/UnidentifiedOriginsComponent.css";
 import InfoSelect from "../PriceUpdater/ParsingResultsBlocks/InfoSelect.jsx";
 import AttributesModal from "../PriceUpdater/ParsingResultsBlocks/AttributesModal.jsx";
+import UpdateHubChooseElements from "./UpdateHubChooseElements.jsx";
 
 
 const UnidentifiedOriginsComponent = ({
@@ -24,6 +25,7 @@ const UnidentifiedOriginsComponent = ({
     const [dependencySelection, setDependencySelection] = useState(null);
     const [rows, setRows] = useState([]);
     const [attributesModalData, setAttributesModalData] = useState(null);
+    const [isHubUpdateOpen, setIsHubUpdateOpen] = useState(false);
 
 
     const reloadData = async () => {
@@ -323,6 +325,18 @@ const UnidentifiedOriginsComponent = ({
         });
     };
 
+    if (isHubUpdateOpen) {
+        return (
+            <UpdateHubChooseElements
+                vsl_list={vsl_list}
+                path_ids={path_ids}
+                onClose={() => {
+                    setIsHubUpdateOpen(false);
+                    onClose();
+                }}
+            />
+        );
+    }
 
     return (
         <Modal open={isOpen} onCancel={onClose} width={1280} footer={null}>
@@ -373,6 +387,21 @@ const UnidentifiedOriginsComponent = ({
                 />
             )}
 
+            {isHubUpdateOpen && (
+                <UpdateHubChooseElements
+                    vsl_list={vsl_list}
+                    path_ids={path_ids}
+                    onClose={() => setIsHubUpdateOpen(false)}
+                />
+            )}
+
+
+            <div>
+                <Button type="primary" onClick={() => setIsHubUpdateOpen(true)}>
+                    Выбрать модели для обновления
+                </Button>
+
+            </div>
             <div style={{marginTop: 20}}>
                 <Table
                     rowSelection={{

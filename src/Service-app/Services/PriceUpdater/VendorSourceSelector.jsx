@@ -1,29 +1,10 @@
 import {Select} from "antd";
 
 
-
-//Реализация для выбора:
-
-// const VendorSourceSelector = ({list, onChange}) => {
-//     return (
-//         <Select defaultValue={list.length > 0 ? list[0].value : undefined}
-//                 defaultOpen={true} options={list}
-//                 showSearch style={{width: '100%'}}
-//                 placeholder="Кого парсим?"
-//                 onChange={onChange}/>
-//     );
-// };
-//
-// export default VendorSourceSelector;
+import {useState, useEffect} from 'react';
 
 
-
-
-
-import { useState, useEffect } from 'react';
-
-
-const VendorSourceSelector = ({ list, onChange }) => {
+const VendorSourceSelector = ({list, onChange}) => {
     const [value, setValue] = useState(
         list.length > 0 ? list[0].value : undefined
     );
@@ -45,7 +26,7 @@ const VendorSourceSelector = ({ list, onChange }) => {
             value={value}
             options={list}
             showSearch
-            style={{ width: '100%' }}
+            style={{width: '100%'}}
             placeholder="Кого парсим?"
             onChange={handleChange}
         />

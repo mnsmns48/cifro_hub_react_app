@@ -18,6 +18,7 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent, onStepbyste
     const [isUpdating, setIsUpdating] = useState(false);
     const [isUpdateFinished, setIsUpdateFinished] = useState(false);
 
+
     useEffect(() => {
         if (Array.isArray(vslList)) {
             const enriched = vslList.map(item => ({
