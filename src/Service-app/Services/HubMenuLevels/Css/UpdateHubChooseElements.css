@@ -1,3 +1,10 @@
 .row-selected {
-    background-color: #e6f7ff !important;
+    background-color: #707575 !important;
+    color: white !important;
 }
+
+.row-selected:hover > td {
+    background-color: #707575 !important;
+    color: white !important;
+}
+

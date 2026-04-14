@@ -105,9 +105,18 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent, onStepbyste
             <div>
                 <div style={{marginBottom: 12, textAlign: "left"}}>
                     {selectedRowKeys.length > 0 && !isUpdating && !isUpdateFinished && (
-                        <Button type="primary" onClick={handleUpdateClick}>
-                            Запустить обновление
-                        </Button>
+                        <Popconfirm
+                            title="Запустить обновление?"
+                            description="Вы уверены, что хотите запустить обновление?"
+                            okText="Да"
+                            cancelText="Нет"
+                            onConfirm={handleUpdateClick}
+                        >
+                            <Button type="primary">
+                                Запустить обновление
+                            </Button>
+                        </Popconfirm>
+
                     )}
                     {!isUpdating && (
                         <div style={{display: "flex", gap: 10, paddingTop: 10}}>
