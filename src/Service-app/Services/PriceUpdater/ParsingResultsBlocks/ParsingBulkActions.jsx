@@ -39,7 +39,7 @@ const ParsingBulkActions = ({
                 onClick={onAddDependence}
                 className="fixed-hub-button fixed-hub-button-dependency"
             >
-                Зависимость(Модель) ({selectedCount}) <ShareAltOutlined/>
+                Зависимость ({selectedCount}) <ShareAltOutlined/>
             </Button>
 
             <Button

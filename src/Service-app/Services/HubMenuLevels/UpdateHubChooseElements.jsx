@@ -1,15 +1,16 @@
 import {useEffect, useState} from "react";
-import {Modal, Button, Segmented, Table, Flex, Spin} from "antd";
+import {Modal, Button, Segmented, Table, Flex, Tooltip, Popconfirm} from "antd";
 import {fetchPostData} from "../SchemeAttributes/api.js";
 import "./Css/UpdateHubChooseElements.css"
-import {DatabaseOutlined} from "@ant-design/icons";
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
+import SmartPhone from "../../../Cifrotech-app/components/products/smartPhone.jsx";
+import DependencyModal from "../PriceUpdater/ResolveModelTypeDependencies.jsx";
 
 const styleFn = (info) => {
     if (info.props.vertical) {
         return {
             root: {
-                border: "1px solid #77BEF0",
+                border: "2px solid #676760",
                 padding: 4,
                 width: 350,
             },
@@ -30,6 +31,9 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
     const [data, setData] = useState([]);
     const [active, setActive] = useState(0);
 
+    const [selectedByTab, setSelectedByTab] = useState({});
+
+
     useEffect(() => {
         const load = async () => {
             setLoading(true);
@@ -42,9 +46,17 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
                     ...item,
                     models: item.models.map(m => ({...m}))
                 }));
-                console.log("cloned---", cloned)
+
                 setData(cloned);
                 setActive(0);
+                const initial = {};
+                cloned.forEach((tab, index) => {
+                    initial[index] = tab.models
+                        .filter(m => m.in_hub)
+                        .map(m => m.id);
+                });
+
+                setSelectedByTab(initial);
             }
 
             setLoading(false);
@@ -53,68 +65,87 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
         void load();
     }, []);
 
+    const activeTab = data.length > 0 ? data[active] : null;
+    const selectedRowKeys = selectedByTab[active] || [];
 
     const onRowClick = (record) => {
-        const newData = [...data];
-        const tab = newData[active];
+        setSelectedByTab(prev => {
+            const current = prev[active] || [];
+            const next = current.includes(record.id)
+                ? current.filter(id => id !== record.id)
+                : [...current, record.id];
 
-        for (let i = 0; i < tab.models.length; i++) {
-            if (tab.models[i].id === record.id) {
-                tab.models[i].in_hub = !tab.models[i].in_hub;
-                break;
-            }
-        }
-
-        setData(newData);
+            return {...prev, [active]: next};
+        });
     };
-
-
-    const activeTab = data.length > 0 ? data[active] : null;
 
     const columns = [
         {
-            title: "",
-            width: 40,
-            render: (_, r) => r.in_hub ? "✓" : "",
-        },
-        {title: "Название", dataIndex: "title"},
-        {
-            title: "Модель",
-            align: "center",
-            width: 90,
-            render: (_, record) => (
-                <Button
-                    size="small"
-                    onClick={() => {
-                        Modal.info({
-                            title: record.title,
-                            content: (
-                                <pre style={{whiteSpace: "pre-wrap"}}>
-                            {JSON.stringify(record.info, null, 2)}
-                        </pre>
-                            ),
-                            width: 600,
-                        });
-                    }}
-                    icon={<DatabaseOutlined/>}
-                />
-            ),
-        },
-        {
-            title: "От",
+            title: "Цена ОТ",
             align: "center",
             width: 120,
+            sorter: (a, b) => {
+                const minA = Math.min(...(a.available || []).map(x => x.output_price));
+                const minB = Math.min(...(b.available || []).map(x => x.output_price));
+                return minA - minB;
+            },
             render: (_, record) => {
                 const list = record.available || [];
-                if (list.length === 0) {
-                    return "-";
-                }
+                if (list.length === 0) return "-";
 
-                const price = list[0].output_price;
-                return price.toLocaleString("ru-RU");
+                const minPrice = Math.min(...list.map(item => item.output_price));
+                return minPrice.toLocaleString("ru-RU");
             }
         },
-
+        {
+            title: "Название",
+            dataIndex: "title",
+            sorter: (a, b) => a.title.localeCompare(b.title),
+            render: (text, record) => (
+                <Tooltip
+                    placement="right"
+                    overlayStyle={{
+                        maxWidth: 900,
+                        padding: 0,
+                    }}
+                    title={
+                        <div style={{maxWidth: 900}}>
+                            <div style={{textAlign: "center", marginBottom: 10}}>
+                                <div style={{color: "blue"}}>
+                                    {record.source}
+                                </div>
+                                <div style={{fontWeight: 600}}>
+                                    {record.title}
+                                </div>
+                            </div>
+                            <div style={{textAlign: "left", marginBottom: 15}}>
+                                <DependencyModal source={record.source} info={record.info} />
+                            </div>
+                            {record.available?.length ? (
+                                <div style={{maxWidth: 900}}>
+                                    {[...record.available]
+                                        .sort((a, b) => a.output_price - b.output_price)
+                                        .map((a, i) => (
+                                            <div key={i} style={{marginBottom: 4}}>
+                                                <span>{a.title}: </span>
+                                                <span style={{color: "#7FFF00", fontWeight: 600}}>
+                                            {a.output_price.toLocaleString("ru-RU")} ₽
+                                        </span>
+                                            </div>
+                                        ))}
+                                </div>
+                            ) : (
+                                <div>Нет данных</div>
+                            )}
+                        </div>
+                    }
+                >
+            <span style={{cursor: "pointer"}}>
+                {text}
+            </span>
+                </Tooltip>
+            )
+        },
         {
             title: "Тип",
             align: "center",
@@ -125,15 +156,14 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
             align: "center",
             render: (_, r) => r.brand.brand,
         },
-
-
     ];
 
     return (
         loading ? (
             <Spinner/>
         ) : (
-            <Modal open={true} onCancel={onClose} footer={null} width={1280}>
+
+            <Modal open={true} onCancel={onClose} footer={null} width={1280} maskClosable={false}>
                 <div style={{paddingTop: 25}}>
                     <Flex gap="small">
                         {data.length > 0 && (
@@ -170,23 +200,38 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
                                     columns={columns}
                                     pagination={false}
                                     size="small"
-                                    rowClassName={(record) => record.in_hub ? "row-selected" : ""}
+                                    rowSelection={{
+                                        selectedRowKeys,
+                                        onChange: (keys) =>
+                                            setSelectedByTab(prev => ({...prev, [active]: keys})),
+                                        preserveSelectedRowKeys: true,
+                                    }}
+                                    rowClassName={(record) =>
+                                        selectedRowKeys.includes(record.id) ? "row-selected" : ""
+                                    }
                                     onRow={(record) => ({
                                         onClick: () => onRowClick(record)
                                     })}
                                 />
-
                             )}
                         </div>
                     </Flex>
+                    <Popconfirm
+                        title="Уверены, что хотите закрыть?"
+                        description="Данные не сохранятся"
+                        okText="Да"
+                        cancelText="Нет"
+                        onConfirm={onClose}
+                    >
+                        <Button type="primary" style={{marginTop: 20}}>
+                            Закрыть
+                        </Button>
+                    </Popconfirm>
 
-                    <Button type="primary" onClick={onClose} style={{marginTop: 20}}>
-                        Закрыть
-                    </Button>
                 </div>
             </Modal>
         )
     );
-};
+}
 
 export default UpdateHubChooseElements;

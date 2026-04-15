@@ -1,21 +1,20 @@
 import React, {Suspense} from "react";
-import {Spin} from "antd";
 
 
 function shortSmartPhoneSpecification(info, source) {
     const ShortSpecsImportComponent = React.lazy(() => import(`./description_sources/${source}.jsx`));
     return (
-        <Suspense fallback={<div><Spin/></div>}>
+        <Suspense>
             <ShortSpecsImportComponent features_array={info}/>
         </Suspense>
     );
 }
 
 
-const ShortInfoBlock = ({ title, specs }) => (
+const ShortInfoBlock = ({title, specs}) => (
     <div className="spec-item">
         {title && (
-            <span className="spec-title" style={{ fontWeight: 'bold' }}>{title} </span>
+            <span className="spec-title" style={{fontWeight: 'bold'}}>{title} </span>
         )}
         <span className="spec-value">
             {specs.map((spec, index) =>
@@ -117,7 +116,7 @@ export const RenderShortSpecs = ({features_array, shortSpecificationFn}) => {
 };
 
 
-export default function SmartPhone({ info }) {
+export default function SmartPhone({info}) {
     const features_array = Array.isArray(info.info) ? info.info : [];
 
     return (

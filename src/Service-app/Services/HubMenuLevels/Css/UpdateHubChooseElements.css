@@ -1,10 +1,9 @@
-.row-selected {
+.ant-table-row.row-selected > td {
     background-color: #707575 !important;
     color: white !important;
 }
 
-.row-selected:hover > td {
+.ant-table-row.row-selected:hover > td {
     background-color: #707575 !important;
     color: white !important;
 }
-
