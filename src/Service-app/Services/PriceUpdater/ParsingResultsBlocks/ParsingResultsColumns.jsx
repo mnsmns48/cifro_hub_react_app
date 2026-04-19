@@ -141,11 +141,5 @@ export const createParsingColumns = (
     },
     {title: "Доставка", dataIndex: "shipment", key: "shipment", align: "center"},
     {title: "Дополнительно", dataIndex: "optional", key: "optional"},
-    {
-        title: "Зависимость",
-        dataIndex: "features_title",
-        key: "features_title",
-        align: "center",
-        width: 215,
-    }
+    {title: "Зависимость", dataIndex: "features_title", key: "features_title", align: "center", width: 215}
 ];

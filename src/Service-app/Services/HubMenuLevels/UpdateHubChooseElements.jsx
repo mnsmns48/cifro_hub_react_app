@@ -1,9 +1,10 @@
 import {useEffect, useState} from "react";
-import {Modal, Button, Segmented, Table, Flex, Tooltip, Popconfirm} from "antd";
+import {Modal, Button, Segmented, Table, Flex, Tooltip, Popconfirm, Popover} from "antd";
 import {fetchPostData} from "../SchemeAttributes/api.js";
 import "./Css/UpdateHubChooseElements.css"
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
-import ResolveModelTypeDependencies from "../PriceUpdater/ResolveModelTypeDependencies.jsx";
+import ResolveModelTypeDependencies from "../Common/ResolveModelTypeDependencies.jsx";
+import ProductPopoverContent from "../Common/ProductPopoverContent.jsx";
 
 const styleFn = (info) => {
     if (info.props.vertical) {
@@ -100,50 +101,20 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
             title: "Название",
             dataIndex: "title",
             sorter: (a, b) => a.title.localeCompare(b.title),
-            render: (text, record) => (
-                <Tooltip
-                    placement="right"
-                    overlayStyle={{
-                        maxWidth: 900,
-                        padding: 0,
-                    }}
-                    title={
-                        <div style={{maxWidth: 900}}>
-                            <div style={{textAlign: "center", marginBottom: 10}}>
-                                <div style={{color: "blue"}}>
-                                    {record.source}
-                                </div>
-                                <div style={{fontWeight: 600}}>
-                                    {record.title}
-                                </div>
-                            </div>
-                            <div style={{textAlign: "left", marginBottom: 15}}>
-                                <ResolveModelTypeDependencies source={record.source} info={record.info}/>
-                            </div>
-                            {record.available?.length ? (
-                                <div style={{maxWidth: 900}}>
-                                    {[...record.available]
-                                        .sort((a, b) => a.output_price - b.output_price)
-                                        .map((a, i) => (
-                                            <div key={i} style={{marginBottom: 4}}>
-                                                <span>{a.title}: </span>
-                                                <span style={{color: "#7FFF00", fontWeight: 600}}>
-                                            {a.output_price.toLocaleString("ru-RU")} ₽
-                                        </span>
-                                            </div>
-                                        ))}
-                                </div>
-                            ) : (
-                                <div>Нет данных</div>
-                            )}
-                        </div>
-                    }
-                >
-            <span style={{cursor: "pointer"}}>
-                {text}
-            </span>
-                </Tooltip>
-            )
+            render: (text, record) => {
+                return (
+                    <Popover
+                        placement="right"
+                        trigger="hover"
+                        overlayInnerStyle={{ padding: 0, maxWidth: 900 }}
+                        content={<ProductPopoverContent record={record} />}
+                    >
+                <span style={{ cursor: "pointer" }}>
+                    {text}
+                </span>
+                    </Popover>
+                );
+            }
         },
         {
             title: "Тип",

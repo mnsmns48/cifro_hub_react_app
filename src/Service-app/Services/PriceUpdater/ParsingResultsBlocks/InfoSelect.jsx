@@ -3,7 +3,7 @@ import {Button, Typography, Input} from "antd";
 import {ScissorOutlined, SelectOutlined} from "@ant-design/icons";
 import MyModal from "../../../../Ui/MyModal.jsx";
 import {deleteDependencies, fetchDependencyDetails, fetchItemDependencies, postDependencyUpdate} from "../api.js";
-import ResolveModelTypeDependencies from "../ResolveModelTypeDependencies.jsx";
+import ResolveModelTypeDependencies from "../../Common/ResolveModelTypeDependencies.jsx";
 import Spinner from "../../../../Cifrotech-app/components/Spinner.jsx";
 
 const {Search} = Input;
