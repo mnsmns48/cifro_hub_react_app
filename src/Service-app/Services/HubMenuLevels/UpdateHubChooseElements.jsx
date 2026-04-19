@@ -3,8 +3,7 @@ import {Modal, Button, Segmented, Table, Flex, Tooltip, Popconfirm} from "antd";
 import {fetchPostData} from "../SchemeAttributes/api.js";
 import "./Css/UpdateHubChooseElements.css"
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
-import SmartPhone from "../../../Cifrotech-app/components/products/smartPhone.jsx";
-import DependencyModal from "../PriceUpdater/ResolveModelTypeDependencies.jsx";
+import ResolveModelTypeDependencies from "../PriceUpdater/ResolveModelTypeDependencies.jsx";
 
 const styleFn = (info) => {
     if (info.props.vertical) {
@@ -119,7 +118,7 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
                                 </div>
                             </div>
                             <div style={{textAlign: "left", marginBottom: 15}}>
-                                <DependencyModal source={record.source} info={record.info} />
+                                <ResolveModelTypeDependencies source={record.source} info={record.info}/>
                             </div>
                             {record.available?.length ? (
                                 <div style={{maxWidth: 900}}>
