@@ -5,7 +5,7 @@ import {getProgressLine} from "../PriceUpdater/api.js";
 import {startParsing} from "./api.js";
 import getComparisonTableColumns from "./ComparisonTableColumns.jsx";
 import "./Css/ComparisonModal.css";
-import {MoreOutlined} from "@ant-design/icons";
+import {ExclamationCircleOutlined, MoreOutlined} from "@ant-design/icons";
 
 
 const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent, onStepbystep}) => {
@@ -112,8 +112,8 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent, onStepbyste
                             cancelText="Нет"
                             onConfirm={handleUpdateClick}
                         >
-                            <Button type="primary">
-                                Запустить обновление
+                            <Button type="primary" danger>
+                                <ExclamationCircleOutlined /> Запустить обновление
                             </Button>
                         </Popconfirm>
 

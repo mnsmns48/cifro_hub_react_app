@@ -4,7 +4,7 @@ import {fetchPostData} from "../SchemeAttributes/api.js";
 
 
 const FeaturesDependenciesComponent = ({prosCons, brand, type, source, info}) => {
-    if (!source || !info) {
+    if (!info) {
         return (
             <div style={{padding: 10, color: "red"}}>
                 Ошибка: отсутствуют данные для отображения
@@ -12,7 +12,15 @@ const FeaturesDependenciesComponent = ({prosCons, brand, type, source, info}) =>
         );
     }
 
-    return <SmartPhone info={{info, source}}/>;
+    return (
+        <>
+            <div style={{textAlign: "center", marginBottom: 10}}>
+                <div style={{color: "#7FFF00"}}>
+                    {source}
+                </div>
+            </div>
+            <SmartPhone info={{info, source}}/>
+        </>)
 };
 
 
@@ -20,7 +28,6 @@ const ResolveModelTypeDependencies = ({
                                           origin = null,
                                           features_id = null,
                                           features_title = null,
-
                                           brand = null,
                                           type = null,
                                           info = null,
@@ -30,9 +37,8 @@ const ResolveModelTypeDependencies = ({
 
     const [data, setData] = useState(null);
 
-    // 1. Если переданы готовые данные — используем их
     useEffect(() => {
-        if (brand && type && info && source) {
+        if (info && source) {
             setData({
                 brand,
                 product_type: type,
@@ -40,11 +46,8 @@ const ResolveModelTypeDependencies = ({
                 source,
                 pros_cons,
             });
+            return;
         }
-    }, [brand, type, info, source, pros_cons]);
-
-    useEffect(() => {
-        if (data) return;
 
         const payload = {};
         if (origin !== null) payload.origin = origin;
@@ -53,31 +56,29 @@ const ResolveModelTypeDependencies = ({
 
         if (Object.keys(payload).length === 0) return;
 
-        let isMounted = true;
 
         fetchPostData("service/features/fetch_product_information", payload)
             .then((res) => {
-                if (isMounted) setData(res);
+                setData(res);
             });
 
-        return () => {
-            isMounted = false;
-        };
-    }, [origin, features_id, features_title, data]);
+
+    }, [
+        brand, type, info, source, pros_cons,
+        origin, features_id, features_title
+    ]);
 
     if (!data) return null;
 
     return (
-        <FeaturesDependenciesComponent
-            brand={data.brand}
-            type={data.product_type}
-            source={data.source}
-            info={data.info}
-            prosCons={data.pros_cons}
+        <FeaturesDependenciesComponent brand={data.brand}
+                                       type={data.product_type}
+                                       source={data.source}
+                                       info={data.info}
+                                       prosCons={data.pros_cons}
         />
     );
 };
-
 
 
 export default ResolveModelTypeDependencies;

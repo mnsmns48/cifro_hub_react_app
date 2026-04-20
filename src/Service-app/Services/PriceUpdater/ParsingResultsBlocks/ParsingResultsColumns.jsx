@@ -1,8 +1,8 @@
-import {Image, Button} from "antd";
+import {Image, Button, Tooltip} from "antd";
 import {FileUnknownOutlined, LinkOutlined, PercentageOutlined,} from "@ant-design/icons";
 import {updateParsingItem} from "../api.js";
-import InfoSelect from "./InfoSelect.jsx";
 import "../../Css/ParsingResults.css";
+import ResolveModelTypeDependencies from "../../Common/ResolveModelTypeDependencies.jsx";
 
 export const createParsingColumns = (
     {setRows, showInputPrice, expandedRows, toggleExpand, openAttributesModal}
@@ -58,28 +58,36 @@ export const createParsingColumns = (
         dataIndex: "title",
         key: "title",
         width: 240,
-        render: (text, record, index) => (
-            <div
-                contentEditable
-                suppressContentEditableWarning
-                className={record.in_hub ? "highlight-purple" : ""}
-                onBlur={async e => {
-                    const newVal = e.target.innerText.trim();
-                    if (!newVal || newVal === text) return;
+        render: (text, record, index) => {
+            return (
+                <Tooltip
+                    placement="right"
+                    overlayInnerStyle={{width: "15vw", maxWidth: "15vw", padding: 15}}
+                    title={<ResolveModelTypeDependencies origin={record.origin}/>}
+                >
+                    <div
+                        contentEditable
+                        suppressContentEditableWarning
+                        className={record.in_hub ? "highlight-purple" : ""}
+                        onBlur={async e => {
+                            const newVal = e.target.innerText.trim();
+                            if (!newVal || newVal === text) return;
 
-                    setRows(prev => {
-                        const copy = [...prev];
-                        copy[index] = {...copy[index], title: newVal};
-                        return copy;
-                    });
+                            setRows(prev => {
+                                const copy = [...prev];
+                                copy[index] = {...copy[index], title: newVal};
+                                return copy;
+                            });
 
-                    const res = await updateParsingItem(record.origin, {title: newVal});
-                    if (!res.is_ok) console.error("Ошибка:", res.message);
-                }}
-            >
-                {text}
-            </div>
-        )
+                            const res = await updateParsingItem(record.origin, {title: newVal});
+                            if (!res.is_ok) console.error("Ошибка:", res.message);
+                        }}
+                    >
+                        {text}
+                    </div>
+                </Tooltip>
+            );
+        }
     },
     {
         key: "details",
@@ -141,5 +149,23 @@ export const createParsingColumns = (
     },
     {title: "Доставка", dataIndex: "shipment", key: "shipment", align: "center"},
     {title: "Дополнительно", dataIndex: "optional", key: "optional"},
-    {title: "Зависимость", dataIndex: "features_title", key: "features_title", align: "center", width: 215}
+    {
+        title: "Зависимость",
+        dataIndex: "features_title",
+        key: "features_title",
+        align: "center",
+        width: 215,
+        render: (text, record) => (
+            <div
+                style={{
+                    cursor: "not-allowed",
+                    opacity: 0.6
+                }}
+                title={record.features_title}
+            >
+                {record.features_title}
+            </div>
+        )
+    }
+
 ];

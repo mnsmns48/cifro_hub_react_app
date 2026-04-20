@@ -345,7 +345,7 @@ const UnidentifiedOriginsComponent = ({
                     className="fixed-button fixed-button-dependency"
                     onClick={() => handleAddDependenceMulti(selectedRowKeys)}
                 >
-                    Зависимость(Модель) ({selectedRowKeys.length}) <ShareAltOutlined/>
+                    Зависимость ({selectedRowKeys.length}) <ShareAltOutlined/>
                 </Button>
             )}
 
