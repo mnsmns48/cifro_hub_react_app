@@ -41,6 +41,7 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     const [attributesModalData, setAttributesModalData] = useState(null);
     const [isAttributesModalOpen, setIsAttributesModalOpen] = useState(false);
     const [isAutoLoading, setIsAutoLoading] = useState(false);
+    const [showDependencyColumn, setShowDependencyColumn] = useState(false);
 
 
     useEffect(() => {
@@ -106,9 +107,10 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                 showInputPrice,
                 expandedRows,
                 toggleExpand,
-                openAttributesModal
+                openAttributesModal,
+                showDependencyColumn
             }),
-        [rows, setRows, showInputPrice, expandedRows, toggleExpand, openAttributesModal]
+        [rows, setRows, showInputPrice, expandedRows, toggleExpand, openAttributesModal, showDependencyColumn]
     );
 
     const downloadExcel = async () => {
@@ -241,6 +243,9 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                             onRangeChange={handleSelectRange}
 
                             onExportExcel={downloadExcel}
+
+                            showDependencyColumn={showDependencyColumn}
+                            setShowDependencyColumn={setShowDependencyColumn}
             />
 
             <ParsingBulkActions selectedCount={selectedRowKeys.length}

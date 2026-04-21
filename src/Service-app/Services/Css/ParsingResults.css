@@ -113,3 +113,34 @@
 }
 
 
+.hover-reveal-wrapper {
+    position: relative;
+}
+
+.hover-reveal-zone {
+    position: absolute;
+    right: -215px; /* ширина скрытой колонки */
+    top: 0;
+    width: 215px;
+    height: 100%;
+    opacity: 0;
+}
+
+.hover-reveal-zone:hover .hover-reveal-content {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.hover-reveal-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: white;
+    border: 1px solid #dcdcdc;
+    padding: 6px 10px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 999;
+}

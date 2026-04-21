@@ -1,12 +1,11 @@
 import {Button, Input, Select, Badge, Tooltip} from "antd";
 import {
-    BarsOutlined,
     CalculatorOutlined,
     CalendarOutlined,
     DeleteRowOutlined,
     EyeInvisibleOutlined,
     FileExcelOutlined,
-    LinkOutlined
+    LinkOutlined, QuestionCircleOutlined, ReloadOutlined
 } from "@ant-design/icons";
 
 const {Search} = Input;
@@ -29,7 +28,11 @@ const ParsingToolbar = ({
                             selectedRangeId,
                             onRangeChange,
 
-                            onExportExcel
+                            onExportExcel,
+
+                            showDependencyColumn,
+                            setShowDependencyColumn
+
                         }) => {
     return (
         <div
@@ -40,31 +43,49 @@ const ParsingToolbar = ({
                 padding: "12px 0"
             }}
         >
-            <Button onClick={onTogglePrice}>
-                {showInputPrice ? <CalendarOutlined/> : <CalculatorOutlined/>}
-            </Button>
-
-            <Button onClick={onResetFilters}>
-                <BarsOutlined/>
-            </Button>
-
-            <Badge count={countNoPreview} offset={[-8, -6]}>
-                <Button onClick={() => onFilterChange("noPreview")}>
-                    <EyeInvisibleOutlined/>
+            <Tooltip title="Сбросить фильтры">
+                <Button onClick={onResetFilters}>
+                    <ReloadOutlined />
                 </Button>
-            </Badge>
-
-            <Badge count={countNoFeatures} offset={[-8, -6]}>
-                <Button onClick={() => onFilterChange("noFeatures")}>
-                    <DeleteRowOutlined/>
+            </Tooltip>
+            <Tooltip title="Показать / скрыть закупочные цены и разницу">
+                <Button onClick={onTogglePrice}>
+                    {showInputPrice ? <CalendarOutlined/> : <CalculatorOutlined/>}
                 </Button>
-            </Badge>
-
-            <Badge count={countNoAttributes} offset={[-8, -6]}>
-                <Button onClick={() => onFilterChange("NoAttributes")}>
-                    <LinkOutlined/>
+            </Tooltip>
+            <Tooltip title="Показать / скрыть позиции без картинок">
+                <Badge count={countNoPreview} offset={[-8, -6]}>
+                    <Button onClick={() => onFilterChange("noPreview")}>
+                        <EyeInvisibleOutlined/>
+                    </Button>
+                </Badge>
+            </Tooltip>
+            <Tooltip title="Показать / скрыть позиции без зависимостей (Модель не присвоена)">
+                <Badge count={countNoFeatures} offset={[-8, -6]}>
+                    <Button onClick={() => onFilterChange("noFeatures")}>
+                        <DeleteRowOutlined/>
+                    </Button>
+                </Badge>
+            </Tooltip>
+            <Tooltip title="Показать / скрыть позиции без атрибутов">
+                <Badge count={countNoAttributes} offset={[-8, -6]}>
+                    <Button onClick={() => onFilterChange("NoAttributes")}>
+                        <LinkOutlined/>
+                    </Button>
+                </Badge>
+            </Tooltip>
+            <Tooltip title="Показать / скрыть колонку 'Зависимость'">
+                <Button
+                    onClick={() => setShowDependencyColumn(v => !v)}
+                    style={{
+                        background: showDependencyColumn ? "#ff4d4f" : "transparent",
+                        color: showDependencyColumn ? "white" : "inherit",
+                    }}
+                >
+                    <QuestionCircleOutlined/>
                 </Button>
-            </Badge>
+            </Tooltip>
+
 
             <Search
                 placeholder="Поиск по названию / коду товара"

@@ -37,7 +37,9 @@ const ResolveModelTypeDependencies = ({
 
     const [data, setData] = useState(null);
 
+
     useEffect(() => {
+
         if (info && source) {
             setData({
                 brand,
@@ -54,19 +56,25 @@ const ResolveModelTypeDependencies = ({
         if (features_id !== null) payload.features_id = features_id;
         if (features_title !== null) payload.features_title = features_title;
 
-        if (Object.keys(payload).length === 0) return;
-
+        if (Object.keys(payload).length === 0) {
+            return;
+        }
 
         fetchPostData("service/features/fetch_product_information", payload)
             .then((res) => {
                 setData(res);
+            })
+            .catch((err) => {
+                if (err?.response?.status === 404) {
+                    setData(null);
+                }
             });
-
 
     }, [
         brand, type, info, source, pros_cons,
         origin, features_id, features_title
     ]);
+
 
     if (!data) return null;
 

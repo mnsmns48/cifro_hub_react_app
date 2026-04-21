@@ -5,7 +5,7 @@ import "../../Css/ParsingResults.css";
 import ResolveModelTypeDependencies from "../../Common/ResolveModelTypeDependencies.jsx";
 
 export const createParsingColumns = (
-    {setRows, showInputPrice, expandedRows, toggleExpand, openAttributesModal}
+    {setRows, showInputPrice, expandedRows, toggleExpand, openAttributesModal, showDependencyColumn}
 ) => [
     {
         dataIndex: "preview",
@@ -54,37 +54,69 @@ export const createParsingColumns = (
         }
     },
     {
+        title: "Зависимость",
+        dataIndex: "features_title",
+        key: "features_title",
+        hidden: !showDependencyColumn,
+        align: "center",
+        width: 215,
+        render: (text, record) => (
+            <div
+                style={{
+
+                    opacity: 0.6
+                }}
+                title={record.features_title}
+            >
+                {record.features_title}
+            </div>
+        )
+    },
+    {
         title: "Название",
         dataIndex: "title",
         key: "title",
         width: 240,
         render: (text, record, index) => {
+            const content = (
+                <div
+                    contentEditable
+                    suppressContentEditableWarning
+                    className={record.in_hub ? "highlight-purple" : ""}
+                    onBlur={async e => {
+                        const newVal = e.target.innerText.trim();
+                        if (!newVal || newVal === text) return;
+
+                        setRows(prev => {
+                            const copy = [...prev];
+                            copy[index] = {...copy[index], title: newVal};
+                            return copy;
+                        });
+
+                        const res = await updateParsingItem(record.origin, {title: newVal});
+                        if (!res.is_ok) console.error("Ошибка:", res.message);
+                    }}
+                >
+                    {text}
+                </div>
+            );
+
+            const hasFeatures =
+                Array.isArray(record.features_title) &&
+                record.features_title.length > 0;
+
+            if (!hasFeatures) {
+                return content;
+            }
+
+
             return (
                 <Tooltip
                     placement="right"
                     overlayInnerStyle={{width: "15vw", maxWidth: "15vw", padding: 15}}
                     title={<ResolveModelTypeDependencies origin={record.origin}/>}
                 >
-                    <div
-                        contentEditable
-                        suppressContentEditableWarning
-                        className={record.in_hub ? "highlight-purple" : ""}
-                        onBlur={async e => {
-                            const newVal = e.target.innerText.trim();
-                            if (!newVal || newVal === text) return;
-
-                            setRows(prev => {
-                                const copy = [...prev];
-                                copy[index] = {...copy[index], title: newVal};
-                                return copy;
-                            });
-
-                            const res = await updateParsingItem(record.origin, {title: newVal});
-                            if (!res.is_ok) console.error("Ошибка:", res.message);
-                        }}
-                    >
-                        {text}
-                    </div>
+                    {content}
                 </Tooltip>
             );
         }
@@ -149,23 +181,4 @@ export const createParsingColumns = (
     },
     {title: "Доставка", dataIndex: "shipment", key: "shipment", align: "center"},
     {title: "Дополнительно", dataIndex: "optional", key: "optional"},
-    {
-        title: "Зависимость",
-        dataIndex: "features_title",
-        key: "features_title",
-        align: "center",
-        width: 215,
-        render: (text, record) => (
-            <div
-                style={{
-                    cursor: "not-allowed",
-                    opacity: 0.6
-                }}
-                title={record.features_title}
-            >
-                {record.features_title}
-            </div>
-        )
-    }
-
 ];
