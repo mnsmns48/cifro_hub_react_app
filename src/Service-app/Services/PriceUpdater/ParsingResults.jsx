@@ -1,7 +1,7 @@
 import {useState, useMemo, useCallback, useEffect} from "react";
 
 import {Table, Button, Spin} from "antd";
-import {AlignRightOutlined} from "@ant-design/icons";
+import {AlignRightOutlined, ReadOutlined} from "@ant-design/icons";
 
 import {exportParsingToExcel} from "./api.js";
 
@@ -23,6 +23,7 @@ import ParsingFloatingActions from "./ParsingResultsBlocks/ParsingFloatingAction
 import "../Css/ParsingResults.css";
 import {fetchPostData} from "../SchemeAttributes/api.js";
 import {createHubLoading} from "../HubMenuLevels/api.js";
+import RenderModelStructured from "./ParsingResultsBlocks/RenderModelStructured.jsx";
 
 
 const ParsingResults = ({url, result, vslId, onRangeChange}) => {
@@ -42,6 +43,7 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     const [isAttributesModalOpen, setIsAttributesModalOpen] = useState(false);
     const [isAutoLoading, setIsAutoLoading] = useState(false);
     const [showDependencyColumn, setShowDependencyColumn] = useState(false);
+    const [isRenderStructuredOpen, setIsRenderStructuredOpen] = useState(false);
 
 
     useEffect(() => {
@@ -219,7 +221,9 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
 
     return (
         <>
+
             <ParsingHeader url={url} result={result}/>
+
 
             <ParsingToolbar showInputPrice={showInputPrice}
                             onTogglePrice={() => setShowInputPrice(v => !v)}
@@ -247,7 +251,10 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                             showDependencyColumn={showDependencyColumn}
                             setShowDependencyColumn={setShowDependencyColumn}
             />
-
+            <Button
+                icon={<ReadOutlined/>} variant="solid" color="primary" onClick={() => setIsRenderStructuredOpen(true)}>
+                Показать структурировано
+            </Button>
             <ParsingBulkActions selectedCount={selectedRowKeys.length}
                                 onDelete={() => handleDelete(selectedRowKeys)}
                                 onAddDependence={() => handleAddDependenceMulti(selectedRowKeys)}
@@ -268,6 +275,7 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                             }}
                 />
             )}
+
             <Spin spinning={isAutoLoading} tip="Добавляем в хаб...">
                 <Table className="parsing-result-table"
                        dataSource={filteredData}
@@ -313,6 +321,13 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                                 rows={rows}
                                 onApply={(selected) => setFeatureFilter(selected)}
             />
+
+            {isRenderStructuredOpen && (
+                <RenderModelStructured
+                    vsl_id={vslId}
+                    onClose={() => setIsRenderStructuredOpen(false)}
+                />
+            )}
 
 
             <AttributesModal open={isAttributesModalOpen}

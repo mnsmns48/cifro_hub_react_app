@@ -6,6 +6,7 @@ import {EditOutlined, SaveOutlined, RedoOutlined, FileJpgOutlined, DeleteOutline
 import UploadImagesModal from "../PriceUpdater/ParsingResultsBlocks/UploadImagesModal.jsx";
 import InfoSelect from "../PriceUpdater/ParsingResultsBlocks/InfoSelect.jsx";
 import OneItemProfileRewardSelector from "../../../Ui/OneItemProfileRewardSelector.jsx";
+import EmptyState from "../../../Ui/Empty.jsx";
 
 
 const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_profiles}) => {
@@ -363,6 +364,7 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
             <Table className="stockHubTable"
                    dataSource={items}
                    columns={columns}
+                   locale={{ emptyText: <EmptyState /> }}
                    rowKey="origin"
                    pagination={false}
                    size="small"

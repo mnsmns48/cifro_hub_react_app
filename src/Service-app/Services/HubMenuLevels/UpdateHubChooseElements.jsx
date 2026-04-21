@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Modal, Button, Segmented, Table, Flex, Tooltip, Popconfirm, Popover} from "antd";
+import {Modal, Button, Segmented, Table, Flex, Tooltip, Popconfirm} from "antd";
 import {fetchPostData} from "../SchemeAttributes/api.js";
 import "./Css/UpdateHubChooseElements.css"
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
