@@ -76,7 +76,7 @@ export const createParsingColumns = (
         title: "Название",
         dataIndex: "title",
         key: "title",
-        width: 240,
+        width: 300,
         render: (text, record, index) => {
             const content = (
                 <div
@@ -97,7 +97,7 @@ export const createParsingColumns = (
                         if (!res.is_ok) console.error("Ошибка:", res.message);
                     }}
                 >
-                    {text}
+                    <span style={{fontWeight: 500, fontSize: 14}}>{text}</span>
                 </div>
             );
 

@@ -251,10 +251,15 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                             showDependencyColumn={showDependencyColumn}
                             setShowDependencyColumn={setShowDependencyColumn}
             />
-            <Button
-                icon={<ReadOutlined/>} variant="solid" color="primary" onClick={() => setIsRenderStructuredOpen(true)}>
-                Показать структурировано
-            </Button>
+
+            {vslId  && (
+                <Button icon={<ReadOutlined/>} variant="solid" color="primary"
+                        onClick={() => setIsRenderStructuredOpen(true)}>
+                    Показать структурировано
+                </Button>
+                )
+            }
+
             <ParsingBulkActions selectedCount={selectedRowKeys.length}
                                 onDelete={() => handleDelete(selectedRowKeys)}
                                 onAddDependence={() => handleAddDependenceMulti(selectedRowKeys)}
