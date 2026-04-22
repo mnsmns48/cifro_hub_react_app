@@ -4,6 +4,8 @@ import {fetchPostData} from "../SchemeAttributes/api.js";
 import "./Css/UpdateHubChooseElements.css"
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 import ResolveModelTypeDependencies from "../Common/ResolveModelTypeDependencies.jsx";
+import {MenuOutlined} from "@ant-design/icons";
+import UpdateHubApproveOrigins from "./UpdateHubApproveOrigins.jsx";
 
 
 const styleFn = (info) => {
@@ -27,11 +29,10 @@ const styleFn = (info) => {
 
 const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
     const [loading, setLoading] = useState(true);
-
     const [data, setData] = useState([]);
     const [active, setActive] = useState(0);
-
     const [selectedByTab, setSelectedByTab] = useState({});
+    const [isApproveOpen, setIsApproveOpen] = useState(false);
 
 
     useEffect(() => {
@@ -55,7 +56,6 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
                         .filter(m => m.in_hub)
                         .map(m => m.id);
                 });
-
                 setSelectedByTab(initial);
             }
 
@@ -78,6 +78,14 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
             return {...prev, [active]: next};
         });
     };
+
+    const handleRowSelectionChange = (keys) => {
+        setSelectedByTab(prev => ({
+            ...prev,
+            [active]: keys
+        }));
+    };
+
 
     const columns = [
         {
@@ -151,78 +159,92 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
         },
     ];
 
+    const ConfirmClose = ({onConfirm, children}) => (
+        <Popconfirm title="Уверены, что хотите закрыть?"
+                    description="Данные не сохранятся"
+                    okText="Да"
+                    cancelText="Нет"
+                    onConfirm={onConfirm}>
+            {children}
+        </Popconfirm>
+    );
+
+
     return (
         loading ? (
             <Spinner/>
         ) : (
-
-            <Modal open={true} onCancel={onClose} footer={null} width={1280} maskClosable={false}>
-                <div style={{paddingTop: 25}}>
-                    <Flex gap="small">
-                        {data.length > 0 && (
-                            <Segmented
-                                value={active}
-                                onChange={setActive}
-                                options={data.map((item, index) => {
-                                    const route = item.route;
-                                    const last = route[route.length - 1];
-
-                                    return {
-                                        value: index,
-                                        label: route.map((r) => r.label).join(" - "),
-                                        icon: last?.icon ? (
-                                            <img
-                                                src={last.icon}
-                                                alt={last.label}
-                                                style={{width: 18, height: 18, objectFit: "contain"}}
-                                            />
-                                        ) : null,
-                                    };
-                                })}
-                                styles={styleFn}
-                                vertical
-                                size="small"
-                            />
-                        )}
-
-                        <div style={{flex: 1}}>
-                            {activeTab && (
-                                <Table
-                                    rowKey="id"
-                                    dataSource={activeTab.models}
-                                    columns={columns}
-                                    pagination={false}
-                                    size="small"
-                                    rowSelection={{
-                                        selectedRowKeys,
-                                        onChange: (keys) =>
-                                            setSelectedByTab(prev => ({...prev, [active]: keys})),
-                                        preserveSelectedRowKeys: true,
-                                    }}
-                                    rowClassName={(record) =>
-                                        selectedRowKeys.includes(record.id) ? "row-selected" : ""
-                                    }
-                                    onRow={(record) => ({
-                                        onClick: () => onRowClick(record)
-                                    })}
-                                />
-                            )}
-                        </div>
-                    </Flex>
-                    <Popconfirm
-                        title="Уверены, что хотите закрыть?"
-                        description="Данные не сохранятся"
-                        okText="Да"
-                        cancelText="Нет"
-                        onConfirm={onClose}
-                    >
-                        <Button type="primary" style={{marginTop: 20}}>
+            <>
+                <Modal open={true} onCancel={onClose} footer={null} width={1280} maskClosable={false} closable={false}>
+                    <ConfirmClose onConfirm={onClose}>
+                        <Button style={{marginTop: 20}}>
                             Закрыть
                         </Button>
-                    </Popconfirm>
+                    </ConfirmClose>
+                    <Button
+                        color="purple" variant="solid" style={{margin: 10}} icon={<MenuOutlined/>}
+                        onClick={() => setIsApproveOpen(true)}>
+                        Выбрать позиции для обновления
+                    </Button>
+                    <div style={{paddingTop: 25}}>
+                        <Flex gap="small">
+                            {data.length > 0 && (
+                                <Segmented
+                                    value={active}
+                                    onChange={setActive}
+                                    options={data.map((item, index) => {
+                                        const route = item.route;
+                                        const last = route[route.length - 1];
 
-                </div>
-            </Modal>
+                                        return {
+                                            value: index,
+                                            label: route.map((r) => r.label).join(" - "),
+                                            icon: last?.icon ? (
+                                                <img
+                                                    src={last.icon}
+                                                    alt={last.label}
+                                                    style={{width: 18, height: 18, objectFit: "contain"}}
+                                                />
+                                            ) : null,
+                                        };
+                                    })}
+                                    styles={styleFn}
+                                    vertical
+                                    size="small"
+                                />
+                            )}
+
+                            <div style={{flex: 1}}>
+                                {activeTab && (
+                                    <Table
+                                        rowKey="id"
+                                        dataSource={activeTab.models}
+                                        columns={columns}
+                                        pagination={false}
+                                        size="small"
+                                        rowSelection={{
+                                            selectedRowKeys,
+                                            onChange: handleRowSelectionChange,
+                                            preserveSelectedRowKeys: true
+                                        }}
+                                        rowClassName={(record) =>
+                                            selectedRowKeys.includes(record.id) ? "row-selected" : ""
+                                        }
+                                        onRow={(record) => ({
+                                            onClick: () => onRowClick(record)
+                                        })}
+                                    />
+                                )}
+                            </div>
+                        </Flex>
+                    </div>
+                </Modal>
+                {isApproveOpen && (
+                    <UpdateHubApproveOrigins selectedByTab={selectedByTab}
+                                             onCloseParent={() => onClose()}
+                                             onCloseApproveOrigins={() => setIsApproveOpen(false)}/>
+                )}
+            </>
         )
     );
 }

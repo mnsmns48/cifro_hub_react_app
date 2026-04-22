@@ -294,7 +294,6 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
         );
     }, [getSelectedValue, handleSelect]);
 
-
     return (
         <Modal
             open={open}
@@ -313,11 +312,11 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                             alignItems: "center",
                             paddingBottom: 10
                         }}>
-                        <span style={{
-                            color: selectedFormula ? "green" : "red",
-                            paddingRight: 6
-                        }}
-                        >Формула</span>
+                    <span style={{
+                        color: selectedFormula ? "green" : "red",
+                        paddingRight: 6
+                    }}
+                    >Формула</span>
                         <span style={{paddingLeft: 6, color: "#686868"}}>{selectedFormula?.name ?? null}</span>
                         <Dropdown trigger={["click"]} onOpenChange={handleDropdownOpen}
                                   menu={{
@@ -332,6 +331,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                         </Dropdown>
                     </div>
                 )}
+
                 {allowable.length > 0 && (<div>{allowable.map(renderAttribute)}</div>)}
 
                 <Row gutter={10} justify="center">
@@ -357,7 +357,6 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                             </Button>
                         )}
 
-
                         {showImages && data?.origin && (
                             <div style={{margin: 10}}>
                                 <div style={{margin: 10}}>
@@ -374,48 +373,34 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                                 />
                             </div>
                         )}
+
                         <div style={{marginTop: 20, display: "flex", gap: 8}}>
-                            <Popconfirm
-                                title="Перенести картинки?"
-                                description="Все картинки у товара будут заменены"
-                                open={popConfirmOpen}
-                                onConfirm={async () => {
-                                    await handleImplementDependencyImages();
-                                    setPopConfirmOpen(false);
+                            <Select
+                                style={{width: '100%'}}
+                                showSearch
+                                value={selectedDependencyOrigin}
+                                placeholder="Картинки из"
+                                onFocus={loadDependencyList}
+                                options={dependencyList.map(item => ({
+                                    label: (
+                                        <span style={{fontSize: 10}}>
+                                        <span style={{color: 'red'}}>{item.qnt_images} </span>
+                                            {item.title}
+                                    </span>
+                                    ),
+                                    value: item.origin,
+                                    searchValue: item.title,
+                                }))}
+                                filterOption={(input, option) =>
+                                    option?.searchValue
+                                        ?.toLowerCase()
+                                        .includes(input.toLowerCase())
+                                }
+                                onChange={async (value) => {
+                                    setSelectedDependencyOrigin(value)
+                                    await handleImplementDependencyImages()
                                 }}
-                                onCancel={() => {
-                                    setPopConfirmOpen(false);
-                                }}
-                                okText="Да"
-                                cancelText="Нет"
-                            >
-                                <Select
-                                    style={{width: '100%'}}
-                                    showSearch
-                                    value={selectedDependencyOrigin}
-                                    placeholder="Картинки из"
-                                    onFocus={loadDependencyList}
-                                    options={dependencyList.map(item => ({
-                                        label: (
-                                            <span style={{fontSize: 10}}>
-                                                <span style={{color: 'red'}}>{item.qnt_images} </span>
-                                                {item.title}
-                                            </span>
-                                        ),
-                                        value: item.origin,
-                                        searchValue: item.title,
-                                    }))}
-                                    filterOption={(input, option) =>
-                                        option?.searchValue
-                                            ?.toLowerCase()
-                                            .includes(input.toLowerCase())
-                                    }
-                                    onChange={(value) => {
-                                        setSelectedDependencyOrigin(value);
-                                        setPopConfirmOpen(true);
-                                    }}
-                                />
-                            </Popconfirm>
+                            />
                         </div>
 
                     </Col>
@@ -468,6 +453,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
             </>
         </Modal>
     );
+
 
 };
 
