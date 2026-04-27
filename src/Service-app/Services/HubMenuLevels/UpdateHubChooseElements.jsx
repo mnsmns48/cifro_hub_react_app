@@ -7,7 +7,6 @@ import ResolveModelTypeDependencies from "../Common/ResolveModelTypeDependencies
 import {MenuOutlined} from "@ant-design/icons";
 import UpdateHubApproveOrigins from "./UpdateHubApproveOrigins.jsx";
 
-
 const styleFn = (info) => {
     if (info.props.vertical) {
         return {
@@ -30,10 +29,11 @@ const styleFn = (info) => {
 const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
-    const [active, setActive] = useState(0);
-    const [selectedByTab, setSelectedByTab] = useState({});
-    const [isApproveOpen, setIsApproveOpen] = useState(false);
+    const [orderedPathIds, setOrderedPathIds] = useState([]);
+    const [selectedByPathId, setSelectedByPathId] = useState(new Map());
+    const [activeIndex, setActiveIndex] = useState(0);
 
+    const [isApproveOpen, setIsApproveOpen] = useState(false);
 
     useEffect(() => {
         const load = async () => {
@@ -43,20 +43,20 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
             const res = await fetchPostData("/service/resolve_models_for_comparison", payload);
 
             if (Array.isArray(res) && res.length > 0) {
-                const cloned = res.map(item => ({
-                    ...item,
-                    models: item.models.map(m => ({...m}))
-                }));
-
-                setData(cloned);
-                setActive(0);
-                const initial = {};
-                cloned.forEach((tab, index) => {
-                    initial[index] = tab.models
-                        .filter(m => m.in_hub)
-                        .map(m => m.id);
+                setData(res);
+                const ids = res.map(item => item.path_id);
+                setOrderedPathIds(ids);
+                const map = new Map();
+                res.forEach(item => {
+                    const selected = item.models.filter(m => m.in_hub).map(m => m.id);
+                    map.set(item.path_id, {
+                        path_id: item.path_id,
+                        route: item.route,
+                        models: selected
+                    });
                 });
-                setSelectedByTab(initial);
+                setSelectedByPathId(map);
+                setActiveIndex(0);
             }
 
             setLoading(false);
@@ -65,27 +65,37 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
         void load();
     }, []);
 
-    const activeTab = data.length > 0 ? data[active] : null;
-    const selectedRowKeys = selectedByTab[active] || [];
+    const activePathId = orderedPathIds[activeIndex];
+    const activeTab = data.find(d => d.path_id === activePathId);
+    const selectedRowKeys = selectedByPathId.get(activePathId)?.models || [];
 
     const onRowClick = (record) => {
-        setSelectedByTab(prev => {
-            const current = prev[active] || [];
+        setSelectedByPathId(prev => {
+            const newMap = new Map(prev);
+            const entry = newMap.get(activePathId);
+            const current = entry.models;
+
             const next = current.includes(record.id)
                 ? current.filter(id => id !== record.id)
                 : [...current, record.id];
 
-            return {...prev, [active]: next};
+            newMap.set(activePathId, {...entry, models: next});
+
+            return newMap;
         });
     };
 
     const handleRowSelectionChange = (keys) => {
-        setSelectedByTab(prev => ({
-            ...prev,
-            [active]: keys
-        }));
+        setSelectedByPathId(prev => {
+            const newMap = new Map(prev);
+            const entry = newMap.get(activePathId);
+            newMap.set(activePathId, {
+                ...entry,
+                models: keys
+            });
+            return newMap;
+        });
     };
-
 
     const columns = [
         {
@@ -112,7 +122,7 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
             render: (text, record) => (
                 <Tooltip
                     placement="right"
-                    overlayStyle={{
+                    style={{
                         maxWidth: 900,
                         padding: 0,
                     }}
@@ -169,84 +179,87 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
         </Popconfirm>
     );
 
-
-    return (
-        loading ? (
-            <Spinner/>
-        ) : (
-            <>
-                <Modal open={true} onCancel={onClose} footer={null} width={1280} maskClosable={false} closable={false}>
-                    <ConfirmClose onConfirm={onClose}>
-                        <Button style={{marginTop: 20}}>
-                            Закрыть
-                        </Button>
-                    </ConfirmClose>
-                    <Button
-                        color="purple" variant="solid" style={{margin: 10}} icon={<MenuOutlined/>}
-                        onClick={() => setIsApproveOpen(true)}>
-                        Выбрать позиции для обновления
+    return loading ? (
+        <Spinner/>
+    ) : (
+        <>
+            <Modal open={true} onCancel={onClose} footer={null} width={1280} maskClosable={false} closable={false}>
+                <ConfirmClose onConfirm={onClose}>
+                    <Button style={{marginTop: 20}}>
+                        Закрыть
                     </Button>
-                    <div style={{paddingTop: 25}}>
-                        <Flex gap="small">
-                            {data.length > 0 && (
-                                <Segmented
-                                    value={active}
-                                    onChange={setActive}
-                                    options={data.map((item, index) => {
-                                        const route = item.route;
-                                        const last = route[route.length - 1];
+                </ConfirmClose>
 
-                                        return {
-                                            value: index,
-                                            label: route.map((r) => r.label).join(" - "),
-                                            icon: last?.icon ? (
-                                                <img
-                                                    src={last.icon}
-                                                    alt={last.label}
-                                                    style={{width: 18, height: 18, objectFit: "contain"}}
-                                                />
-                                            ) : null,
-                                        };
-                                    })}
-                                    styles={styleFn}
-                                    vertical
+                <Button
+                    color="purple"
+                    variant="solid"
+                    style={{margin: 10}}
+                    icon={<MenuOutlined/>}
+                    onClick={() => setIsApproveOpen(true)}
+                >
+                    Выбрать позиции для обновления
+                </Button>
+
+                <div style={{paddingTop: 25}}>
+                    <Flex gap="small">
+                        {orderedPathIds.length > 0 && (
+                            <Segmented
+                                value={activeIndex}
+                                onChange={setActiveIndex}
+                                options={data.map((item, index) => {
+                                    const route = item.route;
+                                    const last = route[route.length - 1];
+
+                                    return {
+                                        value: index,
+                                        label: route.map((r) => r.label).join(" - "),
+                                        icon: last?.icon ? (
+                                            <img
+                                                src={last.icon}
+                                                alt={last.label}
+                                                style={{width: 18, height: 18, objectFit: "contain"}}
+                                            />
+                                        ) : null,
+                                    };
+                                })}
+                                styles={styleFn}
+                                vertical
+                                size="small"
+                            />
+                        )}
+
+                        <div style={{flex: 1}}>
+                            {activeTab && (
+                                <Table
+                                    rowKey="id"
+                                    dataSource={activeTab.models}
+                                    columns={columns}
+                                    pagination={false}
                                     size="small"
+                                    rowSelection={{
+                                        selectedRowKeys,
+                                        onChange: handleRowSelectionChange,
+                                        preserveSelectedRowKeys: true
+                                    }}
+                                    rowClassName={(record) =>
+                                        selectedRowKeys.includes(record.id) ? "row-selected" : ""
+                                    }
+                                    onRow={(record) => ({
+                                        onClick: () => onRowClick(record)
+                                    })}
                                 />
                             )}
-
-                            <div style={{flex: 1}}>
-                                {activeTab && (
-                                    <Table
-                                        rowKey="id"
-                                        dataSource={activeTab.models}
-                                        columns={columns}
-                                        pagination={false}
-                                        size="small"
-                                        rowSelection={{
-                                            selectedRowKeys,
-                                            onChange: handleRowSelectionChange,
-                                            preserveSelectedRowKeys: true
-                                        }}
-                                        rowClassName={(record) =>
-                                            selectedRowKeys.includes(record.id) ? "row-selected" : ""
-                                        }
-                                        onRow={(record) => ({
-                                            onClick: () => onRowClick(record)
-                                        })}
-                                    />
-                                )}
-                            </div>
-                        </Flex>
-                    </div>
-                </Modal>
-                {isApproveOpen && (
-                    <UpdateHubApproveOrigins selectedByTab={selectedByTab}
-                                             onCloseParent={() => onClose()}
-                                             onCloseApproveOrigins={() => setIsApproveOpen(false)}/>
-                )}
-            </>
-        )
+                        </div>
+                    </Flex>
+                </div>
+            </Modal>
+            {isApproveOpen && (
+                <UpdateHubApproveOrigins objForUpdate={selectedByPathId}
+                                         onCloseParent={() => onClose()}
+                                         onCloseApproveOrigins={() => setIsApproveOpen(false)}/>
+            )}
+        </>
     );
-}
+};
 
 export default UpdateHubChooseElements;

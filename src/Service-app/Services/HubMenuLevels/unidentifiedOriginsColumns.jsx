@@ -31,32 +31,37 @@ export const getUnidentifiedOriginsColumns = (filters,
         dataIndex: "origin",
         key: "origin",
         width: 105,
+        onCell: (record) => {
+            if (record.children) {
+                return { colSpan: 999 };
+            }
+            return {};
+        },
         render: (_, record) => {
             if (record.children) {
-                return {
-                    children: cell(
-                        <strong>{record.vsl_title} </strong>
-                    ),
-                    props: {colSpan: 999},
-
-                };
+                return <strong>{record.vsl_title}</strong>;
             }
-
-            return cell(
-                <span style={{color: "#555"}}>
-                {record.origin}
-            </span>
-            );
+            return record.origin;
         }
-    }
-    ,
+
+    },
     {
         dataIndex: "title",
         key: "title",
         width: "40%",
+        onCell: (record) => {
+            if (record.children) {
+                return {
+                    children: cell(<strong>{record.vsl_title}</strong>),
+                    props: { colSpan: 999 },
+                };
+
+            }
+            return {};
+        },
         render: (_, record) => {
             if (record.children) {
-                return {props: {colSpan: 0}};
+                return null;
             }
             return record.title;
         }
