@@ -1,8 +1,9 @@
-import {Button, Tag} from "antd";
+import { Button, Tag } from "antd";
 import {
     CarryOutOutlined,
     LinkOutlined,
-    PictureOutlined, QuestionOutlined
+    PictureOutlined,
+    QuestionOutlined
 } from "@ant-design/icons";
 
 const cell = (content) => (
@@ -20,49 +21,43 @@ const cell = (content) => (
     </div>
 );
 
+const spanAllIfGroup = (record) => ({
+    colSpan: record.children ? 998 : 1
+});
 
-export const getUnidentifiedOriginsColumns = (filters,
-                                              filtersState,
-                                              modelColumnTitle,
-                                              attrsColumnTitle,
-                                              setAttributesModalData,
-                                              missingAttrsFilterActive) => [
+const hideIfGroup = (record) => ({
+    colSpan: record.children ? 0 : 1
+});
+
+export const getUnidentifiedOriginsColumns = (
+    filters,
+    filtersState,
+    modelColumnTitle,
+    attrsColumnTitle,
+    setAttributesModalData,
+    missingAttrsFilterActive
+) => [
     {
         dataIndex: "origin",
         key: "origin",
         width: 105,
-        onCell: (record) => {
-            if (record.children) {
-                return { colSpan: 999 };
-            }
-            return {};
-        },
+        onCell: spanAllIfGroup,
         render: (_, record) => {
             if (record.children) {
                 return <strong>{record.vsl_title}</strong>;
             }
             return record.origin;
         }
-
     },
     {
         dataIndex: "title",
         key: "title",
         width: "40%",
-        onCell: (record) => {
-            if (record.children) {
-                return {
-                    children: cell(<strong>{record.vsl_title}</strong>),
-                    props: { colSpan: 999 },
-                };
-
-            }
-            return {};
-        },
+        onCell: (record) => ({
+            colSpan: record.children ? 0 : 1
+        }),
         render: (_, record) => {
-            if (record.children) {
-                return null;
-            }
+            if (record.children) return null;
             return record.title;
         }
     },
@@ -71,10 +66,9 @@ export const getUnidentifiedOriginsColumns = (filters,
         dataIndex: "price",
         key: "price",
         align: "center",
+        onCell: hideIfGroup,
         render: (_, record) => {
-            if (record.children) {
-                return {props: {colSpan: 0}};
-            }
+            if (record.children) return null;
             return record.price ?? "—";
         }
     },
@@ -86,12 +80,12 @@ export const getUnidentifiedOriginsColumns = (filters,
         align: "center",
         filters: filters.models,
         filteredValue: filtersState.model_title || null,
-
+        onCell: hideIfGroup,
         render: (_, record) => {
-            if (record.children) return {props: {colSpan: 0}};
+            if (record.children) return null;
 
             if (!record.model_title) {
-                return <QuestionOutlined style={{color: "#ff0000"}}/>;
+                return <QuestionOutlined style={{ color: "#ff0000" }} />;
             }
 
             return record.model_title;
@@ -104,10 +98,9 @@ export const getUnidentifiedOriginsColumns = (filters,
         filters: filters.types,
         filteredValue: filtersState.type_ || null,
         onFilter: () => true,
+        onCell: hideIfGroup,
         render: (_, record) => {
-            if (record.children) {
-                return {props: {colSpan: 0}};
-            }
+            if (record.children) return null;
             return record.type_?.type ?? "";
         }
     },
@@ -118,10 +111,9 @@ export const getUnidentifiedOriginsColumns = (filters,
         filters: filters.brands,
         filteredValue: filtersState.brand || null,
         onFilter: () => true,
+        onCell: hideIfGroup,
         render: (_, record) => {
-            if (record.children) {
-                return {props: {colSpan: 0}};
-            }
+            if (record.children) return null;
             return record.brand?.brand ?? "";
         }
     },
@@ -131,16 +123,18 @@ export const getUnidentifiedOriginsColumns = (filters,
         key: "attributes",
         width: 80,
         align: "center",
-
+        onCell: hideIfGroup,
         render: (_, record) => {
+            if (record.children) return null;
+
             if (!record.model_title) {
                 return "";
             }
+
             const a = record.attributes;
             const hasAttributes =
                 Array.isArray(a?.attr_value_ids) &&
                 a.attr_value_ids.length > 0;
-
 
             const isGreenBtn = missingAttrsFilterActive
                 ? hasAttributes
@@ -149,7 +143,7 @@ export const getUnidentifiedOriginsColumns = (filters,
             return (
                 <Button
                     type="text"
-                    icon={<LinkOutlined/>}
+                    icon={<LinkOutlined />}
                     style={{
                         color: isGreenBtn ? "#52c41a" : "#454545",
                         fontSize: isGreenBtn ? 18 : 16,
@@ -173,46 +167,45 @@ export const getUnidentifiedOriginsColumns = (filters,
         }
     },
     {
-        title: <PictureOutlined style={{opacity: 0.7, fontSize: 20}}/>,
+        title: <PictureOutlined style={{ opacity: 0.7, fontSize: 20 }} />,
         dataIndex: "have_images",
         key: "have_images",
         align: "center",
         filters: [
-            {text: "Есть фото", value: true},
-            {text: "Нет фото", value: false}
+            { text: "Есть фото", value: true },
+            { text: "Нет фото", value: false }
         ],
         filteredValue: filtersState.have_images || null,
         onFilter: () => true,
+        onCell: hideIfGroup,
         render: (_, record) => {
-            if (record.children) {
-                return {props: {colSpan: 0}};
-            }
+            if (record.children) return null;
 
             return record.have_images ? (
                 <Tag color="green">
-                    <PictureOutlined/>
+                    <PictureOutlined />
                 </Tag>
             ) : "";
         }
     },
     {
-        title: <CarryOutOutlined style={{opacity: 0.7, fontSize: 20}}/>,
+        title: <CarryOutOutlined style={{ opacity: 0.7, fontSize: 20 }} />,
         dataIndex: "model_in_hub",
         key: "model_in_hub",
         align: "center",
         filters: [
-            {text: "Есть в хабе", value: true},
-            {text: "Нет в хабе", value: false}
+            { text: "Есть в хабе", value: true },
+            { text: "Нет в хабе", value: false }
         ],
         filteredValue: filtersState.model_in_hub || null,
         onFilter: () => true,
+        onCell: hideIfGroup,
         render: (_, record) => {
-            if (record.children) {
-                return {props: {colSpan: 0}};
-            }
+            if (record.children) return null;
+
             return record.model_in_hub ? (
                 <Tag color="green">
-                    <CarryOutOutlined/>
+                    <CarryOutOutlined />
                 </Tag>
             ) : "";
         }

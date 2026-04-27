@@ -1,6 +1,6 @@
 import {useEffect, useState, useCallback} from "react";
 import {fetchGetData, fetchPostData} from "../../SchemeAttributes/api.js";
-import {Button, Col, Modal, Radio, Row, Select, message, Input, Spin, Popconfirm, Dropdown} from "antd";
+import {Button, Col, Modal, Radio, Row, Select, message, Input, Spin, Dropdown} from "antd";
 import {FileImageOutlined, LoadingOutlined, SaveOutlined} from "@ant-design/icons";
 import AttributesImageContainer from "./AttributeImageConteiner.jsx";
 import MultiUploadDropzone from "./MultiUploadDropzone.jsx";
@@ -15,7 +15,6 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     const [showImages, setShowImages] = useState(false);
     const [dependencyList, setDependencyList] = useState([]);
     const [selectedDependencyOrigin, setSelectedDependencyOrigin] = useState(null);
-    const [popConfirmOpen, setPopConfirmOpen] = useState(false);
     const [haveImages, setHaveImages] = useState(false);
     const [formulas, setFormulas] = useState([]);
 
@@ -29,7 +28,6 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
         setShowImages(false);
         setDependencyList([]);
         setSelectedDependencyOrigin(null);
-        setPopConfirmOpen(false);
         setHaveImages(false);
     };
 

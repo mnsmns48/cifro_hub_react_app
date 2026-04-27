@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
-import {Segmented, Table, Image, Tag, Popover, Flex, Spin, Button, Modal} from "antd";
-import {BarcodeOutlined, CloseOutlined} from "@ant-design/icons";
+import {Segmented, Table, Image, Popover, Flex, Spin, Button, Modal, Badge} from "antd";
+import {BarcodeOutlined, CloseOutlined, FileExcelOutlined} from "@ant-design/icons";
 import {fetchPostData} from "../SchemeAttributes/api.js";
+import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 
 
 const styleFn = (info) => {
@@ -80,12 +81,14 @@ const buildDynamicAttributeColumns = (products) => {
 
 
 const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOrigins}) => {
-    const [loading, setLoading] = useState(true);
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [dataForUpdate, setDataForUpdate] = useState([]);
     const [selectedPathId, setSelectedPathId] = useState(null);
     const [selectedFeatureId, setSelectedFeatureId] = useState(null);
 
     useEffect(() => {
+        setLoading(true);
         const load = async () => {
             try {
                 const payload = {
@@ -95,9 +98,8 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                 };
 
                 const resp = await fetchPostData("/service/approve_origins_for_update", payload);
-
-                setDataForUpdate(resp);
                 console.log(resp);
+                setDataForUpdate(resp);
                 if (resp.length > 0) {
                     setSelectedPathId(resp[0].path.id);
 
@@ -114,11 +116,12 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
 
     }, [objForUpdate]);
 
-    if (loading) {
-        return (<div style={{padding: 40, textAlign: "center"}}>
-            <Spin size="large"/>
-        </div>);
-    }
+    const rowSelection = {
+        selectedRowKeys,
+        onChange: (newSelectedRowKeys) => {
+            setSelectedRowKeys(newSelectedRowKeys);
+        },
+    };
 
     const selectedPath = dataForUpdate.find((p) => p.path.id === selectedPathId);
     const features = selectedPath ? selectedPath.products : [];
@@ -126,16 +129,56 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
 
     const dynamicAttributeColumns = selectedFeature ? buildDynamicAttributeColumns([selectedFeature]) : [];
 
-
     const columns = [{
-        align: "center", title: <BarcodeOutlined/>, dataIndex: "origin", key: "origin", width: 80,
+        align: "center", title: <BarcodeOutlined/>, dataIndex: "origin", key: "origin", width: 100,
     }, {
         title: "Фото",
         align: "center",
         dataIndex: "preview",
         key: "preview",
         width: 80,
-        render: (url) => url ? <Image src={url} width={60} height={60} style={{objectFit: "cover"}}/> : null,
+        render: (_, record) => {
+            const url = record.preview;
+            const pics = record.pics || [];
+            const count = pics.length;
+
+            const content = (
+                <div
+                    style={{
+                        width: 50,
+                        height: 50,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        opacity: url ? 1 : 0.6
+                    }}
+                >
+                    {url ? (
+                        <Image
+                            src={url}
+                            width={50}
+                            height={50}
+                            style={{objectFit: "cover"}}
+                            preview={false}
+                        />
+                    ) : (
+                        <FileExcelOutlined style={{fontSize: 28}}/>
+                    )}
+                </div>
+            );
+
+            return count > 0 ? (
+                <Badge
+                    count={count}
+                    offset={[-5, 5]}
+                    size="small"
+                >
+                    {content}
+                </Badge>
+            ) : (
+                content
+            );
+        }
     }, {
         title: "Название", dataIndex: "title", key: "title", width: "30%",
     }, {
@@ -168,7 +211,7 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
         }
     }, ...dynamicAttributeColumns,
         {
-            title: "Фото галерея", dataIndex: "pics", key: "pics", render: (pics) => pics && pics.length > 0 ? (<Popover
+            dataIndex: "pics", key: "pics", render: (pics) => pics && pics.length > 0 ? (<Popover
                 content={<div style={{display: "flex", gap: 8, flexWrap: "wrap", maxWidth: 300}}>
                     {pics.map((p, idx) => (<Image key={idx} src={p} width={80}/>))}
                 </div>}
@@ -183,11 +226,22 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
             render: (v) => (v ? "Да" : "Нет"),
         },];
 
-    return (<Modal open={true} closable={false} footer={null} width={1650}>
-            <div style={{padding: 16}}>
 
-                <Flex gap={16} align="flex-end" style={{marginBottom: 20}}>
-                    <div style={{width: 350}}>
+    return (
+        <Modal open closable={false} footer={null} width={1650}>
+            {loading ? (
+                <div>
+                    <Spinner/>
+                </div>
+            ) : (
+                <div style={{padding: 16}}>
+                    <div style={{marginBottom: 8, textAlign: "left"}}>
+                        <Button icon={<CloseOutlined/>} type="primary" onClick={onCloseApproveOrigins}>
+                            Закрыть
+                        </Button>
+                    </div>
+
+                    <Flex gap={16} align="flex-end" style={{marginBottom: 20}}>
                         <Segmented
                             styles={styleFn}
                             vertical
@@ -195,64 +249,40 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                             value={selectedPathId}
                             onChange={(val) => {
                                 setSelectedPathId(val);
-
                                 const backendPath = dataForUpdate.find(p => p.path.id === val);
                                 if (backendPath && backendPath.products.length > 0) {
                                     setSelectedFeatureId(backendPath.products[0].id);
                                 }
                             }}
-                            options={Array.from(objForUpdate.values()).map(entry => {
-                                const route = entry.route;
-                                const last = route[route.length - 1];
-
-                                return {
-                                    value: entry.path_id,
-                                    label: route.map(r => r.label).join(" - "),
-                                    icon: last?.icon ? (<img src={last.icon}
-                                                             alt={last.label}
-                                                             style={{width: 18, height: 18, objectFit: "contain"}}
-                                    />) : null,
-                                };
-                            })}
-                        />
-                    </div>
-                    <div style={{width: 350}}>
-                        {selectedPath && (<Segmented
-                            styles={styleFn}
-                            vertical
-                            size="small"
-                            value={selectedFeatureId}
-                            onChange={(val) => setSelectedFeatureId(val)}
-                            options={features.map((f) => ({
-                                label: f.title, value: f.id,
+                            options={Array.from(objForUpdate.values()).map(entry => ({
+                                value: entry.path_id,
+                                label: entry.route.map(r => r.label).join(" - "),
+                                icon: entry.route.at(-1)?.icon && (
+                                    <img src={entry.route.at(-1).icon} width={18}/>
+                                )
                             }))}
-                            style={{width: "100%"}}
-                        />)}
-                    </div>
+                        />
 
-                </Flex>
-                <div style={{marginTop: 10}}>
-                    {selectedFeature && (<Table
-                        rowKey="origin"
-                        dataSource={selectedFeature.items}
-                        columns={columns}
-                        pagination={false}
-                        size="small"
-                    />)}
+                        <Segmented styles={styleFn}
+                                   vertical
+                                   size="small"
+                                   value={selectedFeatureId}
+                                   onChange={setSelectedFeatureId}
+                                   options={features.map(f => ({label: f.title, value: f.id}))}/>
+                    </Flex>
+
+                    {selectedFeature && (
+                        <Table rowKey="origin"
+                               dataSource={selectedFeature.items}
+                               columns={columns}
+                               pagination={false}
+                               size="small"
+                               rowSelection={rowSelection}/>
+                    )}
                 </div>
-
-                <div style={{marginTop: 16, textAlign: "right"}}>
-                    <Button icon={<CloseOutlined/>} onClick={onCloseApproveOrigins}>
-                        Закрыть
-                    </Button>
-                </div>
-
-            </div>
+            )}
         </Modal>
-
-
     );
-};
-
+}
 
 export default UpdateHubApproveOrigins;
