@@ -70,8 +70,6 @@ const MultiUploadDropzone = ({origin, onUploaded, onLoadingChange}) => {
                 xhr.onerror = () => reject("Ошибка сети");
                 xhr.send(formData);
             });
-        } catch (e) {
-            message.error("Ошибка загрузки");
         } finally {
             setUploading(false);
             setProgress(0);

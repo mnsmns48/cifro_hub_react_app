@@ -1,9 +1,11 @@
 import {useEffect, useState} from "react";
-import {Segmented, Table, Image, Popover, Flex, Spin, Button, Modal, Badge} from "antd";
-import {BarcodeOutlined, CloseOutlined, FileExcelOutlined} from "@ant-design/icons";
+import {Segmented, Table, Flex, Button, Modal} from "antd";
+import {CloseOutlined} from "@ant-design/icons";
 import {fetchPostData} from "../SchemeAttributes/api.js";
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
-
+import "./Css/UpdateHubApproveOrigins.css"
+import OriginImageViewer from "../Common/OriginImageViewer.jsx";
+import {buildApproveOriginsColumns} from "./UpdateHubApproveOriginsColumns.jsx";
 
 const styleFn = (info) => {
     if (info.props.vertical) {
@@ -21,71 +23,14 @@ const styleFn = (info) => {
 };
 
 
-const buildDynamicAttributeColumns = (products) => {
-    const keyMap = new Map();
-
-    products.forEach(product => {
-        product.items.forEach(item => {
-            item.attrs?.forEach(attr => {
-                if (!keyMap.has(attr.key.id)) {
-                    keyMap.set(attr.key.id, {
-                        id: attr.key.id,
-                        name: attr.key.key,
-                        values: new Set()
-                    });
-                }
-                keyMap.get(attr.key.id).values.add(attr.alias || attr.value);
-            });
-        });
-    });
-
-    const sortedKeys = Array.from(keyMap.values()).sort(
-        (a, b) => a.id - b.id
-    );
-
-    return sortedKeys.map(key => ({
-        title: key.name,
-        dataIndex: `attr_${key.id}`,
-        key: `attr_${key.id}`,
-        align: "center",
-        ellipsis: true,
-
-        filters: Array.from(key.values).map(v => ({
-            text: v,
-            value: v
-        })),
-
-        onFilter: (value, record) => {
-            const attr = record.attrs?.find(a => a.key.id === key.id);
-            if (!attr) return false;
-            return (attr.alias || attr.value) === value;
-        },
-
-        sorter: (a, b) => {
-            const av = a.attrs?.find(x => x.key.id === key.id);
-            const bv = b.attrs?.find(x => x.key.id === key.id);
-
-            const aval = av ? (av.alias || av.value) : "";
-            const bval = bv ? (bv.alias || bv.value) : "";
-
-            return aval.localeCompare(bval, "ru");
-        },
-
-        render: (_, record) => {
-            const attr = record.attrs?.find(a => a.key.id === key.id);
-            if (!attr) return "—";
-            return attr.alias || attr.value;
-        }
-    }));
-};
-
-
 const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOrigins}) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [loading, setLoading] = useState(false);
     const [dataForUpdate, setDataForUpdate] = useState([]);
     const [selectedPathId, setSelectedPathId] = useState(null);
     const [selectedFeatureId, setSelectedFeatureId] = useState(null);
+    const [openedImageModalView, setOpenedImageModalView] = useState(null);
+
 
     useEffect(() => {
         setLoading(true);
@@ -98,8 +43,8 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                 };
 
                 const resp = await fetchPostData("/service/approve_origins_for_update", payload);
-                console.log(resp);
                 setDataForUpdate(resp);
+
                 if (resp.length > 0) {
                     setSelectedPathId(resp[0].path.id);
 
@@ -116,6 +61,20 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
 
     }, [objForUpdate]);
 
+
+    useEffect(() => {
+        if (!loading && dataForUpdate.length > 0) {
+            const validPaths = dataForUpdate.filter(p => p.products.length > 0);
+            if (validPaths.length > 0) {
+                if (!validPaths.some(p => p.path.id === selectedPathId)) {
+                    setSelectedPathId(validPaths[0].path.id);
+                    setSelectedFeatureId(validPaths[0].products[0].id);
+                }
+            }
+        }
+    }, [dataForUpdate]);
+
+
     const rowSelection = {
         selectedRowKeys,
         onChange: (newSelectedRowKeys) => {
@@ -127,161 +86,128 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
     const features = selectedPath ? selectedPath.products : [];
     const selectedFeature = features.find((f) => f.id === selectedFeatureId);
 
-    const dynamicAttributeColumns = selectedFeature ? buildDynamicAttributeColumns([selectedFeature]) : [];
-
-    const columns = [{
-        align: "center", title: <BarcodeOutlined/>, dataIndex: "origin", key: "origin", width: 100,
-    }, {
-        title: "Фото",
-        align: "center",
-        dataIndex: "preview",
-        key: "preview",
-        width: 80,
-        render: (_, record) => {
-            const url = record.preview;
-            const pics = record.pics || [];
-            const count = pics.length;
-
-            const content = (
-                <div
-                    style={{
-                        width: 50,
-                        height: 50,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        opacity: url ? 1 : 0.6
-                    }}
-                >
-                    {url ? (
-                        <Image
-                            src={url}
-                            width={50}
-                            height={50}
-                            style={{objectFit: "cover"}}
-                            preview={false}
-                        />
-                    ) : (
-                        <FileExcelOutlined style={{fontSize: 28}}/>
-                    )}
-                </div>
-            );
-
-            return count > 0 ? (
-                <Badge
-                    count={count}
-                    offset={[-5, 5]}
-                    size="small"
-                >
-                    {content}
-                </Badge>
-            ) : (
-                content
-            );
+    useEffect(() => {
+        if (selectedFeature && selectedFeature.items) {
+            const allKeys = selectedFeature.items.map(item => item.origin);
+            setSelectedRowKeys(allKeys);
         }
-    }, {
-        title: "Название", dataIndex: "title", key: "title", width: "30%",
-    }, {
-        title: "Цена",
-        align: "center",
-        dataIndex: "output_price",
-        key: "output_price",
-        width: 100,
-        render: (_, record) => {
-            const opt = record.input_price;
-            const retail = record.output_price;
+    }, [selectedFeature]);
 
-            return (
-                <Popover
-                    placement="top"
-                    content={
-                        <div style={{fontSize: 13}}>
-                            Опт:{" "}
-                            <span style={{fontWeight: 600, color: "#003e67"}}>
-                            {opt?.toLocaleString("ru-RU")} ₽
-                        </span>
-                        </div>
-                    }
-                >
-                <span style={{cursor: "pointer", fontWeight: 600}}>
-                    {retail?.toLocaleString("ru-RU")}
-                </span>
-                </Popover>
-            );
-        }
-    }, ...dynamicAttributeColumns,
-        {
-            dataIndex: "pics", key: "pics", render: (pics) => pics && pics.length > 0 ? (<Popover
-                content={<div style={{display: "flex", gap: 8, flexWrap: "wrap", maxWidth: 300}}>
-                    {pics.map((p, idx) => (<Image key={idx} src={p} width={80}/>))}
-                </div>}
-            >
-                <Button size="small">Открыть</Button>
-            </Popover>) : null,
-        }, {
-            title: "В хабе",
-            dataIndex: "origin_in_hub",
-            key: "origin_in_hub",
-            width: 80,
-            render: (v) => (v ? "Да" : "Нет"),
-        },];
+
+    const columns = buildApproveOriginsColumns({
+        setOpenedImageModalView,
+        selectedFeature,
+    });
+
+
+    const handleImagesUpdated = ({images}, origin) => {
+        setOpenedImageModalView(prev =>
+            prev && prev.origin === origin
+                ? {...prev, images}
+                : prev
+        );
+
+        setDataForUpdate(prev =>
+            prev.map(path => ({
+                ...path,
+                products: path.products.map(prod => ({
+                    ...prod,
+                    items: prod.items.map(item =>
+                        item.origin === origin
+                            ? {...item, pics: images}
+                            : item
+                    )
+                }))
+            }))
+        );
+    };
 
 
     return (
-        <Modal open closable={false} footer={null} width={1650}>
-            {loading ? (
-                <div>
-                    <Spinner/>
-                </div>
-            ) : (
-                <div style={{padding: 16}}>
-                    <div style={{marginBottom: 8, textAlign: "left"}}>
-                        <Button icon={<CloseOutlined/>} type="primary" onClick={onCloseApproveOrigins}>
-                            Закрыть
-                        </Button>
+        <>
+            <Modal open closable={false} footer={null} width={1650}>
+                {loading ? (
+                    <div>
+                        <Spinner/>
                     </div>
+                ) : (
+                    <div style={{padding: 16}}>
+                        <div style={{marginBottom: 8, textAlign: "left"}}>
+                            <Button icon={<CloseOutlined/>} type="primary" onClick={onCloseApproveOrigins}>
+                                Закрыть
+                            </Button>
+                        </div>
 
-                    <Flex gap={16} align="flex-end" style={{marginBottom: 20}}>
-                        <Segmented
-                            styles={styleFn}
-                            vertical
-                            size="small"
-                            value={selectedPathId}
-                            onChange={(val) => {
-                                setSelectedPathId(val);
-                                const backendPath = dataForUpdate.find(p => p.path.id === val);
-                                if (backendPath && backendPath.products.length > 0) {
-                                    setSelectedFeatureId(backendPath.products[0].id);
+                        <Flex gap={16} align="flex-end" style={{marginBottom: 20}}>
+                            <Segmented
+                                styles={styleFn}
+                                vertical
+                                size="small"
+                                value={selectedPathId}
+                                onChange={(val) => {
+                                    setSelectedPathId(val);
+                                    const backendPath = dataForUpdate.find(p => p.path.id === val);
+                                    if (backendPath && backendPath.products.length > 0) {
+                                        setSelectedFeatureId(backendPath.products[0].id);
+                                    }
+                                }}
+                                options={Array.from(objForUpdate.values())
+                                    .filter(entry => {
+                                        const backendPath = dataForUpdate.find(p => p.path.id === entry.path_id);
+                                        return backendPath && backendPath.products.length > 0;
+                                    })
+                                    .map(entry => ({
+                                        value: entry.path_id,
+                                        label: entry.route.map(r => r.label).join(" - "),
+                                        icon: entry.route.at(-1)?.icon && (
+                                            <img src={entry.route.at(-1).icon} width={18}/>
+                                        )
+                                    }))
                                 }
-                            }}
-                            options={Array.from(objForUpdate.values()).map(entry => ({
-                                value: entry.path_id,
-                                label: entry.route.map(r => r.label).join(" - "),
-                                icon: entry.route.at(-1)?.icon && (
-                                    <img src={entry.route.at(-1).icon} width={18}/>
-                                )
-                            }))}
-                        />
+                            />
 
-                        <Segmented styles={styleFn}
-                                   vertical
-                                   size="small"
-                                   value={selectedFeatureId}
-                                   onChange={setSelectedFeatureId}
-                                   options={features.map(f => ({label: f.title, value: f.id}))}/>
-                    </Flex>
+                            <Segmented styles={styleFn}
+                                       vertical
+                                       size="small"
+                                       value={selectedFeatureId}
+                                       onChange={setSelectedFeatureId}
+                                       options={features.map(f => ({label: f.title, value: f.id}))}/>
+                        </Flex>
 
-                    {selectedFeature && (
-                        <Table rowKey="origin"
-                               dataSource={selectedFeature.items}
-                               columns={columns}
-                               pagination={false}
-                               size="small"
-                               rowSelection={rowSelection}/>
-                    )}
-                </div>
+                        {selectedFeature && (
+                            <Table
+                                rowKey="origin"
+                                dataSource={selectedFeature.items}
+                                columns={columns}
+                                pagination={false}
+                                size="small"
+                                rowSelection={rowSelection}
+                                rowClassName={(record) => {
+                                    const noPreview = !(record.pics || []).some(p => p.is_preview);
+                                    const noPics = !record.pics || record.pics.length === 0;
+                                    const noPhoto = noPreview && noPics;
+                                    const isSelected = selectedRowKeys.includes(record.origin);
+                                    if (noPhoto && isSelected) return "row-no-photo-selected";
+                                    if (noPhoto) return "row-no-photo";
+
+                                    return "";
+                                }}
+                            />
+
+                        )}
+                    </div>
+                )}
+            </Modal>
+            {openedImageModalView && openedImageModalView.origin && (
+                <OriginImageViewer
+                    origin={openedImageModalView.origin}
+                    images={openedImageModalView.images}
+                    title={openedImageModalView.title}
+                    onClose={() => setOpenedImageModalView(null)}
+                    onUploaded={handleImagesUpdated}
+                />
             )}
-        </Modal>
+        </>
     );
 }
 

@@ -8,6 +8,7 @@ import MultiUploadDropzone from "./MultiUploadDropzone.jsx";
 
 const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     const [loading, setLoading] = useState(false);
+    const [loadingImages, setLoadingImages] = useState(false);
     const [allowable, setAllowable] = useState([]);
     const [exists, setExists] = useState([]);
     const [selectedFormula, setSelectedFormula] = useState(null);
@@ -189,24 +190,32 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     }, [data, exists, generatedName, onClose, onSaved]);
 
 
-    const handleImplementDependencyImages = async () => {
-        if (!selectedDependencyOrigin || !data?.origin) return;
+    const handleImplementDependencyImages = async (originValue) => {
+        if (!originValue || !data?.origin) return;
 
         const payload = {
             target_origin: data.origin,
-            image_same_origin: selectedDependencyOrigin
+            image_same_origin: originValue
         };
 
         try {
-            const resp = await fetchPostData("/service/implement_dependency_images", payload);
+            setLoadingImages(true);
+
+            const resp = await fetchPostData(
+                "/service/implement_dependency_images",
+                payload
+            );
+
             onUploaded({
-                    images: resp,
-                    preview: resp.find(i => i.is_preview)?.url || resp[0]?.url || null
-                },
-                data.origin);
+                images: resp,
+                preview: resp.find(i => i.is_preview)?.url || resp[0]?.url || null
+            }, data.origin);
+
         } catch (e) {
             console.error(e);
             message.error("Ошибка при переносе картинок");
+        } finally {
+            setLoadingImages(false);
         }
     };
 
@@ -292,6 +301,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
         );
     }, [getSelectedValue, handleSelect]);
 
+
     return (
         <Modal
             open={open}
@@ -310,11 +320,11 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                             alignItems: "center",
                             paddingBottom: 10
                         }}>
-                    <span style={{
-                        color: selectedFormula ? "green" : "red",
-                        paddingRight: 6
-                    }}
-                    >Формула</span>
+                        <span style={{
+                            color: selectedFormula ? "green" : "red",
+                            paddingRight: 6
+                        }}
+                        >Формула</span>
                         <span style={{paddingLeft: 6, color: "#686868"}}>{selectedFormula?.name ?? null}</span>
                         <Dropdown trigger={["click"]} onOpenChange={handleDropdownOpen}
                                   menu={{
@@ -329,7 +339,6 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                         </Dropdown>
                     </div>
                 )}
-
                 {allowable.length > 0 && (<div>{allowable.map(renderAttribute)}</div>)}
 
                 <Row gutter={10} justify="center">
@@ -355,6 +364,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                             </Button>
                         )}
 
+
                         {showImages && data?.origin && (
                             <div style={{margin: 10}}>
                                 <div style={{margin: 10}}>
@@ -371,20 +381,21 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                                 />
                             </div>
                         )}
+                        <div style={{marginTop: 20, display: "flex", gap: 8, alignItems: "center"}}>
 
-                        <div style={{marginTop: 20, display: "flex", gap: 8}}>
                             <Select
                                 style={{width: '100%'}}
                                 showSearch
                                 value={selectedDependencyOrigin}
                                 placeholder="Картинки из"
                                 onFocus={loadDependencyList}
+                                disabled={loadingImages}
                                 options={dependencyList.map(item => ({
                                     label: (
                                         <span style={{fontSize: 10}}>
-                                        <span style={{color: 'red'}}>{item.qnt_images} </span>
+                                            <span style={{color: 'red'}}>{item.qnt_images} </span>
                                             {item.title}
-                                    </span>
+                                        </span>
                                     ),
                                     value: item.origin,
                                     searchValue: item.title,
@@ -394,11 +405,12 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                                         ?.toLowerCase()
                                         .includes(input.toLowerCase())
                                 }
-                                onChange={async (value) => {
-                                    setSelectedDependencyOrigin(value)
-                                    await handleImplementDependencyImages()
+                                onChange={(value) => {
+                                    setSelectedDependencyOrigin(value);
+                                    void handleImplementDependencyImages(value);
                                 }}
                             />
+                            {loadingImages && (<Spin size="small"/>)}
                         </div>
 
                     </Col>
@@ -452,7 +464,7 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
         </Modal>
     );
 
-
 };
+
 
 export default AttributesModal;

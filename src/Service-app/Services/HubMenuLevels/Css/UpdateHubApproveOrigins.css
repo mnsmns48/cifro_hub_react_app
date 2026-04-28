@@ -1,0 +1,8 @@
+.row-no-photo td {
+    background: #e6e6e6 !important;
+}
+
+
+.row-no-photo-selected td {
+    background: #ffcccc !important;
+}

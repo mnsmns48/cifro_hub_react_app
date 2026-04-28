@@ -111,10 +111,15 @@ export const createParsingColumns = (
 
 
             return (
-                <Tooltip
-                    placement="right"
-                    overlayInnerStyle={{width: "15vw", maxWidth: "15vw", padding: 15}}
-                    title={<ResolveModelTypeDependencies origin={record.origin}/>}
+                <Tooltip placement="right"
+                         styles={{
+                             container: {
+                                 width: "15vw",
+                                 maxWidth: "15vw",
+                                 padding: 15
+                             }
+                         }}
+                         title={<ResolveModelTypeDependencies origin={record.origin}/>}
                 >
                     {content}
                 </Tooltip>
