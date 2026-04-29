@@ -1,10 +1,8 @@
-import {useCallback, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {Table, Spin, Space, Button, Popconfirm} from "antd";
 import {deleteStockItems, fetchStockHubItems, recalcHubStockItems, renameHubObj} from "./api.js";
 import "./Css/Tree.css";
-import {EditOutlined, SaveOutlined, RedoOutlined, FileJpgOutlined, DeleteOutlined} from "@ant-design/icons";
-import UploadImagesModal from "../PriceUpdater/ParsingResultsBlocks/UploadImagesModal.jsx";
-import InfoSelect from "../PriceUpdater/ParsingResultsBlocks/InfoSelect.jsx";
+import {EditOutlined, SaveOutlined, RedoOutlined, DeleteOutlined} from "@ant-design/icons";
 import OneItemProfileRewardSelector from "../../../Ui/OneItemProfileRewardSelector.jsx";
 import EmptyState from "../../../Ui/Empty.jsx";
 
@@ -15,22 +13,7 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
     const [items, setItems] = useState([]);
     const [editingKey, setEditingKey] = useState(null);
     const [originalRecord, setOriginalRecord] = useState(null);
-    const [uploadModalOpen, setUploadModalOpen] = useState(false);
-    const [currentOrigin, setCurrentOrigin] = useState(null);
 
-
-    const handleImageUploaded = useCallback(
-        ({images, preview}, origin) => {
-            setItems(prev =>
-                prev.map(r =>
-                    r.origin !== origin
-                        ? r
-                        : {...r, images, preview}
-                )
-            );
-        },
-        [setItems]
-    );
 
     useEffect(() => {
         if (!visible) return;
@@ -210,11 +193,6 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
     };
 
 
-    const openImageModal = useCallback(origin => {
-        setCurrentOrigin(origin);
-        setUploadModalOpen(true);
-    }, []);
-
     const columns = [
         {
             dataIndex: "origin",
@@ -238,25 +216,10 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
                 )
         },
         {
-            dataIndex: "features_title",
-            title: "Зависимость",
-            key: "features_title",
-            align: "center",
-            width: 200,
-            render: (_, record) => (
-                <InfoSelect titles={record.features_title} record={record} setRows={setItems} origin={record.origin}/>
-            ),
-        },
-        {
-            dataIndex: "warranty",
-            title: "Гарантия",
-            key: "warranty",
-            width: 40
-        },
-        {
             dataIndex: "output_price",
             title: "Цена",
             key: "output_price",
+            align: "center",
             width: 80,
             render: (value, record) =>
                 editingKey === record.origin ? (
@@ -327,8 +290,6 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
                         </>
                     ) : (
                         <>
-                            <Button icon={<FileJpgOutlined/>} type="text"
-                                    onClick={() => openImageModal(record.origin)}/>
                             <Button icon={<EditOutlined/>} type="link" onClick={() => handleEdit(record)}/>
                         </>
                     )}
@@ -338,6 +299,11 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
     ];
 
     if (!visible) return null;
+
+
+    if (items.length === 0) {
+        return null;
+    }
 
     return loading ? (
         <div style={{padding: 12, textAlign: "center", fontSize: 12}}>
@@ -364,7 +330,7 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
             <Table className="stockHubTable"
                    dataSource={items}
                    columns={columns}
-                   locale={{ emptyText: <EmptyState /> }}
+                   locale={{emptyText: <EmptyState/>}}
                    rowKey="origin"
                    pagination={false}
                    size="small"
@@ -378,10 +344,6 @@ const StockHubItemsTable = ({pathId, visible = true, onSelectedOrigins, profit_p
                    }}
 
             />
-            <UploadImagesModal
-                isOpen={uploadModalOpen} originCode={currentOrigin}
-                onClose={() => setUploadModalOpen(false)}
-                onUploaded={(data) => handleImageUploaded(data, currentOrigin)}/>
         </div>
 
     );

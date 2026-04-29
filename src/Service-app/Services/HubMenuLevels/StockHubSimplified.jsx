@@ -8,6 +8,7 @@ const StockHubSimplified = ({pathId, visible = true, existingItems = []}) => {
     const [items, setItems] = useState([]);
     const [expanded, setExpanded] = useState(false);
 
+
     useEffect(() => {
         if (!visible || !expanded) return;
         setLoading(true);

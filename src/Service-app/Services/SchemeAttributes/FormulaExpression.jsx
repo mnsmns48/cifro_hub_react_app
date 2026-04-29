@@ -18,7 +18,7 @@ import {
     fetchGetData,
     fetchPostData,
     fetchPutData
-} from "./api.js";
+} from "../Common/api.js";
 import {ArrowLeftOutlined, CheckCircleOutlined, SaveOutlined} from "@ant-design/icons";
 
 const {Title} = Typography;

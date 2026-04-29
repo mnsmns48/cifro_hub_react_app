@@ -1,5 +1,5 @@
 import {Input, Popconfirm} from "antd";
-import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
+import {CloseOutlined, PlusOutlined} from "@ant-design/icons";
 import {buildTreeData} from "./utils.js";
 import "./Css/Tree.css";
 
@@ -36,32 +36,38 @@ const renderTreeTitle = (node, ctx = {}) => {
 
     return (
         <span className="treeNodeRow">
-      <span
-          className={node.isRoot ? "treeNodeLabel root" : "treeNodeLabel"}
-          onDoubleClick={() => {
-              if (!node.isRoot) {
-                  setEditingKey(node.id);
-                  setTempLabel(node.label);
-              }
-          }}
-      >
-        {node.label}
-      </span>
-
-      <span className="treeIcons">
-        {!node.isRoot && (
-            <Popconfirm title="Вы уверены, что хотите удалить уровень?" okText="Да"
-                        cancelText="Нет" onConfirm={() => handleDeleteNode(node.id)}> <CloseOutlined
-                className="treeIcon"/>
-            </Popconfirm>
-        )}
-          <PlusOutlined
-              className="treeIcon"
-              onClick={() => handleAddLevelUI(node)}
-          />
+        <span
+            className={node.isRoot ? "treeNodeLabel root" : "treeNodeLabel"}
+            onDoubleClick={() => {
+                if (!node.isRoot) {
+                    setEditingKey(node.id);
+                    setTempLabel(node.label);
+                }
+            }}
+        >
+            {node.label}
         </span>
+
+        <span className="treeIcons">
+            <PlusOutlined
+                className="treeIcon"
+                onClick={() => handleAddLevelUI(node)}
+            />
+        </span>
+
+            {!node.isRoot && (
+                <Popconfirm
+                    title="Вы уверены, что хотите удалить уровень?"
+                    okText="Да"
+                    cancelText="Нет"
+                    onConfirm={() => handleDeleteNode(node.id)}
+                >
+                    <CloseOutlined className="treeIcon"/>
+                </Popconfirm>
+            )}
     </span>
     );
+
 };
 
 const TreeDataRender = ({menuData, treeContext}) => {

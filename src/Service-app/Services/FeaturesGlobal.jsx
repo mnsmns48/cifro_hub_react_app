@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {Button, Modal, Popconfirm, Table} from "antd";
-import {fetchGetData, fetchPostData} from "./SchemeAttributes/api.js";
+import {fetchGetData, fetchPostData} from "./Common/api.js";
 import {featuresColumns} from "./FeaturesGlobal/FeaturesColumns.jsx";
 import './FeaturesGlobal/FeaturesGlobal.css'
 import FeaturesComponent from "./FeaturesGlobal/FeaturesComponent.jsx";

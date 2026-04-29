@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {fetchGetData} from "./api.js";
+import {fetchGetData} from "../Common/api.js";
 import {Badge, Button, Input, Modal, Select, Table} from "antd";
 import {
     ClearOutlined,

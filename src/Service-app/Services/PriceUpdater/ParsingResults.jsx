@@ -21,7 +21,7 @@ import ParsingBulkActions from "./ParsingResultsBlocks/ParsingBulkActions.jsx";
 import ParsingFloatingActions from "./ParsingResultsBlocks/ParsingFloatingActions.jsx";
 
 import "../Css/ParsingResults.css";
-import {fetchPostData} from "../SchemeAttributes/api.js";
+import {fetchPostData} from "../Common/api.js";
 import {createHubLoading} from "../HubMenuLevels/api.js";
 import RenderModelStructured from "./ParsingResultsBlocks/RenderModelStructured.jsx";
 

@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {Badge, Button, Modal, Table} from "antd";
-import {fetchPostData} from "../SchemeAttributes/api.js";
+import {fetchPostData} from "../Common/api.js";
 import {getUnidentifiedOriginsColumns} from "./UnidentifiedOriginsColumns.jsx";
 import {LinkOutlined, QuestionOutlined, ShareAltOutlined} from "@ant-design/icons";
 import "./Css/UnidentifiedOriginsComponent.css";

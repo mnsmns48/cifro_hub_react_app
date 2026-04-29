@@ -1,7 +1,7 @@
 import AttributesMain from "./SchemeAttributes/AttributesMain.jsx";
 
 
-const SchemeAttributes = () => {
+const AttributesScheme = () => {
 
     return (
         <>
@@ -11,4 +11,4 @@ const SchemeAttributes = () => {
 };
 
 
-export default SchemeAttributes;
+export default AttributesScheme;

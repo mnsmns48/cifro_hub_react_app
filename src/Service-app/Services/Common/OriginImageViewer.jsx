@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {Modal, Select, message, Spin} from "antd";
-import {fetchGetData, fetchPostData} from "../SchemeAttributes/api.js";
+import {fetchGetData, fetchPostData} from "./api.js";
 import MultiUploadDropzone from "../PriceUpdater/ParsingResultsBlocks/MultiUploadDropzone.jsx";
 import {useImagesActions} from "../Hook/useImagesActions.js";
 import UploadedImageItem from "../PriceUpdater/UploadImagesElement.jsx";

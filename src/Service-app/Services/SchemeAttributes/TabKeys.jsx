@@ -6,8 +6,9 @@ import {
     fetchPostData,
     fetchPutData,
     fetchDeleteData
-} from "./api.js";
+} from "../Common/api.js";
 import styles from ".//css/TabAttributeValues.module.css"
+import EmptyState from "../../../Ui/Empty.jsx";
 
 
 const TabKeys = () => {
@@ -128,7 +129,7 @@ const TabKeys = () => {
     return (
         <div>
             <Table columns={columns} dataSource={keys} rowKey="id" pagination={false} showHeader={false}
-                   style={{marginBottom: 16}} className={styles.table}/>
+                   style={{marginBottom: 16}} className={styles.table} locale={{ emptyText: <EmptyState /> }}/>
 
             <div style={{textAlign: "start"}}>
                 <a style={{fontSize: 16, cursor: "default"}} onClick={addEmptyRow}>Добавить ключ</a>

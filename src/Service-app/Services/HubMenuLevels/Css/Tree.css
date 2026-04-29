@@ -13,9 +13,17 @@
     cursor: default;
 }
 
+.treeNodeRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+
 .treeIcons {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
 }
 
 .treeIcon {

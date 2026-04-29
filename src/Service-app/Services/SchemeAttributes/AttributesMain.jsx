@@ -5,11 +5,13 @@ import TabAttributeValues from "./TabAttributeValues.jsx";
 import TabTypesDependencies from "./TabTypesDependencies.jsx";
 import TabModelsDependencies from "./TabModelsDependencies.jsx";
 import FormulaList from "./FormulaList.jsx";
-
+import Analytics from "./Analytics.jsx";
 
 
 const renderTabContent = (tab) => {
     switch (tab) {
+        case "analytics":
+            return <Analytics/>;
         case "formula_list":
             return <FormulaList/>;
         case "keys":
@@ -29,6 +31,7 @@ const AttributesMain = () => {
     const [tab, setTab] = useState(null);
 
     const options = [
+        {label: "Аналитика", value: "analytics"},
         {label: "Формулы", value: "formula_list"},
         {label: "Ключи", value: "keys"},
         {label: "Атрибуты", value: "attrs"},

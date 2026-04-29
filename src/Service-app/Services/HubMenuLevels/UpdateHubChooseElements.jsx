@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {Modal, Button, Segmented, Table, Flex, Tooltip, Popconfirm} from "antd";
-import {fetchPostData} from "../SchemeAttributes/api.js";
+import {fetchPostData} from "../Common/api.js";
 import "./Css/UpdateHubChooseElements.css"
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 import ResolveModelTypeDependencies from "../Common/ResolveModelTypeDependencies.jsx";

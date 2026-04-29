@@ -1,5 +1,5 @@
 import {useEffect, useState, useCallback} from "react";
-import {fetchGetData, fetchPostData} from "../../SchemeAttributes/api.js";
+import {fetchGetData, fetchPostData} from "../../Common/api.js";
 import {Button, Col, Modal, Radio, Row, Select, message, Input, Spin, Dropdown} from "antd";
 import {FileImageOutlined, LoadingOutlined, SaveOutlined} from "@ant-design/icons";
 import AttributesImageContainer from "./AttributeImageConteiner.jsx";

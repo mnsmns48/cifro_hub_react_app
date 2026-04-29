@@ -1,8 +1,9 @@
 import {useEffect, useState} from "react";
 import {Select, Table, Button} from "antd";
-import {fetchGetData, fetchPostData, fetchDeleteData} from "./api.js";
+import {fetchGetData, fetchPostData, fetchDeleteData} from "../Common/api.js";
 import {CloseOutlined, PlusOutlined} from "@ant-design/icons";
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
+import EmptyState from "../../../Ui/Empty.jsx";
 
 const TabTypesDependencies = () => {
     const [loading, setLoading] = useState(false);
@@ -259,6 +260,7 @@ const TabTypesDependencies = () => {
                                 }
                                 pagination={false}
                                 size="small"
+                                locale={{ emptyText: <EmptyState /> }}
                                 style={{ width: 500 }}
                             />
                         )}

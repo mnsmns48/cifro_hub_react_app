@@ -1,8 +1,9 @@
 import {useEffect, useState} from "react";
 import {Input, Select, Space, Table} from "antd";
-import {fetchDeleteData, fetchGetData, fetchPostData, fetchPutData} from "./api.js";
+import {fetchDeleteData, fetchGetData, fetchPostData, fetchPutData} from "../Common/api.js";
 import {DeleteOutlined, EditOutlined, SaveOutlined} from "@ant-design/icons";
 import styles from ".//css/TabAttributeValues.module.css"
+import EmptyState from "../../../Ui/Empty.jsx";
 
 const TabAttributeValues = () => {
     const [keys, setKeys] = useState([]);
@@ -153,15 +154,18 @@ const TabAttributeValues = () => {
                 onChange={setSelectedKey}
                 options={keys.map(k => ({label: k.key, value: k.id}))}
             />
-
-            <Table
-                columns={columns}
-                dataSource={filtered}
-                rowKey="id"
-                pagination={false}
-                showHeader={false}
-                className={styles.table}
-            />
+            {selectedKey && (
+                <Table
+                    columns={columns}
+                    dataSource={filtered}
+                    rowKey="id"
+                    pagination={false}
+                    showHeader={false}
+                    className={styles.table}
+                    locale={{emptyText: <EmptyState/>}}
+                />
+            )
+            }
             {selectedKey && (
                 <div style={{textAlign: "start", marginTop: 12}}>
                     <a style={{fontSize: 16, cursor: "pointer"}} onClick={addEmptyRow}>

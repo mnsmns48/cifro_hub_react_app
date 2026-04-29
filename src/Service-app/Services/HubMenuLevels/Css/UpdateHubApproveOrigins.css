@@ -6,3 +6,18 @@
 .row-no-photo-selected td {
     background: #ffcccc !important;
 }
+
+
+.vertical-segmented .ant-segmented {
+    border: 2px solid #676760;
+    padding: 4px;
+    width: 350px;
+}
+
+.vertical-segmented .ant-segmented-item {
+    text-align: start;
+}
+
+.vertical-segmented .ant-segmented-item-icon {
+    color: #676760;
+}

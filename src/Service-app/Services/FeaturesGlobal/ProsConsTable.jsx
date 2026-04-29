@@ -1,7 +1,7 @@
 import {Table, Button, Modal, Input, Popconfirm} from "antd";
 import {useState, useEffect} from "react";
 import {FileAddOutlined} from "@ant-design/icons";
-import {fetchPostData} from "../SchemeAttributes/api.js";
+import {fetchPostData} from "../Common/api.js";
 
 const ProsConsTable = ({prosCons, featureId}) => {
     const [data, setData] = useState([]);

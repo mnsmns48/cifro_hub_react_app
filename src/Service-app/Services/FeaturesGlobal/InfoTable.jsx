@@ -6,7 +6,7 @@ import {
     CloseOutlined,
     DashOutlined, AppstoreAddOutlined, HddOutlined, CheckOutlined, UndoOutlined
 } from "@ant-design/icons";
-import {fetchPostData} from "../SchemeAttributes/api.js";
+import {fetchPostData} from "../Common/api.js";
 import './FeaturesGlobal.css'
 
 const InfoTable = ({featureId, info}) => {

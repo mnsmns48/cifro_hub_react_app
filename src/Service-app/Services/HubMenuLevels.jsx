@@ -1,11 +1,17 @@
 import {useEffect, useState, useCallback, useMemo} from "react";
-import {Tree, Spin, Button} from "antd";
+import {Tree, Spin, Button, Row, Col} from "antd";
 import {
     addHubLevel, ComparisonStockItems, deleteHubLevel, fetchHubLevels, renameHubLevel, updateHubItemPosition
 } from "./HubMenuLevels/api.js";
 import StockHubItemsTable from "./HubMenuLevels/StockHubItemsTable.jsx";
 import TreeDataRender from "./HubMenuLevels/TreeRender.jsx";
-import {ReloadOutlined} from "@ant-design/icons";
+import {
+    DownOutlined,
+    FolderOpenOutlined,
+    FolderOutlined,
+    ReloadOutlined,
+    UpOutlined,
+} from "@ant-design/icons";
 import ComparisonModal from "./HubMenuLevels/ComparisonModal.jsx";
 import Consent from "./HubMenuLevels/Consent.jsx";
 import {fetchRangeRewardsProfiles} from "./RewardRangeSettings/api.js";
@@ -14,19 +20,16 @@ import StockHubSimplified from "./HubMenuLevels/StockHubSimplified.jsx";
 import StebystepComponent from "./HubMenuLevels/UnidentifiedOriginsComponent.jsx";
 
 
-const HubMenuLevels = (
-    {
-        onSelectPath = () => {
-        }, simplified = true,
-        compareElements = []
-    }
-) => {
+const HubMenuLevels = ({
+                           onSelectPath = () => {
+                           }, simplified = true, compareElements = []
+                       }) => {
 
     const [menuData, setMenuData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editingKey, setEditingKey] = useState(null);
     const [tempLabel, setTempLabel] = useState("");
-    const [expandedKeys, setExpandedKeys] = useState([]);
+    // const [expandedKeys, setExpandedKeys] = useState([]);
     const [activePathId, setActivePathId] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
@@ -34,6 +37,9 @@ const HubMenuLevels = (
     const [consentVisible, setConsentVisible] = useState(false);
     const [ProfitRangesProfiles, setProfitRangesProfiles] = useState([]);
     const [stepbystepVisible, setStepbystepVisible] = useState(false);
+
+
+
 
     const loadLevels = useCallback(async () => {
         const data = await fetchHubLevels();
@@ -50,11 +56,15 @@ const HubMenuLevels = (
         void loadLevels();
     }, [loadLevels]);
 
+
+
+
     const handleSelect = useCallback((selectedKeys) => {
         const key = selectedKeys.length ? parseInt(selectedKeys[0], 10) : null;
         setActivePathId(key);
         setSelectedItems([]);
         onSelectPath(key);
+
     }, [onSelectPath]);
 
     const handleSubmitLabel = async (key, newLabel) => {
@@ -97,7 +107,7 @@ const HubMenuLevels = (
         ]);
         setTempLabel("");
         setEditingKey(newKey);
-        setExpandedKeys(prev => [...new Set([...prev, node.id.toString()])]);
+        // setExpandedKeys(prev => [...new Set([...prev, node.id.toString()])]);
     };
 
     const handleDeleteNode = async (id) => {
@@ -145,6 +155,51 @@ const HubMenuLevels = (
 
     const treeData = useMemo(() => TreeDataRender({menuData, treeContext}), [menuData, treeContext]);
 
+    const renderTitle = (node) => {
+        const isActive = node.key === activePathId;
+
+        return (
+            <div style={{
+                    padding: "4px 8px",
+                    borderRadius: 6,
+                    background: isActive ? "#e6f7ff" : "transparent",
+                    color: isActive ? "#1677ff" : "inherit",
+                    fontWeight: isActive ? 600 : 400,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    cursor: "pointer",
+                    width: "100%"
+                }}
+            >
+                {node.children?.length > 0 ? (
+                    <FolderOpenOutlined style={{color: "#1677ff"}}/>
+                ) : (
+                    <FolderOutlined style={{color: "#999"}}/>
+                )}
+                {node.title}
+            </div>
+        );
+    };
+
+
+
+
+    const switcherIcon = (props) => {
+        const {expanded, data} = props;
+
+        if (!data.children || data.children.length === 0) {
+            return <DownOutlined style={{fontSize: 12}}/>;
+        }
+
+        return expanded ? (
+            <UpOutlined style={{fontSize: 12}}/>
+        ) : (
+            <DownOutlined style={{fontSize: 12}}/>
+        );
+    };
+
+
     const handleUpdateDataBtn = async () => {
         if (!activePathId) return;
         const origins = selectedItems.map(item => item.origin);
@@ -162,34 +217,65 @@ const HubMenuLevels = (
 
     return loading ? (
         <div style={{padding: 24, textAlign: "center"}}>
-            <Spin size="large"/>
+            <Spin size="small"/>
         </div>
     ) : (
         <>
-            <Tree draggable blockNode expandedKeys={expandedKeys} onExpand={setExpandedKeys}
-                  treeData={treeData} onDrop={onDrop} onSelect={handleSelect}/>
+            <div style={{display: "flex", justifyContent: "center", color: "#3a3a3a"}}>
+                <h2>Нужно выбрать папку, предварительно раскрыв дерево</h2>
+            </div>
             {activePathId != null && simplified && (
-                <div style={{paddingTop: 25}}>
+                <div style={{paddingBottom: 10}}>
                     <Button
-                        icon={<ReloadOutlined/>} type="primary" onClick={handleUpdateDataBtn}
+                        type="primary"
+                        icon={<ReloadOutlined/>} onClick={handleUpdateDataBtn}
                         className="comparison-button">
                         Обновить данные
                     </Button>
                 </div>
-
             )}
-            {activePathId != null && (
-                simplified === false ? (
-                    <StockHubSimplified pathId={activePathId} existingItems={compareElements}/>
-                ) : (
-                    <StockHubItemsTable
-                        pathId={activePathId}
-                        selectedRowKeys={[]}
-                        onSelectedOrigins={setSelectedItems}
-                        profit_profiles={ProfitRangesProfiles}
+            <Row gutter={16}>
+                <Col span={8}>
+                    <Tree
+                        draggable
+                        blockNode
+                        defaultExpandAll
+                        treeData={treeData}
+                        onSelect={handleSelect}
+                        onDrop={onDrop}
+                        showLine={false}
+                        switcherIcon={switcherIcon}
+                        titleRender={renderTitle}
                     />
-                )
-            )}
+                </Col>
+
+                <Col span={16}
+                    style={{
+                        maxHeight: "calc(100vh - 20px)",
+                        overflowY: "auto",
+                        position: "relative",
+                        paddingRight: 10
+                    }}
+                >
+                    {activePathId != null && (
+                        simplified === false ? (
+                            <StockHubSimplified
+                                pathId={activePathId}
+                                existingItems={compareElements}
+                            />
+                        ) : (
+                            <StockHubItemsTable
+                                pathId={activePathId}
+                                selectedRowKeys={[]}
+                                onSelectedOrigins={setSelectedItems}
+                                profit_profiles={ProfitRangesProfiles}
+                            />
+                        )
+                    )}
+                </Col>
+            </Row>
+
+
 
             {comparisonResult && simplified && (
                 <ComparisonModal

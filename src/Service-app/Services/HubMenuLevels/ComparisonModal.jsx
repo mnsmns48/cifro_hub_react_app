@@ -103,36 +103,58 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent, onStepbyste
 
         return (
             <div>
-                <div style={{marginBottom: 12, textAlign: "left"}}>
-                    {selectedRowKeys.length > 0 && !isUpdating && !isUpdateFinished && (
-                        <Popconfirm
-                            title="Запустить обновление?"
-                            description="Вы уверены, что хотите запустить обновление?"
-                            okText="Да"
-                            cancelText="Нет"
-                            onConfirm={handleUpdateClick}
-                        >
-                            <Button type="primary" danger>
-                                <ExclamationCircleOutlined /> Запустить обновление
+                <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 6
+                }}
+                >
+                    <div style={{display: "flex", gap: 8}}>
+                        {selectedRowKeys.length > 0 && !isUpdating && !isUpdateFinished && (
+                            <Popconfirm
+                                title="Запустить обновление?"
+                                description="Вы уверены, что хотите запустить обновление?"
+                                okText="Да"
+                                cancelText="Нет"
+                                onConfirm={handleUpdateClick}
+                            >
+                                <Button type="primary" danger>
+                                    <ExclamationCircleOutlined/> Запустить парсинг
+                                </Button>
+                            </Popconfirm>
+                        )}
+                        {!isUpdating && (
+                            <>
+                                <Button
+                                    onClick={() => onConsent?.()}
+                                    className="comparison-button comparison-active-button"
+                                >
+                                    Сверка
+                                </Button>
+
+                                <Button
+                                    className="comparison-button comparison-active-button"
+                                    icon={<MoreOutlined/>}
+                                    onClick={() => onStepbystep?.()}
+                                >
+                                    Пошаговое обновление
+                                </Button>
+                            </>
+                        )}
+                    </div>
+                    <div style={{display: "flex", gap: 8}}>
+                        <Popconfirm title="Точно закрыть окно?"
+                                    okText="Да"
+                                    cancelText="Нет"
+                                    onConfirm={onClose}>
+                            <Button type="primary">
+                                Выход
                             </Button>
                         </Popconfirm>
-
-                    )}
-                    {!isUpdating && (
-                        <div style={{display: "flex", gap: 10, paddingTop: 10}}>
-                            <Button onClick={() => onConsent?.()}
-                                    className="comparison-button comparison-active-button">
-                                Сверка
-                            </Button>
-
-                            <Button className="comparison-button comparison-active-button" icon={<MoreOutlined/>}
-                                    onClick={() => onStepbystep?.()}>
-                                Пошаговое внедрение изменений
-                            </Button>
-                        </div>
-                    )}
-
+                    </div>
                 </div>
+
                 <Table
                     columns={getComparisonTableColumns(setRows, progressMap, setProgressMap, isUpdating)}
                     rowKey="id"
@@ -150,28 +172,10 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent, onStepbyste
     };
 
 
-    const renderFooter = () => {
-        if (isUpdating) return null;
-
-        return rows.length === 0 ? (
-            <Button type="primary" onClick={onClose}>Выход</Button>
-        ) : (
-            <Popconfirm
-                title="Точно закрыть окно?"
-                okText="Да"
-                cancelText="Нет"
-                onConfirm={onClose}
-            >
-                <Button type="primary">Выход</Button>
-            </Popconfirm>
-        );
-    };
-
     return (
         <MyModal
             isOpen={isOpen}
             content={renderTable()}
-            footer={renderFooter()}
             width={1200}
         />
 

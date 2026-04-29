@@ -219,15 +219,7 @@ const Consent = ({
                             </Popconfirm>
                         )}
                     </div>
-
-                    <Popconfirm
-                        title="Закрыть просмотр результатов?"
-                        okText="Да"
-                        cancelText="Нет"
-                        onConfirm={onClose}
-                    >
-                        <Button type="primary">Закрыть</Button>
-                    </Popconfirm>
+                    <Button type="primary" onClick={onClose}>Закрыть</Button>
                 </div>
 
                 <Tabs items={items}/>

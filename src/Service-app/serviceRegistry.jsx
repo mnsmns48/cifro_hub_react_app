@@ -44,7 +44,7 @@ export const serviceRegistry = [
         key: "SchemeAttributes",
         title: "Атрибуты",
         icon: makeIcon(AppstoreAddOutlined),
-        loader: () => import("./Services/SchemeAttributes.jsx"),
+        loader: () => import("./Services/AttributesScheme.jsx"),
     },
     {
         key: "RewardRangeSettings",

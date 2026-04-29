@@ -1,6 +1,6 @@
 import SmartPhone from "../../../Cifrotech-app/components/products/smartPhone.jsx";
 import {useEffect, useState} from "react";
-import {fetchPostData} from "../SchemeAttributes/api.js";
+import {fetchPostData} from "./api.js";
 
 
 const FeaturesDependenciesComponent = ({prosCons, brand, type, source, info}) => {

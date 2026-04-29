@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {Modal, Table, Tooltip, Button} from "antd";
-import {fetchPostData} from "../../SchemeAttributes/api.js";
+import {fetchPostData} from "../../Common/api.js";
 import ResolveModelTypeDependencies from "../../Common/ResolveModelTypeDependencies.jsx";
 import Spinner from "../../../../Cifrotech-app/components/Spinner.jsx";
 import {QuestionCircleOutlined} from "@ant-design/icons";

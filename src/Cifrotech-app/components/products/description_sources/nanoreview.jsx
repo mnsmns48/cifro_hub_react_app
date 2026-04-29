@@ -25,7 +25,7 @@ const nanoreviewReleaseDate = (features_array) => {
     const year = match[2] || match[4];
     const normalizedMonth = russianMonth ? monthsMap[russianMonth] : monthsMap[match[3]];
 
-    return { month: normalizedMonth, year };
+    return {month: normalizedMonth, year};
 };
 
 
@@ -203,7 +203,7 @@ const nanoreviewCPU = (features_array) => {
 
 const nanoreviewAntutu = (features_array) => {
     const getAntutuScore = (item) => {
-        return item['Производительность']?.['Total score'] || item['Performance']?.['Total score'] || null;
+        return item['Производительность']?.['Total score'] || item['Performance']?.['Total score'] || item['Бенчмарки']?.['Total score'] || null;
     }
     let antutuScore;
     for (const item of features_array) {

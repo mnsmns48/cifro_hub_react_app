@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {fetchGetData, fetchDeleteData} from "./api.js";
+import {fetchGetData, fetchDeleteData} from "../Common/api.js";
 import {Table, Button, Space, Popconfirm, Card} from "antd";
 import FormulaExpression from "./FormulaExpression.jsx";
 import {

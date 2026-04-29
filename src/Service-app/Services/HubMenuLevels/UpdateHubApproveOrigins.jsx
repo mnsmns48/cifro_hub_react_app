@@ -1,26 +1,11 @@
 import {useEffect, useState} from "react";
 import {Segmented, Table, Flex, Button, Modal} from "antd";
 import {CloseOutlined} from "@ant-design/icons";
-import {fetchPostData} from "../SchemeAttributes/api.js";
+import {fetchPostData} from "../Common/api.js";
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 import "./Css/UpdateHubApproveOrigins.css"
 import OriginImageViewer from "../Common/OriginImageViewer.jsx";
 import {buildApproveOriginsColumns} from "./UpdateHubApproveOriginsColumns.jsx";
-
-const styleFn = (info) => {
-    if (info.props.vertical) {
-        return {
-            root: {
-                border: "2px solid #676760", padding: 4, width: 350,
-            }, icon: {
-                color: "#676760",
-            }, item: {
-                textAlign: "start",
-            },
-        };
-    }
-    return {};
-};
 
 
 const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOrigins}) => {
@@ -139,39 +124,42 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                         </div>
 
                         <Flex gap={16} align="flex-end" style={{marginBottom: 20}}>
-                            <Segmented
-                                styles={styleFn}
-                                vertical
-                                size="small"
-                                value={selectedPathId}
-                                onChange={(val) => {
-                                    setSelectedPathId(val);
-                                    const backendPath = dataForUpdate.find(p => p.path.id === val);
-                                    if (backendPath && backendPath.products.length > 0) {
-                                        setSelectedFeatureId(backendPath.products[0].id);
+                            <div className="vertical-segmented">
+                                <Segmented
+                                    vertical
+                                    size="small"
+                                    value={selectedPathId}
+                                    onChange={(val) => {
+                                        setSelectedPathId(val);
+                                        const backendPath = dataForUpdate.find(p => p.path.id === val);
+                                        if (backendPath && backendPath.products.length > 0) {
+                                            setSelectedFeatureId(backendPath.products[0].id);
+                                        }
+                                    }}
+                                    options={Array.from(objForUpdate.values())
+                                        .filter(entry => {
+                                            const backendPath = dataForUpdate.find(p => p.path.id === entry.path_id);
+                                            return backendPath && backendPath.products.length > 0;
+                                        })
+                                        .map(entry => ({
+                                            value: entry.path_id,
+                                            label: entry.route.map(r => r.label).join(" - "),
+                                            icon: entry.route.at(-1)?.icon && (
+                                                <img src={entry.route.at(-1).icon} width={18}/>
+                                            )
+                                        }))
                                     }
-                                }}
-                                options={Array.from(objForUpdate.values())
-                                    .filter(entry => {
-                                        const backendPath = dataForUpdate.find(p => p.path.id === entry.path_id);
-                                        return backendPath && backendPath.products.length > 0;
-                                    })
-                                    .map(entry => ({
-                                        value: entry.path_id,
-                                        label: entry.route.map(r => r.label).join(" - "),
-                                        icon: entry.route.at(-1)?.icon && (
-                                            <img src={entry.route.at(-1).icon} width={18}/>
-                                        )
-                                    }))
-                                }
-                            />
-
-                            <Segmented styles={styleFn}
-                                       vertical
-                                       size="small"
-                                       value={selectedFeatureId}
-                                       onChange={setSelectedFeatureId}
-                                       options={features.map(f => ({label: f.title, value: f.id}))}/>
+                                />
+                            </div>
+                            <div className="vertical-segmented">
+                                <Segmented
+                                    vertical
+                                    size="small"
+                                    value={selectedFeatureId}
+                                    onChange={setSelectedFeatureId}
+                                    options={features.map(f => ({label: f.title, value: f.id}))}
+                                />
+                            </div>
                         </Flex>
 
                         {selectedFeature && (

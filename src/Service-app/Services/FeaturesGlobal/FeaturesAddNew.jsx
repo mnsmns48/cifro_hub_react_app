@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {Modal, Select, Input, Button, message} from "antd";
-import {fetchGetData, fetchPostData} from "../SchemeAttributes/api.js";
+import {fetchGetData, fetchPostData} from "../Common/api.js";
 import CreateBrandOrTypeModal from "./CreateBrandOrTypeModal.jsx";
 import {LoginOutlined} from "@ant-design/icons";
 
