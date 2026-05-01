@@ -1,9 +1,9 @@
-import {Button, Table, Input, Select} from 'antd';
+import {Button, Table, Input, Select, Card} from 'antd';
 import {
     EditOutlined,
     DeleteOutlined,
     SaveOutlined,
-    PlusSquareOutlined,
+    AppstoreAddOutlined,
 } from '@ant-design/icons';
 import {useEffect, useState} from 'react';
 import axios from 'axios';
@@ -146,15 +146,6 @@ const Vendors = () => {
 
     return (
         <>
-            <div className='vendor-main'>
-                <Button
-                    icon={<PlusSquareOutlined/>}
-                    type="text"
-                    shape="circle"
-                    onClick={handleAdd}
-                    className="add_vendor_button"
-                />
-            </div>
             {newVendor && (
                 <div className="new-vendor-line">
                     {vendorFields.map(key => (
@@ -178,7 +169,9 @@ const Vendors = () => {
                     ))}
                     <Button icon={<SaveOutlined/>} type="primary" onClick={handleSaveNewVendor}>Сохранить</Button>
                 </div>)}
-            <Table columns={columns} dataSource={vendors} rowKey="id"/>
+            <Card title={<Button primary icon={<AppstoreAddOutlined/>} onClick={handleAdd}/>}>
+                <Table columns={columns} dataSource={vendors} rowKey="id"/>
+            </Card>
             <MyModal
                 isOpen={isModalOpen}
                 onCancel={() => setIsModalOpen(false)}

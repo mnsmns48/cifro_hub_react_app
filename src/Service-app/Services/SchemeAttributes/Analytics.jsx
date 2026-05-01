@@ -1,74 +1,165 @@
 import {useEffect, useState} from "react";
-import {Table, Descriptions} from "antd";
-import {fetchGetData} from "../Common/api.js";
+import {Button, Card, message, Table} from "antd";
+import {fetchGetData, fetchPostData} from "../Common/api.js";
 import EmptyState from "../../../Ui/Empty.jsx";
+import {getAnalyticsColumns} from "./AnalyticsColumns.jsx";
+import {AppstoreAddOutlined} from "@ant-design/icons";
 
 const Analytics = () => {
+    const [isCreatingRuleLine, setIsCreatingRuleLine] = useState(false);
+    const [isEditingRuleId, setIsEditingRuleId] = useState(null);
+
+    const [newRule, setNewRule] = useState({});
+    const [editRule, setEditRule] = useState({});
+
+
+    const [productTypes, setProductTypes] = useState([]);
+    const [attributes, setAttributes] = useState([]);
     const [data, setData] = useState([]);
 
     useEffect(() => {
+        void loadRuleLines();
+    }, []);
+
+    const loadRuleLines = () => {
         fetchGetData("/service/analytics/")
             .then((res) => setData(res))
             .catch(() => setData([]));
-    }, []);
+    };
 
-    const columns = [
-        {
-            title: "Тип товара",
-            dataIndex: ["product_type", "type"],
-            key: "product_type",
-        },
-        {
-            title: "Атрибут",
-            dataIndex: ["attr_key", "key"],
-            key: "attr_key",
-        },
-        {
-            title: "Вес",
-            dataIndex: "weight",
-            key: "weight",
-        },
-        {
-            title: "Value Map",
-            dataIndex: "value_map",
-            key: "value_map",
-            render: (value) => {
-                if (!value) return "—";
+    const loadProductTypes = async () => {
+        const res = await fetchGetData("/service/product/fetch_product_type_list");
+        setProductTypes(res);
+    };
 
-                const entries = Object.entries(value);
+    const loadAttrKeys = async () => {
+        const res = await fetchGetData("/service/attributes/get_attr_keys");
+        setAttributes(res);
+    };
 
-                return (
-                    <Descriptions
-                        size="small"
-                        column={1}
-                        bordered={false}
-                        style={{margin: 0}}
-                    >
-                        {entries.map(([k, v]) => (
-                            <Descriptions.Item key={k} label={k}>
-                                {v}
-                            </Descriptions.Item>
-                        ))}
-                    </Descriptions>
+    const handleUndo = () => {
+        setIsCreatingRuleLine(false);
+        setIsEditingRuleId(null);
+        setNewRule({});
+        setEditRule({});
+    };
+
+
+    const handleCreateNewRule = () => {
+        void loadProductTypes();
+        void loadAttrKeys();
+        setNewRule({});
+        setIsCreatingRuleLine(true);
+    };
+
+    const handleEditStart = async (record) => {
+        await loadProductTypes();
+        await loadAttrKeys();
+
+        setIsEditingRuleId(record.id);
+
+        setEditRule({
+            product_type_id: record.product_type?.id ?? record.product_type_id,
+            attr_key_id: record.attr_key?.id ?? record.attr_key_id,
+            weight: record.weight,
+            description: record.description,
+            is_enabled: record.is_enabled
+        });
+    };
+
+
+    const handleUpdateRuleLine = async (record) => {
+        const payload = {
+            id: isEditingRuleId,
+            product_type_id: record.product_type_id,
+            attr_key_id: record.attr_key_id,
+            weight: record.weight,
+            description: record.description,
+            is_enabled: record.is_enabled
+        };
+
+        try {
+            const updated = await fetchPostData("/service/analytics/update_rule_line", payload);
+
+            if (updated) {
+                setData(prev =>
+                    prev.map(r => r.id === updated.id ? updated : r)
                 );
             }
-        },
-        {
-            title: "Описание",
-            dataIndex: "description",
-            key: "description",
+
+            handleUndo();
+        } catch (e) {
+            message.error(e);
         }
-    ];
+    };
+
+
+    const handleDeleteRule = async (id) => {
+        try {
+            await fetchPostData("/service/analytics/delete_rule_line", {id});
+            setData(prev => prev.filter(r => r.id !== id));
+        } catch (e) {
+            message.error(e);
+        }
+    };
+
+
+    const handleSaveRuleLine = async (record) => {
+        const payload = {
+            product_type_id: record.product_type_id,
+            attr_key_id: record.attr_key_id,
+            weight: record.weight,
+            description: record.description,
+            is_enabled: record.is_enabled ?? true
+        };
+
+        try {
+            const created = await fetchPostData("/service/analytics/add_rule_line", payload);
+            if (created) {
+                setData(prev => [created, ...prev]);
+            }
+            setIsCreatingRuleLine(false);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+
+    const handleToggleSwitch = async (id, value) => {
+        const updated = await fetchPostData("/service/analytics/toggle_switch", {
+            id,
+            is_enabled: value
+        });
+
+        setData(prev => prev.map(r => r.id === updated.id ? updated : r));
+    };
+
 
     return (
         <>
-            <Table
-                locale={{ emptyText: <EmptyState /> }}
-                rowKey="id"
-                columns={columns}
-                dataSource={data}
-                pagination={false}
-            />
+            <Card title={<Button icon={<AppstoreAddOutlined/>} onClick={handleCreateNewRule}/>}>
+                <Table locale={{emptyText: <EmptyState/>}}
+                       rowKey="id"
+                       columns={getAnalyticsColumns({
+                           isCreatingRuleLine,
+                           isEditingRuleId,
+                           productTypes,
+                           attributes,
+                           newRule,
+                           setNewRule,
+                           editRule,
+                           setEditRule,
+                           handleEditStart,
+                           handleDeleteRule,
+                           handleUpdateRuleLine,
+                           handleSaveRuleLine,
+                           handleUndo,
+                           handleToggleSwitch
+                       })}
+                       dataSource={isCreatingRuleLine ? [{}, ...data] : data}
+                       pagination={false}
+                />
+            </Card>
         </>
     );
 };
