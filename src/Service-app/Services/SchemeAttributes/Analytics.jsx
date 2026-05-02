@@ -1,9 +1,10 @@
 import {useEffect, useState} from "react";
-import {Button, Card, message, Table} from "antd";
+import {Button, Card, message, Table, Tooltip} from "antd";
 import {fetchGetData, fetchPostData} from "../Common/api.js";
 import EmptyState from "../../../Ui/Empty.jsx";
 import {getAnalyticsColumns} from "./AnalyticsColumns.jsx";
-import {AppstoreAddOutlined} from "@ant-design/icons";
+import {AppstoreAddOutlined, ReloadOutlined} from "@ant-design/icons";
+import AnalyticsValueMap from "./AnalyticsValueMap.jsx";
 
 const Analytics = () => {
     const [isCreatingRuleLine, setIsCreatingRuleLine] = useState(false);
@@ -16,6 +17,10 @@ const Analytics = () => {
     const [productTypes, setProductTypes] = useState([]);
     const [attributes, setAttributes] = useState([]);
     const [data, setData] = useState([]);
+
+    const [valueMapModalOpen, setValueMapModalOpen] = useState(false);
+    const [valueMapRecord, setValueMapRecord] = useState(null);
+
 
     useEffect(() => {
         void loadRuleLines();
@@ -134,10 +139,26 @@ const Analytics = () => {
         setData(prev => prev.map(r => r.id === updated.id ? updated : r));
     };
 
+    const handleOpenValueMapModal = (record) => {
+        setValueMapRecord(record);
+        setValueMapModalOpen(true);
+    };
+
 
     return (
         <>
-            <Card title={<Button icon={<AppstoreAddOutlined/>} onClick={handleCreateNewRule}/>}>
+            <Card
+                title={
+                    <div style={{display: "flex", gap: 8}}>
+                        <Tooltip title="Создать правило">
+                            <Button icon={<AppstoreAddOutlined/>} onClick={handleCreateNewRule}/>
+                        </Tooltip>
+                        <Tooltip title="Перезагрузить страницу">
+                            <Button icon={<ReloadOutlined/>} onClick={loadRuleLines}/>
+                        </Tooltip>
+                    </div>
+                }
+            >
                 <Table locale={{emptyText: <EmptyState/>}}
                        rowKey="id"
                        columns={getAnalyticsColumns({
@@ -154,12 +175,18 @@ const Analytics = () => {
                            handleUpdateRuleLine,
                            handleSaveRuleLine,
                            handleUndo,
-                           handleToggleSwitch
+                           handleToggleSwitch,
+                           handleOpenValueMapModal
                        })}
                        dataSource={isCreatingRuleLine ? [{}, ...data] : data}
                        pagination={false}
                 />
             </Card>
+            <AnalyticsValueMap
+                open={valueMapModalOpen}
+                onClose={() => setValueMapModalOpen(false)}
+                record={valueMapRecord}
+            />
         </>
     );
 };

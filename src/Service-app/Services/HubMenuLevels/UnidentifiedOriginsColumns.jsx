@@ -6,20 +6,20 @@ import {
     QuestionOutlined
 } from "@ant-design/icons";
 
-const cell = (content) => (
-    <div
-        style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "start",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis"
-        }}
-    >
-        {content}
-    </div>
-);
+// const cell = (content) => (
+//     <div
+//         style={{
+//             display: "flex",
+//             alignItems: "center",
+//             justifyContent: "start",
+//             whiteSpace: "nowrap",
+//             overflow: "hidden",
+//             textOverflow: "ellipsis"
+//         }}
+//     >
+//         {content}
+//     </div>
+// );
 
 const spanAllIfGroup = (record) => ({
     colSpan: record.children ? 998 : 1

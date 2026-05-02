@@ -1,5 +1,11 @@
 import {Button, Descriptions, Input, InputNumber, message, Popconfirm, Select, Space, Switch, Tag} from "antd";
-import {DeleteOutlined, EditOutlined, SaveOutlined, UndoOutlined} from "@ant-design/icons";
+import {
+    DashOutlined,
+    DeleteOutlined,
+    EditOutlined,
+    SaveOutlined,
+    UndoOutlined
+} from "@ant-design/icons";
 
 
 export const getAnalyticsColumns = ({
@@ -16,7 +22,8 @@ export const getAnalyticsColumns = ({
                                         handleUpdateRuleLine,
                                         handleSaveRuleLine,
                                         handleUndo,
-                                        handleToggleSwitch
+                                        handleToggleSwitch,
+                                        handleOpenValueMapModal
                                     }) => {
 
     const isNewRow = (record) => isCreatingRuleLine && !record.id;
@@ -240,31 +247,48 @@ export const getAnalyticsColumns = ({
 
     if (!isCreatingRuleLine) {
         columns.splice(3, 0, {
-            title: "Value Maps",
-            key: "value_maps",
-            align: "center",
-            width: "20%",
-            render: (_, record) => {
-                const maps = record.value_maps;
-                if (!maps?.length) return "";
+                title: "Value Maps",
+                key: "value_maps",
+                align: "center",
+                width: "20%",
+                render: (_, record) => {
+                    const maps = record.value_maps;
 
-                return (
-                    <Descriptions size="small"
-                                  column={1}
-                                  bordered={false}
-                                  style={{margin: 0}}
-                    >
-                        {maps.map((vm) => (
-                            <Descriptions.Item key={vm.id}
-                                               label={vm.attr_value.alias || vm.attr_value.value}
-                            >
-                                <Tag color="blue">{vm.multiplier}</Tag>
-                            </Descriptions.Item>
-                        ))}
-                    </Descriptions>
-                );
+                    return (
+                        <div
+                            style={{cursor: "pointer"}}
+                            onClick={() => handleOpenValueMapModal(record)}
+                        >
+                            {maps?.length ? (
+                                <Descriptions
+                                    size="small"
+                                    column={1}
+                                    bordered={false}
+                                    style={{margin: 0}}
+                                >
+                                    {maps.map((vm) => (
+                                        <Descriptions.Item
+                                            key={vm.id}
+                                            label={
+                                                <span style={{display: "inline-block", lineHeight: 1.2}}>
+                                                    {vm.attr_value.value}
+                                                    <br/>
+                                                    <span style={{color: "#999", fontSize: 13}}>
+                                                        {vm.attr_value.alias}
+                                                    </span>
+                                            </span>}>
+                                            <Tag color="blue">{vm.multiplier}</Tag>
+                                        </Descriptions.Item>
+                                    ))}
+                                </Descriptions>
+                            ) : (
+                                <span style={{color: "#999"}}><DashOutlined/></span>
+                            )}
+                        </div>
+                    );
+                }
             }
-        });
+        );
     }
 
 
