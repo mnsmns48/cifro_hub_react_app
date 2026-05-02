@@ -1,4 +1,4 @@
-import {Select, InputNumber, Tag} from "antd";
+import { Select, InputNumber, Tag } from "antd";
 
 export const getAnalyticsValueMapColumns = ({
                                                 isCreatingValueMapLine,
@@ -14,33 +14,39 @@ export const getAnalyticsValueMapColumns = ({
         render: (text, record, index) => {
             if (isCreatingValueMapLine && index === 0) {
                 return (
-                    <Select mode="multiple"
-                            style={{width: "100%"}}
+                    <div key="value_new">
+                        <Select
+                            mode="multiple"
+                            style={{ width: "100%" }}
                             showSearch
                             filterOption={(input, option) =>
                                 option.searchText.toLowerCase().includes(input.toLowerCase())
                             }
                             options={attributeValues.map(v => ({
                                 label: (
-                                    <span>
-                                    {v.value}<br/>
-                                    <span style={{fontSize: 11, color: "#999"}}>{v.alias}</span>
-                                </span>
+                                    <span style={{ fontSize: 11, lineHeight: "8px" }}>
+                                        {v.value}<br />
+                                        <span style={{ fontSize: 11, color: "#999", lineHeight: "8px" }}>
+                                            {v.alias}
+                                        </span>
+                                    </span>
                                 ),
                                 value: v.id,
                                 searchText: `${v.value} ${v.alias}`
                             }))}
                             value={newValueMap.attr_value_ids}
                             onChange={(vals) =>
-                                setNewValueMap(prev => ({...prev, attr_value_ids: vals}))
+                                setNewValueMap(prev => ({ ...prev, attr_value_ids: vals }))
                             }
-                    />
-
+                        />
+                    </div>
                 );
             }
-            return record?.attr_value?.value;
+
+            return <div key={`value_${record.id}`}>{record?.attr_value?.value}</div>;
         }
     },
+
     {
         title: "Alias",
         key: "alias",
@@ -49,15 +55,20 @@ export const getAnalyticsValueMapColumns = ({
         render: (text, record, index) => {
             if (isCreatingValueMapLine && index === 0) {
                 return (
-                    <span style={{color: "#999"}}>
-                        Выберите value
-                    </span>
+                    <div key="alias_new">
+                        <span style={{ color: "#999" }}>Выберите value</span>
+                    </div>
                 );
             }
 
-            return record?.attr_value?.alias || <span style={{color: "#999"}}>—</span>;
+            return (
+                <div key={`alias_${record.id}`}>
+                    {record?.attr_value?.alias || <span style={{ color: "#999" }}>—</span>}
+                </div>
+            );
         }
     },
+
     {
         title: "Multiplier",
         key: "multiplier",
@@ -66,19 +77,25 @@ export const getAnalyticsValueMapColumns = ({
         render: (text, record, index) => {
             if (isCreatingValueMapLine && index === 0) {
                 return (
-                    <InputNumber
-                        value={newValueMap.multiplier}
-                        onChange={(val) =>
-                            setNewValueMap(prev => ({...prev, multiplier: val}))
-                        }
-                        min={0}
-                        step={0.1}
-                        style={{width: "100%"}}
-                    />
+                    <div key="multiplier_new">
+                        <InputNumber
+                            value={newValueMap.multiplier}
+                            onChange={(val) =>
+                                setNewValueMap(prev => ({ ...prev, multiplier: val }))
+                            }
+                            min={0}
+                            step={0.1}
+                            style={{ width: "100%" }}
+                        />
+                    </div>
                 );
             }
 
-            return <Tag color="blue">{record.multiplier}</Tag>;
+            return (
+                <div key={`multiplier_${record.id}`}>
+                    <Tag color="blue">{record.multiplier}</Tag>
+                </div>
+            );
         }
     }
 ];

@@ -178,7 +178,7 @@ const Analytics = () => {
                            handleToggleSwitch,
                            handleOpenValueMapModal
                        })}
-                       dataSource={isCreatingRuleLine ? [{}, ...data] : data}
+                       dataSource={isCreatingRuleLine ? [{ id: "__new_rule_line" }, ...data] : data}
                        pagination={false}
                 />
             </Card>
@@ -186,6 +186,7 @@ const Analytics = () => {
                 open={valueMapModalOpen}
                 onClose={() => setValueMapModalOpen(false)}
                 record={valueMapRecord}
+                onUpdated={loadRuleLines}
             />
         </>
     );

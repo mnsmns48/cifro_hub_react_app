@@ -2,7 +2,7 @@ import {Button, Descriptions, Input, InputNumber, message, Popconfirm, Select, S
 import {
     DashOutlined,
     DeleteOutlined,
-    EditOutlined,
+    EditOutlined, PlusSquareOutlined,
     SaveOutlined,
     UndoOutlined
 } from "@ant-design/icons";
@@ -26,7 +26,7 @@ export const getAnalyticsColumns = ({
                                         handleOpenValueMapModal
                                     }) => {
 
-    const isNewRow = (record) => isCreatingRuleLine && !record.id;
+    const isNewRow = (record) => record.id === "__new_rule_line";
     const isEditRow = (record) => isEditingRuleId === record.id;
 
     const columns = [
@@ -46,21 +46,24 @@ export const getAnalyticsColumns = ({
                         : (v) => setEditRule(prev => ({...prev, product_type_id: v}));
 
                     return (
-                        <Select
-                            style={{width: "100%"}}
-                            options={productTypes.map(pt => ({
-                                label: pt.type,
-                                value: pt.id
-                            }))}
-                            value={value}
-                            onChange={onChange}
-                        />
+                        <div key="product_type">
+                            <Select
+                                style={{width: "100%"}}
+                                options={productTypes.map(pt => ({
+                                    label: pt.type,
+                                    value: pt.id
+                                }))}
+                                value={value}
+                                onChange={onChange}
+                            />
+                        </div>
                     );
                 }
 
-                return record.product_type?.type;
+                return <div key="product_type_text">{record.product_type?.type}</div>;
             }
         },
+
         {
             title: "Атрибут",
             key: "attr_key",
@@ -74,176 +77,201 @@ export const getAnalyticsColumns = ({
                     const value = isNew ? newRule.attr_key_id : editRule.attr_key_id;
 
                     const onChange = (v) => {
-                        if (isNew) {
-                            setNewRule(prev => ({...prev, attr_key_id: v}));
-                        } else {
-                            if (v !== editRule.attr_key_id) {
-                                void message.open({
-                                    type: "warning",
-                                    content: (
-                                        <span style={{color: "#ff4d4f", fontWeight: 500}}>
-                                            Внимание!<br/>
-                                            При смене атрибута связанные Value Maps будут удалены
-                                        </span>
-                                    ),
-                                    style: {color: "#c38428", fontSize: 22, fontWeight: "bold"},
-                                    duration: 10
-                                });
-
-                            }
-                            setEditRule(prev => ({...prev, attr_key_id: v}));
+                        if (!isNew && v !== editRule.attr_key_id) {
+                            void message.open({
+                                type: "warning",
+                                content: (
+                                    <span style={{color: "#ff4d4f", fontWeight: 500}}>
+                                    Внимание!<br/>
+                                    При смене атрибута связанные Value Maps будут удалены
+                                </span>
+                                ),
+                                style: {color: "#c38428", fontSize: 22, fontWeight: "bold"},
+                                duration: 10
+                            });
                         }
+
+                        isNew
+                            ? setNewRule(prev => ({...prev, attr_key_id: v}))
+                            : setEditRule(prev => ({...prev, attr_key_id: v}));
                     };
 
                     return (
-                        <Select
-                            style={{width: "100%"}}
-                            options={attributes.map(k => ({
-                                label: k.key,
-                                value: k.id
-                            }))}
-                            value={value}
-                            onChange={onChange}
-                        />
+                        <div key="attr_key">
+                            <Select
+                                style={{width: "100%"}}
+                                options={attributes.map(k => ({
+                                    label: k.key,
+                                    value: k.id
+                                }))}
+                                value={value}
+                                onChange={onChange}
+                            />
+                        </div>
                     );
                 }
 
-                return record.attr_key?.key;
+                return <div key="attr_key_text">{record.attr_key?.key}</div>;
             }
         },
+
         {
             title: "Вес",
             key: "weight",
             align: "center",
             width: "7%",
             render: (_, record) => {
-                if (isCreatingRuleLine && !record.id) {
+                const isNew = isNewRow(record);
+                const isEdit = isEditRow(record);
+
+                if (isNew) {
                     return (
-                        <InputNumber
-                            style={{width: "100%"}}
-                            value={newRule.weight}
-                            onChange={(v) => setNewRule(prev => ({...prev, weight: v}))}
-                        />
+                        <div key="weight_new">
+                            <InputNumber
+                                style={{width: "100%"}}
+                                value={newRule.weight}
+                                onChange={(v) => setNewRule(prev => ({...prev, weight: v}))}
+                            />
+                        </div>
                     );
                 }
 
-                if (isEditRow(record)) {
+                if (isEdit) {
                     return (
-                        <InputNumber
-                            style={{width: "100%"}}
-                            value={editRule.weight}
-                            onChange={(v) => setEditRule(prev => ({...prev, weight: v}))}
-                        />
+                        <div key="weight_edit">
+                            <InputNumber
+                                style={{width: "100%"}}
+                                value={editRule.weight}
+                                onChange={(v) => setEditRule(prev => ({...prev, weight: v}))}
+                            />
+                        </div>
                     );
                 }
 
-                return record.weight;
+                return <div key="weight_text">{record.weight}</div>;
             }
         },
+
         {
             title: "Описание",
             key: "description",
             align: "center",
             width: "30%",
             render: (_, record) => {
-                const isNew = isCreatingRuleLine && !record.id;
-                const isEdit = isEditingRuleId === record.id;
+                const isNew = isNewRow(record);
+                const isEdit = isEditRow(record);
 
                 if (isNew) {
                     return (
-                        <Input
-                            value={newRule.description}
-                            onChange={(e) =>
-                                setNewRule(prev => ({...prev, description: e.target.value}))
-                            }
-                        />
+                        <div key="desc_new">
+                            <Input
+                                value={newRule.description}
+                                onChange={(e) =>
+                                    setNewRule(prev => ({...prev, description: e.target.value}))
+                                }
+                            />
+                        </div>
                     );
                 }
 
                 if (isEdit) {
                     return (
-                        <Input
-                            value={editRule.description}
-                            onChange={(e) =>
-                                setEditRule(prev => ({...prev, description: e.target.value}))
-                            }
-                        />
+                        <div key="desc_edit">
+                            <Input
+                                value={editRule.description}
+                                onChange={(e) =>
+                                    setEditRule(prev => ({...prev, description: e.target.value}))
+                                }
+                            />
+                        </div>
                     );
                 }
 
-                return record.description;
+                return <div key="desc_text">{record.description}</div>;
             }
         },
+
         {
             title: "Активно",
             key: "is_enabled",
             align: "center",
             width: "10%",
             render: (_, record) => {
-                if ((isCreatingRuleLine && !record.id) || isEditingRuleId === record.id) {
-                    return null;
+                const isNew = isNewRow(record);
+                const isEdit = isEditRow(record);
+
+                if (isNew || isEdit) {
+                    return <div key="switch_empty"/>;
                 }
 
                 return (
-                    <Switch
-                        checked={record.is_enabled}
-                        onChange={(v) => handleToggleSwitch(record.id, v)}
-                    />
+                    <div key="switch">
+                        <Switch
+                            checked={record.is_enabled}
+                            onChange={(v) => handleToggleSwitch(record.id, v)}
+                        />
+                    </div>
                 );
             }
         },
+
         {
             key: "actions",
             width: "6%",
             align: "center",
             render: (_, record) => {
-                const isNew = isCreatingRuleLine && !record.id;
-                const isEdit = isEditingRuleId === record.id;
+                const isNew = isNewRow(record);
+                const isEdit = isEditRow(record);
 
                 if (isNew) {
                     return (
-                        <Space>
-                            <Button size="small" icon={<SaveOutlined/>} onClick={() => handleSaveRuleLine(newRule)}/>
-                            <Button size="small" icon={<UndoOutlined/>} onClick={handleUndo}/>
-                        </Space>
+                        <div key="actions_new">
+                            <Space>
+                                <Button size="small" icon={<SaveOutlined/>}
+                                        onClick={() => handleSaveRuleLine(newRule)}/>
+                                <Button size="small" icon={<UndoOutlined/>} onClick={handleUndo}/>
+                            </Space>
+                        </div>
                     );
                 }
 
                 if (isEdit) {
                     return (
-                        <Space>
-                            <Button size="small" icon={<SaveOutlined/>} onClick={() => handleUpdateRuleLine(editRule)}/>
-                            <Button size="small" icon={<UndoOutlined/>} onClick={handleUndo}/>
-                        </Space>
+                        <div key="actions_edit">
+                            <Space>
+                                <Button size="small" icon={<SaveOutlined/>}
+                                        onClick={() => handleUpdateRuleLine(editRule)}/>
+                                <Button size="small" icon={<UndoOutlined/>} onClick={handleUndo}/>
+                            </Space>
+                        </div>
                     );
                 }
 
                 return (
-                    <Space>
-                        <Button
-                            size="small"
-                            icon={<EditOutlined/>}
-                            onClick={async () => await handleEditStart(record)}
-                        />
-
-                        <Popconfirm
-                            title="Удалить правило?"
-                            description="Это действие нельзя отменить"
-                            okText="Да"
-                            cancelText="Нет"
-                            onConfirm={() => handleDeleteRule(record.id)}
-                        >
+                    <div key="actions_default">
+                        <Space>
                             <Button
-                                danger
                                 size="small"
-                                icon={<DeleteOutlined/>}
+                                icon={<EditOutlined/>}
+                                onClick={async () => await handleEditStart(record)}
                             />
-                        </Popconfirm>
-                    </Space>
+
+                            <Popconfirm
+                                title="Удалить правило?"
+                                description="Это действие нельзя отменить"
+                                okText="Да"
+                                cancelText="Нет"
+                                onConfirm={() => handleDeleteRule(record.id)}
+                            >
+                                <Button danger size="small" icon={<DeleteOutlined/>}/>
+                            </Popconfirm>
+                        </Space>
+                    </div>
                 );
             }
         }
-    ]
+    ];
+
 
     if (!isCreatingRuleLine) {
         columns.splice(3, 0, {
@@ -282,7 +310,7 @@ export const getAnalyticsColumns = ({
                                     ))}
                                 </Descriptions>
                             ) : (
-                                <span style={{color: "#999"}}><DashOutlined/></span>
+                                <span style={{color: "#999"}}><PlusSquareOutlined/> <DashOutlined/></span>
                             )}
                         </div>
                     );
