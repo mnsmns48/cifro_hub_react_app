@@ -23,9 +23,7 @@ const AnalyticsValueMap = ({open, onClose, record, onUpdated}) => {
     const [newValueMap, setNewValueMap] = useState({});
     const [valueMapsData, setValueMapsData] = useState([]);
     const [attributeValues, setAttributeValues] = useState([]);
-
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
     const [isBulkUpdateModal, setIsBulkUpdateModal] = useState(false);
     const [bulkMultiplier, setBulkMultiplier] = useState(null);
 
@@ -65,7 +63,6 @@ const AnalyticsValueMap = ({open, onClose, record, onUpdated}) => {
         setAttributeValues(res || []);
     };
 
-    // 🔥 Главный фикс: новая строка теперь имеет стабильный id
     const dataSource = isCreatingValueMapLine
         ? [{id: "__new_value_map"}, ...valueMapsData]
         : valueMapsData;
@@ -159,49 +156,34 @@ const AnalyticsValueMap = ({open, onClose, record, onUpdated}) => {
 
                 {selectedRowKeys.length > 0 && !isCreatingValueMapLine && (
                     <>
-                        <Button
-                            color="cyan"
-                            variant="solid"
-                            icon={<EditOutlined/>}
-                            onClick={() => setIsBulkUpdateModal(true)}
-                        />
-
-                        <Button
-                            color="red"
-                            variant="solid"
-                            icon={<DeleteOutlined/>}
-                            onClick={handleBulkDelete}
-                        />
+                        <Button color="cyan" variant="solid" icon={<EditOutlined/>}
+                                onClick={() => setIsBulkUpdateModal(true)}/>
+                        <Button color="red" variant="solid" icon={<DeleteOutlined/>} onClick={handleBulkDelete}/>
                     </>
                 )}
             </div>
 
-            <Table
-                rowKey="id"
-                columns={columns}
-                dataSource={dataSource}
-                pagination={false}
-                size="small"
-                rowSelection={rowSelection}
-                locale={{emptyText: <EmptyState/>}}
+            <Table rowKey="id"
+                   columns={columns}
+                   dataSource={dataSource}
+                   pagination={false}
+                   size="small"
+                   rowSelection={rowSelection}
+                   locale={{emptyText: <EmptyState/>}}
             />
 
             {isBulkUpdateModal && (
-                <Modal
-                    open={true}
-                    title="Bulk Update Multiplier"
-                    onCancel={() => setIsBulkUpdateModal(false)}
-                    onOk={handleBulkUpdate}
-                    okText="Save"
-                    cancelText="Cancel"
-                >
-                    <InputNumber
-                        style={{width: "100%"}}
-                        value={bulkMultiplier}
-                        onChange={setBulkMultiplier}
-                        min={0}
-                        step={0.1}
-                        placeholder="Enter new multiplier"
+                <Modal open={true}
+                       onCancel={() => setIsBulkUpdateModal(false)}
+                       onOk={handleBulkUpdate}
+                       okText="Сохранить"
+                       cancelText="Отмена">
+                    <InputNumber style={{width: "100%"}}
+                                 value={bulkMultiplier}
+                                 onChange={setBulkMultiplier}
+                                 min={0}
+                                 step={0.1}
+                                 placeholder="Введите множитель для выделенных строк"
                     />
                 </Modal>
             )}
