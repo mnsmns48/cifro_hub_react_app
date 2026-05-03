@@ -1,4 +1,4 @@
-import {Image, Badge, Popover} from "antd";
+import {Image, Badge, Popover, Tooltip} from "antd";
 import {BarcodeOutlined, FileExcelOutlined} from "@ant-design/icons";
 
 
@@ -131,11 +131,60 @@ export const buildApproveOriginsColumns = ({
                 ) : content;
             },
         },
+        // {
+        //     title: "Название",
+        //     dataIndex: "title",
+        //     key: "title",
+        //     width: "30%",
+        // },
         {
             title: "Название",
             dataIndex: "title",
             key: "title",
             width: "30%",
+            render: (text, record) => {
+                const a = record.analyze || {};
+
+                const tooltipContent = (
+                    <table style={{fontSize: 12}}>
+                        <tbody>
+                        <tr>
+                            <td><b>Ценность (value):</b></td>
+                            <td>{a.value?.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Прирост ценности (value_increase):</b></td>
+                            <td>{a.value_increase?.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Переплата (price_increase):</b></td>
+                            <td>{a.price_increase?.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Допустимая переплата (threshold):</b></td>
+                            <td>{a.threshold?.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Цена за единицу ценности (ratio):</b></td>
+                            <td>{a.ratio?.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Вердикт (verdict):</b></td>
+                            <td>{a.verdict ? "OK" : "BAD"}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+
+                );
+
+
+                return (
+                    <Tooltip placement="topLeft" title={tooltipContent}>
+                        <span style={{cursor: "help"}}>{text}</span>
+                    </Tooltip>
+                );
+            }
         },
         {
             title: "Цена",
