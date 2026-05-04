@@ -216,12 +216,5 @@ export const buildApproveOriginsColumns = ({
             },
         },
         ...dynamicAttributeColumns,
-        {
-            title: "В хабе",
-            dataIndex: "origin_in_hub",
-            key: "origin_in_hub",
-            width: 80,
-            render: (v) => (v ? "Да" : "Нет"),
-        },
     ];
 };
