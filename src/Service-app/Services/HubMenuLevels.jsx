@@ -196,7 +196,7 @@ const HubMenuLevels = ({
         const origins = selectedItems.map(item => item.origin);
         try {
             const payload = {path_id: activePathId, origins: origins};
-            const result = await fetchPostData("/service/start_comparison_process", payload);
+            const result = await fetchPostData("/service/start_price_sync_process", payload);
             setComparisonResponse(result);
             setModalVisible(true);
         } catch (error) {
