@@ -1,4 +1,4 @@
-import ComparisonProgress from "./ComparisonProgress.jsx";
+import VslUpdateProgress from "./VslUpdateProgress.jsx";
 import {Checkbox} from "antd";
 import TimeDayBlock from "../../../Ui/TimeDateBlock.jsx";
 
@@ -48,7 +48,7 @@ const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdat
         dataIndex: "status",
         key: "status",
         render: (_, record) => (
-            <ComparisonProgress
+            <VslUpdateProgress
                 id={record.id}
                 progress_obj={record.progress_obj}
                 progressState={progressMap[record.id]}

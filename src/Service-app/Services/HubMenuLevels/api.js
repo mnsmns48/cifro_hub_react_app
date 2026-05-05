@@ -119,11 +119,6 @@ export const deleteStockItems = async (payload) => {
     }
 };
 
-export const ComparisonStockItems = async (payload) => {
-    const response = await axios.post(`/service/start_comparison_process`, payload);
-    return response.data;
-};
-
 
 export const startParsing = async (payload) => {
     const response = await axios.post("/service/start_parsing", payload, {
@@ -132,18 +127,4 @@ export const startParsing = async (payload) => {
     return response.data;
 };
 
-export const consentDataApiLoad = async (payload) => {
-    const response = await axios.post(`/service/give_me_consent`, payload);
-    return response.data;
-};
 
-
-export const comparisonRecomputedData = async (payload) => {
-    const response = await axios.post(`/service/give_recomputed_output_prices`, payload);
-    return response.data;
-};
-
-export const storeRecomputedData = async (payload) => {
-    const response = await axios.patch(`/service/store_new_prices_hubstock_items`, payload);
-    return response.data;
-};

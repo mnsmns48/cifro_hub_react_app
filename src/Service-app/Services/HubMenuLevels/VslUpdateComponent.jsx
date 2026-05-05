@@ -3,14 +3,14 @@ import MyModal from "../../../Ui/MyModal.jsx";
 import {useEffect, useState} from "react";
 import {getProgressLine} from "../PriceUpdater/api.js";
 import {startParsing} from "./api.js";
-import getComparisonTableColumns from "./ComparisonTableColumns.jsx";
-import "./Css/ComparisonModal.css";
-import {ExclamationCircleOutlined, MoreOutlined} from "@ant-design/icons";
+import getComparisonTableColumns from "./VslUpdateTableColumns.jsx";
+import "./Css/VslUpdate.css";
+import {ExclamationCircleOutlined, OrderedListOutlined} from "@ant-design/icons";
 
 
-const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent, onStepbystep}) => {
+const VslUpdateComponent = ({isOpen, onClose, comparisonResponse, onStepbystep}) => {
 
-    const {vsl_list: vslList} = comparisonObj || {};
+    const {vsl_list: vslList} = comparisonResponse || {};
 
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [rows, setRows] = useState([]);
@@ -21,10 +21,7 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent, onStepbyste
 
     useEffect(() => {
         if (Array.isArray(vslList)) {
-            const enriched = vslList.map(item => ({
-                ...item,
-                vsl_id: item.id
-            }));
+            const enriched = vslList.map(item => ({...item, vsl_id: item.id}));
             setRows(enriched);
         }
     }, [vslList]);
@@ -126,17 +123,9 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent, onStepbyste
                         )}
                         {!isUpdating && (
                             <>
-                                <Button
-                                    onClick={() => onConsent?.()}
-                                    className="comparison-button comparison-active-button"
-                                >
-                                    Сверка
-                                </Button>
-
-                                <Button
-                                    className="comparison-button comparison-active-button"
-                                    icon={<MoreOutlined/>}
-                                    onClick={() => onStepbystep?.()}
+                                <Button className="comparison-button comparison-active-button"
+                                        icon={<OrderedListOutlined />}
+                                        onClick={() => onStepbystep?.()}
                                 >
                                     Пошаговое обновление
                                 </Button>
@@ -183,4 +172,4 @@ const ComparisonModal = ({isOpen, onClose, comparisonObj, onConsent, onStepbyste
 };
 
 
-export default ComparisonModal;
+export default VslUpdateComponent;

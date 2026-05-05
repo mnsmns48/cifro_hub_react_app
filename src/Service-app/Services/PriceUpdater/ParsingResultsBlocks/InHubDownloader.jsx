@@ -47,6 +47,7 @@ const InHubDownloader = ({
 
     return (
         <MyModal
+            width={1200}
             isOpen={isOpen}
             onCancel={onCancel}
             title="Добавить в Хаб"
@@ -74,7 +75,7 @@ const InHubDownloader = ({
 
                     <div style={{marginTop: 20}}>
                         <Suspense fallback={<Spin/>}>
-                            <HubMenuLevels onSelectPath={setSelectedPathId} simplified={false} compareElements={items}/>
+                            <HubMenuLevels onSelectPath={setSelectedPathId} inHubOption={true} compareElements={items}/>
                         </Suspense>
                     </div>
                 </>

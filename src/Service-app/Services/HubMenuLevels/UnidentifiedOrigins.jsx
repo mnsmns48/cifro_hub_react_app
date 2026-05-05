@@ -9,7 +9,7 @@ import AttributesModal from "../PriceUpdater/ParsingResultsBlocks/AttributesModa
 import UpdateHubChooseElements from "./UpdateHubChooseElements.jsx";
 
 
-const UnidentifiedOriginsComponent = ({
+const UnidentifiedOrigins = ({
                                           comparisonObj: {vsl_list, path_ids},
                                           isOpen,
                                           onClose
@@ -437,4 +437,4 @@ const UnidentifiedOriginsComponent = ({
 };
 
 
-export default UnidentifiedOriginsComponent;
+export default UnidentifiedOrigins;

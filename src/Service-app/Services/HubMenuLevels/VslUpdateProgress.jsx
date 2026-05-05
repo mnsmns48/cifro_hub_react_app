@@ -3,7 +3,7 @@ import {Progress} from "antd";
 import {ClockCircleOutlined, CheckCircleOutlined} from "@ant-design/icons";
 import {progressStreamManager} from "./ProgressStreamManager.js";
 
-const ComparisonProgress = ({id, progress_obj, progressState, setProgressMap, duration}) => {
+const VslUpdateProgress = ({id, progress_obj, progressState, setProgressMap, duration}) => {
     useEffect(() => {
         if (!progress_obj || progressState?.status === "done") return;
 
@@ -60,4 +60,4 @@ const ComparisonProgress = ({id, progress_obj, progressState, setProgressMap, du
     return null;
 };
 
-export default ComparisonProgress;
+export default VslUpdateProgress;

@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
 import {fetchStockHubItems} from "./api.js";
 import {Spin, Table} from "antd";
-import {DownSquareOutlined, UpSquareOutlined} from "@ant-design/icons";
+import {ArrowDownOutlined, ArrowUpOutlined} from "@ant-design/icons";
+
 
 const StockHubSimplified = ({pathId, visible = true, existingItems = []}) => {
     const [loading, setLoading] = useState(false);
@@ -56,6 +57,7 @@ const StockHubSimplified = ({pathId, visible = true, existingItems = []}) => {
         }
     ];
 
+    const expandedStyle = {fontSize: 20}
 
     return (
         <div style={{margin: "15px"}}>
@@ -63,7 +65,11 @@ const StockHubSimplified = ({pathId, visible = true, existingItems = []}) => {
                 onClick={() => setExpanded(prev => !prev)}
                 style={{padding: "10px", borderRadius: 6, transition: "background 0.2s ease"}}
             >
-                {expanded ? <UpSquareOutlined style={{fontSize: 20}}/> : <DownSquareOutlined style={{fontSize: 20}}/>}
+                {expanded ? (
+                    <>Свернуть <ArrowUpOutlined style={expandedStyle}/></>
+                ) : (
+                    <>Открой <ArrowDownOutlined style={expandedStyle}/></>
+                )}
             </div>
 
             {expanded && (

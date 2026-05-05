@@ -1,7 +1,7 @@
 import {useEffect, useState, useCallback, useMemo} from "react";
 import {Tree, Spin, Button, Row, Col} from "antd";
 import {
-    addHubLevel, ComparisonStockItems, deleteHubLevel, fetchHubLevels, renameHubLevel, updateHubItemPosition
+    addHubLevel, deleteHubLevel, fetchHubLevels, renameHubLevel, updateHubItemPosition
 } from "./HubMenuLevels/api.js";
 import StockHubItemsTable from "./HubMenuLevels/StockHubItemsTable.jsx";
 import TreeDataRender from "./HubMenuLevels/TreeRender.jsx";
@@ -12,33 +12,29 @@ import {
     ReloadOutlined,
     UpOutlined,
 } from "@ant-design/icons";
-import ComparisonModal from "./HubMenuLevels/ComparisonModal.jsx";
-import Consent from "./HubMenuLevels/Consent.jsx";
+import VslUpdateComponent from "./HubMenuLevels/VslUpdateComponent.jsx";
 import {fetchRangeRewardsProfiles} from "./RewardRangeSettings/api.js";
-import "./HubMenuLevels/Css/ComparisonModal.css";
+import "./HubMenuLevels/Css/VslUpdate.css";
 import StockHubSimplified from "./HubMenuLevels/StockHubSimplified.jsx";
-import StebystepComponent from "./HubMenuLevels/UnidentifiedOriginsComponent.jsx";
+import StebystepComponent from "./HubMenuLevels/UnidentifiedOrigins.jsx";
+import {fetchPostData} from "./Common/api.js";
 
 
 const HubMenuLevels = ({
                            onSelectPath = () => {
-                           }, simplified = true, compareElements = []
+                           }, inHubOption = false, compareElements = []
                        }) => {
 
     const [menuData, setMenuData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editingKey, setEditingKey] = useState(null);
     const [tempLabel, setTempLabel] = useState("");
-    // const [expandedKeys, setExpandedKeys] = useState([]);
     const [activePathId, setActivePathId] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [comparisonResult, setComparisonResult] = useState({});
-    const [consentVisible, setConsentVisible] = useState(false);
+    const [comparisonResponse, setComparisonResponse] = useState({});
     const [ProfitRangesProfiles, setProfitRangesProfiles] = useState([]);
     const [stepbystepVisible, setStepbystepVisible] = useState(false);
-
-
 
 
     const loadLevels = useCallback(async () => {
@@ -55,8 +51,6 @@ const HubMenuLevels = ({
     useEffect(() => {
         void loadLevels();
     }, [loadLevels]);
-
-
 
 
     const handleSelect = useCallback((selectedKeys) => {
@@ -107,7 +101,6 @@ const HubMenuLevels = ({
         ]);
         setTempLabel("");
         setEditingKey(newKey);
-        // setExpandedKeys(prev => [...new Set([...prev, node.id.toString()])]);
     };
 
     const handleDeleteNode = async (id) => {
@@ -160,17 +153,17 @@ const HubMenuLevels = ({
 
         return (
             <div style={{
-                    padding: "4px 8px",
-                    borderRadius: 6,
-                    background: isActive ? "#e6f7ff" : "transparent",
-                    color: isActive ? "#1677ff" : "inherit",
-                    fontWeight: isActive ? 600 : 400,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    cursor: "pointer",
-                    width: "100%"
-                }}
+                padding: "4px 8px",
+                borderRadius: 6,
+                background: isActive ? "#e6f7ff" : "transparent",
+                color: isActive ? "#1677ff" : "inherit",
+                fontWeight: isActive ? 600 : 400,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                cursor: "pointer",
+                width: "100%"
+            }}
             >
                 {node.children?.length > 0 ? (
                     <FolderOpenOutlined style={{color: "#1677ff"}}/>
@@ -181,8 +174,6 @@ const HubMenuLevels = ({
             </div>
         );
     };
-
-
 
 
     const switcherIcon = (props) => {
@@ -205,11 +196,11 @@ const HubMenuLevels = ({
         const origins = selectedItems.map(item => item.origin);
         try {
             const payload = {path_id: activePathId, origins: origins};
-            const result = await ComparisonStockItems(payload);
-            setComparisonResult(result);
+            const result = await fetchPostData("/service/start_comparison_process", payload);
+            setComparisonResponse(result);
             setModalVisible(true);
         } catch (error) {
-            setComparisonResult(error.message);
+            setComparisonResponse(error.message);
             setModalVisible(true);
         }
     };
@@ -221,19 +212,15 @@ const HubMenuLevels = ({
         </div>
     ) : (
         <>
-            <div style={{display: "flex", justifyContent: "center", color: "#3a3a3a"}}>
-                <h2>Нужно выбрать папку, предварительно раскрыв дерево</h2>
-            </div>
-            {activePathId != null && simplified && (
-                <div style={{paddingBottom: 10}}>
-                    <Button
-                        type="primary"
-                        icon={<ReloadOutlined/>} onClick={handleUpdateDataBtn}
-                        className="comparison-button">
+            {activePathId && inHubOption === false && (
+                <div style={{marginBottom: "10px"}}>
+                    <Button type="primary" icon={<ReloadOutlined/>} onClick={handleUpdateDataBtn}
+                            className="comparison-button" disabled={activePathId == null}>
                         Обновить данные
                     </Button>
                 </div>
-            )}
+            )
+            }
             <Row gutter={16}>
                 <Col span={8}>
                     <Tree
@@ -250,62 +237,50 @@ const HubMenuLevels = ({
                 </Col>
 
                 <Col span={16}
-                    style={{
-                        maxHeight: "calc(100vh - 20px)",
-                        overflowY: "auto",
-                        position: "relative",
-                        paddingRight: 10
-                    }}
+                     style={{
+                         maxHeight: "calc(100vh - 20px)",
+                         overflowY: "auto",
+                         position: "relative",
+                         paddingRight: 10
+                     }}
                 >
                     {activePathId != null && (
-                        simplified === false ? (
-                            <StockHubSimplified
-                                pathId={activePathId}
-                                existingItems={compareElements}
-                            />
+                        inHubOption === true ? (
+                            <StockHubSimplified pathId={activePathId} existingItems={compareElements}/>
                         ) : (
-                            <StockHubItemsTable
-                                pathId={activePathId}
-                                selectedRowKeys={[]}
-                                onSelectedOrigins={setSelectedItems}
-                                profit_profiles={ProfitRangesProfiles}
-                            />
+                            <StockHubItemsTable pathId={activePathId}
+                                                selectedRowKeys={[]}
+                                                onSelectedOrigins={setSelectedItems}
+                                                profit_profiles={ProfitRangesProfiles}/>
                         )
                     )}
                 </Col>
             </Row>
 
 
-
-            {comparisonResult && simplified && (
-                <ComparisonModal
-                    isOpen={modalVisible}
-                    onClose={() => setModalVisible(false)}
-                    comparisonObj={comparisonResult}
-                    onConsent={() => {
-                        setModalVisible(false);
-                        setConsentVisible(true)
-                    }}
-                    onStepbystep={() => {
-                        setModalVisible(false);
-                        setStepbystepVisible(true);
-                    }}
-                />
-            )}
-            {consentVisible && simplified && (
-                <Consent
-                    comparisonObj={comparisonResult} isOpen={consentVisible} onClose={() => setConsentVisible(false)}
-                />
-            )}
-
-            {stepbystepVisible && (
-                <StebystepComponent
-                    comparisonObj={comparisonResult} isOpen={stepbystepVisible}
-                    onClose={() => setStepbystepVisible(false)}
-                />
-            )
+            {
+                comparisonResponse && !inHubOption && (
+                    <VslUpdateComponent
+                        isOpen={modalVisible}
+                        onClose={() => setModalVisible(false)}
+                        comparisonResponse={comparisonResponse}
+                        onStepbystep={() => {
+                            setModalVisible(false);
+                            setStepbystepVisible(true);
+                        }}
+                    />
+                )
+            }
+            {
+                stepbystepVisible && (
+                    <StebystepComponent
+                        comparisonObj={comparisonResponse} isOpen={stepbystepVisible}
+                        onClose={() => setStepbystepVisible(false)}
+                    />
+                )
             }
         </>
-    );
+    )
+        ;
 };
 export default HubMenuLevels;
