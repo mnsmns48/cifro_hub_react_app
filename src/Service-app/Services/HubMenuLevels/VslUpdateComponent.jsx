@@ -5,6 +5,7 @@ import {startParsing} from "./api.js";
 import getComparisonTableColumns from "./VslUpdateTableColumns.jsx";
 import "./Css/VslUpdate.css";
 import {DashboardOutlined, OrderedListOutlined} from "@ant-design/icons";
+import {PriceSyncFlow} from "./PriceSyncFlow.jsx";
 
 const VslUpdateComponent = ({isOpen, onClose, priceSyncList, onStepbystep}) => {
 
@@ -113,6 +114,7 @@ const VslUpdateComponent = ({isOpen, onClose, priceSyncList, onStepbystep}) => {
                 </div>
             ) : (
                 <div>
+                    <PriceSyncFlow step={1}/>
                     <div
                         style={{
                             display: "flex",

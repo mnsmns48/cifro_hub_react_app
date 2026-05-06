@@ -3,10 +3,11 @@ import {Badge, Button, Modal, Table} from "antd";
 import {fetchPostData} from "../Common/api.js";
 import {getRawOriginsColumns} from "./RawOriginsColumns.jsx";
 import {LinkOutlined, QuestionOutlined, ShareAltOutlined} from "@ant-design/icons";
-import "./Css/UnidentifiedOriginsComponent.css";
+import "./Css/RawOrigins.css";
 import InfoSelect from "../PriceUpdater/ParsingResultsBlocks/InfoSelect.jsx";
 import AttributesModal from "../PriceUpdater/ParsingResultsBlocks/AttributesModal.jsx";
 import UpdateHubChooseElements from "./UpdateHubChooseElements.jsx";
+import {PriceSyncFlow} from "./PriceSyncFlow.jsx";
 
 
 const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
@@ -43,9 +44,11 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
         setLoading(true);
 
         const response = await fetchPostData("/service/fetch_raw_origins", priceSyncList);
-        console.log("response--", response)
-        if (response?.origins) {
-            const origins = response.origins;
+        console.log("response--", response);
+
+        if (Array.isArray(response)) {
+            // Собираем все origins из всех путей
+            const origins = response.flatMap(p => p.raw_origin_ids || []);
 
             setRows(origins);
 
@@ -63,14 +66,15 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
             }
 
             setFilters({
-                models: [...modelSet].map(v => ({text: v, value: v})),
-                types: [...typeSet].map(v => ({text: v, value: v})),
-                brands: [...brandSet].map(v => ({text: v, value: v}))
+                models: [...modelSet].map(v => ({ text: v, value: v })),
+                types: [...typeSet].map(v => ({ text: v, value: v })),
+                brands: [...brandSet].map(v => ({ text: v, value: v }))
             });
         }
 
         setLoading(false);
     };
+
 
 
     useEffect(() => {
@@ -112,7 +116,7 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
             }
         }
         setSelectedRowKeys([]);
-    }, [rows, filtersState, missingModelFilterActive, missingAttrsFilterActive, vsl_list, attributesModalData]);
+    }, [rows, filtersState, missingModelFilterActive, missingAttrsFilterActive]);
 
 
     useEffect(() => {
@@ -405,7 +409,7 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
                 />
             )}
 
-
+            <PriceSyncFlow step={2}/>
             <div>
                 <Button type="primary" onClick={() => setIsHubUpdateOpen(true)}>
                     Выбрать модели для обновления

@@ -18,6 +18,7 @@ import "./HubMenuLevels/Css/VslUpdate.css";
 import StockHubSimplified from "./HubMenuLevels/StockHubSimplified.jsx";
 import {fetchPostData} from "./Common/api.js";
 import RawOriginsComponent from "./HubMenuLevels/RawOriginsComponent.jsx";
+import {PriceSyncFlow} from "./HubMenuLevels/PriceSyncFlow.jsx";
 
 
 const HubMenuLevels = ({

@@ -40,8 +40,21 @@ const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdat
     {
         dataIndex: "url",
         key: "url",
+        width: 150,
         render: (text) => (
-            <a href={text} target="_blank" rel="noopener noreferrer" style={{ wordBreak: "break-word" }}>
+            <a
+                href={text}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                    display: "inline-block",
+                    maxWidth: "100%",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    verticalAlign: "middle"
+                }}
+            >
                 {text}
             </a>
         ),
@@ -49,6 +62,7 @@ const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdat
     {
         dataIndex: "status",
         key: "status",
+        width: 150,
         render: (_, record) => (
             <VslUpdateProgress
                 id={record.id}

@@ -78,12 +78,11 @@ const StockHubSimplified = ({pathId, visible = true, existingItems = []}) => {
                         <Spin size="small"/>
                     </div>
                 ) : (
-                    <Table
-                        dataSource={items}
-                        columns={columns}
-                        rowKey="origin"
-                        pagination={false}
-                        size="small"
+                    <Table dataSource={items}
+                           columns={columns}
+                           rowKey="origin"
+                           pagination={false}
+                           size="small"
                     />
 
                 )
