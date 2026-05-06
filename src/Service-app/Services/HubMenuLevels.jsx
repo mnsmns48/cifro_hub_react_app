@@ -16,8 +16,8 @@ import VslUpdateComponent from "./HubMenuLevels/VslUpdateComponent.jsx";
 import {fetchRangeRewardsProfiles} from "./RewardRangeSettings/api.js";
 import "./HubMenuLevels/Css/VslUpdate.css";
 import StockHubSimplified from "./HubMenuLevels/StockHubSimplified.jsx";
-import StebystepComponent from "./HubMenuLevels/UnidentifiedOrigins.jsx";
 import {fetchPostData} from "./Common/api.js";
+import RawOriginsComponent from "./HubMenuLevels/RawOriginsComponent.jsx";
 
 
 const HubMenuLevels = ({
@@ -31,10 +31,10 @@ const HubMenuLevels = ({
     const [tempLabel, setTempLabel] = useState("");
     const [activePathId, setActivePathId] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [comparisonResponse, setComparisonResponse] = useState({});
+    const [vslUpdateModalVisible, setVslUpdateModalVisible] = useState(false);
+    const [priceSyncList, setPriceSyncList] = useState([]);
     const [ProfitRangesProfiles, setProfitRangesProfiles] = useState([]);
-    const [stepbystepVisible, setStepbystepVisible] = useState(false);
+    const [rawOriginsVisible, setRawOriginsVisible] = useState(false);
 
 
     const loadLevels = useCallback(async () => {
@@ -197,11 +197,11 @@ const HubMenuLevels = ({
         try {
             const payload = {path_id: activePathId, origins: origins};
             const result = await fetchPostData("/service/start_price_sync_process", payload);
-            setComparisonResponse(result);
-            setModalVisible(true);
+            setPriceSyncList(result);
+            setVslUpdateModalVisible(true);
         } catch (error) {
-            setComparisonResponse(error.message);
-            setModalVisible(true);
+            setPriceSyncList(error.message);
+            setVslUpdateModalVisible(true);
         }
     };
 
@@ -212,15 +212,24 @@ const HubMenuLevels = ({
         </div>
     ) : (
         <>
-            {activePathId && inHubOption === false && (
-                <div style={{marginBottom: "10px"}}>
-                    <Button type="primary" icon={<ReloadOutlined/>} onClick={handleUpdateDataBtn}
-                            className="comparison-button" disabled={activePathId == null}>
-                        Обновить данные
-                    </Button>
-                </div>
-            )
-            }
+            <div
+                style={{
+                    marginBottom: "10px",
+                    visibility: activePathId && inHubOption === false ? "visible" : "hidden",
+                    pointerEvents: activePathId && inHubOption === false ? "auto" : "none"
+                }}
+            >
+                <Button
+                    type="primary"
+                    icon={<ReloadOutlined/>}
+                    onClick={handleUpdateDataBtn}
+                    className="comparison-button"
+                    disabled={activePathId == null}
+                >
+                    Обновить данные
+                </Button>
+            </div>
+
             <Row gutter={16}>
                 <Col span={8}>
                     <Tree
@@ -258,26 +267,23 @@ const HubMenuLevels = ({
             </Row>
 
 
-            {
-                comparisonResponse && !inHubOption && (
-                    <VslUpdateComponent
-                        isOpen={modalVisible}
-                        onClose={() => setModalVisible(false)}
-                        comparisonResponse={comparisonResponse}
-                        onStepbystep={() => {
-                            setModalVisible(false);
-                            setStepbystepVisible(true);
-                        }}
-                    />
-                )
+            {priceSyncList.length > 0 && !inHubOption && (
+                <VslUpdateComponent
+                    isOpen={vslUpdateModalVisible}
+                    onClose={() => setVslUpdateModalVisible(false)}
+                    priceSyncList={priceSyncList}
+                    onStepbystep={() => {
+                        setVslUpdateModalVisible(false);
+                        setRawOriginsVisible(true);
+                    }}
+                />
+            )
             }
-            {
-                stepbystepVisible && (
-                    <StebystepComponent
-                        comparisonObj={comparisonResponse} isOpen={stepbystepVisible}
-                        onClose={() => setStepbystepVisible(false)}
-                    />
-                )
+            {priceSyncList.length > 0 && rawOriginsVisible && (
+                <RawOriginsComponent priceSyncList={priceSyncList} isOpen={rawOriginsVisible}
+                                     onClose={() => setRawOriginsVisible(false)}
+                />
+            )
             }
         </>
     )

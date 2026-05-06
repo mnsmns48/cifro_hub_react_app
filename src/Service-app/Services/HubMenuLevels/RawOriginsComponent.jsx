@@ -1,7 +1,7 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Badge, Button, Modal, Table} from "antd";
 import {fetchPostData} from "../Common/api.js";
-import {getUnidentifiedOriginsColumns} from "./UnidentifiedOriginsColumns.jsx";
+import {getRawOriginsColumns} from "./RawOriginsColumns.jsx";
 import {LinkOutlined, QuestionOutlined, ShareAltOutlined} from "@ant-design/icons";
 import "./Css/UnidentifiedOriginsComponent.css";
 import InfoSelect from "../PriceUpdater/ParsingResultsBlocks/InfoSelect.jsx";
@@ -9,11 +9,8 @@ import AttributesModal from "../PriceUpdater/ParsingResultsBlocks/AttributesModa
 import UpdateHubChooseElements from "./UpdateHubChooseElements.jsx";
 
 
-const UnidentifiedOrigins = ({
-                                          comparisonObj: {vsl_list, path_ids},
-                                          isOpen,
-                                          onClose
-                                      }) => {
+const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
+
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
@@ -27,13 +24,26 @@ const UnidentifiedOrigins = ({
     const [attributesModalData, setAttributesModalData] = useState(null);
     const [isHubUpdateOpen, setIsHubUpdateOpen] = useState(false);
 
+    const vsl_list = useMemo(() => {
+        if (!Array.isArray(priceSyncList)) return [];
+        const all = priceSyncList.flatMap(p => p.vsl_list || []);
+        const seen = new Set();
+        return all.filter(v => !seen.has(v.id) && seen.add(v.id));
+    }, [priceSyncList]);
+
+    const path_ids = useMemo(() => {
+        if (!Array.isArray(priceSyncList)) return [];
+        return priceSyncList.map(p => p.path_id);
+    }, [priceSyncList]);
+
+
+
 
     const reloadData = async () => {
         setLoading(true);
 
-        const payload = {vsl_list, path_ids};
-        const response = await fetchPostData("/service/fetch_unidentified_origins", payload);
-
+        const response = await fetchPostData("/service/fetch_raw_origins", priceSyncList);
+        console.log("response--", response)
         if (response?.origins) {
             const origins = response.origins;
 
@@ -66,7 +76,7 @@ const UnidentifiedOrigins = ({
     useEffect(() => {
         if (isOpen)
             void reloadData();
-    }, [isOpen, vsl_list, path_ids]);
+    }, [isOpen, priceSyncList]);
 
 
     useEffect(() => {
@@ -102,7 +112,7 @@ const UnidentifiedOrigins = ({
             }
         }
         setSelectedRowKeys([]);
-    }, [rows, filtersState, missingModelFilterActive, missingAttrsFilterActive]);
+    }, [rows, filtersState, missingModelFilterActive, missingAttrsFilterActive, vsl_list, attributesModalData]);
 
 
     useEffect(() => {
@@ -411,7 +421,7 @@ const UnidentifiedOrigins = ({
                             disabled: !!record.children
                         })
                     }}
-                    columns={getUnidentifiedOriginsColumns(
+                    columns={getRawOriginsColumns(
                         filters,
                         filtersState,
                         modelColumnTitle,
@@ -437,4 +447,4 @@ const UnidentifiedOrigins = ({
 };
 
 
-export default UnidentifiedOrigins;
+export default RawOriginsComponent;

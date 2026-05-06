@@ -1,23 +1,33 @@
-import {Button, Popconfirm, Table} from "antd";
-import MyModal from "../../../Ui/MyModal.jsx";
-import {useEffect, useState} from "react";
+import {Button, Popconfirm, Table, Modal} from "antd";
+import {useEffect, useMemo, useState} from "react";
 import {getProgressLine} from "../PriceUpdater/api.js";
 import {startParsing} from "./api.js";
 import getComparisonTableColumns from "./VslUpdateTableColumns.jsx";
 import "./Css/VslUpdate.css";
-import {ExclamationCircleOutlined, OrderedListOutlined} from "@ant-design/icons";
+import {DashboardOutlined, OrderedListOutlined} from "@ant-design/icons";
 
+const VslUpdateComponent = ({isOpen, onClose, priceSyncList, onStepbystep}) => {
 
-const VslUpdateComponent = ({isOpen, onClose, comparisonResponse, onStepbystep}) => {
+    const vslList = useMemo(() => {
+        if (!Array.isArray(priceSyncList)) return [];
+        const all = priceSyncList.flatMap(item => item.vsl_list || []);
+        const seen = new Set();
+        const unique = [];
+        for (const vsl of all) {
+            if (!seen.has(vsl.id)) {
+                seen.add(vsl.id);
+                unique.push(vsl);
+            }
+        }
+        return unique;
+    }, [priceSyncList]);
 
-    const {vsl_list: vslList} = comparisonResponse || {};
 
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [rows, setRows] = useState([]);
     const [progressMap, setProgressMap] = useState({});
     const [isUpdating, setIsUpdating] = useState(false);
     const [isUpdateFinished, setIsUpdateFinished] = useState(false);
-
 
     useEffect(() => {
         if (Array.isArray(vslList)) {
@@ -32,7 +42,6 @@ const VslUpdateComponent = ({isOpen, onClose, comparisonResponse, onStepbystep})
         }
     }, [rows]);
 
-
     useEffect(() => {
         if (!isUpdating && Object.values(progressMap).length > 0) {
             const allDone = Object.values(progressMap).every(p => p.status === "done");
@@ -46,8 +55,10 @@ const VslUpdateComponent = ({isOpen, onClose, comparisonResponse, onStepbystep})
         if (isUpdating) return;
         setIsUpdating(true);
         setIsUpdateFinished(false);
+
         try {
             const queue = rows.filter(row => selectedRowKeys.includes(row.id));
+
             for (const row of queue) {
                 const {result: progress} = await getProgressLine();
 
@@ -88,88 +99,81 @@ const VslUpdateComponent = ({isOpen, onClose, comparisonResponse, onStepbystep})
         }
     };
 
-
-    const renderTable = () => {
-        if (rows.length === 0) {
-            return (
+    return (
+        <Modal open={isOpen}
+               onCancel={onClose}
+               footer={null}
+               width={1200}
+               closable={false}
+               maskClosable={false}
+        >
+            {rows.length === 0 ? (
                 <div style={{padding: "16px", fontStyle: "italic", color: "#999"}}>
                     Нет данных для отображения
                 </div>
-            );
-        }
+            ) : (
+                <div>
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: 6
+                        }}
+                    >
+                        <div style={{display: "flex", gap: 8}}>
+                            {selectedRowKeys.length > 0 && !isUpdating && !isUpdateFinished && (
+                                <Popconfirm
+                                    title="Запустить обновление?"
+                                    description="Вы уверены, что хотите запустить обновление?"
+                                    okText="Да"
+                                    cancelText="Нет"
+                                    onConfirm={handleUpdateClick}
+                                >
+                                    <Button color="purple" variant="solid">
+                                        <DashboardOutlined/> Запустить парсинг
+                                    </Button>
+                                </Popconfirm>
+                            )}
 
-        return (
-            <div>
-                <div style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: 6
-                }}
-                >
-                    <div style={{display: "flex", gap: 8}}>
-                        {selectedRowKeys.length > 0 && !isUpdating && !isUpdateFinished && (
-                            <Popconfirm
-                                title="Запустить обновление?"
-                                description="Вы уверены, что хотите запустить обновление?"
-                                okText="Да"
-                                cancelText="Нет"
-                                onConfirm={handleUpdateClick}
-                            >
-                                <Button type="primary" danger>
-                                    <ExclamationCircleOutlined/> Запустить парсинг
-                                </Button>
-                            </Popconfirm>
-                        )}
-                        {!isUpdating && (
-                            <>
+                            {!isUpdating && (
                                 <Button className="comparison-button comparison-active-button"
-                                        icon={<OrderedListOutlined />}
+                                        icon={<OrderedListOutlined/>}
                                         onClick={() => onStepbystep?.()}
                                 >
                                     Пошаговое обновление
                                 </Button>
-                            </>
-                        )}
+                            )}
+                        </div>
+                        <div style={isUpdating ? {pointerEvents: "none", opacity: 0.6} : {}}>
+                            <Popconfirm title="Точно закрыть окно?"
+                                        okText="Да"
+                                        cancelText="Нет"
+                                        onConfirm={onClose}
+                            >
+                                <Button type="primary">Выход</Button>
+                            </Popconfirm>
+                        </div>
                     </div>
-                    <div style={{display: "flex", gap: 8}}>
-                        <Popconfirm title="Точно закрыть окно?"
-                                    okText="Да"
-                                    cancelText="Нет"
-                                    onConfirm={onClose}>
-                            <Button type="primary">
-                                Выход
-                            </Button>
-                        </Popconfirm>
-                    </div>
+
+                    <Table
+                        columns={getComparisonTableColumns(setRows, progressMap, setProgressMap, isUpdating)}
+                        rowKey="id"
+                        size="small"
+                        dataSource={rows}
+                        pagination={false}
+                        rowSelection={{
+                            selectedRowKeys,
+                            onChange: setSelectedRowKeys,
+                            disabled: isUpdating,
+                        }}
+                        rowClassName={() => (isUpdating ? "disabled-row" : "")}
+                        style={isUpdating ? {pointerEvents: "none", opacity: 0.6} : {}}
+                    />
                 </div>
-
-                <Table
-                    columns={getComparisonTableColumns(setRows, progressMap, setProgressMap, isUpdating)}
-                    rowKey="id"
-                    dataSource={rows}
-                    pagination={false}
-                    rowSelection={{
-                        selectedRowKeys,
-                        onChange: setSelectedRowKeys,
-                        disabled: isUpdating,
-                    }}
-                    rowClassName={() => (isUpdating ? "disabled-row" : "")}
-                />
-            </div>
-        );
-    };
-
-
-    return (
-        <MyModal
-            isOpen={isOpen}
-            content={renderTable()}
-            width={1200}
-        />
-
+            )}
+        </Modal>
     );
-};
-
+}
 
 export default VslUpdateComponent;

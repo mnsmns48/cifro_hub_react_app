@@ -1,4 +1,4 @@
-import { Button, Tag } from "antd";
+import {Button, Tag} from "antd";
 import {
     CarryOutOutlined,
     LinkOutlined,
@@ -6,20 +6,6 @@ import {
     QuestionOutlined
 } from "@ant-design/icons";
 
-// const cell = (content) => (
-//     <div
-//         style={{
-//             display: "flex",
-//             alignItems: "center",
-//             justifyContent: "start",
-//             whiteSpace: "nowrap",
-//             overflow: "hidden",
-//             textOverflow: "ellipsis"
-//         }}
-//     >
-//         {content}
-//     </div>
-// );
 
 const spanAllIfGroup = (record) => ({
     colSpan: record.children ? 998 : 1
@@ -29,7 +15,7 @@ const hideIfGroup = (record) => ({
     colSpan: record.children ? 0 : 1
 });
 
-export const getUnidentifiedOriginsColumns = (
+export const getRawOriginsColumns = (
     filters,
     filtersState,
     modelColumnTitle,
@@ -85,7 +71,7 @@ export const getUnidentifiedOriginsColumns = (
             if (record.children) return null;
 
             if (!record.model_title) {
-                return <QuestionOutlined style={{ color: "#ff0000" }} />;
+                return <QuestionOutlined style={{color: "#ff0000"}}/>;
             }
 
             return record.model_title;
@@ -143,7 +129,7 @@ export const getUnidentifiedOriginsColumns = (
             return (
                 <Button
                     type="text"
-                    icon={<LinkOutlined />}
+                    icon={<LinkOutlined/>}
                     style={{
                         color: isGreenBtn ? "#52c41a" : "#454545",
                         fontSize: isGreenBtn ? 18 : 16,
@@ -167,13 +153,13 @@ export const getUnidentifiedOriginsColumns = (
         }
     },
     {
-        title: <PictureOutlined style={{ opacity: 0.7, fontSize: 20 }} />,
+        title: <PictureOutlined style={{opacity: 0.7, fontSize: 20}}/>,
         dataIndex: "have_images",
         key: "have_images",
         align: "center",
         filters: [
-            { text: "Есть фото", value: true },
-            { text: "Нет фото", value: false }
+            {text: "Есть фото", value: true},
+            {text: "Нет фото", value: false}
         ],
         filteredValue: filtersState.have_images || null,
         onFilter: () => true,
@@ -183,19 +169,19 @@ export const getUnidentifiedOriginsColumns = (
 
             return record.have_images ? (
                 <Tag color="green">
-                    <PictureOutlined />
+                    <PictureOutlined/>
                 </Tag>
             ) : "";
         }
     },
     {
-        title: <CarryOutOutlined style={{ opacity: 0.7, fontSize: 20 }} />,
+        title: <CarryOutOutlined style={{opacity: 0.7, fontSize: 20}}/>,
         dataIndex: "model_in_hub",
         key: "model_in_hub",
         align: "center",
         filters: [
-            { text: "Есть в хабе", value: true },
-            { text: "Нет в хабе", value: false }
+            {text: "Есть в хабе", value: true},
+            {text: "Нет в хабе", value: false}
         ],
         filteredValue: filtersState.model_in_hub || null,
         onFilter: () => true,
@@ -205,7 +191,7 @@ export const getUnidentifiedOriginsColumns = (
 
             return record.model_in_hub ? (
                 <Tag color="green">
-                    <CarryOutOutlined />
+                    <CarryOutOutlined/>
                 </Tag>
             ) : "";
         }

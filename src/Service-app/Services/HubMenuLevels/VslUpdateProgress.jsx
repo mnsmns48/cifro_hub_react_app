@@ -25,8 +25,7 @@ const VslUpdateProgress = ({id, progress_obj, progressState, setProgressMap, dur
     if (!progressState || progressState.status === "pending") {
         return (
             <span style={{color: "#999", display: "flex", alignItems: "center", gap: 6}}>
-                <ClockCircleOutlined/>
-                Ожидает обновления
+                <ClockCircleOutlined/> В ожидании
             </span>
         );
     }
@@ -43,13 +42,13 @@ const VslUpdateProgress = ({id, progress_obj, progressState, setProgressMap, dur
 
     if (progressState.status === "done") {
         return (
-            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <span style={{ color: "#52c41a", display: "flex", alignItems: "center", gap: 6 }}>
-                    <CheckCircleOutlined />
+            <div style={{display: "flex", flexDirection: "column", gap: 4}}>
+                <span style={{color: "#52c41a", display: "flex", alignItems: "center", gap: 6}}>
+                    <CheckCircleOutlined/>
                     Готово
                 </span>
                 {duration && (
-                    <span style={{ fontWeight: 600, color: "#333", fontSize: "13px" }}>
+                    <span style={{fontWeight: 600, color: "#333", fontSize: "13px"}}>
                         {duration.toFixed(1)} сек
                     </span>
                 )}

@@ -5,10 +5,11 @@ import TimeDayBlock from "../../../Ui/TimeDateBlock.jsx";
 
 const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdating)  => [
     {
-        title: "Sync",
+        title: "Подтянуть зависимости",
         dataIndex: "sync",
+        align: "center",
         key: "sync",
-        width: 20,
+        width: 150,
         render: (value, record) => (
             <Checkbox
                 checked={!!value}
@@ -33,6 +34,7 @@ const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdat
         title: "Обновлено",
         dataIndex: "dt_parsed",
         key: "dt_parsed",
+        width: 110,
         render: (value) => <TimeDayBlock isoString={value} />
     },
     {
