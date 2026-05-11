@@ -1,41 +1,69 @@
+import {CheckCircleOutlined, LoadingOutlined} from "@ant-design/icons";
 import {Timeline} from "antd";
-import {CheckCircleOutlined, SyncOutlined} from "@ant-design/icons";
 
 export const PriceSyncFlow = ({step}) => {
+
+    const getStatus = (currentStep) => {
+        if (step === currentStep) {
+            return {
+                color: "#edcb16",
+                dot: <LoadingOutlined style={{fontSize: 20}}/>,
+                textStyle: {
+                    fontSize: 15,
+                    fontWeight: 600,
+                    opacity: 1
+                }
+            };
+        }
+        if (step > currentStep) {
+            return {
+                color: "green",
+                dot: <CheckCircleOutlined style={{fontSize: 20}}/>,
+                textStyle: {
+                    fontSize: 15,
+                    fontWeight: 400,
+                    opacity: 0.4
+                }
+            };
+        }
+
+        return {
+            color: "gray",
+            dot: null,
+            textStyle: {
+                fontSize: 15,
+                fontWeight: 400,
+                opacity: 1
+            }
+        };
+    };
+
     return (
         <Timeline
             style={{marginBottom: 20}}
-            orientation='horizontal'
+            orientation="horizontal"
+            mode="alternate"
             items={[
                 {
-                    color: step >= 1 ? "green" : "blue",
-                    dot: step > 1
-                        ? <CheckCircleOutlined style={{fontSize: 16}}/>
-                        : <SyncOutlined style={{fontSize: 16}}/>,
+                    ...getStatus(1),
                     children: (
-                        <div style={{fontSize: 15, fontWeight: step === 1 ? 600 : 400}}>
+                        <div style={getStatus(1).textStyle}>
                             1. Парсинг свежих данных
                         </div>
                     )
                 },
                 {
-                    color: step >= 2 ? "green" : "gray",
-                    dot: step >= 2
-                        ? <CheckCircleOutlined style={{fontSize: 16}}/>
-                        : <SyncOutlined style={{fontSize: 16}}/>,
+                    ...getStatus(2),
                     children: (
-                        <div style={{fontSize: 15, fontWeight: step === 2 ? 600 : 400}}>
+                        <div style={getStatus(2).textStyle}>
                             2. Выставляем модель и атрибуты
                         </div>
                     )
                 },
                 {
-                    color: step >= 3 ? "green" : "gray",
-                    dot: step >= 3
-                        ? <CheckCircleOutlined style={{fontSize: 16}}/>
-                        : null,
+                    ...getStatus(3),
                     children: (
-                        <div style={{fontSize: 15, fontWeight: step === 2 ? 600 : 400}}>
+                        <div style={getStatus(3).textStyle}>
                             3. Выбери выгодные модели
                         </div>
                     )

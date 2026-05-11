@@ -29,7 +29,7 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
 
                 const resp = await fetchPostData("/service/approve_origins_for_update", payload);
                 setDataForUpdate(resp);
-                console.log("resp", resp)
+
 
                 if (resp.length > 0) {
                     setSelectedPathId(resp[0].path.id);

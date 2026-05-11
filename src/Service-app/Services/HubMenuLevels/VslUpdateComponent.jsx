@@ -143,7 +143,7 @@ const VslUpdateComponent = ({isOpen, onClose, priceSyncList, onStepbystep}) => {
                                         icon={<OrderedListOutlined/>}
                                         onClick={() => onStepbystep?.()}
                                 >
-                                    Пошаговое обновление
+                                    Переход к выставлению моделей и атрибутов
                                 </Button>
                             )}
                         </div>

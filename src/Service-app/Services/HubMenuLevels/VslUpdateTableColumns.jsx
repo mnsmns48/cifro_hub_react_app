@@ -1,15 +1,15 @@
 import VslUpdateProgress from "./VslUpdateProgress.jsx";
-import {Checkbox} from "antd";
+import {Checkbox, Tooltip} from "antd";
 import TimeDayBlock from "../../../Ui/TimeDateBlock.jsx";
 
 
-const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdating)  => [
+const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdating) => [
     {
         title: "Подтянуть зависимости",
         dataIndex: "sync",
         align: "center",
         key: "sync",
-        width: 150,
+        width: "10%",
         render: (value, record) => (
             <Checkbox
                 checked={!!value}
@@ -18,7 +18,7 @@ const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdat
                     const checked = e.target.checked;
                     setRows(prev =>
                         prev.map(row =>
-                            row.id === record.id ? { ...row, sync: checked } : row
+                            row.id === record.id ? {...row, sync: checked} : row
                         )
                     );
                 }}
@@ -28,41 +28,58 @@ const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdat
     {
         dataIndex: "title",
         key: "title",
-        render: (text) => text || <span style={{ color: "#999" }}>—</span>,
+        width: "20%",
+        render: (text) => text || <span style={{color: "#999"}}>—</span>,
     },
     {
         title: "Обновлено",
         dataIndex: "dt_parsed",
         key: "dt_parsed",
-        width: 110,
-        render: (value) => <TimeDayBlock isoString={value} />
+        width: "10%",
+        render: (value) => <TimeDayBlock isoString={value}/>
     },
+
     {
         dataIndex: "url",
         key: "url",
-        width: 150,
+        width: "10%",
         render: (text) => (
-            <a
-                href={text}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                    display: "inline-block",
-                    maxWidth: "100%",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    verticalAlign: "middle"
-                }}
+            <Tooltip
+                title={
+                    <a
+                        href={text}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{color: "white"}}
+                    >
+                        {text}
+                    </a>
+                }
             >
-                {text}
-            </a>
+                <a href={text}
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   style={{
+                       display: "inline-block",
+                       maxWidth: "100%",
+                       whiteSpace: "nowrap",
+                       overflow: "hidden",
+                       textOverflow: "ellipsis",
+                       verticalAlign: "middle"
+                   }}
+                >
+                    {text}
+                </a>
+
+            </Tooltip>
         ),
+
+
     },
     {
         dataIndex: "status",
         key: "status",
-        width: 150,
+        width: "20%",
         render: (_, record) => (
             <VslUpdateProgress
                 id={record.id}

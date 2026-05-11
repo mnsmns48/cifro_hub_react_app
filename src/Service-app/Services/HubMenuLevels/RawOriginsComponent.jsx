@@ -44,10 +44,9 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
         setLoading(true);
 
         const response = await fetchPostData("/service/fetch_raw_origins", priceSyncList);
-        console.log("response--", response);
+
 
         if (Array.isArray(response)) {
-            // Собираем все origins из всех путей
             const origins = response.flatMap(p => p.raw_origin_ids || []);
 
             setRows(origins);
@@ -342,8 +341,7 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
     if (isHubUpdateOpen) {
         return (
             <UpdateHubChooseElements
-                vsl_list={vsl_list}
-                path_ids={path_ids}
+                priceSyncList={priceSyncList}
                 onClose={() => {
                     setIsHubUpdateOpen(false);
                     onClose();

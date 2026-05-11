@@ -6,6 +6,7 @@ import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 import ResolveModelTypeDependencies from "../Common/ResolveModelTypeDependencies.jsx";
 import {MenuOutlined} from "@ant-design/icons";
 import UpdateHubApproveOrigins from "./UpdateHubApproveOrigins.jsx";
+import {PriceSyncFlow} from "./PriceSyncFlow.jsx";
 
 const styleFn = (info) => {
     if (info.props.vertical) {
@@ -26,7 +27,7 @@ const styleFn = (info) => {
     return {};
 };
 
-const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
+const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
     const [orderedPathIds, setOrderedPathIds] = useState([]);
@@ -39,22 +40,27 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
         const load = async () => {
             setLoading(true);
 
-            const payload = {vsl_list, path_ids};
-            const res = await fetchPostData("/service/resolve_models_for_comparison", payload);
 
+            const res = await fetchPostData("/service/resolve_models_for_sync", priceSyncList);
             if (Array.isArray(res) && res.length > 0) {
                 setData(res);
+
                 const ids = res.map(item => item.path_id);
                 setOrderedPathIds(ids);
+
                 const map = new Map();
                 res.forEach(item => {
-                    const selected = item.models.filter(m => m.in_hub).map(m => m.id);
+                    const selected = item.models
+                        .filter(m => m.in_hub)
+                        .map(m => m.id);
+
                     map.set(item.path_id, {
                         path_id: item.path_id,
                         route: item.route,
                         models: selected
                     });
                 });
+
                 setSelectedByPathId(map);
                 setActiveIndex(0);
             }
@@ -64,6 +70,7 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
 
         void load();
     }, []);
+
 
     const activePathId = orderedPathIds[activeIndex];
     const activeTab = data.find(d => d.path_id === activePathId);
@@ -103,12 +110,12 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
             align: "center",
             width: 120,
             sorter: (a, b) => {
-                const minA = Math.min(...(a.available || []).map(x => x.output_price));
-                const minB = Math.min(...(b.available || []).map(x => x.output_price));
+                const minA = Math.min(...(a.origins || []).map(x => x.output_price));
+                const minB = Math.min(...(b.origins || []).map(x => x.output_price));
                 return minA - minB;
             },
             render: (_, record) => {
-                const list = record.available || [];
+                const list = record.origins || [];
                 if (list.length === 0) return "-";
 
                 const minPrice = Math.min(...list.map(item => item.output_price));
@@ -132,9 +139,9 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
                             <div style={{textAlign: "left", marginBottom: 15}}>
                                 <ResolveModelTypeDependencies source={record.source} info={record.info}/>
                             </div>
-                            {record.available?.length ? (
+                            {record.origins?.length ? (
                                 <div style={{maxWidth: 900}}>
-                                    {[...record.available]
+                                    {[...record.origins]
                                         .sort((a, b) => a.output_price - b.output_price)
                                         .map((a, i) => (
                                             <div key={i} style={{marginBottom: 4}}>
@@ -184,6 +191,7 @@ const UpdateHubChooseElements = ({vsl_list, path_ids, onClose}) => {
     ) : (
         <>
             <Modal open={true} onCancel={onClose} footer={null} width={1280} maskClosable={false} closable={false}>
+                <PriceSyncFlow step={3}/>
                 <ConfirmClose onConfirm={onClose}>
                     <Button style={{marginTop: 20}}>
                         Закрыть

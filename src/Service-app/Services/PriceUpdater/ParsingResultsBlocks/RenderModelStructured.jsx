@@ -57,19 +57,37 @@ const RenderModelStructured = ({vsl_id, onClose}) => {
                                 />
                             </div>
 
-                            {record.available?.length ? (
-                                <div>
-                                    {[...record.available]
+                            {record.origins?.length ? (
+                                <div style={{
+                                    maxHeight: 180,
+                                    overflowY: "auto",
+                                    paddingRight: 6,
+                                    marginTop: 6,
+                                }}
+                                >
+                                    {[...record.origins]
                                         .sort((a, b) => a.output_price - b.output_price)
                                         .map((a, i) => (
-                                            <div key={i} style={{marginBottom: 4}}>
-                                                <span>{a.title}: </span>
+                                            <div key={i}
+                                                 style={{
+                                                     display: "flex",
+                                                     gap: 6,
+                                                     fontSize: 12,
+                                                     lineHeight: "16px",
+                                                     marginBottom: 2,
+                                                     alignItems: "center",
+                                                     whiteSpace: "nowrap",
+                                                 }}
+                                            >
+                                                <span style={{color: "#ccc"}}>{a.title}:</span>
                                                 <span style={{color: "#7FFF00", fontWeight: 600}}>
                                                     {a.output_price.toLocaleString("ru-RU")} ₽
                                                 </span>
+                                                <span style={{color: "#999"}}>{a.origin}</span>
                                             </div>
                                         ))}
                                 </div>
+
                             ) : (
                                 <div>Нет данных</div>
                             )}
@@ -93,7 +111,7 @@ const RenderModelStructured = ({vsl_id, onClose}) => {
             width: 150,
             sorter: (a, b) => {
                 const getMin = (rec) => {
-                    const list = rec.available || [];
+                    const list = rec.origins || [];
                     if (!list.length) return 0;
                     return Math.min(...list.map(item =>
                         showPrices ? item.input_price : item.output_price
@@ -131,19 +149,19 @@ const RenderModelStructured = ({vsl_id, onClose}) => {
     ) : (
         <Modal open={true} onCancel={onClose} footer={null} width={800}>
             <div style={{paddingTop: 25}}>
-            <Button onClick={() => setShowPrices(v => !v)} style={{
+                <Button onClick={() => setShowPrices(v => !v)} style={{
                     marginBottom: 10,
                     background: showPrices ? "#ff4d4f" : "transparent",
                     color: showPrices ? "white" : "inherit",
                     borderColor: showPrices ? "#ff4d4f" : "transparent"
                 }}>
-                    <QuestionCircleOutlined />
+                    <QuestionCircleOutlined/>
                 </Button>
 
                 <Table
                     rowKey="id"
                     dataSource={models}
-                    locale={{ emptyText: <EmptyState /> }}
+                    locale={{emptyText: <EmptyState/>}}
                     columns={columns}
                     pagination={false}
                     size="small"
