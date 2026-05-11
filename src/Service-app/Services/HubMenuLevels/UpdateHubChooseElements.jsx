@@ -31,7 +31,7 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
     const [orderedPathIds, setOrderedPathIds] = useState([]);
-    const [selectedByPathId, setSelectedByPathId] = useState(new Map());
+    const [selectedByPathId, setSelectedByPathId] = useState({});
     const [activeIndex, setActiveIndex] = useState(0);
 
     const [isApproveOpen, setIsApproveOpen] = useState(false);
@@ -48,20 +48,16 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
                 const ids = res.map(item => item.path_id);
                 setOrderedPathIds(ids);
 
-                const map = new Map();
+                const obj = {};
                 res.forEach(item => {
-                    const selected = item.models
-                        .filter(m => m.in_hub)
-                        .map(m => m.id);
-
-                    map.set(item.path_id, {
+                    obj[item.path_id] = {
                         path_id: item.path_id,
                         route: item.route,
-                        models: selected
-                    });
+                        models: item.models.filter(m => m.in_hub).map(m => m.id)
+                    };
                 });
+                setSelectedByPathId(obj);
 
-                setSelectedByPathId(map);
                 setActiveIndex(0);
             }
 
@@ -74,35 +70,40 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
 
     const activePathId = orderedPathIds[activeIndex];
     const activeTab = data.find(d => d.path_id === activePathId);
-    const selectedRowKeys = selectedByPathId.get(activePathId)?.models || [];
+    const selectedRowKeys = selectedByPathId[activePathId]?.models || [];
 
     const onRowClick = (record) => {
         setSelectedByPathId(prev => {
-            const newMap = new Map(prev);
-            const entry = newMap.get(activePathId);
-            const current = entry.models;
+            const entry = prev[activePathId];
+            const next = entry.models.includes(record.id)
+                ? entry.models.filter(id => id !== record.id)
+                : [...entry.models, record.id];
 
-            const next = current.includes(record.id)
-                ? current.filter(id => id !== record.id)
-                : [...current, record.id];
-
-            newMap.set(activePathId, {...entry, models: next});
-
-            return newMap;
+            return {
+                ...prev,
+                [activePathId]: {
+                    ...entry,
+                    models: next
+                }
+            };
         });
     };
+
 
     const handleRowSelectionChange = (keys) => {
         setSelectedByPathId(prev => {
-            const newMap = new Map(prev);
-            const entry = newMap.get(activePathId);
-            newMap.set(activePathId, {
-                ...entry,
-                models: keys
-            });
-            return newMap;
+            const entry = prev[activePathId];
+
+            return {
+                ...prev,
+                [activePathId]: {
+                    ...entry,
+                    models: keys
+                }
+            };
         });
     };
+
 
     const columns = [
         {
