@@ -38,8 +38,6 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
     }, [priceSyncList]);
 
 
-
-
     const reloadData = async () => {
         setLoading(true);
 
@@ -65,15 +63,14 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
             }
 
             setFilters({
-                models: [...modelSet].map(v => ({ text: v, value: v })),
-                types: [...typeSet].map(v => ({ text: v, value: v })),
-                brands: [...brandSet].map(v => ({ text: v, value: v }))
+                models: [...modelSet].map(v => ({text: v, value: v})),
+                types: [...typeSet].map(v => ({text: v, value: v})),
+                brands: [...brandSet].map(v => ({text: v, value: v}))
             });
         }
 
         setLoading(false);
     };
-
 
 
     useEffect(() => {
@@ -353,10 +350,8 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
     return (
         <Modal open={isOpen} onCancel={onClose} width={1280} footer={null}>
             {selectedRowKeys.length > 0 && (
-                <Button
-                    className="fixed-button fixed-button-dependency"
-                    onClick={() => handleAddDependenceMulti(selectedRowKeys)}
-                >
+                <Button className="fixed-button fixed-button-dependency"
+                        onClick={() => handleAddDependenceMulti(selectedRowKeys)}>
                     Зависимость ({selectedRowKeys.length}) <ShareAltOutlined/>
                 </Button>
             )}

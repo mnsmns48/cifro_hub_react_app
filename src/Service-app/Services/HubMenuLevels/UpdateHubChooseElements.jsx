@@ -1,12 +1,12 @@
 import {useEffect, useState} from "react";
-import {Modal, Button, Segmented, Table, Flex, Tooltip, Popconfirm} from "antd";
+import {Modal, Button, Segmented, Table, Flex, Popconfirm} from "antd";
 import {fetchPostData} from "../Common/api.js";
 import "./Css/UpdateHubChooseElements.css"
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
-import ResolveModelTypeDependencies from "../Common/ResolveModelTypeDependencies.jsx";
 import {MenuOutlined} from "@ant-design/icons";
 import UpdateHubApproveOrigins from "./UpdateHubApproveOrigins.jsx";
 import {PriceSyncFlow} from "./PriceSyncFlow.jsx";
+import {buildHubChooseElementsColumns} from "./UpdateHubChooseElementsColumns.jsx";
 
 const styleFn = (info) => {
     if (info.props.vertical) {
@@ -33,8 +33,9 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
     const [orderedPathIds, setOrderedPathIds] = useState([]);
     const [selectedByPathId, setSelectedByPathId] = useState({});
     const [activeIndex, setActiveIndex] = useState(0);
-
     const [isApproveOpen, setIsApproveOpen] = useState(false);
+
+
 
     useEffect(() => {
         const load = async () => {
@@ -48,15 +49,20 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
                 const ids = res.map(item => item.path_id);
                 setOrderedPathIds(ids);
 
-                const obj = {};
+                const obj = {
+                    sortOrderPathId: res.map(item => item.path_id)
+                };
+
                 res.forEach(item => {
                     obj[item.path_id] = {
                         path_id: item.path_id,
                         route: item.route,
-                        models: item.models.filter(m => m.in_hub).map(m => m.id)
+                        models: item.models.filter(m => m.in_hub)
                     };
                 });
+
                 setSelectedByPathId(obj);
+
 
                 setActiveIndex(0);
             }
@@ -67,17 +73,23 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
         void load();
     }, []);
 
-
-    const activePathId = orderedPathIds[activeIndex];
+    if (!selectedByPathId.sortOrderPathId) {
+        return <Spinner />;
+    }
+    const activePathId = selectedByPathId.sortOrderPathId[activeIndex];
     const activeTab = data.find(d => d.path_id === activePathId);
-    const selectedRowKeys = selectedByPathId[activePathId]?.models || [];
+    const selectedRowKeys = selectedByPathId[activePathId]?.models.map(m => m.id) || [];
+
 
     const onRowClick = (record) => {
         setSelectedByPathId(prev => {
             const entry = prev[activePathId];
-            const next = entry.models.includes(record.id)
-                ? entry.models.filter(id => id !== record.id)
-                : [...entry.models, record.id];
+
+            const exists = entry.models.some(m => m.id === record.id);
+
+            const next = exists
+                ? entry.models.filter(m => m.id !== record.id)
+                : [...entry.models, record];
 
             return {
                 ...prev,
@@ -94,88 +106,18 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
         setSelectedByPathId(prev => {
             const entry = prev[activePathId];
 
+            const next = activeTab.models.filter(m => keys.includes(m.id));
+
             return {
                 ...prev,
                 [activePathId]: {
                     ...entry,
-                    models: keys
+                    models: next
                 }
             };
         });
     };
 
-
-    const columns = [
-        {
-            title: "Цена ОТ",
-            align: "center",
-            width: 120,
-            sorter: (a, b) => {
-                const minA = Math.min(...(a.origins || []).map(x => x.output_price));
-                const minB = Math.min(...(b.origins || []).map(x => x.output_price));
-                return minA - minB;
-            },
-            render: (_, record) => {
-                const list = record.origins || [];
-                if (list.length === 0) return "-";
-
-                const minPrice = Math.min(...list.map(item => item.output_price));
-                return minPrice.toLocaleString("ru-RU");
-            }
-        },
-        {
-            title: "Название",
-            dataIndex: "title",
-            sorter: (a, b) => a.title.localeCompare(b.title),
-            render: (text, record) => (
-                <Tooltip
-                    placement="right"
-                    style={{
-                        maxWidth: 900,
-                        padding: 0,
-                    }}
-                    title={
-                        <div style={{maxWidth: 900}}>
-
-                            <div style={{textAlign: "left", marginBottom: 15}}>
-                                <ResolveModelTypeDependencies source={record.source} info={record.info}/>
-                            </div>
-                            {record.origins?.length ? (
-                                <div style={{maxWidth: 900}}>
-                                    {[...record.origins]
-                                        .sort((a, b) => a.output_price - b.output_price)
-                                        .map((a, i) => (
-                                            <div key={i} style={{marginBottom: 4}}>
-                                                <span>{a.title}: </span>
-                                                <span style={{color: "#7FFF00", fontWeight: 600}}>
-                                            {a.output_price.toLocaleString("ru-RU")} ₽
-                                        </span>
-                                            </div>
-                                        ))}
-                                </div>
-                            ) : (
-                                <div>Нет данных</div>
-                            )}
-                        </div>
-                    }
-                >
-            <span style={{cursor: "pointer"}}>
-                {text}
-            </span>
-                </Tooltip>
-            )
-        },
-        {
-            title: "Тип",
-            align: "center",
-            render: (_, r) => r.type_.type,
-        },
-        {
-            title: "Бренд",
-            align: "center",
-            render: (_, r) => r.brand.brand,
-        },
-    ];
 
     const ConfirmClose = ({onConfirm, children}) => (
         <Popconfirm title="Уверены, что хотите закрыть?"
@@ -199,12 +141,11 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
                     </Button>
                 </ConfirmClose>
 
-                <Button
-                    color="purple"
-                    variant="solid"
-                    style={{margin: 10}}
-                    icon={<MenuOutlined/>}
-                    onClick={() => setIsApproveOpen(true)}
+                <Button color="purple"
+                        variant="solid"
+                        style={{margin: 10}}
+                        icon={<MenuOutlined/>}
+                        onClick={() => setIsApproveOpen(true)}
                 >
                     Выбрать позиции для обновления
                 </Button>
@@ -242,7 +183,7 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
                                 <Table
                                     rowKey="id"
                                     dataSource={activeTab.models}
-                                    columns={columns}
+                                    columns={buildHubChooseElementsColumns()}
                                     pagination={false}
                                     size="small"
                                     rowSelection={{
@@ -272,3 +213,5 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
 };
 
 export default UpdateHubChooseElements;
+
+

@@ -131,12 +131,6 @@ export const buildApproveOriginsColumns = ({
                 ) : content;
             },
         },
-        // {
-        //     title: "Название",
-        //     dataIndex: "title",
-        //     key: "title",
-        //     width: "30%",
-        // },
         {
             title: "Название",
             dataIndex: "title",
