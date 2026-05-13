@@ -5,7 +5,17 @@ import TimeDayBlock from "../../../Ui/TimeDateBlock.jsx";
 
 const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdating) => [
     {
-        title: "Подтянуть зависимости",
+        title: (
+            <div style={{
+                fontSize: 12,
+                lineHeight: "12px",
+                whiteSpace: "normal",
+                wordBreak: "break-word",
+                textAlign: "center"
+            }}>
+                Подтянуть зависимости
+            </div>
+        ),
         dataIndex: "sync",
         align: "center",
         key: "sync",
@@ -18,7 +28,7 @@ const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdat
                     const checked = e.target.checked;
                     setRows(prev =>
                         prev.map(row =>
-                            row.id === record.id ? {...row, sync: checked} : row
+                            row.id === record.id ? { ...row, sync: checked } : row
                         )
                     );
                 }}
@@ -42,7 +52,8 @@ const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdat
     {
         dataIndex: "url",
         key: "url",
-        width: "10%",
+        width: "30%",
+        ellipsis: true,
         render: (text) => (
             <Tooltip
                 title={

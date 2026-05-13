@@ -1,13 +1,13 @@
 import {useEffect, useState} from "react";
-import {Segmented, Table, Flex, Button, Modal, Tag, Tooltip} from "antd";
+import {Segmented, Table, Flex, Button, Modal, Col, Row} from "antd";
 import {CloseOutlined} from "@ant-design/icons";
 import {fetchPostData} from "../Common/api.js";
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 import "./Css/UpdateHubApproveOrigins.css"
 import OriginImageViewer from "../Common/OriginImageViewer.jsx";
-import {buildApproveOriginsColumns} from "./UpdateHubApproveOriginsColumns.jsx";
-import Color from "color";
 
+import {buildApproveOriginsColumns} from "./UpdateHubApproveOriginsColumns.jsx";
+import {PriceSyncFlow} from "./PriceSyncFlow.jsx";
 
 
 const DeepViewer = ({data, indent = 0}) => {
@@ -247,46 +247,6 @@ const DeepViewer = ({data, indent = 0}) => {
 //
 // export default UpdateHubApproveOrigins;
 
-const BASIC_COLORS = [
-    "black", "white", "red", "blue", "green", "yellow",
-    "orange", "pink", "purple", "violet", "brown",
-    "beige", "gold", "silver", "gray", "grey",
-    "teal", "cyan", "olive", "mint", "coral", "titanium"
-];
-
-const tagColorForAttr = (value) => {
-    if (!value) return "#999999";
-
-    const lower = value.toLowerCase();
-
-    // 1. Попытка распарсить напрямую
-    try {
-        return Color(value).hex();
-    } catch {}
-
-    // 2. Ищем ключевой цвет в названии
-    for (const base of BASIC_COLORS) {
-        if (lower.includes(base)) {
-            try {
-                return Color(base).hex();
-            } catch {}
-        }
-    }
-
-    // 3. fallback — твоя хеш-палитра
-    const fallbackColors = [
-        "blue", "green", "geekblue", "purple", "cyan",
-        "magenta", "volcano", "orange", "lime"
-    ];
-
-    let hash = 0;
-    for (let i = 0; i < value.length; i++) {
-        hash = value.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    return fallbackColors[Math.abs(hash) % fallbackColors.length];
-};
-
 
 const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOrigins}) => {
 
@@ -294,6 +254,9 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
     const [data, setData] = useState([]);
     const [selectedPathId, setSelectedPathId] = useState(null);
     const [selectedModelId, setSelectedModelId] = useState(null);
+    const [openedImageModalView, setOpenedImageModalView] = useState(null);
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
 
     const paths = objForUpdate.sortOrderPathId.map(id => objForUpdate[id]);
 
@@ -329,99 +292,149 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
     const selectedPath = data.find(p => p.path_id === selectedPathId);
     const selectedModel = selectedPath?.models.find(m => m.id === selectedModelId);
 
+    const handleImagesUpdated = ({images}, origin) => {
+        setOpenedImageModalView(prev =>
+            prev && prev.origin === origin
+                ? {...prev, images}
+                : prev
+        );
 
-    const originColumns = [{title: "Origin", dataIndex: "origin", width: 120}, {
-        title: "Название",
-        dataIndex: "title"
-    }, {title: "Оптовая цена", render: (_, r) => r.input_price?.toLocaleString("ru-RU")}, {
-        title: "Розничная цена",
-        render: (_, r) => r.output_price?.toLocaleString("ru-RU")
-    }, {
-        title: "Attrs",
-        render: (_, r) =>
-            r.attrs?.length ? (
-                r.attrs.map((a, idx) => (
-                    <Tooltip key={idx} title={a.value}>
-                        <Tag
-                            color={tagColorForAttr(a.value)}
-                            style={{ marginBottom: 4 }}
-                        >
-                            {a.alias}
-                        </Tag>
-                    </Tooltip>
-                ))
-            ) : (
-                "—"
-            )
-    }
+        // setDataForUpdate(prev =>
+        //     prev.map(path => ({
+        //         ...path,
+        //         products: path.products.map(prod => ({
+        //             ...prod,
+        //             items: prod.items.map(item =>
+        //                 item.origin === origin
+        //                     ? {...item, pics: images}
+        //                     : item
+        //             )
+        //         }))
+        //     }))
+        // );
+    };
 
-    ];
 
-    return (<Modal
-        open
-        closable={false}
-        footer={null}
-        width={1650}
-        onCancel={onCloseApproveOrigins}
-    >
-        {loading ? (<Spinner/>) : (<div style={{padding: 16}}>
-            <div style={{marginBottom: 8, textAlign: "left"}}>
-                <Button icon={<CloseOutlined/>} type="primary" onClick={onCloseApproveOrigins}>
-                    Закрыть
-                </Button>
-            </div>
+    const columns = buildApproveOriginsColumns({
+        setOpenedImageModalView,
+        selectedModel
+    });
 
-            <Flex gap={16} align="flex-end" style={{marginBottom: 20}}>
-                {/* LEFT: PATH SELECTOR */}
-                <div className="vertical-segmented">
-                    <Segmented
-                        vertical
-                        size="small"
-                        value={selectedPathId}
-                        onChange={(val) => {
-                            setSelectedPathId(val);
-                            const backendPath = data.find(p => p.path_id === val);
-                            if (backendPath && backendPath.models.length > 0) {
-                                setSelectedModelId(backendPath.models[0].id);
-                            }
-                        }}
-                        options={paths
-                            .filter(entry => {
-                                const backendPath = data.find(p => p.path_id === entry.path_id);
-                                return backendPath && backendPath.models.length > 0;
-                            })
-                            .map(entry => ({
-                                value: entry.path_id,
-                                label: entry.route.map(r => r.label).join(" - "),
-                                icon: entry.route.at(-1)?.icon && (
-                                    <img src={entry.route.at(-1).icon} width={18}/>)
-                            }))}
-                    />
-                </div>
 
-                {/* CENTER: MODEL SELECTOR */}
-                <div className="vertical-segmented">
-                    <Segmented
-                        vertical
-                        size="small"
-                        value={selectedModelId}
-                        onChange={setSelectedModelId}
-                        options={(selectedPath?.models || [])
-                            .map(m => ({label: m.title, value: m.id}))}
-                    />
-                </div>
-            </Flex>
+    return (
+        <>
+            <Modal open closable={false} footer={null} width={1450} onCancel={onCloseApproveOrigins}>
+                {loading ? (<Spinner/>) : (
+                    <div style={{padding: 16}}>
+                        <PriceSyncFlow step={4}/>
+                        {/* Кнопка закрытия */}
+                        <div style={{marginBottom: 8, textAlign: "left"}}>
+                            <Button
+                                icon={<CloseOutlined/>}
+                                type="primary"
+                                onClick={onCloseApproveOrigins}
+                            >
+                                Закрыть
+                            </Button>
+                        </div>
 
-            {/* RIGHT: ORIGINS TABLE */}
-            {selectedModel && (<Table
-                rowKey="origin"
-                dataSource={selectedModel.origins}
-                columns={originColumns}
-                pagination={false}
-                size="small"
-            />)}
-        </div>)}
-    </Modal>);
+                        <Row gutter={16} wrap>
+
+
+                            <Col xs={24} sm={24} md={8} lg={6} xl={6} xxl={6}>
+                                <Segmented
+                                    vertical
+                                    size="small"
+                                    value={selectedPathId}
+                                    onChange={(val) => {
+                                        setSelectedPathId(val);
+                                        const backendPath = data.find(p => p.path_id === val);
+                                        if (backendPath && backendPath.models.length > 0) {
+                                            setSelectedModelId(backendPath.models[0].id);
+                                        }
+                                    }}
+                                    options={paths
+                                        .filter(entry => {
+                                            const backendPath = data.find(p => p.path_id === entry.path_id);
+                                            return backendPath && backendPath.models.length > 0;
+                                        })
+                                        .map(entry => ({
+                                            value: entry.path_id,
+                                            label: entry.route.map(r => r.label).join(" - "),
+                                            icon: entry.route.at(-1)?.icon && (
+                                                <img src={entry.route.at(-1).icon} width={18}/>
+                                            )
+                                        }))}
+                                    styles={{
+                                        item: {justifyContent: "flex-start"},
+                                        label: {textAlign: "left"},
+                                        thumb: {backgroundColor: "#1677ff", color: "#fff"}
+                                    }}
+                                />
+                            </Col>
+
+
+                            <Col xs={24} sm={24} md={16} lg={18} xl={18} xxl={18}>
+
+                                {/* Второй Segmented */}
+                                <div style={{marginBottom: 12}}>
+                                    <Segmented
+                                        vertical
+                                        size="small"
+                                        value={selectedModelId}
+                                        onChange={setSelectedModelId}
+                                        options={(selectedPath?.models || [])
+                                            .map(m => ({label: m.title, value: m.id}))}
+                                        styles={{
+                                            item: {justifyContent: "flex-start"},
+                                            label: {textAlign: "left"},
+                                            thumb: {backgroundColor: "#1677ff", color: "#fff"}
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Таблица */}
+                                {selectedModel && (
+                                    <Table
+                                        rowKey="origin"
+                                        dataSource={selectedModel.origins}
+                                        columns={columns}
+                                        pagination={false}
+                                        size="small"
+                                        className="approve-origins-table"
+                                        rowSelection={{
+                                            selectedRowKeys,
+                                            onChange: setSelectedRowKeys,
+                                            preserveSelectedRowKeys: true,
+                                            columnWidth: "2%"
+                                        }}
+                                        rowClassName={(record, index) => {
+                                            const isSelected = selectedRowKeys.includes(record.origin);
+                                            if (isSelected) return "row-selected";
+                                            return index % 2 === 0 ? "" : "row-light";
+                                        }}
+                                    />
+
+                                )}
+                            </Col>
+
+                        </Row>
+                    </div>
+                )
+                }
+            </Modal>
+            {openedImageModalView && openedImageModalView.origin && (
+                <OriginImageViewer
+                    origin={openedImageModalView.origin}
+                    images={openedImageModalView.images}
+                    title={openedImageModalView.title}
+                    onClose={() => setOpenedImageModalView(null)}
+                    onUploaded={handleImagesUpdated}
+                />
+            )}
+        </>
+
+    );
 };
 
 

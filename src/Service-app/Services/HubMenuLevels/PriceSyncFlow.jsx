@@ -67,6 +67,14 @@ export const PriceSyncFlow = ({step}) => {
                             3. Выбери выгодные модели
                         </div>
                     )
+                },
+                {
+                    ...getStatus(4),
+                    children: (
+                        <div style={getStatus(4).textStyle}>
+                            3. Выбираем отдельные позиции
+                        </div>
+                    )
                 }
             ]}
         />

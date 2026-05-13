@@ -12,6 +12,7 @@
     border: 2px solid #676760;
     padding: 4px;
     width: 350px;
+
 }
 
 .vertical-segmented .ant-segmented-item {
@@ -20,4 +21,16 @@
 
 .vertical-segmented .ant-segmented-item-icon {
     color: #676760;
+}
+
+.approve-origins-table .ant-table-cell {
+    padding: 0 !important;
+}
+
+.approve-origins-table .row-light {
+    background-color: #d0e8e6;
+}
+
+.approve-origins-table .row-selected {
+    background-color: #cce5ff !important;
 }
