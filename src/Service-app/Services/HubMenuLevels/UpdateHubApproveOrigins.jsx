@@ -327,94 +327,76 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                 {loading ? (<Spinner/>) : (
                     <div style={{padding: 16}}>
                         <PriceSyncFlow step={4}/>
-                        {/* Кнопка закрытия */}
                         <div style={{marginBottom: 8, textAlign: "left"}}>
-                            <Button
-                                icon={<CloseOutlined/>}
-                                type="primary"
-                                onClick={onCloseApproveOrigins}
-                            >
+                            <Button icon={<CloseOutlined/>} type="primary" onClick={onCloseApproveOrigins}>
                                 Закрыть
                             </Button>
                         </div>
 
                         <Row gutter={16} wrap>
 
-
                             <Col xs={24} sm={24} md={8} lg={6} xl={6} xxl={6}>
-                                <Segmented
-                                    vertical
-                                    size="small"
-                                    value={selectedPathId}
-                                    onChange={(val) => {
-                                        setSelectedPathId(val);
-                                        const backendPath = data.find(p => p.path_id === val);
-                                        if (backendPath && backendPath.models.length > 0) {
-                                            setSelectedModelId(backendPath.models[0].id);
-                                        }
-                                    }}
-                                    options={paths
-                                        .filter(entry => {
-                                            const backendPath = data.find(p => p.path_id === entry.path_id);
-                                            return backendPath && backendPath.models.length > 0;
-                                        })
-                                        .map(entry => ({
-                                            value: entry.path_id,
-                                            label: entry.route.map(r => r.label).join(" - "),
-                                            icon: entry.route.at(-1)?.icon && (
-                                                <img src={entry.route.at(-1).icon} width={18}/>
-                                            )
-                                        }))}
-                                    styles={{
-                                        item: {justifyContent: "flex-start"},
-                                        label: {textAlign: "left"},
-                                        thumb: {backgroundColor: "#1677ff", color: "#fff"}
-                                    }}
+                                <Segmented vertical
+                                           size="small"
+                                           value={selectedPathId}
+                                           onChange={(val) => {
+                                               setSelectedPathId(val);
+                                               const backendPath = data.find(p => p.path_id === val);
+                                               if (backendPath && backendPath.models.length > 0) {
+                                                   setSelectedModelId(backendPath.models[0].id);
+                                               }
+                                           }}
+                                           options={paths
+                                               .filter(entry => {
+                                                   const backendPath = data.find(p => p.path_id === entry.path_id);
+                                                   return backendPath && backendPath.models.length > 0;
+                                               })
+                                               .map(entry => ({
+                                                   value: entry.path_id,
+                                                   label: entry.route.map(r => r.label).join(" - "),
+                                                   icon: entry.route.at(-1)?.icon && (
+                                                       <img src={entry.route.at(-1).icon} width={18}/>
+                                                   )
+                                               }))}
+                                           styles={{
+                                               item: {justifyContent: "flex-start"},
+                                               label: {textAlign: "left"},
+                                           }}
                                 />
                             </Col>
 
-
                             <Col xs={24} sm={24} md={16} lg={18} xl={18} xxl={18}>
-
-                                {/* Второй Segmented */}
                                 <div style={{marginBottom: 12}}>
-                                    <Segmented
-                                        vertical
-                                        size="small"
-                                        value={selectedModelId}
-                                        onChange={setSelectedModelId}
-                                        options={(selectedPath?.models || [])
-                                            .map(m => ({label: m.title, value: m.id}))}
-                                        styles={{
-                                            item: {justifyContent: "flex-start"},
-                                            label: {textAlign: "left"},
-                                            thumb: {backgroundColor: "#1677ff", color: "#fff"}
-                                        }}
-                                    />
+                                    <Segmented vertical
+                                               size="small"
+                                               value={selectedModelId}
+                                               onChange={setSelectedModelId}
+                                               options={(selectedPath?.models || [])
+                                                   .map(m => ({label: m.title, value: m.id}))}
+                                               styles={{
+                                                   item: {justifyContent: "flex-start"},
+                                                   label: {textAlign: "left"},
+                                               }}/>
                                 </div>
 
-                                {/* Таблица */}
                                 {selectedModel && (
-                                    <Table
-                                        rowKey="origin"
-                                        dataSource={selectedModel.origins}
-                                        columns={columns}
-                                        pagination={false}
-                                        size="small"
-                                        className="approve-origins-table"
-                                        rowSelection={{
-                                            selectedRowKeys,
-                                            onChange: setSelectedRowKeys,
-                                            preserveSelectedRowKeys: true,
-                                            columnWidth: "2%"
-                                        }}
-                                        rowClassName={(record, index) => {
-                                            const isSelected = selectedRowKeys.includes(record.origin);
-                                            if (isSelected) return "row-selected";
-                                            return index % 2 === 0 ? "" : "row-light";
-                                        }}
+                                    <Table rowKey="origin"
+                                           dataSource={selectedModel.origins}
+                                           columns={columns}
+                                           pagination={false}
+                                           size="small"
+                                           className="approve-origins-table"
+                                           rowSelection={{
+                                               selectedRowKeys,
+                                               onChange: setSelectedRowKeys,
+                                               preserveSelectedRowKeys: true,
+                                               columnWidth: "2%"
+                                           }}
+                                           rowClassName={(record) => {
+                                               const isSelected = selectedRowKeys.includes(record.origin);
+                                               if (isSelected) return "row-selected";
+                                           }}
                                     />
-
                                 )}
                             </Col>
 
@@ -424,12 +406,11 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                 }
             </Modal>
             {openedImageModalView && openedImageModalView.origin && (
-                <OriginImageViewer
-                    origin={openedImageModalView.origin}
-                    images={openedImageModalView.images}
-                    title={openedImageModalView.title}
-                    onClose={() => setOpenedImageModalView(null)}
-                    onUploaded={handleImagesUpdated}
+                <OriginImageViewer origin={openedImageModalView.origin}
+                                   images={openedImageModalView.images}
+                                   title={openedImageModalView.title}
+                                   onClose={() => setOpenedImageModalView(null)}
+                                   onUploaded={handleImagesUpdated}
                 />
             )}
         </>

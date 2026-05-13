@@ -394,7 +394,7 @@ export const buildApproveOriginsColumns = ({
                 const previewObj = pics.find(p => p.is_preview);
                 const previewUrl = previewObj?.url || null;
                 const count = pics.length;
-                const cell = [50, 40]
+                const cell = [50, 48]
                 const content = (
                     <div
                         onClick={() =>
@@ -429,7 +429,7 @@ export const buildApproveOriginsColumns = ({
                 );
 
                 return count > 0 ? (
-                    <Badge count={count} offset={[-5, 5]} size="small">
+                    <Badge count={count} offset={[-5, 8]} size="small">
                         {content}
                     </Badge>
                 ) : content;
