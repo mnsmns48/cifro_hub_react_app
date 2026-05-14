@@ -269,6 +269,7 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                 if (Array.isArray(res)) {
                     setData(res);
                 }
+                console.log("res-----", res)
             } catch (e) {
                 console.error("approveOriginsRequest error:", e);
             } finally {
@@ -280,17 +281,38 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
 
     useEffect(() => {
         if (!loading && data.length > 0) {
+
             const firstPath = data[0];
             setSelectedPathId(firstPath.path_id);
 
             if (firstPath.models.length > 0) {
                 setSelectedModelId(firstPath.models[0].id);
             }
+
+            setSelectedRowKeys(computeSelectedRowKeys(data));
         }
     }, [loading, data]);
 
+
     const selectedPath = data.find(p => p.path_id === selectedPathId);
     const selectedModel = selectedPath?.models.find(m => m.id === selectedModelId);
+
+    const computeSelectedRowKeys = (data) => {
+        const keys = [];
+
+        data.forEach(path =>
+            path.models.forEach(model =>
+                model.origins.forEach(origin => {
+                    if (origin.analyze?.verdict === true) {
+                        keys.push(origin.origin);
+                    }
+                })
+            )
+        );
+
+        return keys;
+    };
+
 
     const handleImagesUpdated = ({images}, origin) => {
         setOpenedImageModalView(prev =>
