@@ -3,11 +3,6 @@
 }
 
 
-.row-no-photo-selected td {
-    background: #ffcccc !important;
-}
-
-
 .vertical-segmented .ant-segmented {
     border: 2px solid #676760;
     padding: 4px;
@@ -29,4 +24,9 @@
 
 .approve-origins-table .row-light {
     background-color: #d0e8e6;
+}
+
+
+.row-selected-no-pics td {
+    background-color: #d390c5 !important;
 }
