@@ -290,32 +290,12 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
 
 
     const handleImagesUpdated = ({images}, origin) => {
-        setOpenedImageModalView(prev =>
-            prev && prev.origin === origin
-                ? {...prev, images}
-                : prev
-        );
-        setData(prev =>
-            prev.map(path =>
-                path.path_id === selectedPathId
-                    ? {
-                        ...path,
-                        models: path.models.map(model =>
-                            model.id === selectedModelId
-                                ? {
-                                    ...model,
-                                    origins: model.origins.map(o =>
-                                        o.origin === origin
-                                            ? {...o, pics: images}
-                                            : o
-                                    )
-                                }
-                                : model
-                        )
-                    }
-                    : path
-            )
-        );
+        setOpenedImageModalView(prev => prev && prev.origin === origin ? {...prev, images} : prev);
+        setData(prev => prev.map(path => path.path_id === selectedPathId ? {
+            ...path, models: path.models.map(model => model.id === selectedModelId ? {
+                ...model, origins: model.origins.map(o => o.origin === origin ? {...o, pics: images} : o)
+            } : model)
+        } : path));
     };
 
 
@@ -329,10 +309,8 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                     ...(scale !== null ? {market_variance_scale: scale} : {}),
                     ...(exponent !== null ? {market_variance_exponent: exponent} : {})
                 });
-
                 if (Array.isArray(res) && res.length > 0) {
                     const updatedPath = res[0];
-
                     setData(prev =>
                         prev.map(p =>
                             p.path_id === updatedPath.path_id
@@ -367,21 +345,39 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
         selectedModel
     });
 
-    const hasSelectedWithoutPics = selectedModel?.origins?.some(
-        o => selectedRowKeys.includes(o.origin) && (!o.pics || o.pics.length === 0)
-    );
+    const hasSelectedWithoutPics = selectedPath?.models?.some(model =>
+        model.origins.some(o => selectedRowKeys.includes(o.origin) && (!o.pics || o.pics.length === 0)));
 
 
     const updateOriginsInHubstock = async () => {
         try {
-            await fetchPostData("/service/update_origins_in_hubstock", {
+            const modelsForPayload = selectedPath.models
+                .map(model => {
+                    const filteredOrigins = model.origins.filter(o => selectedRowKeys.includes(o.origin));
+                    if (filteredOrigins.length === 0) return null;
+
+                    return {
+                        ...model, origins: filteredOrigins
+                    };
+                })
+                .filter(Boolean);
+
+            const totalOrigins = modelsForPayload.reduce((acc, m) => acc + m.origins.length, 0);
+
+            const payload = {
                 path_id: selectedPath.path_id,
                 route: selectedPath.route,
                 vsl_id: selectedPath.vsl_id,
-                models: selectedPath.models
-            });
+                models: modelsForPayload
+            };
+            const res = await fetchPostData("/service/update_origins_in_hubstock", payload);
+            if (res?.updated === totalOrigins) {
+                message.success("HubStock обновлён");
+                onCloseParent(true);
+            } else {
+                message.error("Ошибка: не все позиции были обновлены");
+            }
 
-            message.success("HubStock обновлён");
         } catch (e) {
             console.error("update_origins_in_hubstock error:", e);
             message.error("Ошибка при обновлении HubStock");
@@ -432,7 +428,6 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                                                 value={marketScale}
                                                 onChange={handleScaleChange}
                                         />
-
                                     </div>
                                     <div style={{width: 260}}>
                                         <Tooltip title={exponentTooltip} placement="bottom">
