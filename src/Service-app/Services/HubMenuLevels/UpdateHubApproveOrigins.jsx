@@ -205,12 +205,13 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
     const [marketScale, setMarketScale] = useState(0);
     const [marketExponent, setMarketExponent] = useState(0);
 
+    const debounceRef = useRef(null);
+    const isLocalUpdateRef = useRef(false);
+
     const paths = useMemo(
         () => objForUpdate.sortOrderPathId.map(id => objForUpdate[id]),
         [objForUpdate]
     );
-
-    const debounceRef = useRef(null);
 
     const debounceUpdate = (callback, delay = 400) => {
         if (debounceRef.current) {
@@ -218,7 +219,6 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
         }
         debounceRef.current = setTimeout(callback, delay);
     };
-
 
     useEffect(() => {
         void (async () => {
@@ -228,7 +228,6 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                 if (Array.isArray(res)) {
                     setData(res);
                 }
-                console.log("res", res)
             } catch (e) {
                 console.error("approveOriginsRequest error:", e);
             } finally {
@@ -238,44 +237,59 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
     }, [objForUpdate]);
 
 
+    const selectedPath = useMemo(
+        () => data.find(p => p.path_id === selectedPathId),
+        [data, selectedPathId]
+    );
+
+    const selectedModel = useMemo(
+        () => selectedPath?.models.find(m => m.id === selectedModelId),
+        [selectedPath, selectedModelId]
+    );
+
+
     useEffect(() => {
         if (loading || data.length === 0) return;
-        setSelectedRowKeys(computeSelectedRowKeys(data));
-        setSelectedPathId(prevSelectedPathId => {
-            const existingPath = data.find(p => p.path_id === prevSelectedPathId);
-            if (existingPath) {
-                return prevSelectedPathId;
-            }
-            return data[0].path_id;
+
+        setSelectedPathId(prev => {
+            const exists = data.some(p => p.path_id === prev);
+            return exists ? prev : data[0].path_id;
         });
 
-        setSelectedModelId(prevSelectedModelId => {
-            const modelExists = data.some(path =>
-                path.models.some(model => model.id === prevSelectedModelId)
+        setSelectedModelId(prev => {
+            const exists = data.some(path =>
+                path.models.some(model => model.id === prev)
             );
-            if (modelExists) {
-                return prevSelectedModelId;
-            }
-            return data[0]?.models?.[0]?.id ?? null;
+            return exists ? prev : data[0]?.models?.[0]?.id ?? null;
         });
 
-    }, [loading, data]);
+    }, [loading, objForUpdate]); // <— НЕ зависит от data
 
 
     useEffect(() => {
-        if (selectedPath?.market) {
-            setMarketScale(selectedPath.market.market_variance_scale ?? 0);
-            setMarketExponent(selectedPath.market.market_variance_exponent ?? 0);
+        if (loading || data.length === 0) return;
+
+        if (isLocalUpdateRef.current) {
+            isLocalUpdateRef.current = false;
+            return;
         }
-    }, [selectedPathId]);
+
+        setSelectedRowKeys(computeSelectedRowKeys(data));
+
+    }, [data, loading]);
 
 
-    const selectedPath = data.find(p => p.path_id === selectedPathId);
-    const selectedModel = selectedPath?.models.find(m => m.id === selectedModelId);
+    useEffect(() => {
+        if (!selectedPath?.market) return;
+
+        setMarketScale(selectedPath.market.market_variance_scale ?? 0);
+        setMarketExponent(selectedPath.market.market_variance_exponent ?? 0);
+
+    }, [selectedPath]);
+
 
     const computeSelectedRowKeys = (data) => {
         const keys = [];
-
         data.forEach(path =>
             path.models.forEach(model =>
                 model.origins.forEach(origin => {
@@ -288,21 +302,35 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
         return keys;
     };
 
+
     const handleImagesUpdated = ({images}, origin) => {
+        isLocalUpdateRef.current = true;
+
         setOpenedImageModalView(prev =>
-            prev && prev.origin === origin ? {
-                ...prev,
-                images
-            } : prev);
-        setData(prev => prev.map(path => path.path_id === selectedPathId ? {
-            ...path,
-            models: path.models.map(model =>
-                model.id === selectedModelId ? {
-                    ...model, origins: model.origins.map(o =>
-                        o.origin === origin ? {...o, pics: images} : o)
-                } : model
+            prev && prev.origin === origin ? {...prev, images} : prev
+        );
+
+        setData(prev =>
+            prev.map(path =>
+                path.path_id === selectedPathId
+                    ? {
+                        ...path,
+                        models: path.models.map(model =>
+                            model.id === selectedModelId
+                                ? {
+                                    ...model,
+                                    origins: model.origins.map(o =>
+                                        o.origin === origin
+                                            ? {...o, pics: images}
+                                            : o
+                                    )
+                                }
+                                : model
+                        )
+                    }
+                    : path
             )
-        } : path));
+        );
     };
 
 
