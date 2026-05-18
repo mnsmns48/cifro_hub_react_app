@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useRef, useState} from "react";
-import {Segmented, Table, Button, Modal, Col, Row, Slider, Tooltip, message} from "antd";
-import {CloseOutlined, CloudUploadOutlined} from "@ant-design/icons";
+import {Segmented, Table, Button, Modal, Col, Row, Slider, Tooltip, message, Popconfirm} from "antd";
+import {CloseOutlined, CloudUploadOutlined, FileExcelOutlined} from "@ant-design/icons";
 import {fetchPostData} from "../Common/api.js";
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 import "./Css/UpdateHubApproveOrigins.css"
@@ -204,6 +204,7 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [marketScale, setMarketScale] = useState(0);
     const [marketExponent, setMarketExponent] = useState(0);
+    const [showWithoutPics, setShowWithoutPics] = useState(false);
 
     const debounceRef = useRef(null);
     const isLocalUpdateRef = useRef(false);
@@ -236,7 +237,6 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
         })();
     }, [objForUpdate]);
 
-
     const selectedPath = useMemo(
         () => data.find(p => p.path_id === selectedPathId),
         [data, selectedPathId]
@@ -247,24 +247,19 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
         [selectedPath, selectedModelId]
     );
 
-
     useEffect(() => {
         if (loading || data.length === 0) return;
-
         setSelectedPathId(prev => {
             const exists = data.some(p => p.path_id === prev);
             return exists ? prev : data[0].path_id;
         });
-
         setSelectedModelId(prev => {
             const exists = data.some(path =>
                 path.models.some(model => model.id === prev)
             );
             return exists ? prev : data[0]?.models?.[0]?.id ?? null;
         });
-
-    }, [loading, objForUpdate]); // <— НЕ зависит от data
-
+    }, [loading, objForUpdate]);
 
     useEffect(() => {
         if (loading || data.length === 0) return;
@@ -277,7 +272,6 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
         setSelectedRowKeys(computeSelectedRowKeys(data));
 
     }, [data, loading]);
-
 
     useEffect(() => {
         if (!selectedPath?.market) return;
@@ -301,7 +295,6 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
         );
         return keys;
     };
-
 
     const handleImagesUpdated = ({images}, origin) => {
         isLocalUpdateRef.current = true;
@@ -332,7 +325,6 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
             )
         );
     };
-
 
     const updateMarketParam = (path_id, scale, exponent) => {
         debounceUpdate(async () => {
@@ -380,8 +372,16 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
         selectedModel
     });
 
-    const hasSelectedWithoutPics = selectedPath?.models?.some(model =>
-        model.origins.some(o => selectedRowKeys.includes(o.origin) && (!o.pics || o.pics.length === 0)));
+    const hasSelectedWithoutPics = useMemo(() => {
+        return data.some(path =>
+            path.models.some(model =>
+                model.origins.some(o =>
+                    selectedRowKeys.includes(o.origin) &&
+                    (!o.pics || o.pics.length === 0)
+                )
+            )
+        );
+    }, [data, selectedRowKeys]);
 
 
     const updateOriginsInHubstock = async () => {
@@ -414,10 +414,36 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
             }
 
         } catch (e) {
-            console.error("update_origins_in_hubstock error:", e);
             message.error("Ошибка при обновлении HubStock");
         }
     };
+
+    const flatOriginsWithoutPics = useMemo(() => {
+        if (!showWithoutPics) return [];
+
+        const result = [];
+
+        data.forEach(path =>
+            path.models.forEach(model =>
+                model.origins.forEach(origin => {
+                    const noPics = !origin.pics || origin.pics.length === 0;
+                    const isSelected = selectedRowKeys.includes(origin.origin);
+
+                    if (isSelected && noPics) {
+                        result.push({
+                            ...origin,
+                            path_id: path.path_id,
+                            model_id: model.id,
+                            model_title: model.title,
+                            route: path.route
+                        });
+                    }
+                })
+            )
+        );
+
+        return result;
+    }, [showWithoutPics, data, selectedRowKeys]);
 
 
     return (
@@ -426,6 +452,7 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                 {loading ? (<Spinner/>) : (
                     <div style={{padding: 16}}>
                         <PriceSyncFlow step={4}/>
+
                         <div style={{
                             marginBottom: 12,
                             display: "flex",
@@ -436,14 +463,30 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                                 <Button icon={<CloseOutlined/>} type="primary" onClick={onCloseApproveOrigins}>
                                     Закрыть
                                 </Button>
-                                <Button color="purple"
-                                        variant="solid"
-                                        icon={<CloudUploadOutlined/>}
-                                        disabled={hasSelectedWithoutPics}
-                                        onClick={updateOriginsInHubstock}>
-                                    Выгрузить
+
+                                <Button icon={<FileExcelOutlined/>}
+                                        type={showWithoutPics ? "primary" : "default"}
+                                        onClick={() => setShowWithoutPics(prev => !prev)}
+                                >
+                                    {showWithoutPics ? "Показать все" : "Показать без картинок"}
                                 </Button>
+                                <Popconfirm title="Выгрузить выбранные позиции?"
+                                            description="Будут выгружены только выделенные позиции. Продолжить?"
+                                            okText="Да"
+                                            cancelText="Нет"
+                                            onConfirm={updateOriginsInHubstock}
+                                            disabled={hasSelectedWithoutPics}>
+                                    <Button color="purple"
+                                            variant="solid"
+                                            icon={<CloudUploadOutlined/>}
+                                            disabled={hasSelectedWithoutPics}
+                                    >
+                                        Выгрузить в хаб
+                                    </Button>
+                                </Popconfirm>
+
                             </div>
+
                             {selectedPath?.market && (
                                 <div style={{
                                     display: "flex",
@@ -455,8 +498,7 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                                     <div style={{width: 260}}>
                                         <Tooltip title={scaleTooltip} placement="bottom">
                                             <div style={{fontSize: 12, marginBottom: 4}}>
-                                                Мягкость рынка
-                                                (scale): {marketScale.toFixed(2)}
+                                                Мягкость рынка (scale): {marketScale.toFixed(2)}
                                             </div>
                                         </Tooltip>
                                         <Slider min={0} max={10} step={0.1}
@@ -467,8 +509,7 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                                     <div style={{width: 260}}>
                                         <Tooltip title={exponentTooltip} placement="bottom">
                                             <div style={{fontSize: 12, marginBottom: 4}}>
-                                                Степень влияния цены
-                                                (exponent): {marketExponent.toFixed(2)}
+                                                Степень влияния цены (exponent): {marketExponent.toFixed(2)}
                                             </div>
                                         </Tooltip>
                                         <Slider min={0}
@@ -483,86 +524,111 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                             <div style={{width: 80}}></div>
                         </div>
 
-                        <Row gutter={16} wrap>
+                        {showWithoutPics ? (
+                            <Table
+                                rowKey="origin"
+                                dataSource={flatOriginsWithoutPics}
+                                columns={columns}
+                                pagination={false}
+                                size="small"
+                                rowSelection={{
+                                    selectedRowKeys,
+                                    preserveSelectedRowKeys: true,
+                                    columnWidth: "2%",
+                                    onChange: () => {
+                                    },
+                                    renderCell: () => null
+                                }}
+                                rowClassName={(record) => {
+                                    const isSelected = selectedRowKeys.includes(record.origin);
+                                    const hasPics = Array.isArray(record.pics) && record.pics.length > 0;
 
-                            <Col xs={24} sm={24} md={8} lg={6} xl={6} xxl={6}>
-                                <Segmented vertical
-                                           size="small"
-                                           value={selectedPathId}
-                                           onChange={(val) => {
-                                               setSelectedPathId(val);
-                                               const backendPath = data.find(p => p.path_id === val);
-                                               if (backendPath && backendPath.models.length > 0) {
-                                                   setSelectedModelId(backendPath.models[0].id);
-                                               }
-                                           }}
-                                           options={paths
-                                               .filter(entry => {
-                                                   const backendPath = data.find(p => p.path_id === entry.path_id);
-                                                   return backendPath && backendPath.models.length > 0;
-                                               })
-                                               .map(entry => ({
-                                                   value: entry.path_id,
-                                                   label: entry.route.map(r => r.label).join(" - "),
-                                                   icon: entry.route.at(-1)?.icon && (
-                                                       <img src={entry.route.at(-1).icon} width={18}/>
-                                                   )
-                                               }))}
-                                           styles={{
-                                               item: {justifyContent: "flex-start"},
-                                               label: {textAlign: "left"},
-                                           }}
-                                />
-                            </Col>
+                                    if (isSelected && !hasPics) return "row-selected-no-pics";
+                                    if (isSelected) return "row-selected";
+                                    return "";
+                                }}
+                            />
 
-                            <Col xs={24} sm={24} md={16} lg={18} xl={18} xxl={18}>
-                                <div style={{marginBottom: 12}}>
+                        ) : (
+                            <Row gutter={16} wrap>
+
+                                <Col xs={24} sm={24} md={8} lg={6} xl={6} xxl={6}>
                                     <Segmented vertical
                                                size="small"
-                                               value={selectedModelId}
-                                               onChange={setSelectedModelId}
-                                               options={(selectedPath?.models || [])
-                                                   .map(m => ({label: m.title, value: m.id}))}
+                                               value={selectedPathId}
+                                               onChange={(val) => {
+                                                   setSelectedPathId(val);
+                                                   const backendPath = data.find(p => p.path_id === val);
+                                                   if (backendPath && backendPath.models.length > 0) {
+                                                       setSelectedModelId(backendPath.models[0].id);
+                                                   }
+                                               }}
+                                               options={paths
+                                                   .filter(entry => {
+                                                       const backendPath = data.find(p => p.path_id === entry.path_id);
+                                                       return backendPath && backendPath.models.length > 0;
+                                                   })
+                                                   .map(entry => ({
+                                                       value: entry.path_id,
+                                                       label: entry.route.map(r => r.label).join(" - "),
+                                                       icon: entry.route.at(-1)?.icon && (
+                                                           <img src={entry.route.at(-1).icon} width={18}/>
+                                                       )
+                                                   }))}
                                                styles={{
                                                    item: {justifyContent: "flex-start"},
                                                    label: {textAlign: "left"},
-                                               }}/>
-                                </div>
-
-                                {selectedModel && (
-                                    <Table rowKey="origin"
-                                           dataSource={selectedModel.origins}
-                                           columns={columns}
-                                           pagination={false}
-                                           size="small"
-                                           className="approve-origins-table"
-                                           rowSelection={{
-                                               selectedRowKeys,
-                                               onChange: setSelectedRowKeys,
-                                               preserveSelectedRowKeys: true,
-                                               columnWidth: "2%"
-                                           }}
-                                           rowClassName={(record) => {
-                                               const isSelected = selectedRowKeys.includes(record.origin);
-                                               const hasPics = Array.isArray(record.pics) && record.pics.length > 0;
-                                               if (isSelected && !hasPics) {
-                                                   return "row-selected-no-pics";
-                                               }
-                                               if (isSelected) {
-                                                   return "row-selected";
-                                               }
-                                               return "";
-                                           }}
-
+                                               }}
                                     />
-                                )}
-                            </Col>
+                                </Col>
 
-                        </Row>
+                                <Col xs={24} sm={24} md={16} lg={18} xl={18} xxl={18}>
+                                    <div style={{marginBottom: 12}}>
+                                        <Segmented vertical
+                                                   size="small"
+                                                   value={selectedModelId}
+                                                   onChange={setSelectedModelId}
+                                                   options={(selectedPath?.models || [])
+                                                       .map(m => ({label: m.title, value: m.id}))}
+                                                   styles={{
+                                                       item: {justifyContent: "flex-start"},
+                                                       label: {textAlign: "left"},
+                                                   }}/>
+                                    </div>
+
+                                    {selectedModel && (
+                                        <Table rowKey="origin"
+                                               dataSource={selectedModel.origins}
+                                               columns={columns}
+                                               pagination={false}
+                                               size="small"
+                                               className="approve-origins-table"
+                                               rowSelection={{
+                                                   selectedRowKeys,
+                                                   onChange: setSelectedRowKeys,
+                                                   preserveSelectedRowKeys: true,
+                                                   columnWidth: "2%"
+                                               }}
+                                               rowClassName={(record) => {
+                                                   const isSelected = selectedRowKeys.includes(record.origin);
+                                                   const hasPics = Array.isArray(record.pics) && record.pics.length > 0;
+                                                   if (isSelected && !hasPics) {
+                                                       return "row-selected-no-pics";
+                                                   }
+                                                   if (isSelected) {
+                                                       return "row-selected";
+                                                   }
+                                                   return "";
+                                               }}
+                                        />
+                                    )}
+                                </Col>
+                            </Row>
+                        )}
                     </div>
-                )
-                }
+                )}
             </Modal>
+
             {openedImageModalView && openedImageModalView.origin && (
                 <OriginImageViewer origin={openedImageModalView.origin}
                                    images={openedImageModalView.images}
@@ -572,8 +638,8 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                 />
             )}
         </>
-
     );
+
 };
 
 
