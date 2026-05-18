@@ -288,13 +288,20 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
         return keys;
     };
 
-
     const handleImagesUpdated = ({images}, origin) => {
-        setOpenedImageModalView(prev => prev && prev.origin === origin ? {...prev, images} : prev);
+        setOpenedImageModalView(prev =>
+            prev && prev.origin === origin ? {
+                ...prev,
+                images
+            } : prev);
         setData(prev => prev.map(path => path.path_id === selectedPathId ? {
-            ...path, models: path.models.map(model => model.id === selectedModelId ? {
-                ...model, origins: model.origins.map(o => o.origin === origin ? {...o, pics: images} : o)
-            } : model)
+            ...path,
+            models: path.models.map(model =>
+                model.id === selectedModelId ? {
+                    ...model, origins: model.origins.map(o =>
+                        o.origin === origin ? {...o, pics: images} : o)
+                } : model
+            )
         } : path));
     };
 
