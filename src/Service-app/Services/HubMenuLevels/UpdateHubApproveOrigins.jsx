@@ -421,11 +421,11 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                 return;
             }
             const res = await fetchPostData("/service/update_origins_in_hubstock", payload);
-            if (Array.isArray(res) && res.length === payload.length) {
+            if (res !== false) {
                 message.success("HubStock обновлён");
                 onCloseParent(true);
             } else {
-                message.error("Ошибка: не все позиции были обновлены");
+                message.error("Ошибка при обновлении HubStock");
             }
         } catch (e) {
             message.error("Ошибка при обновлении HubStock");
