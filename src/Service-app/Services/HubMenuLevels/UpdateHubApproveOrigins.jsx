@@ -228,6 +228,7 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                 const res = await fetchPostData("/service/approve_origins_for_update", paths);
                 if (Array.isArray(res)) {
                     setData(res);
+                    console.log('approve_origins_for_update', res)
                 }
             } catch (e) {
                 console.error("approveOriginsRequest error:", e);
@@ -384,29 +385,46 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
     }, [data, selectedRowKeys]);
 
 
+    const buildHubStockPayload = (data, selectedRowKeys) => {
+        const items = [];
+        data.forEach(path => {
+            path.models.forEach(model => {
+                model.origins
+                    .filter(o => selectedRowKeys.includes(o.origin))
+                    .forEach(origin => {
+                        items.push({
+                            path_id: path.path_id,
+                            hub_item: {
+                                origin: origin.origin,
+                                vsl_id: origin.vsl_id,
+                                title: origin.title,
+                                warranty: origin.warranty,
+                                input_price: origin.input_price,
+                                output_price: origin.output_price,
+                                dt_parsed: origin.dt_parsed,
+                                model_title: model.title,
+                                profit_range: origin.profit_range
+                            }
+                        });
+                    });
+            });
+        });
+        return items;
+    };
+
+
+
     const updateOriginsInHubstock = async () => {
         try {
-            const modelsForPayload = selectedPath.models
-                .map(model => {
-                    const filteredOrigins = model.origins.filter(o => selectedRowKeys.includes(o.origin));
-                    if (filteredOrigins.length === 0) return null;
+            const payload = buildHubStockPayload(data, selectedRowKeys);
+            if (payload.length === 0) {
+                message.warning("Нет выбранных origins");
+                return;
+            }
 
-                    return {
-                        ...model, origins: filteredOrigins
-                    };
-                })
-                .filter(Boolean);
-
-            const totalOrigins = modelsForPayload.reduce((acc, m) => acc + m.origins.length, 0);
-
-            const payload = {
-                path_id: selectedPath.path_id,
-                route: selectedPath.route,
-                vsl_id: selectedPath.vsl_id,
-                models: modelsForPayload
-            };
             const res = await fetchPostData("/service/update_origins_in_hubstock", payload);
-            if (res?.updated === totalOrigins) {
+
+            if (Array.isArray(res) && res.length === payload.length) {
                 message.success("HubStock обновлён");
                 onCloseParent(true);
             } else {
@@ -417,6 +435,7 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
             message.error("Ошибка при обновлении HubStock");
         }
     };
+
 
     const flatOriginsWithoutPics = useMemo(() => {
         if (!showWithoutPics) return [];

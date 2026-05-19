@@ -36,23 +36,15 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
     const [isApproveOpen, setIsApproveOpen] = useState(false);
 
 
-
     useEffect(() => {
         const load = async () => {
             setLoading(true);
-
-
             const res = await fetchPostData("/service/resolve_models_for_sync", priceSyncList);
             if (Array.isArray(res) && res.length > 0) {
                 setData(res);
-
                 const ids = res.map(item => item.path_id);
                 setOrderedPathIds(ids);
-
-                const obj = {
-                    sortOrderPathId: res.map(item => item.path_id)
-                };
-
+                const obj = {sortOrderPathId: res.map(item => item.path_id)};
                 res.forEach(item => {
                     obj[item.path_id] = {
                         path_id: item.path_id,
@@ -60,10 +52,7 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
                         models: item.models.filter(m => m.in_hub)
                     };
                 });
-
                 setSelectedByPathId(obj);
-
-
                 setActiveIndex(0);
             }
 
@@ -74,7 +63,7 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
     }, []);
 
     if (!selectedByPathId.sortOrderPathId) {
-        return <Spinner />;
+        return <Spinner/>;
     }
     const activePathId = selectedByPathId.sortOrderPathId[activeIndex];
     const activeTab = data.find(d => d.path_id === activePathId);
@@ -105,9 +94,7 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
     const handleRowSelectionChange = (keys) => {
         setSelectedByPathId(prev => {
             const entry = prev[activePathId];
-
             const next = activeTab.models.filter(m => keys.includes(m.id));
-
             return {
                 ...prev,
                 [activePathId]: {
