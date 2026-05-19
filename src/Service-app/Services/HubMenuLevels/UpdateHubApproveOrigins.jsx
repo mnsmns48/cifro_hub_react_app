@@ -228,7 +228,6 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                 const res = await fetchPostData("/service/approve_origins_for_update", paths);
                 if (Array.isArray(res)) {
                     setData(res);
-                    console.log('approve_origins_for_update', res)
                 }
             } catch (e) {
                 console.error("approveOriginsRequest error:", e);
@@ -421,16 +420,13 @@ const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOri
                 message.warning("Нет выбранных origins");
                 return;
             }
-
             const res = await fetchPostData("/service/update_origins_in_hubstock", payload);
-
             if (Array.isArray(res) && res.length === payload.length) {
                 message.success("HubStock обновлён");
                 onCloseParent(true);
             } else {
                 message.error("Ошибка: не все позиции были обновлены");
             }
-
         } catch (e) {
             message.error("Ошибка при обновлении HubStock");
         }
