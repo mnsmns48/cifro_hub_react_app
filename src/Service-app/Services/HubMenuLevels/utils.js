@@ -7,6 +7,7 @@ export function buildTreeData(data, parentId = 0) {
             label: item.label,
             id: item.id,
             parentId: item.parentId,
+            updated_at: item.updated_at,
             sort_order: item.sort_order,
             isRoot: item.id === 1,
             children: buildTreeData(data, item.id)

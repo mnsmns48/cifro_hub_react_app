@@ -1,34 +1,70 @@
+.ant-tree .ant-tree-node-content-wrapper {
+    width: calc(100% - 24px) !important;
+
+}
+
+.ant-tree-node-content-wrapper {
+    width: 100% !important;
+}
+
+.ant-tree-treenode {
+    width: 100% !important;
+}
+
+.ant-tree-title {
+    width: 100% !important;
+    display: block !important;
+
+}
+
+
 .treeNodeRow {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    width: 100%;
+    min-width: 0;
+}
+
+.treeNodeLeft {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
 }
 
 .treeNodeLabel {
     cursor: text;
-    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .treeNodeLabel.root {
     cursor: default;
 }
 
-.treeNodeRow {
+.treeNodeDate {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    width: 100%;
+    font-size: 9px;
+    color: #999;
+    line-height: 10px;
+    white-space: nowrap;
 }
 
-
-.treeIcons {
+.treeNodeActions {
+    margin-left: auto;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+
 }
 
 .treeIcon {
     font-size: 12px;
-    margin: 0 10px;
     opacity: 0.4;
     cursor: pointer;
     transition: opacity 0.2s ease;
@@ -36,24 +72,4 @@
 
 .treeIcon:hover {
     opacity: 0.8;
-}
-
-.stockHubTable .ant-table-cell {
-    font-size: 11px;
-    padding: 4px 8px;
-}
-
-.actions-column {
-    text-align: right;
-}
-
-.table_output_price {
-    background-color: #f0f0f0;
-    border-radius: 6px;
-    padding: 4px 8px;
-    font-size: 14px;
-    font-weight: 500;
-    text-align: center;
-    display: inline-block;
-    min-width: 60px
 }

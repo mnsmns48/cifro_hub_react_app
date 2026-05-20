@@ -149,33 +149,35 @@ const HubMenuLevels = ({
 
     const treeData = useMemo(() => TreeDataRender({menuData, treeContext}), [menuData, treeContext]);
 
+
     const renderTitle = (node) => {
         const isActive = node.key === activePathId;
-
         return (
-            <div style={{
-                padding: "4px 8px",
-                borderRadius: 6,
-                background: isActive ? "#e6f7ff" : "transparent",
-                color: isActive ? "#1677ff" : "inherit",
-                fontWeight: isActive ? 600 : 400,
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                cursor: "pointer",
-                width: "100%"
-            }}
+            <div
+                style={{
+                    padding: "4px 8px",
+                    marginRight: "5px",
+                    borderRadius: 6,
+                    background: isActive ? "#e6f7ff" : "transparent",
+                    color: isActive ? "#1677ff" : "inherit",
+                    fontWeight: isActive ? 500 : 400,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
+                    cursor: "pointer",
+                }}
             >
-                {node.children?.length > 0 ? (
-                    <FolderOpenOutlined style={{color: "#1677ff"}}/>
-                ) : (
-                    <FolderOutlined style={{color: "#999"}}/>
-                )}
-                {node.title}
+                <div style={{display: "flex", alignItems: "center", gap: 4, flex: 1}}>
+                    {node.children?.length > 0 ? (
+                        <FolderOpenOutlined style={{color: "#1677ff"}}/>
+                    ) : (
+                        <FolderOutlined style={{color: "#999"}}/>
+                    )}
+                    {node.title}
+                </div>
             </div>
         );
     };
-
 
     const switcherIcon = (props) => {
         const {expanded, data} = props;
@@ -246,7 +248,7 @@ const HubMenuLevels = ({
                     />
                 </Col>
 
-                <Col span={16}
+                <Col span={15}
                      style={{
                          maxHeight: "calc(100vh - 20px)",
                          overflowY: "auto",

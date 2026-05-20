@@ -90,7 +90,7 @@ const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdat
     {
         dataIndex: "status",
         key: "status",
-        width: "20%",
+        width: "30%",
         render: (_, record) => (
             <VslUpdateProgress
                 id={record.id}
