@@ -46,7 +46,7 @@ const renderTreeTitle = (node, ctx = {}) => {
         const diffDays = Math.floor((today - targetDay) / (1000 * 60 * 60 * 24));
 
         const color =
-            diffDays === 0 ? "#52c41a" :
+            diffDays === 0 ? "#3e9514" :
                 diffDays === 1 ? "#bc800a" :
                     "#999";
         return {
