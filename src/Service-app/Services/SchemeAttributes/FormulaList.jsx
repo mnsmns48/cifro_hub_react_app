@@ -1,18 +1,20 @@
 import {useEffect, useState} from "react";
 import {fetchGetData, fetchDeleteData} from "../Common/api.js";
-import {Table, Button, Space, Popconfirm, Card} from "antd";
+import {Table, Button, Space, Popconfirm, Card, Tooltip} from "antd";
 import FormulaExpression from "./FormulaExpression.jsx";
 import {
     AppstoreAddOutlined,
     CheckOutlined,
     DeleteOutlined,
     EditOutlined,
-    PoweroffOutlined
+    PoweroffOutlined, SubnodeOutlined
 } from "@ant-design/icons";
+import FormulaEntityType from "./FormulaEntityType.jsx";
 
 const FormulaList = () => {
     const [formulas, setFormulas] = useState([]);
     const [editingId, setEditingId] = useState(null);
+    const [openEntityType, setOpenEntityType] = useState(false);
 
     useEffect(() => {
         void loadFormulas();
@@ -37,6 +39,11 @@ const FormulaList = () => {
         {title: "ID", dataIndex: "id", width: 60},
         {title: "Название", dataIndex: "name"},
         {title: "is_default", align: "center", dataIndex: "is_default", render: (v) => v ? (<CheckOutlined/>) : (null)},
+        {
+            title: "Тип формулы",
+            dataIndex: ["entity_type", "title_type"],
+            render: (_, record) => record.entity_type?.title_type || ""
+        },
         {
             title: "Активна?",
             align: "center",
@@ -68,14 +75,38 @@ const FormulaList = () => {
 
 
     return (
-        <Card extra={<Button primary icon={<AppstoreAddOutlined/>} onClick={() => setEditingId("new")}/>}>
-            <Table rowKey="id"
-                   dataSource={formulas}
-                   columns={columns}
-                   pagination={false}
-                   size={"small"}
+        <>
+            <Card extra={
+                <div style={{display: "flex", gap: 6}}>
+                    <Tooltip title="Создать новую формулу">
+                        <Button
+                            primary
+                            icon={<AppstoreAddOutlined/>}
+                            onClick={() => setEditingId("new")}
+                        />
+                    </Tooltip>
+                    <Tooltip title="Типы формул">
+                        <Button
+                            primary
+                            icon={<SubnodeOutlined/>}
+                            onClick={() => setOpenEntityType(true)}
+                        />
+                    </Tooltip>
+                </div>
+
+            }>
+                <Table rowKey="id"
+                       dataSource={formulas}
+                       columns={columns}
+                       pagination={false}
+                       size={"small"}
+                />
+            </Card>
+            <FormulaEntityType
+                open={openEntityType}
+                onClose={() => setOpenEntityType(false)}
             />
-        </Card>
+        </>
     );
 };
 

@@ -12,7 +12,7 @@ import {
     message,
     Modal,
     Col,
-    Row
+    Row, Select, Tooltip
 } from "antd";
 import {
     fetchGetData,
@@ -28,11 +28,13 @@ const {Panel} = Collapse;
 const FormulaExpression = ({formulaId = null, onSaved, onCancel}) => {
     const [schema, setSchema] = useState(null);
     const [filters, setFilters] = useState(null);
+    const [entityTypes, setEntityTypes] = useState([]);
     const [form] = Form.useForm();
 
     useEffect(() => {
         void loadContextSchema();
         void loadFilterDocs();
+        void loadEntityTypes();
 
         if (formulaId) {
             void loadFormula(formulaId);
@@ -54,8 +56,16 @@ const FormulaExpression = ({formulaId = null, onSaved, onCancel}) => {
     const loadFormula = async (id) => {
         const data = await fetchGetData(`/service/formula-expression/${id}`);
         if (data) {
-            form.setFieldsValue(data);
+            form.setFieldsValue({
+                ...data,
+                entity_type: data.entity_type?.id ?? null
+            });
         }
+    };
+
+    const loadEntityTypes = async () => {
+        const data = await fetchGetData("/service/formula-expression/fetch_entity_types");
+        setEntityTypes(data || []);
     };
 
     const insertVariable = (variable) => {
@@ -107,8 +117,8 @@ const FormulaExpression = ({formulaId = null, onSaved, onCancel}) => {
             <Space wrap size={[8, 8]}>
                 {items.map((item) => (
                     <Tag key={item.label} color="geekblue"
-                        style={{cursor: "pointer", padding: "5px 10px", fontSize: 14}}
-                        onClick={() => insertVariable(item.value)}
+                         style={{cursor: "pointer", padding: "5px 10px", fontSize: 14}}
+                         onClick={() => insertVariable(item.value)}
                     >
                         {item.label}
                     </Tag>
@@ -258,8 +268,20 @@ const FormulaExpression = ({formulaId = null, onSaved, onCancel}) => {
                                 </Form.Item>
 
                                 <Form.Item name="entity_type" label="Тип сущности">
-                                    <Input/>
+                                    <Select
+                                        placeholder="Тип формулы"
+                                        allowClear
+                                        options={entityTypes.map(t => ({
+                                            label: (
+                                                <Tooltip title={t.description}>
+                                                    {t.title_type}
+                                                </Tooltip>
+                                            ),
+                                            value: t.id
+                                        }))}
+                                    />
                                 </Form.Item>
+
 
                                 <Form.Item
                                     name="formula"
