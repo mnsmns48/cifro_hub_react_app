@@ -225,7 +225,7 @@ const FeaturesGlobal = () => {
                    dataSource={filteredData}
                    rowSelection={rowSelection}
                    pagination={false}
-                   size={"small"}
+                   size="small"
                    rowClassName={(record) => (!record.hub_level ? "no-level-row" : "")}
             />
             <Modal

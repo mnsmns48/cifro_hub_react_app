@@ -195,467 +195,863 @@ const exponentTooltip = (
 );
 
 
-const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOrigins}) => {
+const getSelectedPath = (data, pathId) => {
+    return data.find(p => p.path_id === pathId) || null;
+};
+
+
+const getSelectedModel = (path, modelId) => {
+    return path?.models.find(m => m.id === modelId) || null;
+};
+
+
+const getOriginById = (data, originId) => {
+    for (const path of data) {
+        for (const model of path.models) {
+
+            const origin = model.origins.find(
+                o => o.origin === originId
+            );
+
+            if (origin) {
+                return {
+                    origin,
+                    model,
+                    path
+                };
+            }
+        }
+    }
+
+    return null;
+};
+
+
+const computeSelectedRowKeys = (data) => {
+    const keys = [];
+
+    data.forEach(path => {
+        path.models.forEach(model => {
+            model.origins.forEach(origin => {
+
+                if (origin.analyze?.verdict === true) {
+                    keys.push(origin.origin);
+                }
+
+            });
+        });
+    });
+
+    return keys;
+};
+
+
+const getOriginsWithoutPics = ({
+                                   data,
+                                   selectedRowKeys
+                               }) => {
+
+    const result = [];
+
+    data.forEach(path => {
+        path.models.forEach(model => {
+            model.origins.forEach(origin => {
+
+                const noPics =
+                    !origin.pics
+                    || origin.pics.length === 0;
+
+                const selected =
+                    selectedRowKeys.includes(origin.origin);
+
+                if (selected && noPics) {
+
+                    result.push({
+                        ...origin,
+                        path_id: path.path_id,
+                        model_id: model.id,
+                        model_title: model.title,
+                        route: path.route
+                    });
+
+                }
+
+            });
+        });
+    });
+
+    return result;
+};
+
+
+const buildHubStockPayload = ({
+                                  data,
+                                  selectedRowKeys
+                              }) => {
+
+    const items = [];
+
+    data.forEach(path => {
+
+        path.models.forEach(model => {
+
+            model.origins
+                .filter(o => {
+                    return selectedRowKeys.includes(o.origin);
+                })
+                .forEach(origin => {
+
+                    items.push({
+                        path_id: path.path_id,
+                        hub_item: {
+                            origin: origin.origin,
+                            vsl_id: origin.vsl_id,
+                            title: origin.title,
+                            warranty: origin.warranty,
+                            input_price: origin.input_price,
+                            output_price: origin.output_price,
+                            dt_parsed: origin.dt_parsed,
+                            model_title: model.title,
+                            profit_range: origin.profit_range
+                        }
+                    });
+
+                });
+
+        });
+
+    });
+
+    return items;
+};
+
+
+/* =========================================
+   SHARED TABLE POLICIES
+========================================= */
+
+export const getOriginRowClassName = (
+    record,
+    selectedRowKeys
+) => {
+
+    const isSelected =
+        selectedRowKeys.includes(record.origin);
+
+    const hasPics =
+        Array.isArray(record.pics)
+        && record.pics.length > 0;
+
+    if (isSelected && !hasPics) {
+        return "row-selected-no-pics";
+    }
+
+    if (isSelected) {
+        return "row-selected";
+    }
+
+    return "";
+};
+
+
+export const buildInteractiveRowSelection = ({
+                                                 selectedRowKeys,
+                                                 setSelectedRowKeys
+                                             }) => {
+
+    return {
+        selectedRowKeys,
+        onChange: setSelectedRowKeys,
+        preserveSelectedRowKeys: true,
+        columnWidth: "2%"
+    };
+};
+
+
+export const buildReadonlyRowSelection = ({
+                                              selectedRowKeys
+                                          }) => {
+
+    return {
+        selectedRowKeys,
+        preserveSelectedRowKeys: true,
+        columnWidth: "2%",
+        onChange: () => {
+        },
+        renderCell: () => null
+    };
+};
+
+
+/* =========================================
+   COMPONENT
+========================================= */
+
+const UpdateHubApproveOrigins = ({
+                                     objForUpdate,
+                                     onCloseParent,
+                                     onCloseApproveOrigins
+                                 }) => {
+
+    /* =========================================
+       STATE
+    ========================================= */
+
     const [loading, setLoading] = useState(true);
+
     const [data, setData] = useState([]);
+
     const [selectedPathId, setSelectedPathId] = useState(null);
+
     const [selectedModelId, setSelectedModelId] = useState(null);
-    const [openedImageModalView, setOpenedImageModalView] = useState(null);
+
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-    const [marketScale, setMarketScale] = useState(0);
-    const [marketExponent, setMarketExponent] = useState(0);
+
     const [showWithoutPics, setShowWithoutPics] = useState(false);
 
+    const [openedOriginId, setOpenedOriginId] = useState(null);
+
+
+    /* =========================================
+       REFS
+    ========================================= */
+
     const debounceRef = useRef(null);
-    const isLocalUpdateRef = useRef(false);
 
-    const paths = useMemo(
-        () => objForUpdate.sortOrderPathId.map(id => objForUpdate[id]),
-        [objForUpdate]
-    );
 
-    const debounceUpdate = (callback, delay = 400) => {
-        if (debounceRef.current) {
-            clearTimeout(debounceRef.current);
-        }
-        debounceRef.current = setTimeout(callback, delay);
-    };
+    /* =========================================
+       DERIVED
+    ========================================= */
 
-    useEffect(() => {
-        void (async () => {
-            try {
-                setLoading(true);
-                const res = await fetchPostData("/service/approve_origins_for_update", paths);
-                if (Array.isArray(res)) {
-                    setData(res);
-                }
-            } catch (e) {
-                console.error("approveOriginsRequest error:", e);
-            } finally {
-                setLoading(false);
-            }
-        })();
+    const paths = useMemo(() => {
+
+        return objForUpdate.sortOrderPathId.map(
+            id => objForUpdate[id]
+        );
+
     }, [objForUpdate]);
 
-    const selectedPath = useMemo(
-        () => data.find(p => p.path_id === selectedPathId),
-        [data, selectedPathId]
-    );
 
-    const selectedModel = useMemo(
-        () => selectedPath?.models.find(m => m.id === selectedModelId),
-        [selectedPath, selectedModelId]
-    );
+    const selectedPath = useMemo(() => {
+
+        return getSelectedPath(
+            data,
+            selectedPathId
+        );
+
+    }, [data, selectedPathId]);
+
+
+    const selectedModel = useMemo(() => {
+
+        return getSelectedModel(
+            selectedPath,
+            selectedModelId
+        );
+
+    }, [selectedPath, selectedModelId]);
+
+
+    const openedOriginData = useMemo(() => {
+
+        if (!openedOriginId) {
+            return null;
+        }
+
+        return getOriginById(
+            data,
+            openedOriginId
+        );
+
+    }, [data, openedOriginId]);
+
+
+    const flatOriginsWithoutPics = useMemo(() => {
+
+        if (!showWithoutPics) {
+            return [];
+        }
+
+        return getOriginsWithoutPics({
+            data,
+            selectedRowKeys
+        });
+
+    }, [
+        showWithoutPics,
+        data,
+        selectedRowKeys
+    ]);
+
+
+    const hasSelectedWithoutPics = useMemo(() => {
+
+        return flatOriginsWithoutPics.length > 0;
+
+    }, [flatOriginsWithoutPics]);
+
+
+    /* =========================================
+       FETCH
+    ========================================= */
 
     useEffect(() => {
-        if (loading || data.length === 0) return;
-        setSelectedPathId(prev => {
-            const exists = data.some(p => p.path_id === prev);
-            return exists ? prev : data[0].path_id;
-        });
-        setSelectedModelId(prev => {
-            const exists = data.some(path =>
-                path.models.some(model => model.id === prev)
-            );
-            return exists ? prev : data[0]?.models?.[0]?.id ?? null;
-        });
-    }, [loading, objForUpdate]);
+
+        void (async () => {
+
+            try {
+
+                setLoading(true);
+
+                const res = await fetchPostData(
+                    "/service/approve_origins_for_update",
+                    paths
+                );
+
+                if (Array.isArray(res)) {
+
+                    setData(res);
+
+                    setSelectedRowKeys(
+                        computeSelectedRowKeys(res)
+                    );
+
+                }
+
+            } catch (e) {
+
+                console.error(
+                    "approveOriginsRequest error:",
+                    e
+                );
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
+        })();
+
+    }, [paths]);
+
+
+    /* =========================================
+       NAVIGATION INIT
+    ========================================= */
 
     useEffect(() => {
-        if (loading || data.length === 0) return;
 
-        if (isLocalUpdateRef.current) {
-            isLocalUpdateRef.current = false;
+        if (loading || data.length === 0) {
             return;
         }
 
-        setSelectedRowKeys(computeSelectedRowKeys(data));
+        setSelectedPathId(prev => {
 
-    }, [data, loading]);
+            const exists = data.some(
+                p => p.path_id === prev
+            );
+
+            return exists
+                ? prev
+                : data[0].path_id;
+
+        });
+
+    }, [loading, data]);
+
 
     useEffect(() => {
-        if (!selectedPath?.market) return;
 
-        setMarketScale(selectedPath.market.market_variance_scale ?? 0);
-        setMarketExponent(selectedPath.market.market_variance_exponent ?? 0);
+        if (!selectedPath) {
+            return;
+        }
+
+        setSelectedModelId(prev => {
+
+            const exists =
+                selectedPath.models.some(
+                    m => m.id === prev
+                );
+
+            return exists
+                ? prev
+                : selectedPath.models?.[0]?.id ?? null;
+
+        });
 
     }, [selectedPath]);
 
 
-    const computeSelectedRowKeys = (data) => {
-        const keys = [];
-        data.forEach(path =>
-            path.models.forEach(model =>
-                model.origins.forEach(origin => {
-                    if (origin.analyze?.verdict === true) {
-                        keys.push(origin.origin);
-                    }
-                })
-            )
-        );
-        return keys;
-    };
+    /* =========================================
+       MUTATIONS
+    ========================================= */
 
-    const handleImagesUpdated = ({images}, origin) => {
-        isLocalUpdateRef.current = true;
+    const debounceUpdate = (
+        callback,
+        delay = 400
+    ) => {
 
-        setOpenedImageModalView(prev =>
-            prev && prev.origin === origin ? {...prev, images} : prev
-        );
+        if (debounceRef.current) {
+            clearTimeout(debounceRef.current);
+        }
 
-        setData(prev =>
-            prev.map(path =>
-                path.path_id === selectedPathId
-                    ? {
-                        ...path,
-                        models: path.models.map(model =>
-                            model.id === selectedModelId
-                                ? {
-                                    ...model,
-                                    origins: model.origins.map(o =>
-                                        o.origin === origin
-                                            ? {...o, pics: images}
-                                            : o
-                                    )
-                                }
-                                : model
-                        )
-                    }
-                    : path
-            )
+        debounceRef.current = setTimeout(
+            callback,
+            delay
         );
     };
 
-    const updateMarketParam = (path_id, scale, exponent) => {
-        debounceUpdate(async () => {
-            try {
-                const res = await fetchPostData("/service/update_market_param", {
-                    path_id,
-                    route: selectedPath.route,
-                    models: selectedPath.models,
-                    ...(scale !== null ? {market_variance_scale: scale} : {}),
-                    ...(exponent !== null ? {market_variance_exponent: exponent} : {})
-                });
-                if (Array.isArray(res) && res.length > 0) {
-                    const updatedPath = res[0];
-                    setData(prev =>
-                        prev.map(p =>
-                            p.path_id === updatedPath.path_id
-                                ? {
-                                    ...p,
-                                    market: updatedPath.market,
-                                    models: updatedPath.models
-                                }
-                                : p
-                        )
-                    );
+
+    const patchPathMarket = (updatedPath) => {
+
+        setData(prev => {
+
+            return prev.map(path => {
+
+                if (
+                    path.path_id !== updatedPath.path_id
+                ) {
+                    return path;
                 }
-            } catch (e) {
-                console.error("update_market_param error:", e);
-            }
-        });
-    };
 
-    const handleScaleChange = (value) => {
-        setMarketScale(value);
-        updateMarketParam(selectedPathId, value, null);
-    };
+                return {
+                    ...path,
+                    market: updatedPath.market,
+                    models: updatedPath.models
+                };
 
-    const handleExponentChange = (value) => {
-        setMarketExponent(value);
-        updateMarketParam(selectedPathId, null, value);
-    };
-
-
-    const columns = buildApproveOriginsColumns({
-        setOpenedImageModalView,
-        selectedModel
-    });
-
-    const hasSelectedWithoutPics = useMemo(() => {
-        return data.some(path =>
-            path.models.some(model =>
-                model.origins.some(o =>
-                    selectedRowKeys.includes(o.origin) &&
-                    (!o.pics || o.pics.length === 0)
-                )
-            )
-        );
-    }, [data, selectedRowKeys]);
-
-
-    const buildHubStockPayload = (data, selectedRowKeys) => {
-        const items = [];
-        data.forEach(path => {
-            path.models.forEach(model => {
-                model.origins
-                    .filter(o => selectedRowKeys.includes(o.origin))
-                    .forEach(origin => {
-                        items.push({
-                            path_id: path.path_id,
-                            hub_item: {
-                                origin: origin.origin,
-                                vsl_id: origin.vsl_id,
-                                title: origin.title,
-                                warranty: origin.warranty,
-                                input_price: origin.input_price,
-                                output_price: origin.output_price,
-                                dt_parsed: origin.dt_parsed,
-                                model_title: model.title,
-                                profit_range: origin.profit_range
-                            }
-                        });
-                    });
             });
+
         });
-        return items;
+
     };
 
+
+    const patchOriginImages = ({
+                                   originId,
+                                   images
+                               }) => {
+
+        setData(prev => {
+
+            return prev.map(path => {
+
+                return {
+                    ...path,
+                    models: path.models.map(model => {
+
+                        return {
+                            ...model,
+                            origins: model.origins.map(origin => {
+
+                                if (
+                                    origin.origin !== originId
+                                ) {
+                                    return origin;
+                                }
+
+                                return {
+                                    ...origin,
+                                    pics: images
+                                };
+
+                            })
+                        };
+
+                    })
+                };
+
+            });
+
+        });
+
+    };
+
+
+    const updateMarketParam = (
+        path_id,
+        scale,
+        exponent
+    ) => {
+
+        debounceUpdate(async () => {
+
+            try {
+
+                const res = await fetchPostData(
+                    "/service/update_market_param",
+                    {
+                        path_id,
+                        route: selectedPath.route,
+                        models: selectedPath.models,
+
+                        ...(scale !== null
+                                ? {
+                                    market_variance_scale: scale
+                                }
+                                : {}
+                        ),
+
+                        ...(exponent !== null
+                                ? {
+                                    market_variance_exponent: exponent
+                                }
+                                : {}
+                        )
+                    }
+                );
+
+                if (
+                    Array.isArray(res)
+                    && res.length > 0
+                ) {
+                    patchPathMarket(res[0]);
+                }
+
+            } catch (e) {
+
+                console.error(
+                    "update_market_param error:",
+                    e
+                );
+
+            }
+
+        });
+    };
 
 
     const updateOriginsInHubstock = async () => {
+
         try {
-            const payload = buildHubStockPayload(data, selectedRowKeys);
+
+            const payload = buildHubStockPayload({
+                data,
+                selectedRowKeys
+            });
+
             if (payload.length === 0) {
-                message.warning("Нет выбранных origins");
+
+                message.warning(
+                    "Нет выбранных origins"
+                );
+
                 return;
             }
-            const res = await fetchPostData("/service/update_origins_in_hubstock", payload);
+
+            const res = await fetchPostData(
+                "/service/update_origins_in_hubstock",
+                payload
+            );
+
             if (res !== false) {
-                message.success("HubStock обновлён");
+
+                message.success(
+                    "HubStock обновлён"
+                );
+
                 onCloseParent(true);
+
             } else {
-                message.error("Ошибка при обновлении HubStock");
+
+                message.error(
+                    "Ошибка при обновлении HubStock"
+                );
+
             }
+
         } catch (e) {
-            message.error("Ошибка при обновлении HubStock");
+
+            message.error(
+                "Ошибка при обновлении HubStock"
+            );
+
         }
     };
 
 
-    const flatOriginsWithoutPics = useMemo(() => {
-        if (!showWithoutPics) return [];
+    /* =========================================
+       TABLE COLUMNS
+    ========================================= */
 
-        const result = [];
+    const columns = buildApproveOriginsColumns({
+        selectedModel,
+        setOpenedImageModalView: (
+            originData
+        ) => {
+            setOpenedOriginId(
+                originData.origin
+            );
+        }
+    });
 
-        data.forEach(path =>
-            path.models.forEach(model =>
-                model.origins.forEach(origin => {
-                    const noPics = !origin.pics || origin.pics.length === 0;
-                    const isSelected = selectedRowKeys.includes(origin.origin);
 
-                    if (isSelected && noPics) {
-                        result.push({
-                            ...origin,
-                            path_id: path.path_id,
-                            model_id: model.id,
-                            model_title: model.title,
-                            route: path.route
-                        });
-                    }
-                })
-            )
-        );
-
-        return result;
-    }, [showWithoutPics, data, selectedRowKeys]);
-
+    /* =========================================
+       RENDER
+    ========================================= */
 
     return (
         <>
-            <Modal open closable={false} footer={null} width={1450} onCancel={onCloseApproveOrigins}>
-                {loading ? (<Spinner/>) : (
+            <Modal
+                open
+                closable={false}
+                footer={null}
+                width={1450}
+                onCancel={onCloseApproveOrigins}
+            >
+
+                {loading ? (
+                    <Spinner/>
+                ) : (
+
                     <div style={{padding: 16}}>
+
                         <PriceSyncFlow step={4}/>
 
-                        <div style={{
-                            marginBottom: 12,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between"
-                        }}>
-                            <div style={{display: "flex", alignItems: "center", gap: 12}}>
-                                <Button icon={<CloseOutlined/>} type="primary" onClick={onCloseApproveOrigins}>
+                        <div
+                            style={{
+                                marginBottom: 12,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between"
+                            }}
+                        >
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 12
+                                }}
+                            >
+
+                                <Button
+                                    icon={<CloseOutlined/>}
+                                    type="primary"
+                                    onClick={onCloseApproveOrigins}
+                                >
                                     Закрыть
                                 </Button>
 
-                                <Button icon={<FileExcelOutlined/>}
-                                        type={showWithoutPics ? "primary" : "default"}
-                                        onClick={() => setShowWithoutPics(prev => !prev)}
+
+                                <Button
+                                    icon={<FileExcelOutlined/>}
+                                    type={
+                                        showWithoutPics
+                                            ? "primary"
+                                            : "default"
+                                    }
+                                    onClick={() => {
+                                        setShowWithoutPics(
+                                            prev => !prev
+                                        );
+                                    }}
                                 >
-                                    {showWithoutPics ? "Показать все" : "Показать без картинок"}
+                                    {
+                                        showWithoutPics
+                                            ? "Показать все"
+                                            : "Показать без картинок"
+                                    }
                                 </Button>
-                                <Popconfirm title="Выгрузить выбранные позиции?"
-                                            description="Будут выгружены только выделенные позиции. Продолжить?"
-                                            okText="Да"
-                                            cancelText="Нет"
-                                            onConfirm={updateOriginsInHubstock}
-                                            disabled={hasSelectedWithoutPics}>
-                                    <Button color="purple"
-                                            variant="solid"
-                                            icon={<CloudUploadOutlined/>}
-                                            disabled={hasSelectedWithoutPics}
+
+
+                                <Popconfirm
+                                    title="Выгрузить выбранные позиции?"
+                                    description="Будут выгружены только выделенные позиции. Продолжить?"
+                                    okText="Да"
+                                    cancelText="Нет"
+                                    onConfirm={updateOriginsInHubstock}
+                                    disabled={hasSelectedWithoutPics}
+                                >
+
+                                    <Button
+                                        color="purple"
+                                        variant="solid"
+                                        icon={<CloudUploadOutlined/>}
+                                        disabled={hasSelectedWithoutPics}
                                     >
                                         Выгрузить в хаб
                                     </Button>
-                                </Popconfirm>
 
+                                </Popconfirm>
                             </div>
 
-                            {selectedPath?.market && (
-                                <div style={{
-                                    display: "flex",
-                                    gap: 32,
-                                    alignItems: "center",
-                                    flexGrow: 1,
-                                    justifyContent: "center"
-                                }}>
-                                    <div style={{width: 260}}>
-                                        <Tooltip title={scaleTooltip} placement="bottom">
-                                            <div style={{fontSize: 12, marginBottom: 4}}>
-                                                Мягкость рынка (scale): {marketScale.toFixed(2)}
-                                            </div>
-                                        </Tooltip>
-                                        <Slider min={0} max={10} step={0.1}
-                                                value={marketScale}
-                                                onChange={handleScaleChange}
-                                        />
-                                    </div>
-                                    <div style={{width: 260}}>
-                                        <Tooltip title={exponentTooltip} placement="bottom">
-                                            <div style={{fontSize: 12, marginBottom: 4}}>
-                                                Степень влияния цены (exponent): {marketExponent.toFixed(2)}
-                                            </div>
-                                        </Tooltip>
-                                        <Slider min={0}
+
+                            {
+                                selectedPath?.market && (
+
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            gap: 32,
+                                            alignItems: "center",
+                                            flexGrow: 1,
+                                            justifyContent: "center"
+                                        }}
+                                    >
+
+                                        <div style={{width: 260}}>
+
+                                            <Tooltip
+                                                title={scaleTooltip}
+                                                placement="bottom"
+                                            >
+
+                                                <div
+                                                    style={{
+                                                        fontSize: 12,
+                                                        marginBottom: 4
+                                                    }}
+                                                >
+                                                    Мягкость рынка (scale): {
+
+                                                    (
+                                                        selectedPath.market
+                                                            ?.market_variance_scale
+                                                        ?? 0
+                                                    ).toFixed(2)
+
+                                                }
+                                                </div>
+
+                                            </Tooltip>
+
+
+                                            <Slider
+                                                min={0}
+                                                max={10}
+                                                step={0.1}
+                                                value={
+                                                    selectedPath.market
+                                                        ?.market_variance_scale
+                                                    ?? 0
+                                                }
+                                                onChange={(value) => {
+
+                                                    updateMarketParam(
+                                                        selectedPath.path_id,
+                                                        value,
+                                                        null
+                                                    );
+
+                                                }}
+                                            />
+                                        </div>
+
+
+                                        <div style={{width: 260}}>
+
+                                            <Tooltip
+                                                title={exponentTooltip}
+                                                placement="bottom"
+                                            >
+
+                                                <div
+                                                    style={{
+                                                        fontSize: 12,
+                                                        marginBottom: 4
+                                                    }}
+                                                >
+                                                    Степень влияния цены (exponent): {
+
+                                                    (
+                                                        selectedPath.market
+                                                            ?.market_variance_exponent
+                                                        ?? 0
+                                                    ).toFixed(2)
+
+                                                }
+                                                </div>
+                                            </Tooltip>
+
+
+                                            <Slider
+                                                min={0}
                                                 max={3}
                                                 step={0.05}
-                                                value={marketExponent}
-                                                onChange={handleExponentChange}
-                                        />
+                                                value={
+                                                    selectedPath.market
+                                                        ?.market_variance_exponent
+                                                    ?? 0
+                                                }
+                                                onChange={(value) => {
+
+                                                    updateMarketParam(
+                                                        selectedPath.path_id,
+                                                        null,
+                                                        value
+                                                    );
+
+                                                }}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                            <div style={{width: 80}}></div>
+                                )
+                            }
+
+                            <div style={{width: 80}}/>
                         </div>
 
+
                         {showWithoutPics ? (
-                            <Table
-                                rowKey="origin"
+
+                            <ApproveOriginsWithoutPicsView
                                 dataSource={flatOriginsWithoutPics}
                                 columns={columns}
-                                pagination={false}
-                                size="small"
-                                rowSelection={{
-                                    selectedRowKeys,
-                                    preserveSelectedRowKeys: true,
-                                    columnWidth: "2%",
-                                    onChange: () => {
-                                    },
-                                    renderCell: () => null
-                                }}
-                                rowClassName={(record) => {
-                                    const isSelected = selectedRowKeys.includes(record.origin);
-                                    const hasPics = Array.isArray(record.pics) && record.pics.length > 0;
-
-                                    if (isSelected && !hasPics) return "row-selected-no-pics";
-                                    if (isSelected) return "row-selected";
-                                    return "";
-                                }}
+                                selectedRowKeys={selectedRowKeys}
                             />
 
                         ) : (
-                            <Row gutter={16} wrap>
 
-                                <Col xs={24} sm={24} md={8} lg={6} xl={6} xxl={6}>
-                                    <Segmented vertical
-                                               size="small"
-                                               value={selectedPathId}
-                                               onChange={(val) => {
-                                                   setSelectedPathId(val);
-                                                   const backendPath = data.find(p => p.path_id === val);
-                                                   if (backendPath && backendPath.models.length > 0) {
-                                                       setSelectedModelId(backendPath.models[0].id);
-                                                   }
-                                               }}
-                                               options={paths
-                                                   .filter(entry => {
-                                                       const backendPath = data.find(p => p.path_id === entry.path_id);
-                                                       return backendPath && backendPath.models.length > 0;
-                                                   })
-                                                   .map(entry => ({
-                                                       value: entry.path_id,
-                                                       label: entry.route.map(r => r.label).join(" - "),
-                                                       icon: entry.route.at(-1)?.icon && (
-                                                           <img src={entry.route.at(-1).icon} width={18}/>
-                                                       )
-                                                   }))}
-                                               styles={{
-                                                   item: {justifyContent: "flex-start"},
-                                                   label: {textAlign: "left"},
-                                               }}
-                                    />
-                                </Col>
+                            <ApproveOriginsMainTableView
+                                data={data}
+                                paths={paths}
 
-                                <Col xs={24} sm={24} md={16} lg={18} xl={18} xxl={18}>
-                                    <div style={{marginBottom: 12}}>
-                                        <Segmented vertical
-                                                   size="small"
-                                                   value={selectedModelId}
-                                                   onChange={setSelectedModelId}
-                                                   options={(selectedPath?.models || [])
-                                                       .map(m => ({label: m.title, value: m.id}))}
-                                                   styles={{
-                                                       item: {justifyContent: "flex-start"},
-                                                       label: {textAlign: "left"},
-                                                   }}/>
-                                    </div>
+                                selectedPath={selectedPath}
+                                selectedModel={selectedModel}
 
-                                    {selectedModel && (
-                                        <Table rowKey="origin"
-                                               dataSource={selectedModel.origins}
-                                               columns={columns}
-                                               pagination={false}
-                                               size="small"
-                                               className="approve-origins-table"
-                                               rowSelection={{
-                                                   selectedRowKeys,
-                                                   onChange: setSelectedRowKeys,
-                                                   preserveSelectedRowKeys: true,
-                                                   columnWidth: "2%"
-                                               }}
-                                               rowClassName={(record) => {
-                                                   const isSelected = selectedRowKeys.includes(record.origin);
-                                                   const hasPics = Array.isArray(record.pics) && record.pics.length > 0;
-                                                   if (isSelected && !hasPics) {
-                                                       return "row-selected-no-pics";
-                                                   }
-                                                   if (isSelected) {
-                                                       return "row-selected";
-                                                   }
-                                                   return "";
-                                               }}
-                                        />
-                                    )}
-                                </Col>
-                            </Row>
+                                selectedPathId={selectedPathId}
+                                selectedModelId={selectedModelId}
+
+                                setSelectedPathId={setSelectedPathId}
+                                setSelectedModelId={setSelectedModelId}
+
+                                selectedRowKeys={selectedRowKeys}
+                                setSelectedRowKeys={setSelectedRowKeys}
+
+                                columns={columns}
+                            />
+
                         )}
+
                     </div>
                 )}
             </Modal>
 
-            {openedImageModalView && openedImageModalView.origin && (
-                <OriginImageViewer origin={openedImageModalView.origin}
-                                   images={openedImageModalView.images}
-                                   title={openedImageModalView.title}
-                                   onClose={() => setOpenedImageModalView(null)}
-                                   onUploaded={handleImagesUpdated}
+
+            {openedOriginData?.origin && (
+
+                <OriginImageViewer
+                    origin={openedOriginData.origin.origin}
+                    images={openedOriginData.origin.pics}
+                    title={openedOriginData.origin.title}
+                    onClose={() => {
+                        setOpenedOriginId(null);
+                    }}
+                    onUploaded={({images}) => {
+
+                        patchOriginImages({
+                            originId:
+                            openedOriginData.origin.origin,
+                            images
+                        });
+
+                    }}
                 />
             )}
         </>
     );
-
 };
-
 
 export default UpdateHubApproveOrigins;
