@@ -1,9 +1,8 @@
-// ApproveOriginsWithoutPicsView.jsx
-
 import {Table} from "antd";
+import {buildReadonlyRowSelection, getOriginRowClassName} from "./utils.js";
 
 
-const ApproveOriginsWithoutPicsView = ({
+const ApproveWithoutPicsView = ({
                                            dataSource,
                                            columns,
                                            selectedRowKeys
@@ -31,4 +30,4 @@ const ApproveOriginsWithoutPicsView = ({
     );
 };
 
-export default ApproveOriginsWithoutPicsView;
+export default ApproveWithoutPicsView;

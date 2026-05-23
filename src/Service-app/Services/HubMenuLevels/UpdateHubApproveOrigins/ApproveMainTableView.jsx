@@ -1,25 +1,25 @@
 import {Col, Row, Segmented, Table} from "antd";
-import {buildInteractiveRowSelection, getOriginRowClassName} from "../UpdateHubApproveOrigins.jsx";
+import {buildInteractiveRowSelection, getOriginRowClassName} from "./utils.js";
 
 
 const ApproveMainTableView = ({
-                                         data,
-                                         paths,
+                                  data,
+                                  paths,
 
-                                         selectedPath,
-                                         selectedModel,
+                                  selectedPath,
+                                  selectedModel,
 
-                                         selectedPathId,
-                                         selectedModelId,
+                                  selectedPathId,
+                                  selectedModelId,
 
-                                         setSelectedPathId,
-                                         setSelectedModelId,
+                                  setSelectedPathId,
+                                  setSelectedModelId,
 
-                                         selectedRowKeys,
-                                         setSelectedRowKeys,
+                                  selectedRowKeys,
+                                  setSelectedRowKeys,
 
-                                         columns
-                                     }) => {
+                                  columns
+                              }) => {
 
     return (
         <Row gutter={16} wrap>
