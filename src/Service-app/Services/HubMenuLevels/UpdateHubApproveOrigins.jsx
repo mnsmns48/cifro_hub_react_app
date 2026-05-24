@@ -1,340 +1,218 @@
-import {useEffect, useMemo, useRef, useState} from "react";
-import {Button, Modal, Slider, Tooltip, message, Popconfirm} from "antd";
-import {CloseOutlined, CloudUploadOutlined, FileExcelOutlined} from "@ant-design/icons";
-import {fetchPostData} from "../Common/api.js";
-import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
-import "./Css/UpdateHubApproveOrigins.css"
+import {Modal, Button, Divider} from "antd";
+
+import {useApproveOrigins} from "./UpdateHubApproveOrigins/useApproveOrigins";
+
+import PathSelector from "./UpdateHubApproveOrigins/components/PathSelector";
+import ModelSelector from "./UpdateHubApproveOrigins/components/ModelSelector";
+import MarketSliders from "./UpdateHubApproveOrigins/components/MarketSliders";
+import OriginsTable from "./UpdateHubApproveOrigins/components/OriginsTable";
+import OriginsWithoutPics from "./UpdateHubApproveOrigins/components/OriginsWithoutPics";
+
+
+import {findOrigin} from "./UpdateHubApproveOrigins/helpers";
+import {useEffect, useState} from "react";
 import OriginImageViewer from "../Common/OriginImageViewer.jsx";
-import {buildApproveOriginsColumns} from "./UpdateHubApproveOriginsColumns.jsx";
-import {PriceSyncFlow} from "./PriceSyncFlow.jsx";
-import {exponentTooltip, scaleTooltip} from "./UpdateHubApproveOrigins/TooltipHelper.jsx";
-import {
-    buildHubStockPayload,
-    computeSelectedRowKeys,
-    getOriginById,
-    getOriginsWithoutPics,
-    getSelectedModel,
-    getSelectedPath
-} from "./UpdateHubApproveOrigins/utils.js";
-import ApproveWithoutPicsView from "./UpdateHubApproveOrigins/ApproveWithoutPicsView.jsx";
-import ApproveMainTableView from "./UpdateHubApproveOrigins/ApproveMainTableView.jsx";
 
 
-const UpdateHubApproveOrigins = ({objForUpdate, onCloseParent, onCloseApproveOrigins}) => {
-    const [loading, setLoading] = useState(true);
-    const [data, setData] = useState([]);
-    const [selectedPathId, setSelectedPathId] = useState(null);
-    const [selectedModelId, setSelectedModelId] = useState(null);
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-    const [showWithoutPics, setShowWithoutPics] = useState(false);
+export default function UpdateHubApproveOrigins({
+                                                    initialPayload,
+                                                    onCloseParent,
+                                                    onCloseApproveOrigins
+                                                }) {
+    const {
+        loading,
+        data,
+
+        selectedPath,
+        selectedModel,
+        flatOriginsWithoutPics,
+
+        selectedPathId,
+        setSelectedPathId,
+
+        selectedModelId,
+        setSelectedModelId,
+
+        selectedRowKeys,
+        setSelectedRowKeys,
+
+        showWithoutPics,
+        setShowWithoutPics,
+
+        loadInitialData,
+        updateMarketParam,
+        updateOriginPics,
+        commitToHubstock
+    } = useApproveOrigins();
+
+    const [opened, setOpened] = useState(true);
     const [openedOriginId, setOpenedOriginId] = useState(null);
 
-    const debounceRef = useRef(null);
+    const openedOriginData = openedOriginId
+        ? findOrigin(data, openedOriginId)
+        : null;
 
-    const paths = useMemo(() => {
-        return objForUpdate.sortOrderPathId.map(id => objForUpdate[id]);
-
-    }, [objForUpdate]);
-
-
-    const selectedPath = useMemo(() => {
-        return getSelectedPath(data, selectedPathId);
-    }, [data, selectedPathId]);
-
-
-    const selectedModel = useMemo(() => {
-        return getSelectedModel(selectedPath, selectedModelId);
-    }, [selectedPath, selectedModelId]);
-
-
-    const openedOriginData = useMemo(() => {
-        if (!openedOriginId) {
-            return null;
-        }
-        return getOriginById(data, openedOriginId);
-    }, [data, openedOriginId]);
-
-
-    const flatOriginsWithoutPics = useMemo(() => {
-        if (!showWithoutPics) {
-            return [];
-        }
-        return getOriginsWithoutPics({data, selectedRowKeys});
-    }, [showWithoutPics, data, selectedRowKeys]);
-
-    const hasSelectedWithoutPics = useMemo(() => {
-        return flatOriginsWithoutPics.length > 0;
-    }, [flatOriginsWithoutPics]);
-
-
+    // -----------------------------
+    // LOAD INITIAL DATA
+    // -----------------------------
     useEffect(() => {
-        void (async () => {
-            try {
-                setLoading(true);
-                const res = await fetchPostData("/service/approve_origins_for_update", paths);
-                if (Array.isArray(res)) {
-                    setData(res);
-                    setSelectedRowKeys(computeSelectedRowKeys(res));
-                }
-            } catch (e) {
-                console.error("approveOriginsRequest error:", e);
-            } finally {
-                setLoading(false);
-            }
-        })();
-    }, [paths]);
-
-    useEffect(() => {
-        if (loading || data.length === 0) {
-            return;
+        if (opened && initialPayload) {
+            void loadInitialData(initialPayload);
         }
-        setSelectedPathId(prev => {
-            const exists = data.some(p => p.path_id === prev);
-            return exists ? prev : data[0].path_id;
-        });
-    }, [loading, data]);
+    }, [opened, initialPayload]);
 
-
-    useEffect(() => {
-        if (!selectedPath) {
-            return;
-        }
-        setSelectedModelId(prev => {
-            const exists = selectedPath.models.some(m => m.id === prev);
-            return exists ? prev : selectedPath.models?.[0]?.id ?? null;
-        });
-    }, [selectedPath]);
-
-
-    const debounceUpdate = (callback, delay = 400) => {
-
-        if (debounceRef.current) {
-            clearTimeout(debounceRef.current);
-        }
-
-        debounceRef.current = setTimeout(callback, delay);
+    // -----------------------------
+    // CLOSE HANDLER
+    // -----------------------------
+    const closeAll = (result = false) => {
+        setOpened(false);
+        onCloseParent?.(result);
+        onCloseApproveOrigins?.(result);
     };
 
-    const patchPathMarket = (updatedPath) => {
-        setData(prev => {
-            return prev.map(path => {
-                if (path.path_id !== updatedPath.path_id) {
-                    return path;
-                }
-                return {
-                    ...path, market: updatedPath.market, models: updatedPath.models
-                };
-            });
-        });
-    };
+    // -----------------------------
+    // TABLE COLUMNS
+    // -----------------------------
+    const columns = [
+        { title: "Цвет", dataIndex: "color", width: "15%" },
+        { title: "ROM", dataIndex: "rom", width: "10%" },
+        {
+            title: "LTE",
+            dataIndex: "is_LTE",
+            width: "8%",
+            render: v => (v ? "Да" : "Нет")
+        },
+        { title: "Цена", dataIndex: "output_price", width: "12%" },
+        { title: "Фото", dataIndex: "pics", width: "12%" }
+    ];
 
-
-    const patchOriginImages = ({originId, images}) => {
-        setData(prev => {
-            return prev.map(path => {
-                return {
-                    ...path, models: path.models.map(model => {
-                        return {
-                            ...model, origins: model.origins.map(origin => {
-                                if (origin.origin !== originId) {
-                                    return origin;
-                                }
-                                return {
-                                    ...origin, pics: images
-                                };
-                            })
-                        };
-                    })
-                };
-            });
-        });
-    };
-
-
-    const updateMarketParam = (path_id, scale, exponent) => {
-        debounceUpdate(async () => {
-            try {
-                const res = await fetchPostData("/service/update_market_param", {
-                    path_id, route: selectedPath.route, models: selectedPath.models, ...(scale !== null ? {
-                        market_variance_scale: scale
-                    } : {}), ...(exponent !== null ? {
-                        market_variance_exponent: exponent
-                    } : {})
-                });
-                if (Array.isArray(res) && res.length > 0) {
-                    patchPathMarket(res[0]);
-                }
-            } catch (e) {
-                console.error("update_market_param error:", e);
-            }
-        });
-    };
-
-
-    const updateOriginsInHubstock = async () => {
-        try {
-            const payload = buildHubStockPayload({data, selectedRowKeys});
-            if (payload.length === 0) {
-                message.warning("Нет выбранных origins");
-                return;
-            }
-            const res = await fetchPostData("/service/update_origins_in_hubstock", payload);
-            if (res !== false) {
-                message.success("HubStock обновлён");
-                onCloseParent(true);
-            } else {
-                message.error("Ошибка при обновлении HubStock");
-            }
-        } catch (e) {
-            message.error("Ошибка при обновлении HubStock", e);
+    // -----------------------------
+    // COMMIT
+    // -----------------------------
+    const handleCommit = async () => {
+        const res = await commitToHubstock();
+        if (res.ok) {
+            closeAll(true);
         }
     };
 
-
-    const columns = buildApproveOriginsColumns({
-        selectedModel, setOpenedImageModalView: (originData) => {
-            setOpenedOriginId(originData.origin);
-        }
-    });
-
-
-    return (<>
-        <Modal open
-               closable={false}
-               footer={null}
-               width={1450}
-               onCancel={onCloseApproveOrigins}
+    // -----------------------------
+    // RENDER
+    // -----------------------------
+    return (
+        <Modal
+            open={opened}
+            onCancel={() => closeAll(false)}
+            width={1200}
+            footer={null}
+            title="Обновление позиций HubStock"
         >
+            {/* MARKET SLIDERS */}
+            {selectedPath?.market && (
+                <MarketSliders
+                    scale={selectedPath.market.market_variance_scale}
+                    exponent={selectedPath.market.market_variance_exponent}
+                    onScaleChange={(value) =>
+                        updateMarketParam({
+                            path_id: selectedPathId,
+                            scale: value
+                        })
+                    }
+                    onExponentChange={(value) =>
+                        updateMarketParam({
+                            path_id: selectedPathId,
+                            exponent: value
+                        })
+                    }
+                />
+            )}
 
-            {loading ? (<Spinner/>) : (<div style={{padding: 16}}>
-                <PriceSyncFlow step={4}/>
-                <div
-                    style={{
-                        marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "space-between"
-                    }}
-                >
-                    <div
-                        style={{
-                            display: "flex", alignItems: "center", gap: 12
+            <Divider />
+
+            <div style={{ display: "flex", gap: 16 }}>
+                {/* LEFT: PATH SELECTOR */}
+                <div style={{ width: 260 }}>
+                    <PathSelector
+                        paths={data}
+                        selectedPathId={selectedPathId}
+                        onChange={(val) => {
+                            setSelectedPathId(val);
+
+                            const backendPath = data.find(p => p.path_id === val);
+                            if (backendPath && backendPath.models.length > 0) {
+                                setSelectedModelId(backendPath.models[0].id);
+                            }
                         }}
-                    >
-                        <Button icon={<CloseOutlined/>}
-                                type="primary"
-                                onClick={onCloseApproveOrigins}
-                        >
-                            Закрыть
-                        </Button>
-                        <Button icon={<FileExcelOutlined/>}
-                                type={showWithoutPics ? "primary" : "default"}
-                                onClick={() => {
-                                    setShowWithoutPics(prev => !prev);
-                                }}
-                        >
-                            {showWithoutPics ? "Показать все" : "Показать без картинок"}
-                        </Button>
-
-                        <Popconfirm
-                            title="Выгрузить выбранные позиции?"
-                            description="Будут выгружены только выделенные позиции. Продолжить?"
-                            okText="Да"
-                            cancelText="Нет"
-                            onConfirm={updateOriginsInHubstock}
-                            disabled={hasSelectedWithoutPics}
-                        >
-                            <Button
-                                color="purple"
-                                variant="solid"
-                                icon={<CloudUploadOutlined/>}
-                                disabled={hasSelectedWithoutPics}
-                            >
-                                Выгрузить в хаб
-                            </Button>
-                        </Popconfirm>
-                    </div>
-
-                    {selectedPath?.market && (
-                        <div
-                            style={{
-                                display: "flex",
-                                gap: 32,
-                                alignItems: "center",
-                                flexGrow: 1,
-                                justifyContent: "center"
-                            }}
-                        >
-                            <div style={{width: 260}}>
-                                <Tooltip title={scaleTooltip}
-                                         placement="bottom"
-                                >
-                                    <div style={{fontSize: 12, marginBottom: 4}}>
-                                        Мягкость рынка (scale):
-                                        {(selectedPath.market?.market_variance_scale ?? 0).toFixed(2)}
-                                    </div>
-                                </Tooltip>
-
-                                <Slider min={0}
-                                        max={10}
-                                        step={0.1}
-                                        value={selectedPath.market?.market_variance_scale ?? 0}
-                                        onChange={(value) => {
-                                            updateMarketParam(selectedPath.path_id, value, null);
-                                        }}
-                                />
-                            </div>
-                            <div style={{width: 260}}>
-                                <Tooltip title={exponentTooltip}
-                                         placement="bottom">
-                                    <div style={{fontSize: 12, marginBottom: 4}}>
-                                        Степень влияния цены (exponent):
-                                        {(selectedPath.market?.market_variance_exponent ?? 0).toFixed(2)}
-                                    </div>
-                                </Tooltip>
-
-                                <Slider min={0}
-                                        max={3}
-                                        step={0.05}
-                                        value={selectedPath.market?.market_variance_exponent ?? 0}
-                                        onChange={(value) => {
-                                            updateMarketParam(selectedPath.path_id, null, value);
-                                        }}
-                                />
-                            </div>
-                        </div>)}
-                    <div style={{width: 80}}/>
+                    />
                 </div>
-                {showWithoutPics ? (<ApproveWithoutPicsView
-                    dataSource={flatOriginsWithoutPics}
+
+                {/* CENTER: MODEL SELECTOR */}
+                <div style={{ width: 260 }}>
+                    <ModelSelector
+                        models={selectedPath?.models || []}
+                        selectedModelId={selectedModelId}
+                        onChange={setSelectedModelId}
+                    />
+                </div>
+
+                {/* RIGHT: ORIGINS TABLE */}
+                <div style={{ flex: 1 }}>
+                    <OriginsTable
+                        origins={selectedModel?.origins || []}
+                        columns={columns}
+                        selectedRowKeys={selectedRowKeys}
+                        onSelectChange={setSelectedRowKeys}
+                        onOpenImageModal={setOpenedOriginId}
+                        loading={loading}
+                    />
+                </div>
+            </div>
+
+            <Divider />
+
+            {/* BUTTONS */}
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <Button onClick={() => setShowWithoutPics(true)}>
+                    Показать без картинок
+                </Button>
+
+                <Button
+                    type="primary"
+                    disabled={flatOriginsWithoutPics.length > 0}
+                    onClick={handleCommit}
+                >
+                    Обновить HubStock
+                </Button>
+            </div>
+
+            {/* MODAL: ORIGINS WITHOUT PICS */}
+            <Modal
+                open={showWithoutPics}
+                onCancel={() => setShowWithoutPics(false)}
+                footer={null}
+                width={900}
+                title="Позиции без фотографий"
+            >
+                <OriginsWithoutPics
+                    items={flatOriginsWithoutPics}
                     columns={columns}
-                    selectedRowKeys={selectedRowKeys}
-                />) : (<ApproveMainTableView data={data}
-                                             paths={paths}
-                                             selectedPath={selectedPath}
-                                             selectedModel={selectedModel}
-                                             selectedPathId={selectedPathId}
-                                             selectedModelId={selectedModelId}
-                                             setSelectedPathId={setSelectedPathId}
-                                             setSelectedModelId={setSelectedModelId}
-                                             selectedRowKeys={selectedRowKeys}
-                                             setSelectedRowKeys={setSelectedRowKeys}
-                                             columns={columns}
-                />)}
-            </div>)}
+                    onOpenImageModal={setOpenedOriginId}
+                    loading={loading}
+                />
+            </Modal>
+
+            {/* IMAGE VIEWER */}
+            {openedOriginData && (
+                <OriginImageViewer
+                    origin={openedOriginData.origin.origin}
+                    images={openedOriginData.origin.pics}
+                    title={openedOriginData.origin.title}
+                    onClose={() => setOpenedOriginId(null)}
+                    onUploaded={({ images }) => {
+                        updateOriginPics(openedOriginData.origin.origin, images);
+                    }}
+                />
+            )}
         </Modal>
-
-        {openedOriginData?.origin && (<OriginImageViewer
-            origin={openedOriginData.origin.origin}
-            images={openedOriginData.origin.pics}
-            title={openedOriginData.origin.title}
-            onClose={() => {
-                setOpenedOriginId(null);
-            }}
-            onUploaded={({images}) => {
-                patchOriginImages({
-                    originId: openedOriginData.origin.origin, images
-                });
-            }}
-        />)}
-    </>);
-};
-
-export default UpdateHubApproveOrigins;
+    );
+}

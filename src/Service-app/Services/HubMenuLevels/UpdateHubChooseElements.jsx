@@ -191,7 +191,7 @@ const UpdateHubChooseElements = ({priceSyncList, onClose}) => {
                 </div>
             </Modal>
             {isApproveOpen && (
-                <UpdateHubApproveOrigins objForUpdate={selectedByPathId}
+                <UpdateHubApproveOrigins initialPayload={selectedByPathId}
                                          onCloseParent={() => onClose()}
                                          onCloseApproveOrigins={() => setIsApproveOpen(false)}/>
             )}
