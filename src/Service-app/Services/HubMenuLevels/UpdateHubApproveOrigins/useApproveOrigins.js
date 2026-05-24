@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import {useState, useMemo, useCallback} from "react";
 import {
     getSelectedPath,
     getSelectedModel,
@@ -12,9 +12,6 @@ import {
     findOrigin
 } from "./helpers";
 import {fetchPostData} from "../../Common/api.js";
-
-
-
 
 
 export function useApproveOrigins() {
@@ -44,69 +41,40 @@ export function useApproveOrigins() {
     // ============================================================
     async function loadInitialData(rawPayload) {
         try {
-            if (!rawPayload) {
-                console.warn("loadInitialData: empty payload");
-                setData([]);
-                return;
+            setLoading(true);
+
+            // 1. Превращаем объект в массив, исключая sortOrderPathId
+            const entries = Object.entries(rawPayload)
+                .filter(([key]) => key !== "sortOrderPathId")
+                .map(([_, value]) => value);
+
+            // 2. Порядок path_id, который пришёл с бэка
+            const order = rawPayload.sortOrderPathId || [];
+
+            // 3. Сортируем paths по этому порядку
+            const sorted = entries.sort((a, b) => {
+                return order.indexOf(a.path_id) - order.indexOf(b.path_id);
+            });
+
+            // 4. Кладём в состояние
+            setData(sorted);
+
+            // 5. Автовыбор первого path и первой модели
+            if (sorted.length > 0) {
+                const firstPath = sorted[0];
+                setSelectedPathId(firstPath.path_id);
+
+                if (Array.isArray(firstPath.models) && firstPath.models.length > 0) {
+                    setSelectedModelId(firstPath.models[0].id);
+                }
             }
-
-            // 1) Приводим к массиву
-            let payloadArray;
-
-            if (Array.isArray(rawPayload)) {
-                payloadArray = rawPayload;
-            } else if (typeof rawPayload === "object") {
-                payloadArray = Object.values(rawPayload);
-            } else {
-                console.error("loadInitialData: invalid payload", rawPayload);
-                setData([]);
-                return;
-            }
-
-            // 2) Фильтруем undefined/null
-            payloadArray = payloadArray.filter(Boolean);
-
-            // 3) Чистим структуру
-            const cleaned = payloadArray.map(path => ({
-                path_id: path.path_id,
-                route: Array.isArray(path.route) ? path.route : [],
-                models: Array.isArray(path.models)
-                    ? path.models.map(m => ({
-                        id: m.id,
-                        title: m.title,
-                        info: m.info,
-                        source: m.source,
-                        type_: m.type_,
-                        brand: m.brand,
-                        in_hub: m.in_hub,
-                        origins: Array.isArray(m.origins)
-                            ? m.origins.map(o => ({
-                                origin: o.origin,
-                                title: o.title,
-                                input_price: o.input_price,
-                                output_price: o.output_price,
-                                warranty: o.warranty,
-                                vsl_id: o.vsl_id,
-                                dt_parsed: o.dt_parsed,
-                                profit_range: o.profit_range,
-                                attrs: o.attrs ?? [],
-                                pics: o.pics ?? [],
-                                analyze: o.analyze ?? null
-                            }))
-                            : []
-                    }))
-                    : []
-            }));
-
-            setData(cleaned);
 
         } catch (e) {
             console.error("loadInitialData error", e);
-            setData([]);
+        } finally {
+            setLoading(false);
         }
     }
-
-
 
 
     // ============================================================
@@ -131,14 +99,14 @@ export function useApproveOrigins() {
     // ============================================================
     // 3. UPDATE MARKET PARAM (scale/exponent)
     // ============================================================
-    const updateMarketParam = useCallback(async ({ path_id, scale, exponent }) => {
+    const updateMarketParam = useCallback(async ({path_id, scale, exponent}) => {
         try {
             const payload = {
                 path_id,
                 route: selectedPath.route,
                 models: selectedPath.models,
-                ...(scale !== undefined ? { market_variance_scale: scale } : {}),
-                ...(exponent !== undefined ? { market_variance_exponent: exponent } : {})
+                ...(scale !== undefined ? {market_variance_scale: scale} : {}),
+                ...(exponent !== undefined ? {market_variance_exponent: exponent} : {})
             };
 
             const updatedPath = await fetchPostData(
@@ -187,7 +155,7 @@ export function useApproveOrigins() {
             const payload = buildHubStockPayload(data, selectedRowKeys);
 
             if (payload.length === 0) {
-                return { ok: false, message: "Нет выбранных origins" };
+                return {ok: false, message: "Нет выбранных origins"};
             }
 
             const res = await fetchPostData(
@@ -196,14 +164,14 @@ export function useApproveOrigins() {
             );
 
             if (res !== false) {
-                return { ok: true };
+                return {ok: true};
             }
 
-            return { ok: false, message: "Ошибка при обновлении HubStock" };
+            return {ok: false, message: "Ошибка при обновлении HubStock"};
 
         } catch (e) {
             console.error("commitToHubstock error:", e);
-            return { ok: false, message: "Ошибка при обновлении HubStock" };
+            return {ok: false, message: "Ошибка при обновлении HubStock"};
         }
     }, [data, selectedRowKeys]);
 
