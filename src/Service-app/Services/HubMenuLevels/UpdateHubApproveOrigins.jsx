@@ -1,4 +1,4 @@
-import {Modal, Button, Divider} from "antd";
+import {Modal, Button, Divider, Popconfirm, Col, Row} from "antd";
 
 import {useApproveOrigins} from "./UpdateHubApproveOrigins/useApproveOrigins";
 
@@ -12,6 +12,10 @@ import OriginsWithoutPics from "./UpdateHubApproveOrigins/components/OriginsWith
 import {findOrigin} from "./UpdateHubApproveOrigins/helpers";
 import {useEffect, useState} from "react";
 import OriginImageViewer from "../Common/OriginImageViewer.jsx";
+import {buildApproveOriginsColumns} from "./UpdateHubApproveOriginsColumns.jsx";
+import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
+import {PriceSyncFlow} from "./PriceSyncFlow.jsx";
+import {CloseOutlined, CloudUploadOutlined, FileExcelOutlined} from "@ant-design/icons";
 
 
 export default function UpdateHubApproveOrigins({
@@ -36,6 +40,8 @@ export default function UpdateHubApproveOrigins({
         selectedRowKeys,
         setSelectedRowKeys,
 
+        setOpenedImageModalOrigin,
+
         showWithoutPics,
         setShowWithoutPics,
 
@@ -52,43 +58,25 @@ export default function UpdateHubApproveOrigins({
         ? findOrigin(data, openedOriginId)
         : null;
 
-    // -----------------------------
-    // LOAD INITIAL DATA
-    // -----------------------------
     useEffect(() => {
         if (opened && initialPayload) {
             void loadInitialData(initialPayload);
         }
     }, [opened, initialPayload]);
 
-    // -----------------------------
-    // CLOSE HANDLER
-    // -----------------------------
+
     const closeAll = (result = false) => {
         setOpened(false);
         onCloseParent?.(result);
         onCloseApproveOrigins?.(result);
     };
 
-    // -----------------------------
-    // TABLE COLUMNS
-    // -----------------------------
-    const columns = [
-        { title: "Цвет", dataIndex: "color", width: "15%" },
-        { title: "ROM", dataIndex: "rom", width: "10%" },
-        {
-            title: "LTE",
-            dataIndex: "is_LTE",
-            width: "8%",
-            render: v => (v ? "Да" : "Нет")
-        },
-        { title: "Цена", dataIndex: "output_price", width: "12%" },
-        { title: "Фото", dataIndex: "pics", width: "12%" }
-    ];
+    const columns = buildApproveOriginsColumns({
+        setOpenedImageModalOrigin,
+        selectedModel
+    });
 
-    // -----------------------------
-    // COMMIT
-    // -----------------------------
+
     const handleCommit = async () => {
         const res = await commitToHubstock();
         if (res.ok) {
@@ -96,123 +84,140 @@ export default function UpdateHubApproveOrigins({
         }
     };
 
-    // -----------------------------
-    // RENDER
-    // -----------------------------
     return (
-        <Modal
-            open={opened}
-            onCancel={() => closeAll(false)}
-            width={1200}
-            footer={null}
-            title="Обновление позиций HubStock"
-        >
-            {/* MARKET SLIDERS */}
-            {selectedPath?.market && (
-                <MarketSliders
-                    scale={selectedPath.market.market_variance_scale}
-                    exponent={selectedPath.market.market_variance_exponent}
-                    onScaleChange={(value) =>
-                        updateMarketParam({
-                            path_id: selectedPathId,
-                            scale: value
-                        })
-                    }
-                    onExponentChange={(value) =>
-                        updateMarketParam({
-                            path_id: selectedPathId,
-                            exponent: value
-                        })
-                    }
-                />
-            )}
+        <Modal open={opened} onCancel={onCloseApproveOrigins} width={1450} footer={null}>
+            {loading ?
+                <Spinner/> :
+                (
+                    <div style={{padding: 16}}>
+                        <PriceSyncFlow step={4}/>
+                        <div style={{
+                            marginBottom: 12,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between"
+                        }}>
+                            <div style={{display: "flex", alignItems: "center", gap: 12}}>
+                                <Button icon={<CloseOutlined/>} type="primary" onClick={onCloseApproveOrigins}>
+                                    Закрыть
+                                </Button>
+                                <Button icon={<FileExcelOutlined/>}
+                                        type={showWithoutPics ? "primary" : "default"}
+                                        onClick={() => setShowWithoutPics(true)}>
+                                    {showWithoutPics ? "Показать все" : "Показать без картинок"}
+                                </Button>
+                                <Popconfirm title="Выгрузить выбранные позиции?"
+                                            description="Будут выгружены только выделенные позиции. Продолжить?"
+                                            okText="Да"
+                                            cancelText="Нет"
+                                            onConfirm={handleCommit}
+                                            disabled={flatOriginsWithoutPics.length > 0}>
+                                    <Button color="purple"
+                                            variant="solid"
+                                            icon={<CloudUploadOutlined/>}
+                                            disabled={flatOriginsWithoutPics.length > 0}>
+                                        Выгрузить в хаб
+                                    </Button>
+                                </Popconfirm>
 
-            <Divider />
+                            </div>
+                            {selectedPath?.market && (
+                                <div style={{
+                                    display: "flex",
+                                    gap: 32,
+                                    alignItems: "center",
+                                    flexGrow: 1,
+                                    justifyContent: "center"
+                                }}>
+                                    <MarketSliders
+                                        scale={selectedPath.market.market_variance_scale}
+                                        exponent={selectedPath.market.market_variance_exponent}
+                                        onScaleChange={(value) =>
+                                            updateMarketParam({
+                                                path_id: selectedPathId,
+                                                scale: value
+                                            })
+                                        }
+                                        onExponentChange={(value) =>
+                                            updateMarketParam({
+                                                path_id: selectedPathId,
+                                                exponent: value
+                                            })
+                                        }
+                                    />
+                                </div>
+                            )}
+                        </div>
 
-            <div style={{ display: "flex", gap: 16 }}>
-                {/* LEFT: PATH SELECTOR */}
-                <div style={{ width: 260 }}>
-                    <PathSelector
-                        paths={data}
-                        selectedPathId={selectedPathId}
-                        onChange={(val) => {
-                            setSelectedPathId(val);
+                        <Row gutter={16} wrap>
+                            <Col xs={24} sm={24} md={8} lg={6} xl={6} xxl={6}>
+                                <div style={{display: "flex", gap: 16}}>
+                                    <div style={{width: 260}}>
+                                        <PathSelector
+                                            paths={data}
+                                            selectedPathId={selectedPathId}
+                                            onChange={(val) => {
+                                                setSelectedPathId(val);
+                                                const backendPath = data.find(p => p.path_id === val);
+                                                if (backendPath && backendPath.models.length > 0) {
+                                                    setSelectedModelId(backendPath.models[0].id);
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </Col>
 
-                            const backendPath = data.find(p => p.path_id === val);
-                            if (backendPath && backendPath.models.length > 0) {
-                                setSelectedModelId(backendPath.models[0].id);
-                            }
-                        }}
-                    />
-                </div>
+                            <Col xs={24} sm={24} md={16} lg={18} xl={18} xxl={18}>
+                                <div style={{width: 260}}>
+                                    <ModelSelector
+                                        models={selectedPath?.models || []}
+                                        selectedModelId={selectedModelId}
+                                        onChange={setSelectedModelId}
+                                    />
+                                </div>
+                                <div style={{flex: 1}}>
+                                    <OriginsTable
+                                        origins={selectedModel?.origins || []}
+                                        columns={columns}
+                                        selectedRowKeys={selectedRowKeys}
+                                        onSelectChange={setSelectedRowKeys}
+                                        onOpenImageModal={setOpenedOriginId}
+                                        loading={loading}
+                                    />
 
-                {/* CENTER: MODEL SELECTOR */}
-                <div style={{ width: 260 }}>
-                    <ModelSelector
-                        models={selectedPath?.models || []}
-                        selectedModelId={selectedModelId}
-                        onChange={setSelectedModelId}
-                    />
-                </div>
+                                </div>
+                            </Col>
+                        </Row>
 
-                {/* RIGHT: ORIGINS TABLE */}
-                <div style={{ flex: 1 }}>
-                    <OriginsTable
-                        origins={selectedModel?.origins || []}
-                        columns={columns}
-                        selectedRowKeys={selectedRowKeys}
-                        onSelectChange={setSelectedRowKeys}
-                        onOpenImageModal={setOpenedOriginId}
-                        loading={loading}
-                    />
-                </div>
-            </div>
+                        <Modal
+                            open={showWithoutPics}
+                            onCancel={() => setShowWithoutPics(false)}
+                            footer={null}
+                            width={900}
+                            title="Позиции без фотографий"
+                        >
+                            <OriginsWithoutPics
+                                items={flatOriginsWithoutPics}
+                                columns={columns}
+                                onOpenImageModal={setOpenedOriginId}
+                                loading={loading}
+                            />
+                        </Modal>
 
-            <Divider />
-
-            {/* BUTTONS */}
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <Button onClick={() => setShowWithoutPics(true)}>
-                    Показать без картинок
-                </Button>
-
-                <Button
-                    type="primary"
-                    disabled={flatOriginsWithoutPics.length > 0}
-                    onClick={handleCommit}
-                >
-                    Обновить HubStock
-                </Button>
-            </div>
-
-            {/* MODAL: ORIGINS WITHOUT PICS */}
-            <Modal
-                open={showWithoutPics}
-                onCancel={() => setShowWithoutPics(false)}
-                footer={null}
-                width={900}
-                title="Позиции без фотографий"
-            >
-                <OriginsWithoutPics
-                    items={flatOriginsWithoutPics}
-                    columns={columns}
-                    onOpenImageModal={setOpenedOriginId}
-                    loading={loading}
-                />
-            </Modal>
-
-            {/* IMAGE VIEWER */}
-            {openedOriginData && (
-                <OriginImageViewer
-                    origin={openedOriginData.origin.origin}
-                    images={openedOriginData.origin.pics}
-                    title={openedOriginData.origin.title}
-                    onClose={() => setOpenedOriginId(null)}
-                    onUploaded={({ images }) => {
-                        updateOriginPics(openedOriginData.origin.origin, images);
-                    }}
-                />
-            )}
+                        {openedOriginData && (
+                            <OriginImageViewer
+                                origin={openedOriginData.origin.origin}
+                                images={openedOriginData.origin.pics}
+                                title={openedOriginData.origin.title}
+                                onClose={() => setOpenedOriginId(null)}
+                                onUploaded={({images}) => {
+                                    updateOriginPics(openedOriginData.origin.origin, images);
+                                }}
+                            />
+                        )}
+                    </div>
+                )}
         </Modal>
     );
 }

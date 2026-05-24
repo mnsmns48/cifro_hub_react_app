@@ -15,53 +15,35 @@ import {fetchPostData} from "../../Common/api.js";
 
 
 export function useApproveOrigins() {
-
-    // -----------------------------
-    // SERVER STATE
-    // -----------------------------
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    // -----------------------------
-    // UI CONTEXT STATE
-    // -----------------------------
     const [selectedPathId, setSelectedPathId] = useState(null);
     const [selectedModelId, setSelectedModelId] = useState(null);
     const [openedImageModalOrigin, setOpenedImageModalOrigin] = useState(null);
     const [showWithoutPics, setShowWithoutPics] = useState(false);
-
-    // -----------------------------
-    // UI SELECTION STATE
-    // -----------------------------
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
-
-    // ============================================================
-    // 1. INITIAL LOAD
-    // ============================================================
     async function loadInitialData(rawPayload) {
         try {
             setLoading(true);
 
-            // 1. Превращаем объект в массив, исключая sortOrderPathId
+            // 1. Превращаем initialPayload в массив paths (как ты уже сделал)
             const entries = Object.entries(rawPayload)
                 .filter(([key]) => key !== "sortOrderPathId")
                 .map(([_, value]) => value);
 
-            // 2. Порядок path_id, который пришёл с бэка
             const order = rawPayload.sortOrderPathId || [];
-
-            // 3. Сортируем paths по этому порядку
             const sorted = entries.sort((a, b) => {
                 return order.indexOf(a.path_id) - order.indexOf(b.path_id);
             });
+            const res = await fetchPostData("/service/approve_origins_for_update", sorted);
 
-            // 4. Кладём в состояние
-            setData(sorted);
+            if (Array.isArray(res)) {
+                setData(res);
+            }
 
-            // 5. Автовыбор первого path и первой модели
-            if (sorted.length > 0) {
-                const firstPath = sorted[0];
+            if (Array.isArray(res) && res.length > 0) {
+                const firstPath = res[0];
                 setSelectedPathId(firstPath.path_id);
 
                 if (Array.isArray(firstPath.models) && firstPath.models.length > 0) {
@@ -75,6 +57,7 @@ export function useApproveOrigins() {
             setLoading(false);
         }
     }
+
 
 
     // ============================================================
