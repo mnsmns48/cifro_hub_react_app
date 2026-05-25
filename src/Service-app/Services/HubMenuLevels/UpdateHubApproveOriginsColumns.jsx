@@ -162,7 +162,7 @@ const buildDynamicAttributeColumnsForOrigins = (origins) => {
 
 
 export const buildApproveOriginsColumns = ({
-                                               setOpenedImageModalView,
+                                               setOpenedOriginId,
                                                selectedModel
                                            }) => {
 
@@ -185,13 +185,7 @@ export const buildApproveOriginsColumns = ({
                 const cell = [40, 38]
                 const content = (
                     <div
-                        onClick={() =>
-                            setOpenedImageModalView({
-                                origin: record.origin,
-                                title: record.title,
-                                images: record.pics || []
-                            })
-                        }
+                        onClick={() => setOpenedOriginId(record.origin)}
                         style={{
                             width: cell[0],
                             height: cell[1],

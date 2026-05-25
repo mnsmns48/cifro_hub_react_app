@@ -1,28 +1,51 @@
+import { useEffect, useRef, useState } from "react";
 import { Slider, Tooltip } from "antd";
 
 export default function MarketSliders({
                                           scale,
                                           exponent,
                                           onScaleChange,
-                                          onExponentChange,
-                                          scaleTooltip = "Мягкость рынка: влияет на диапазон цен",
-                                          exponentTooltip = "Степень влияния цены: влияет на чувствительность"
+                                          onExponentChange
                                       }) {
+    const [localScale, setLocalScale] = useState(scale);
+    const [localExponent, setLocalExponent] = useState(exponent);
+
+    const scaleTimer = useRef(null);
+    const exponentTimer = useRef(null);
+
+    // 🔥 ВСЕГДА синхронизируем локальный state с бэкендом
+    useEffect(() => {
+        setLocalScale(scale);
+    }, [scale]);
+
+    useEffect(() => {
+        setLocalExponent(exponent);
+    }, [exponent]);
+
+    const handleScale = (value) => {
+        setLocalScale(value);
+
+        clearTimeout(scaleTimer.current);
+        scaleTimer.current = setTimeout(() => {
+            onScaleChange(value, true);
+        }, 120); // 🔥 уменьшенный debounce
+    };
+
+    const handleExponent = (value) => {
+        setLocalExponent(value);
+
+        clearTimeout(exponentTimer.current);
+        exponentTimer.current = setTimeout(() => {
+            onExponentChange(value, true);
+        }, 120); // 🔥 уменьшенный debounce
+    };
+
     return (
-        <div
-            style={{
-                display: "flex",
-                gap: 32,
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: 16
-            }}
-        >
-            {/* SCALE */}
+        <div style={{ display: "flex", gap: 32 }}>
             <div style={{ width: 260 }}>
-                <Tooltip title={scaleTooltip} placement="bottom">
+                <Tooltip title="Мягкость рынка">
                     <div style={{ fontSize: 12, marginBottom: 4 }}>
-                        Мягкость рынка (scale): {scale?.toFixed(2)}
+                        Scale: {localScale.toFixed(2)}
                     </div>
                 </Tooltip>
 
@@ -30,16 +53,15 @@ export default function MarketSliders({
                     min={0}
                     max={10}
                     step={0.1}
-                    value={scale}
-                    onChange={onScaleChange}
+                    value={localScale}
+                    onChange={handleScale}
                 />
             </div>
 
-            {/* EXPONENT */}
             <div style={{ width: 260 }}>
-                <Tooltip title={exponentTooltip} placement="bottom">
+                <Tooltip title="Степень влияния цены">
                     <div style={{ fontSize: 12, marginBottom: 4 }}>
-                        Степень влияния цены (exponent): {exponent?.toFixed(2)}
+                        Exponent: {localExponent.toFixed(2)}
                     </div>
                 </Tooltip>
 
@@ -47,8 +69,8 @@ export default function MarketSliders({
                     min={0}
                     max={3}
                     step={0.05}
-                    value={exponent}
-                    onChange={onExponentChange}
+                    value={localExponent}
+                    onChange={handleExponent}
                 />
             </div>
         </div>

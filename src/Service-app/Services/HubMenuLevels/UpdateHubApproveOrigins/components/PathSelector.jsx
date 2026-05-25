@@ -18,8 +18,10 @@ export default function PathSelector({ paths, selectedPathId, onChange }) {
             value={selectedPathId}
             onChange={onChange}
             options={options}
-            style={{ width: "100%" }}
-            // кастомизация под твой UI
+            styles={{
+                item: {justifyContent: "flex-start"},
+                label: {textAlign: "left"},
+            }}
             block
         />
     );

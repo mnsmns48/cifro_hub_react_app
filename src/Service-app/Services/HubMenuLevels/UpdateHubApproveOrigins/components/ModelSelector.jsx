@@ -16,7 +16,10 @@ export default function ModelSelector({ models, selectedModelId, onChange }) {
             value={selectedModelId}
             onChange={onChange}
             options={options}
-            style={{ width: "100%" }}
+            styles={{
+                item: {justifyContent: "flex-start"},
+                label: {textAlign: "left"},
+            }}
             block
         />
     );

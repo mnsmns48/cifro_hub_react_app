@@ -48,7 +48,6 @@ export default function OriginsWithoutPics({
             pagination={false}
             size="small"
             className="approve-origins-table"
-            // В этой таблице НЕТ выделения
             rowSelection={false}
             rowClassName={() => "row-no-pics"}
         />

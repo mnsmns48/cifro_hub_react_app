@@ -1,4 +1,4 @@
-import {Modal, Button, Divider, Popconfirm, Col, Row} from "antd";
+import {Modal, Button, Popconfirm, Col, Row} from "antd";
 
 import {useApproveOrigins} from "./UpdateHubApproveOrigins/useApproveOrigins";
 
@@ -16,6 +16,7 @@ import {buildApproveOriginsColumns} from "./UpdateHubApproveOriginsColumns.jsx";
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 import {PriceSyncFlow} from "./PriceSyncFlow.jsx";
 import {CloseOutlined, CloudUploadOutlined, FileExcelOutlined} from "@ant-design/icons";
+import {hasAnySelectedWithoutPics} from "./UpdateHubApproveOrigins/selectors.js";
 
 
 export default function UpdateHubApproveOrigins({
@@ -40,8 +41,6 @@ export default function UpdateHubApproveOrigins({
         selectedRowKeys,
         setSelectedRowKeys,
 
-        setOpenedImageModalOrigin,
-
         showWithoutPics,
         setShowWithoutPics,
 
@@ -54,9 +53,26 @@ export default function UpdateHubApproveOrigins({
     const [opened, setOpened] = useState(true);
     const [openedOriginId, setOpenedOriginId] = useState(null);
 
+
     const openedOriginData = openedOriginId
         ? findOrigin(data, openedOriginId)
         : null;
+
+    useEffect(() => {
+        if (!selectedPathId || !data.length) return;
+
+        const path = data.find(p => p.path_id === selectedPathId);
+        if (!path) return;
+
+        const newVerdictKeys = path.models
+            .flatMap(m => m.origins)
+            .filter(o => o.analyze?.verdict)
+            .map(o => o.origin);
+
+        setSelectedRowKeys(newVerdictKeys);
+
+    }, [data, selectedPathId]);
+
 
     useEffect(() => {
         if (opened && initialPayload) {
@@ -72,7 +88,7 @@ export default function UpdateHubApproveOrigins({
     };
 
     const columns = buildApproveOriginsColumns({
-        setOpenedImageModalOrigin,
+        setOpenedOriginId,
         selectedModel
     });
 
@@ -83,6 +99,9 @@ export default function UpdateHubApproveOrigins({
             closeAll(true);
         }
     };
+
+    const disableExport = hasAnySelectedWithoutPics(data, selectedRowKeys);
+
 
     return (
         <Modal open={opened} onCancel={onCloseApproveOrigins} width={1450} footer={null}>
@@ -110,12 +129,13 @@ export default function UpdateHubApproveOrigins({
                                             description="Будут выгружены только выделенные позиции. Продолжить?"
                                             okText="Да"
                                             cancelText="Нет"
-                                            onConfirm={handleCommit}
-                                            disabled={flatOriginsWithoutPics.length > 0}>
+                                            onConfirm={handleCommit}>
                                     <Button color="purple"
                                             variant="solid"
                                             icon={<CloudUploadOutlined/>}
-                                            disabled={flatOriginsWithoutPics.length > 0}>
+                                            disabled={disableExport}
+
+                                    >
                                         Выгрузить в хаб
                                     </Button>
                                 </Popconfirm>
@@ -132,19 +152,18 @@ export default function UpdateHubApproveOrigins({
                                     <MarketSliders
                                         scale={selectedPath.market.market_variance_scale}
                                         exponent={selectedPath.market.market_variance_exponent}
-                                        onScaleChange={(value) =>
-                                            updateMarketParam({
-                                                path_id: selectedPathId,
-                                                scale: value
-                                            })
-                                        }
-                                        onExponentChange={(value) =>
-                                            updateMarketParam({
-                                                path_id: selectedPathId,
-                                                exponent: value
-                                            })
-                                        }
+                                        onScaleChange={(value, final) => {
+                                            if (final) {
+                                                void updateMarketParam({path_id: selectedPathId, scale: value});
+                                            }
+                                        }}
+                                        onExponentChange={(value, final) => {
+                                            if (final) {
+                                                void updateMarketParam({path_id: selectedPathId, exponent: value});
+                                            }
+                                        }}
                                     />
+
                                 </div>
                             )}
                         </div>
@@ -152,7 +171,7 @@ export default function UpdateHubApproveOrigins({
                         <Row gutter={16} wrap>
                             <Col xs={24} sm={24} md={8} lg={6} xl={6} xxl={6}>
                                 <div style={{display: "flex", gap: 16}}>
-                                    <div style={{width: 260}}>
+                                    <div style={{width: 300}}>
                                         <PathSelector
                                             paths={data}
                                             selectedPathId={selectedPathId}
@@ -185,7 +204,6 @@ export default function UpdateHubApproveOrigins({
                                         onOpenImageModal={setOpenedOriginId}
                                         loading={loading}
                                     />
-
                                 </div>
                             </Col>
                         </Row>

@@ -1,8 +1,8 @@
-import {useState, useMemo, useCallback} from "react";
+import {useState, useMemo, useCallback, useEffect} from "react";
 import {
     getSelectedPath,
     getSelectedModel,
-    getFlatOriginsWithoutPics
+    getFlatOriginsWithoutPics, getSelectedRowKeysFromVerdict
 } from "./selectors";
 
 import {
@@ -23,31 +23,53 @@ export function useApproveOrigins() {
     const [showWithoutPics, setShowWithoutPics] = useState(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
+
+    useEffect(() => {
+        if (!selectedPathId || !data.length) return;
+
+        const path = data.find(p => p.path_id === selectedPathId);
+        if (!path) return;
+
+        const newVerdictKeys = path.models
+            .flatMap(m => m.origins)
+            .filter(o => o.analyze?.verdict)
+            .map(o => o.origin);
+
+        setSelectedRowKeys(newVerdictKeys);
+
+    }, [data, selectedPathId]);
+
+
     async function loadInitialData(rawPayload) {
         try {
             setLoading(true);
-
-            // 1. Превращаем initialPayload в массив paths (как ты уже сделал)
             const entries = Object.entries(rawPayload)
                 .filter(([key]) => key !== "sortOrderPathId")
                 .map(([_, value]) => value);
-
             const order = rawPayload.sortOrderPathId || [];
+
             const sorted = entries.sort((a, b) => {
                 return order.indexOf(a.path_id) - order.indexOf(b.path_id);
             });
+
+            // 4. Делаем запрос на бек
             const res = await fetchPostData("/service/approve_origins_for_update", sorted);
 
             if (Array.isArray(res)) {
                 setData(res);
-            }
 
-            if (Array.isArray(res) && res.length > 0) {
-                const firstPath = res[0];
-                setSelectedPathId(firstPath.path_id);
+                // 5. Автовыбор строк по verdict
+                const verdictKeys = getSelectedRowKeysFromVerdict(res);
+                setSelectedRowKeys(verdictKeys);
 
-                if (Array.isArray(firstPath.models) && firstPath.models.length > 0) {
-                    setSelectedModelId(firstPath.models[0].id);
+                // 6. Автовыбор первого path и модели
+                if (res.length > 0) {
+                    const firstPath = res[0];
+                    setSelectedPathId(firstPath.path_id);
+
+                    if (Array.isArray(firstPath.models) && firstPath.models.length > 0) {
+                        setSelectedModelId(firstPath.models[0].id);
+                    }
                 }
             }
 
@@ -57,7 +79,6 @@ export function useApproveOrigins() {
             setLoading(false);
         }
     }
-
 
 
     // ============================================================
@@ -92,34 +113,16 @@ export function useApproveOrigins() {
                 ...(exponent !== undefined ? {market_variance_exponent: exponent} : {})
             };
 
-            const updatedPath = await fetchPostData(
-                "/service/update_market_param",
-                payload
-            );
-
+            const updatedPath = await fetchPostData("/service/update_market_param", payload);
             if (!updatedPath) return;
 
-            // update only this path in data
+            // просто обновляем data
             setData(prev => updatePathInData(prev, updatedPath));
-
-            // reset selection for this path based on new verdict
-            const newVerdictKeys = updatedPath.models
-                .flatMap(m => m.origins)
-                .filter(o => o.analyze?.verdict === true)
-                .map(o => o.origin);
-
-            // remove old keys for this path
-            const otherKeys = selectedRowKeys.filter(originId => {
-                const origin = findOrigin(prevData, originId);
-                return origin && origin.path_id !== path_id;
-            });
-
-            setSelectedRowKeys([...otherKeys, ...newVerdictKeys]);
 
         } catch (e) {
             console.error("updateMarketParam error:", e);
         }
-    }, [selectedPath, selectedRowKeys]);
+    }, [selectedPath]);
 
 
     // ============================================================

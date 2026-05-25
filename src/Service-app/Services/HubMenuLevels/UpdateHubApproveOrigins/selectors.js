@@ -48,3 +48,17 @@ export function getSelectedRowKeysFromVerdict(data) {
         )
     );
 }
+
+export function hasAnySelectedWithoutPics(data, selectedRowKeys) {
+    if (!Array.isArray(data) || !Array.isArray(selectedRowKeys)) return false;
+
+    return data.some(path =>
+        path.models.some(model =>
+            model.origins.some(o => {
+                const id = o.origin;
+                return selectedRowKeys.includes(id) &&
+                    (!o.pics || o.pics.length === 0);
+            })
+        )
+    );
+}
