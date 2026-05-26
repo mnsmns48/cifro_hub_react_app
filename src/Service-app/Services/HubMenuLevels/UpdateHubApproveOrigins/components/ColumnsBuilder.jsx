@@ -1,92 +1,9 @@
 import {Image, Badge, Popover, Tooltip, Tag} from "antd";
 import {BarcodeOutlined, FileExcelOutlined} from "@ant-design/icons";
-import Color from "color";
+import {TooltipColorIndicator} from "./TooltipColorIndicator.jsx";
 
 
-const BASIC_COLORS = [
-    "black", "white", "red", "blue", "green", "yellow", "orange", "pink",
-    "purple", "violet", "brown", "beige", "gold", "silver", "gray", "grey",
-    "teal", "cyan", "aqua", "navy", "azure", "turquoise", "indigo",
-    "ultramarine", "cobalt", "sapphire", "royal", "prussian", "denim",
-    "peach", "coral", "rose", "salmon", "apricot",
-    "olive", "sand", "tan", "khaki", "mocha", "coffee", "bronze",
-    "mint", "lavender", "lilac", "cream",
-    "chrome", "graphite", "titanium", "platinum", "copper",
-    "emerald", "jade", "forest", "sky", "ocean",
-    "midnight", "charcoal", "obsidian",
-    "ivory", "pearl", "snow"
-];
 
-
-const WHITE_KEYWORDS = ["white", "starlight", "cloud", "polar", "moonlight", "frosted",
-    "arctic", "snow", "pearl"];
-
-const BLACK_KEYWORDS = [
-    "black", "midnight", "obsidian", "onyx", "carbon", "graphite", "dark"
-];
-
-const tagColorForAttr = (value) => {
-    if (!value) {
-        return {background: "#8f8f8f", color: "#fff", isBlack: false};
-    }
-
-    const lower = value.toLowerCase();
-
-    if (WHITE_KEYWORDS.some(w => lower.includes(w))) {
-        return {
-            background: "#000",
-            color: "#000000",
-            isBlack: true
-        };
-    }
-
-    if (BLACK_KEYWORDS.some(w => lower.includes(w))) {
-        return {
-            background: "#000000",
-            color: "#ffffff",
-            isBlack: false,
-            border: "none"
-        };
-    }
-
-    let hex = null;
-
-    try {
-        hex = Color(value).hex();
-    } catch {
-        /* ignore */
-    }
-
-    if (!hex) {
-        for (const base of BASIC_COLORS) {
-            if (lower.includes(base)) {
-                try {
-                    hex = Color(base).hex();
-                    break;
-                } catch {
-                    /* ignore */
-                }
-            }
-        }
-    }
-
-    if (!hex) {
-        return {
-            background: "#5c334a",
-            color: "#fff",
-            isBlack: false
-        };
-    }
-
-    const bg = Color(hex);
-    const isLight = bg.isLight();
-
-    return {
-        background: hex,
-        color: isLight ? "#000" : "#fff",
-        isBlack: false
-    };
-};
 
 const buildDynamicAttributeColumnsForOrigins = (origins) => {
     const keyMap = new Map();
@@ -139,7 +56,7 @@ const buildDynamicAttributeColumnsForOrigins = (origins) => {
             const attr = record.attrs?.find(a => a.key.id === key.id);
             if (!attr) return "—";
 
-            const style = tagColorForAttr(attr.value);
+            const style = TooltipColorIndicator(attr.value);
 
             return (
                 <Tooltip title={attr.value}>
@@ -162,7 +79,7 @@ const buildDynamicAttributeColumnsForOrigins = (origins) => {
 
 
 export const buildApproveOriginsColumns = ({
-                                               setOpenedImageModalView,
+                                               setOpenedOriginId,
                                                selectedModel
                                            }) => {
 
@@ -185,13 +102,7 @@ export const buildApproveOriginsColumns = ({
                 const cell = [40, 38]
                 const content = (
                     <div
-                        onClick={() =>
-                            setOpenedImageModalView({
-                                origin: record.origin,
-                                title: record.title,
-                                images: record.pics || []
-                            })
-                        }
+                        onClick={() => setOpenedOriginId(record.origin)}
                         style={{
                             width: cell[0],
                             height: cell[1],
@@ -229,8 +140,10 @@ export const buildApproveOriginsColumns = ({
             key: "title",
             width: "38%",
             render: (text, record) => {
-                const a = record.analyze || {};
-
+                const a = record.analyze;
+                if (!a) {
+                    return <span>{text}</span>;
+                }
                 const tooltipContent = (
                     <table style={{fontSize: 11, lineHeight: "1.9em", borderSpacing: "2px 4px"}}>
                         <tbody>
@@ -255,16 +168,13 @@ export const buildApproveOriginsColumns = ({
                             <td>{a.market_delta?.toFixed(2)}</td>
                         </tr>
                         <tr>
-                            <td><b>Медианное отклонение цен.
-                                Показывает разброс цен: маленькое значение - рынок стабильный,
-                                большое - рынок шумный и непредсказуемый.</b></td>
+                            <td><b>Медианное отклонение цен (MAD):</b></td>
                             <td>{a.market_mad?.toFixed(2)}</td>
                         </tr>
                         <tr>
                             <td><b>Эффективная допустимая переплата:</b></td>
                             <td>{a.market_effective_tolerance?.toFixed(2)}</td>
                         </tr>
-
                         <tr>
                             <td><b>Вердикт:</b></td>
                             <td>{a.verdict ? "OK" : "BAD"}</td>
@@ -277,10 +187,9 @@ export const buildApproveOriginsColumns = ({
                     </table>
                 );
 
-
                 return (
                     <Tooltip placement="topLeft" title={tooltipContent}>
-                        <span style={{}}>{text}</span>
+                        <span>{text}</span>
                     </Tooltip>
                 );
             }

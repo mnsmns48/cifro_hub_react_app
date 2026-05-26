@@ -94,6 +94,7 @@ const SearchTableSelector = ({
                 showHeader={false}
                 dataSource={tableData}
                 rowKey="id"
+                size="small"
                 pagination={false}
                 rowClassName={() => 'compact-row'}/>
             <MyModal

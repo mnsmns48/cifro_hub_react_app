@@ -99,7 +99,7 @@ const FormulaList = () => {
                        dataSource={formulas}
                        columns={columns}
                        pagination={false}
-                       size={"small"}
+                       size="small"
                 />
             </Card>
             <FormulaEntityType
