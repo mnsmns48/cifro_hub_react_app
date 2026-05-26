@@ -10,6 +10,8 @@ const OriginImageViewer = ({origin, title, images = [], onClose, onUploaded}) =>
     const [loading, setLoading] = useState(false);
     const [dependencyList, setDependencyList] = useState([]);
     const [selectedDependencyOrigin, setSelectedDependencyOrigin] = useState(null);
+    const [searchValue, setSearchValue] = useState("");
+
 
     const {deleteImage, markAsPreview} = useImagesActions(origin, onUploaded);
 
@@ -116,17 +118,32 @@ const OriginImageViewer = ({origin, title, images = [], onClose, onUploaded}) =>
 
             <div style={{marginTop: 20, display: "flex", gap: 8}}>
                 <Select
-                    style={{width: "100%"}}
+                    style={{ width: "100%" }}
                     showSearch
                     value={selectedDependencyOrigin}
+                    searchValue={searchValue}
+                    onSearch={setSearchValue}
                     placeholder="Картинки из"
-                    onFocus={loadDependencyList}
+                    onFocus={() => {
+                        void loadDependencyList();
+
+                        const firstTwoWords = title
+                            ?.toLowerCase()
+                            .split(/\s+/)
+                            .slice(0, 2)
+                            .join(" ");
+
+                        setTimeout(() => {
+                            setSearchValue(firstTwoWords || "");
+                        }, 0);
+                    }}
                     disabled={loading}
                     options={dependencyList.map(item => ({
                         label: (
-                            <span style={{fontSize: 10}}
-                                  data-search={item.title.toLowerCase()}>
-                            <span style={{color: "red"}}>{item.qnt_images} </span>{item.title}</span>
+                            <span style={{ fontSize: 10 }} data-search={item.title.toLowerCase()}>
+                <span style={{ color: "red" }}>{item.qnt_images} </span>
+                                {item.title}
+            </span>
                         ),
                         value: item.origin
                     }))}
@@ -134,7 +151,11 @@ const OriginImageViewer = ({origin, title, images = [], onClose, onUploaded}) =>
                         const search = option?.label?.props?.["data-search"];
                         return search?.includes(input.toLowerCase());
                     }}
-                    onChange={handleImplementDependencyImages}
+                    onChange={(value) => {
+                        setSelectedDependencyOrigin(value);
+                        setSearchValue("");
+                        void handleImplementDependencyImages(value);
+                    }}
                 />
                 {loading && (<Spin size="small"/>)}
             </div>
