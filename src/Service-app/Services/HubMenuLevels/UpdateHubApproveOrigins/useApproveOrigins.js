@@ -44,7 +44,7 @@ export function useApproveOrigins() {
             setLoading(true);
             const entries = Object.entries(rawPayload)
                 .filter(([key]) => key !== "sortOrderPathId")
-                .map(([_, value]) => value);
+                .map(([, value]) => value);
             const order = rawPayload.sortOrderPathId || [];
 
             const sorted = entries.sort((a, b) => {
@@ -105,7 +105,6 @@ export function useApproveOrigins() {
             const updatedPath = await fetchPostData("/service/update_market_param", payload);
             if (!updatedPath) return;
 
-            // просто обновляем data
             setData(prev => updatePathInData(prev, updatedPath));
 
         } catch (e) {

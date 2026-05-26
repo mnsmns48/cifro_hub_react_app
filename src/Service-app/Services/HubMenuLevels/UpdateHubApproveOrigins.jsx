@@ -114,7 +114,7 @@ export default function UpdateHubApproveOrigins({
 
 
     return (
-        <Modal open={opened} width={1450} footer={null}>
+        <Modal open={opened} width={1450} footer={null} closable={false}>
             {loading ?
                 <Spinner/> :
                 (
