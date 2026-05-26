@@ -49,16 +49,29 @@ export function getSelectedRowKeysFromVerdict(data) {
     );
 }
 
-export function hasAnySelectedWithoutPics(data, selectedRowKeys) {
-    if (!Array.isArray(data) || !Array.isArray(selectedRowKeys)) return false;
+export function getAllOriginsWithoutPics(data) {
+    if (!Array.isArray(data)) return [];
+    const result = [];
+    data.forEach(path => {
+        path.models.forEach(model => {
+            model.origins.forEach(origin => {
+                if (!origin.pics || origin.pics.length === 0) {
+                    const originWithoutAnalyze = {...origin};
+                    delete originWithoutAnalyze.analyze;
+                    result.push({
+                        originRef: originWithoutAnalyze,
+                        modelRef: model,
+                        pathRef: path
+                    });
+                }
+            });
+        });
+    });
 
-    return data.some(path =>
-        path.models.some(model =>
-            model.origins.some(o => {
-                const id = o.origin;
-                return selectedRowKeys.includes(id) &&
-                    (!o.pics || o.pics.length === 0);
-            })
-        )
-    );
+    return result;
 }
+
+
+
+
+

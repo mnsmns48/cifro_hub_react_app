@@ -37,9 +37,6 @@ export function updateOriginInData(data, originId, newPics) {
     }));
 }
 
-// ---------------------------------------------
-// 4. Построить payload для HubStock
-// ---------------------------------------------
 export function buildHubStockPayload(data, selectedRowKeys) {
     const items = [];
 

@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import { Slider, Tooltip } from "antd";
+import {useEffect, useRef, useState} from "react";
+import {Slider, Tooltip} from "antd";
+import {exponentTooltip, scaleTooltip} from "./MarketTooltips.jsx";
+import {QuestionCircleOutlined} from "@ant-design/icons";
 
 export default function MarketSliders({
                                           scale,
@@ -13,7 +15,6 @@ export default function MarketSliders({
     const scaleTimer = useRef(null);
     const exponentTimer = useRef(null);
 
-    // 🔥 ВСЕГДА синхронизируем локальный state с бэкендом
     useEffect(() => {
         setLocalScale(scale);
     }, [scale]);
@@ -28,7 +29,7 @@ export default function MarketSliders({
         clearTimeout(scaleTimer.current);
         scaleTimer.current = setTimeout(() => {
             onScaleChange(value, true);
-        }, 120); // 🔥 уменьшенный debounce
+        }, 120);
     };
 
     const handleExponent = (value) => {
@@ -37,17 +38,21 @@ export default function MarketSliders({
         clearTimeout(exponentTimer.current);
         exponentTimer.current = setTimeout(() => {
             onExponentChange(value, true);
-        }, 120); // 🔥 уменьшенный debounce
+        }, 120);
     };
 
     return (
-        <div style={{ display: "flex", gap: 32 }}>
-            <div style={{ width: 260 }}>
-                <Tooltip title="Мягкость рынка">
-                    <div style={{ fontSize: 12, marginBottom: 4 }}>
-                        Scale: {localScale.toFixed(2)}
+        <div style={{display: "flex", gap: 32}}>
+            <div style={{width: 260}}>
+                <div style={{display: "flex", alignItems: "center", gap: 6, marginBottom: 4}}>
+                    <Tooltip title={scaleTooltip} placement="bottom">
+                        <QuestionCircleOutlined style={{fontSize: 14, color: "green"}}/>
+                    </Tooltip>
+
+                    <div style={{fontSize: 12}}>
+                        Коэффициент мягкости рынка (scale): {localScale.toFixed(2)}
                     </div>
-                </Tooltip>
+                </div>
 
                 <Slider
                     min={0}
@@ -58,13 +63,15 @@ export default function MarketSliders({
                 />
             </div>
 
-            <div style={{ width: 260 }}>
-                <Tooltip title="Степень влияния цены">
-                    <div style={{ fontSize: 12, marginBottom: 4 }}>
-                        Exponent: {localExponent.toFixed(2)}
+            <div style={{width: 260}}>
+                <div style={{display: "flex", alignItems: "center", gap: 6, marginBottom: 4}}>
+                    <Tooltip title={exponentTooltip} placement="bottom">
+                        <QuestionCircleOutlined style={{fontSize: 14, color: "green"}}/>
+                    </Tooltip>
+                    <div style={{fontSize: 12, marginBottom: 4}}>
+                        Степень влияния цены (exponent): {localExponent.toFixed(2)}
                     </div>
-                </Tooltip>
-
+                </div>
                 <Slider
                     min={0}
                     max={3}

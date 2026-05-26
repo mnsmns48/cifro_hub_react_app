@@ -1,6 +1,9 @@
-import {Badge, Popover, Tag, Tooltip, Image} from "antd";
-import TooltipColorIndicator from "./TooltipColorIndicator.jsx";
+import {Image, Badge, Popover, Tooltip, Tag} from "antd";
 import {BarcodeOutlined, FileExcelOutlined} from "@ant-design/icons";
+import {TooltipColorIndicator} from "./TooltipColorIndicator.jsx";
+
+
+
 
 const buildDynamicAttributeColumnsForOrigins = (origins) => {
     const keyMap = new Map();
@@ -76,7 +79,7 @@ const buildDynamicAttributeColumnsForOrigins = (origins) => {
 
 
 export const buildApproveOriginsColumns = ({
-                                               setOpenedImageModalView,
+                                               setOpenedOriginId,
                                                selectedModel
                                            }) => {
 
@@ -99,13 +102,7 @@ export const buildApproveOriginsColumns = ({
                 const cell = [40, 38]
                 const content = (
                     <div
-                        onClick={() =>
-                            setOpenedImageModalView({
-                                origin: record.origin,
-                                title: record.title,
-                                images: record.pics || []
-                            })
-                        }
+                        onClick={() => setOpenedOriginId(record.origin)}
                         style={{
                             width: cell[0],
                             height: cell[1],
@@ -143,8 +140,10 @@ export const buildApproveOriginsColumns = ({
             key: "title",
             width: "38%",
             render: (text, record) => {
-                const a = record.analyze || {};
-
+                const a = record.analyze;
+                if (!a) {
+                    return <span>{text}</span>;
+                }
                 const tooltipContent = (
                     <table style={{fontSize: 11, lineHeight: "1.9em", borderSpacing: "2px 4px"}}>
                         <tbody>
@@ -169,16 +168,13 @@ export const buildApproveOriginsColumns = ({
                             <td>{a.market_delta?.toFixed(2)}</td>
                         </tr>
                         <tr>
-                            <td><b>Медианное отклонение цен.
-                                Показывает разброс цен: маленькое значение - рынок стабильный,
-                                большое - рынок шумный и непредсказуемый.</b></td>
+                            <td><b>Медианное отклонение цен (MAD):</b></td>
                             <td>{a.market_mad?.toFixed(2)}</td>
                         </tr>
                         <tr>
                             <td><b>Эффективная допустимая переплата:</b></td>
                             <td>{a.market_effective_tolerance?.toFixed(2)}</td>
                         </tr>
-
                         <tr>
                             <td><b>Вердикт:</b></td>
                             <td>{a.verdict ? "OK" : "BAD"}</td>
@@ -191,10 +187,9 @@ export const buildApproveOriginsColumns = ({
                     </table>
                 );
 
-
                 return (
                     <Tooltip placement="topLeft" title={tooltipContent}>
-                        <span style={{}}>{text}</span>
+                        <span>{text}</span>
                     </Tooltip>
                 );
             }

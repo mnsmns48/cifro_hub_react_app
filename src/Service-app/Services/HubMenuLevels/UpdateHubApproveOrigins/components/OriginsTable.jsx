@@ -10,7 +10,6 @@ export default function OriginsTable({
                                      }) {
     if (!origins || origins.length === 0) return null;
 
-    // Добавляем обработчик клика по картинке, если колонка его вызывает
     const enhancedColumns = columns.map(col => {
         if (col.dataIndex === "pics" && !col.render) {
             return {

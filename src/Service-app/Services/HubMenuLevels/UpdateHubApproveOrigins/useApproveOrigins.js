@@ -9,7 +9,6 @@ import {
     updatePathInData,
     updateOriginInData,
     buildHubStockPayload,
-    findOrigin
 } from "./helpers";
 import {fetchPostData} from "../../Common/api.js";
 
@@ -52,17 +51,14 @@ export function useApproveOrigins() {
                 return order.indexOf(a.path_id) - order.indexOf(b.path_id);
             });
 
-            // 4. Делаем запрос на бек
             const res = await fetchPostData("/service/approve_origins_for_update", sorted);
 
             if (Array.isArray(res)) {
                 setData(res);
 
-                // 5. Автовыбор строк по verdict
                 const verdictKeys = getSelectedRowKeysFromVerdict(res);
                 setSelectedRowKeys(verdictKeys);
 
-                // 6. Автовыбор первого path и модели
                 if (res.length > 0) {
                     const firstPath = res[0];
                     setSelectedPathId(firstPath.path_id);
@@ -80,10 +76,6 @@ export function useApproveOrigins() {
         }
     }
 
-
-    // ============================================================
-    // 2. DERIVED STATE
-    // ============================================================
     const selectedPath = useMemo(
         () => getSelectedPath(data, selectedPathId),
         [data, selectedPathId]
@@ -100,9 +92,6 @@ export function useApproveOrigins() {
     );
 
 
-    // ============================================================
-    // 3. UPDATE MARKET PARAM (scale/exponent)
-    // ============================================================
     const updateMarketParam = useCallback(async ({path_id, scale, exponent}) => {
         try {
             const payload = {
@@ -125,17 +114,12 @@ export function useApproveOrigins() {
     }, [selectedPath]);
 
 
-    // ============================================================
-    // 4. UPDATE ORIGIN PICS
-    // ============================================================
     const updateOriginPics = useCallback((originId, newPics) => {
         setData(prev => updateOriginInData(prev, originId, newPics));
     }, []);
 
 
-    // ============================================================
-    // 5. COMMIT TO HUBSTOCK
-    // ============================================================
+    ``
     const commitToHubstock = useCallback(async () => {
         try {
             const payload = buildHubStockPayload(data, selectedRowKeys);
@@ -162,9 +146,29 @@ export function useApproveOrigins() {
     }, [data, selectedRowKeys]);
 
 
-    // ============================================================
-    // RETURN API
-    // ============================================================
+    function updateVerdictForCurrentPath(keys) {
+        setData(prev =>
+            prev.map(path =>
+                path.path_id !== selectedPathId
+                    ? path
+                    : {
+                        ...path,
+                        models: path.models.map(model => ({
+                            ...model,
+                            origins: model.origins.map(o => ({
+                                ...o,
+                                analyze: {
+                                    ...o.analyze,
+                                    verdict: keys.includes(o.origin)
+                                }
+                            }))
+                        }))
+                    }
+            )
+        );
+    }
+
+
     return {
         loading,
         data,
@@ -191,6 +195,7 @@ export function useApproveOrigins() {
         loadInitialData,
         updateMarketParam,
         updateOriginPics,
-        commitToHubstock
+        commitToHubstock,
+        updateVerdictForCurrentPath
     };
 }

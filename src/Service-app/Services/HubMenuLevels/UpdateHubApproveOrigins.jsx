@@ -12,11 +12,12 @@ import OriginsWithoutPics from "./UpdateHubApproveOrigins/components/OriginsWith
 import {findOrigin} from "./UpdateHubApproveOrigins/helpers";
 import {useEffect, useState} from "react";
 import OriginImageViewer from "../Common/OriginImageViewer.jsx";
-import {buildApproveOriginsColumns} from "./UpdateHubApproveOriginsColumns.jsx";
+import {buildApproveOriginsColumns} from "./UpdateHubApproveOrigins/components/ColumnsBuilder.jsx";
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 import {PriceSyncFlow} from "./PriceSyncFlow.jsx";
 import {CloseOutlined, CloudUploadOutlined, FileExcelOutlined} from "@ant-design/icons";
-import {hasAnySelectedWithoutPics} from "./UpdateHubApproveOrigins/selectors.js";
+import "./Css/UpdateHubApproveOrigins.css"
+import {getAllOriginsWithoutPics} from "./UpdateHubApproveOrigins/selectors.js";
 
 
 export default function UpdateHubApproveOrigins({
@@ -30,7 +31,6 @@ export default function UpdateHubApproveOrigins({
 
         selectedPath,
         selectedModel,
-        flatOriginsWithoutPics,
 
         selectedPathId,
         setSelectedPathId,
@@ -45,9 +45,13 @@ export default function UpdateHubApproveOrigins({
         setShowWithoutPics,
 
         loadInitialData,
+
         updateMarketParam,
         updateOriginPics,
-        commitToHubstock
+        commitToHubstock,
+
+        updateVerdictForCurrentPath
+
     } = useApproveOrigins();
 
     const [opened, setOpened] = useState(true);
@@ -100,11 +104,17 @@ export default function UpdateHubApproveOrigins({
         }
     };
 
-    const disableExport = hasAnySelectedWithoutPics(data, selectedRowKeys);
+    const disableExport = data.some(path =>
+        path.models.some(model =>
+            model.origins.some(o =>
+                o.analyze?.verdict && (!o.pics || o.pics.length === 0)
+            )
+        )
+    );
 
 
     return (
-        <Modal open={opened} onCancel={onCloseApproveOrigins} width={1450} footer={null}>
+        <Modal open={opened} width={1450} footer={null}>
             {loading ?
                 <Spinner/> :
                 (
@@ -134,7 +144,6 @@ export default function UpdateHubApproveOrigins({
                                             variant="solid"
                                             icon={<CloudUploadOutlined/>}
                                             disabled={disableExport}
-
                                     >
                                         Выгрузить в хаб
                                     </Button>
@@ -163,7 +172,6 @@ export default function UpdateHubApproveOrigins({
                                             }
                                         }}
                                     />
-
                                 </div>
                             )}
                         </div>
@@ -200,7 +208,10 @@ export default function UpdateHubApproveOrigins({
                                         origins={selectedModel?.origins || []}
                                         columns={columns}
                                         selectedRowKeys={selectedRowKeys}
-                                        onSelectChange={setSelectedRowKeys}
+                                        onSelectChange={(keys) => {
+                                            setSelectedRowKeys(keys);
+                                            updateVerdictForCurrentPath(keys);
+                                        }}
                                         onOpenImageModal={setOpenedOriginId}
                                         loading={loading}
                                     />
@@ -208,15 +219,13 @@ export default function UpdateHubApproveOrigins({
                             </Col>
                         </Row>
 
-                        <Modal
-                            open={showWithoutPics}
-                            onCancel={() => setShowWithoutPics(false)}
-                            footer={null}
-                            width={900}
-                            title="Позиции без фотографий"
-                        >
+                        <Modal open={showWithoutPics}
+                               onCancel={() => setShowWithoutPics(false)}
+                               footer={null}
+                               width={1450}
+                               title="Позиции без фотографий">
                             <OriginsWithoutPics
-                                items={flatOriginsWithoutPics}
+                                items={getAllOriginsWithoutPics(data)}
                                 columns={columns}
                                 onOpenImageModal={setOpenedOriginId}
                                 loading={loading}
