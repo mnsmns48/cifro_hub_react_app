@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useState} from "react";
-import {Badge, Button, Modal, Table} from "antd";
+import {Badge, Button, Modal, Spin, Table} from "antd";
 import {fetchPostData} from "../Common/api.js";
 import {getRawOriginsColumns} from "./RawOriginsColumns.jsx";
 import {LinkOutlined, QuestionOutlined, ShareAltOutlined} from "@ant-design/icons";
@@ -40,9 +40,7 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
 
     const reloadData = async () => {
         setLoading(true);
-
         const response = await fetchPostData("/service/fetch_raw_origins", priceSyncList);
-
 
         if (Array.isArray(response)) {
             const origins = response.flatMap(p => p.raw_origin_ids || []);
@@ -68,7 +66,6 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
                 brands: [...brandSet].map(v => ({text: v, value: v}))
             });
         }
-
         setLoading(false);
     };
 
@@ -349,99 +346,103 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
 
     return (
         <Modal open={isOpen} onCancel={onClose} width={1280} footer={null}>
-            {selectedRowKeys.length > 0 && (
-                <Button className="fixed-button fixed-button-dependency"
-                        onClick={() => handleAddDependenceMulti(selectedRowKeys)}>
-                    Зависимость ({selectedRowKeys.length}) <ShareAltOutlined/>
-                </Button>
-            )}
-
-            {!!dependencySelection && (
-                <InfoSelect
-                    titles={dependencySelection.titles}
-                    origin={dependencySelection.origin}
-                    record={dependencySelection.record}
-                    setRows={setRows}
-                    onClose={() => {
-                        setDependencySelection(null);
-                    }}
-                    autoOpen
-                />
-            )}
-
-            {!!attributesModalData && (
-                <AttributesModal
-                    open={true}
-                    data={attributesModalData}
-                    onClose={() => setAttributesModalData(null)}
-
-                    onSaved={(patch) => {
-                        const normalizedPatch = {
-                            title: patch.title,
-                            attributes: {
-                                attr_value_ids: patch.attributes ?? []
-                            },
-                            have_attributes: (patch.attributes?.length ?? 0) > 0
-                        };
-
-                        updateRow(patch.origin, normalizedPatch);
-                        setAttributesModalData(null);
-                    }}
-
-                    onUploaded={(patch) => {
-                        updateRow(attributesModalData.origin, patch);
-                    }}
-                />
-            )}
-
-            {isHubUpdateOpen && (
-                <UpdateHubChooseElements
-                    vsl_list={vsl_list}
-                    path_ids={path_ids}
-                    onClose={() => setIsHubUpdateOpen(false)}
-                />
-            )}
-
-            <PriceSyncFlow step={2}/>
-            <div>
-                <Button type="primary" onClick={() => setIsHubUpdateOpen(true)}>
-                    Выбрать модели для обновления
-                </Button>
-
-            </div>
-            <div style={{marginTop: 20}}>
-                <Table
-                    rowSelection={{
-                        selectedRowKeys,
-                        onChange: setSelectedRowKeys,
-                        getCheckboxProps: record => ({
-                            disabled: !!record.children
-                        })
-                    }}
-                    columns={getRawOriginsColumns(
-                        filters,
-                        filtersState,
-                        modelColumnTitle,
-                        attrsColumnTitle,
-                        setAttributesModalData,
-                        missingAttrsFilterActive
+            {loading ? (
+                <div style={{padding: 40, textAlign: "center"}}>
+                    <Spin size="small"/>
+                </div>
+            ) : (
+                <>
+                    {selectedRowKeys.length > 0 && (
+                        <Button className="fixed-button fixed-button-dependency"
+                                onClick={() => handleAddDependenceMulti(selectedRowKeys)}>
+                            Зависимость ({selectedRowKeys.length}) <ShareAltOutlined/>
+                        </Button>
                     )}
-                    dataSource={data}
-                    loading={loading}
-                    size="small"
-                    pagination={false}
-                    rowKey="key"
-                    onChange={handleTableChange}
-                    expandable={{
-                        expandedRowKeys,
-                        onExpandedRowsChange: setExpandedRowKeys,
-                        expandIcon: () => null
-                    }}
-                />
-            </div>
+
+                    {!!dependencySelection && (
+                        <InfoSelect
+                            titles={dependencySelection.titles}
+                            origin={dependencySelection.origin}
+                            record={dependencySelection.record}
+                            setRows={setRows}
+                            onClose={() => setDependencySelection(null)}
+                            autoOpen
+                        />
+                    )}
+
+                    {!!attributesModalData && (
+                        <AttributesModal
+                            open={true}
+                            data={attributesModalData}
+                            onClose={() => setAttributesModalData(null)}
+                            onSaved={(patch) => {
+                                const normalizedPatch = {
+                                    title: patch.title,
+                                    attributes: {
+                                        attr_value_ids: patch.attributes ?? []
+                                    },
+                                    have_attributes: (patch.attributes?.length ?? 0) > 0
+                                };
+
+                                updateRow(patch.origin, normalizedPatch);
+                                setAttributesModalData(null);
+                            }}
+                            onUploaded={(patch) => {
+                                updateRow(attributesModalData.origin, patch);
+                            }}
+                        />
+                    )}
+
+                    {isHubUpdateOpen && (
+                        <UpdateHubChooseElements
+                            vsl_list={vsl_list}
+                            path_ids={path_ids}
+                            onClose={() => setIsHubUpdateOpen(false)}
+                        />
+                    )}
+
+                    <PriceSyncFlow step={2}/>
+
+                    <div>
+                        <Button type="primary" onClick={() => setIsHubUpdateOpen(true)}>
+                            Выбрать модели для обновления
+                        </Button>
+                    </div>
+
+                    <div style={{marginTop: 20}}>
+                        <Table
+                            rowSelection={{
+                                selectedRowKeys,
+                                onChange: setSelectedRowKeys,
+                                getCheckboxProps: record => ({
+                                    disabled: !!record.children
+                                })
+                            }}
+                            columns={getRawOriginsColumns(
+                                filters,
+                                filtersState,
+                                modelColumnTitle,
+                                attrsColumnTitle,
+                                setAttributesModalData,
+                                missingAttrsFilterActive
+                            )}
+                            dataSource={data}
+                            loading={loading}
+                            size="small"
+                            pagination={false}
+                            rowKey="key"
+                            onChange={handleTableChange}
+                            expandable={{
+                                expandedRowKeys,
+                                onExpandedRowsChange: setExpandedRowKeys,
+                                expandIcon: () => null
+                            }}
+                        />
+                    </div>
+                </>
+            )}
         </Modal>
     );
-};
-
+}
 
 export default RawOriginsComponent;

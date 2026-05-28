@@ -58,24 +58,11 @@ export default function UpdateHubApproveOrigins({
     const [openedOriginId, setOpenedOriginId] = useState(null);
 
 
+    console.log("initialPayload", initialPayload)
+
     const openedOriginData = openedOriginId
         ? findOrigin(data, openedOriginId)
         : null;
-
-    useEffect(() => {
-        if (!selectedPathId || !data.length) return;
-
-        const path = data.find(p => p.path_id === selectedPathId);
-        if (!path) return;
-
-        const newVerdictKeys = path.models
-            .flatMap(m => m.origins)
-            .filter(o => o.analyze?.verdict)
-            .map(o => o.origin);
-
-        setSelectedRowKeys(newVerdictKeys);
-
-    }, [data, selectedPathId]);
 
 
     useEffect(() => {

@@ -24,19 +24,18 @@ export function useApproveOrigins() {
 
 
     useEffect(() => {
-        if (!selectedPathId || !data.length) return;
+        if (!data.length) return;
 
-        const path = data.find(p => p.path_id === selectedPathId);
-        if (!path) return;
-
-        const newVerdictKeys = path.models
-            .flatMap(m => m.origins)
+        const newVerdictKeys = data
+            .flatMap(path => path.models)
+            .flatMap(model => model.origins)
             .filter(o => o.analyze?.verdict)
             .map(o => o.origin);
 
         setSelectedRowKeys(newVerdictKeys);
 
-    }, [data, selectedPathId]);
+    }, [data]);
+
 
 
     async function loadInitialData(rawPayload) {
@@ -126,12 +125,8 @@ export function useApproveOrigins() {
             if (payload.length === 0) {
                 return {ok: false, message: "Нет выбранных origins"};
             }
-
-            const res = await fetchPostData(
-                "/service/update_origins_in_hubstock",
-                payload
-            );
-
+            console.log("payload:", payload);
+            const res = await fetchPostData("/service/update_origins_in_hubstock", payload);
             if (res !== false) {
                 return {ok: true};
             }

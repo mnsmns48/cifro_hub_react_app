@@ -39,12 +39,12 @@ export function updateOriginInData(data, originId, newPics) {
 
 export function buildHubStockPayload(data, selectedRowKeys) {
     const items = [];
+    const paths = Array.isArray(data) ? data : Object.values(data);
 
-    data.forEach(path => {
+    paths.forEach(path => {
         path.models.forEach(model => {
-            model.origins
-                .filter(o => selectedRowKeys.includes(o.origin))
-                .forEach(origin => {
+            model.origins.forEach(origin => {
+                if (selectedRowKeys.includes(origin.origin)) {
                     items.push({
                         path_id: path.path_id,
                         hub_item: {
@@ -59,11 +59,10 @@ export function buildHubStockPayload(data, selectedRowKeys) {
                             profit_range: origin.profit_range
                         }
                     });
-                });
+                }
+            });
         });
     });
 
     return items;
 }
-
-
