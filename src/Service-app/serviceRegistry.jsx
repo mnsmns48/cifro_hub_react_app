@@ -1,7 +1,7 @@
 import {
-    AppstoreAddOutlined,
+    AppstoreAddOutlined, BarChartOutlined, BuildOutlined,
     DollarOutlined,
-    FileSearchOutlined, IdcardOutlined,
+    FileSearchOutlined, FunctionOutlined, IdcardOutlined,
     PictureOutlined,
     PrinterOutlined,
     StarOutlined,
@@ -41,10 +41,28 @@ export const serviceRegistry = [
         loader: () => import("./Services/FeaturesGlobal.jsx"),
     },
     {
+        key: "SpecsBuilder",
+        title: "Шаблонизатор описаний",
+        icon: makeIcon(BuildOutlined),
+        loader: () => import("./Services/SpecsBuilder.jsx"),
+    },
+    {
         key: "SchemeAttributes",
         title: "Атрибуты",
         icon: makeIcon(AppstoreAddOutlined),
         loader: () => import("./Services/AttributesScheme.jsx"),
+    },
+    {
+        key: "Formulas",
+        title: "Формулы",
+        icon: makeIcon(FunctionOutlined),
+        loader: () => import("./Services/SchemeAttributes/FormulaList.jsx"),
+    },
+    {
+        key: "Analytics",
+        title: "Аналитика",
+        icon: makeIcon(BarChartOutlined),
+        loader: () => import("./Services/SchemeAttributes/Analytics.jsx"),
     },
     {
         key: "RewardRangeSettings",
