@@ -30,8 +30,8 @@ const FormulaTypeSelector = ({
     };
 
     return (
-        <div style={{padding: 20}}>
-            <Collapse defaultActiveKey={["1"]}>
+        <div>
+            <Collapse bordered={false} ghost={true}>
                 <Panel header={panelHeader} key="1">
                     {typesError && <>Ошибка: {typesError}</>}
                     {typesLoading ? (

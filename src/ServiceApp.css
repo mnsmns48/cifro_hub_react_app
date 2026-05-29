@@ -101,3 +101,19 @@
 .icon-style:hover {
     color: #e2fc2a;
 }
+
+.service-app-logo-link {
+    display: flex;
+    background: #40403d;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.service-app-logo {
+    max-width: 32px;
+    max-height: 32px;
+    object-fit: contain;
+}
