@@ -125,7 +125,7 @@ export function useApproveOrigins() {
             if (payload.length === 0) {
                 return {ok: false, message: "Нет выбранных origins"};
             }
-            console.log("payload:", payload);
+
             const res = await fetchPostData("/service/update_origins_in_hubstock", payload);
             if (res !== false) {
                 return {ok: true};

@@ -268,7 +268,6 @@ const HubMenuLevels = ({
                 </Col>
             </Row>
 
-
             {priceSyncList.length > 0 && !inHubOption && (
                 <VslUpdateComponent
                     isOpen={vslUpdateModalVisible}

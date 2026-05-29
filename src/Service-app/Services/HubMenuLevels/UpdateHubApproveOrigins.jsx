@@ -1,7 +1,5 @@
 import {Modal, Button, Popconfirm, Col, Row} from "antd";
-
 import {useApproveOrigins} from "./UpdateHubApproveOrigins/useApproveOrigins";
-
 import PathSelector from "./UpdateHubApproveOrigins/components/PathSelector";
 import ModelSelector from "./UpdateHubApproveOrigins/components/ModelSelector";
 import MarketSliders from "./UpdateHubApproveOrigins/components/MarketSliders";
@@ -56,9 +54,6 @@ export default function UpdateHubApproveOrigins({
 
     const [opened, setOpened] = useState(true);
     const [openedOriginId, setOpenedOriginId] = useState(null);
-
-
-    console.log("initialPayload", initialPayload)
 
     const openedOriginData = openedOriginId
         ? findOrigin(data, openedOriginId)
