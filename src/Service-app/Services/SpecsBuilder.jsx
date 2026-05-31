@@ -3,6 +3,7 @@ import {fetchGetData} from "./Common/api.js";
 import {Spin} from "antd";
 import {useFormulaTypeSelector} from "./SpecsBuilder/useFormulaTypeSelector.js";
 import FormulaTypeSelector from "./SpecsBuilder/FormulaTypeSelector.jsx";
+import DescriptionGenerator from "./SpecsBuilder/DescriptionGenerator.jsx";
 
 const SpecsBuilder = () => {
     const [loading, setLoading] = useState(true);
@@ -42,22 +43,25 @@ const SpecsBuilder = () => {
     if (error) return <>Ошибка: {error}</>;
 
     return (
-        <div style={{display: "flex", justifyContent: "flex-start"}}>
-            <div style={{width: "30%"}}>
-                <FormulaTypeSelector
-                    currentFormulaName={currentFormulaName}
-                    typesLoading={typesLoading}
-                    types={types}
-                    selected={selected}
-                    setSelected={setSelected}
-                    typesError={typesError}
-                    updateFormulaLink={updateFormulaLink}
-                    onUpdated={(newName) => {
-                        setCurrentFormulaName(newName);
-                    }}
-                />
+        <>
+            <div style={{display: "flex", justifyContent: "flex-start"}}>
+                <div style={{width: "30%"}}>
+                    <FormulaTypeSelector
+                        currentFormulaName={currentFormulaName}
+                        typesLoading={typesLoading}
+                        types={types}
+                        selected={selected}
+                        setSelected={setSelected}
+                        typesError={typesError}
+                        updateFormulaLink={updateFormulaLink}
+                        onUpdated={(newName) => {
+                            setCurrentFormulaName(newName);
+                        }}
+                    />
+                </div>
             </div>
-        </div>
+            <DescriptionGenerator/>
+        </>
     );
 };
 

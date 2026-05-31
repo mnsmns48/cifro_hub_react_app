@@ -131,23 +131,63 @@ const FormulaExpression = ({formulaId = null, onSaved, onCancel}) => {
         if (!filters) return "Загрузка...";
 
         return (
-            <Collapse accordion>
-                {Object.entries(filters).map(([name, info]) => (
-                    <Panel header={name} key={name}>
-                        <p style={{marginBottom: 8, color: "#666"}}>{info.description}</p>
-                        <Tag
-                            color="geekblue"
-                            style={{cursor: "pointer", padding: "5px 10px", fontSize: 14}}
-                            onClick={() => insertFilter(name, info.args)}
-                        >
-                            Вставить {name}
-                        </Tag>
+            <Collapse accordion bordered={false} size="small">
+                {Object.entries(filters).map(([name, info]) => {
+                    const tooltipContent = (
+                        <div style={{maxWidth: 350}}>
+                            <div style={{fontWeight: 600, marginBottom: 6}}>
+                                {name}
+                            </div>
 
-                        <div style={{marginTop: 10, fontSize: 12, color: "#a8a8a8"}}>
-                            Пример: <code>{info.example}</code>
+                            <div style={{marginBottom: 8, color: "#d9d9d9"}}>
+                                {info.description}
+                            </div>
+
+                            <div style={{fontSize: 12, opacity: 0.8}}>
+                                <span style={{color: "#8c8c8c"}}>Пример:</span>
+                                <br/>
+                                <code>{info.example}</code>
+                            </div>
                         </div>
-                    </Panel>
-                ))}
+                    );
+
+                    return (
+                        <Panel key={name}
+                               showArrow={false}
+                               header={
+                                   <Tooltip placement="right" color="#1f1f1f" title={tooltipContent}>
+                                       <span style={{cursor: "help"}}>{name}</span>
+                                   </Tooltip>
+                               }
+                        >
+                            <p style={{marginBottom: 8, color: "#666"}}>
+                                {info.description}
+                            </p>
+
+                            <Tag
+                                color="geekblue"
+                                style={{
+                                    cursor: "pointer",
+                                    padding: "5px 10px",
+                                    fontSize: 14
+                                }}
+                                onClick={() => insertFilter(name, info.args)}
+                            >
+                                Вставить {name}
+                            </Tag>
+
+                            <div
+                                style={{
+                                    marginTop: 10,
+                                    fontSize: 12,
+                                    color: "#a8a8a8"
+                                }}
+                            >
+                                Пример: <code>{info.example}</code>
+                            </div>
+                        </Panel>
+                    );
+                })}
             </Collapse>
         );
     };
@@ -239,14 +279,25 @@ const FormulaExpression = ({formulaId = null, onSaved, onCancel}) => {
 
                 <Row gutter={24}>
                     <Col span={8}>
-                        <Card title="Переменные" size="small" style={{marginBottom: 20}}>
-                            {renderVariables()}
-                        </Card>
+                        <Collapse size="small" bordered={false} style={{marginBottom: 20}}
+                                  items={[
+                                      {
+                                          key: "vars",
+                                          label: "Переменные",
+                                          children: (
+                                              <Card size="small" bordered={false} style={{padding: 0}}>
+                                                  {renderVariables()}
+                                              </Card>
+                                          )
+                                      }
+                                  ]}
+                        />
 
                         <Card title="Фильтры" size="small">
                             {renderFilters()}
                         </Card>
                     </Col>
+
 
                     <Col span={16}>
                         <Card title="Параметры формулы" size="small" style={{marginBottom: 20}}>
