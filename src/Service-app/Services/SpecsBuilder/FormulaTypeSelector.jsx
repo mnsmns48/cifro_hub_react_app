@@ -1,4 +1,4 @@
-import {Collapse, Spin, Radio, message} from "antd";
+import {Collapse, Spin, Radio} from "antd";
 
 const {Panel} = Collapse;
 

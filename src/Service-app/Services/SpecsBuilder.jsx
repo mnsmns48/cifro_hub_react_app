@@ -60,7 +60,7 @@ const SpecsBuilder = () => {
                     />
                 </div>
             </div>
-            <DescriptionGenerator/>
+            <DescriptionGenerator formulaId={selected}/>
         </>
     );
 };
