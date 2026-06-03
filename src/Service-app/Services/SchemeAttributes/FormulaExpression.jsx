@@ -285,7 +285,7 @@ const FormulaExpression = ({formulaId = null, onSaved, onCancel}) => {
                                           key: "vars",
                                           label: "Переменные",
                                           children: (
-                                              <Card size="small" bordered={false} style={{padding: 0}}>
+                                              <Card size="small" variant={"borderless"} style={{padding: 0}}>
                                                   {renderVariables()}
                                               </Card>
                                           )

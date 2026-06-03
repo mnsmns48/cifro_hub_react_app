@@ -46,18 +46,16 @@ const SpecsBuilder = () => {
         <>
             <div style={{display: "flex", justifyContent: "flex-start"}}>
                 <div style={{width: "30%"}}>
-                    <FormulaTypeSelector
-                        currentFormulaName={currentFormulaName}
-                        typesLoading={typesLoading}
-                        types={types}
-                        selectedEntityType={selectedEntityType}
-                        setSelectedEntityType={setSelectedEntityType}
-                        typesError={typesError}
-                        updateFormulaLink={updateFormulaLink}
-                        onUpdated={(newName) => {
-                            setCurrentFormulaName(newName);
-                        }}
-                    />
+                    <FormulaTypeSelector currentFormulaName={currentFormulaName}
+                                         typesLoading={typesLoading}
+                                         types={types}
+                                         selectedEntityType={selectedEntityType}
+                                         setSelectedEntityType={setSelectedEntityType}
+                                         typesError={typesError}
+                                         updateFormulaLink={updateFormulaLink}
+                                         onUpdated={(newName) => {
+                                             setCurrentFormulaName(newName)
+                                         }}/>
                 </div>
             </div>
             {selectedEntityType && (

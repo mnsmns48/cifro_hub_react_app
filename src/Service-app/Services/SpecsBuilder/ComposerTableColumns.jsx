@@ -21,7 +21,7 @@ export const getComposerColumns = ({onEditFormula}) =>
             dataIndex: ["formula", "name"],
             key: "formula",
             render: (_, record) => (
-                <a onClick={() => onEditFormula(record.formula)}>
+                <a onClick={() => onEditFormula(record)}>
                     {record.formula.name}
                 </a>
             )
