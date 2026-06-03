@@ -6,8 +6,8 @@ const FormulaTypeSelector = ({
                                  currentFormulaName,
                                  typesLoading,
                                  types,
-                                 selected,
-                                 setSelected,
+                                 selectedEntityType,
+                                 setSelectedEntityType,
                                  typesError,
                                  updateFormulaLink,
                                  onUpdated
@@ -18,7 +18,7 @@ const FormulaTypeSelector = ({
         : <span style={{color: "red"}}>Формула не выбрана</span>;
 
     const handleSelect = async (id) => {
-        setSelected(id);
+        setSelectedEntityType(id);
         const typeObj = types.find(t => t.id === id);
         const res = await updateFormulaLink({
             id: typeObj.id,
@@ -44,7 +44,7 @@ const FormulaTypeSelector = ({
 
                             <Radio.Group
                                 onChange={(e) => handleSelect(e.target.value)}
-                                value={selected}
+                                value={selectedEntityType}
                                 style={{display: "flex", flexDirection: "column", gap: 8}}
                             >
                                 {types.map(t => (

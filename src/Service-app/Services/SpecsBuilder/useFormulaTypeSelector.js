@@ -6,7 +6,7 @@ import {fetchGetData, fetchPostData} from "../Common/api.js";
 export function useFormulaTypeSelector(enabled) {
     const [loading, setLoading] = useState(false);
     const [types, setTypes] = useState([]);
-    const [selected, setSelected] = useState(null);
+    const [selectedEntityType, setSelectedEntityType] = useState(null);
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -53,8 +53,8 @@ export function useFormulaTypeSelector(enabled) {
     return {
         loading,
         types,
-        selected,
-        setSelected,
+        selectedEntityType,
+        setSelectedEntityType,
         error,
         updateFormulaLink
     };

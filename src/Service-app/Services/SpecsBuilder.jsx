@@ -3,7 +3,7 @@ import {fetchGetData} from "./Common/api.js";
 import {Spin} from "antd";
 import {useFormulaTypeSelector} from "./SpecsBuilder/useFormulaTypeSelector.js";
 import FormulaTypeSelector from "./SpecsBuilder/FormulaTypeSelector.jsx";
-import DescriptionGenerator from "./SpecsBuilder/DescriptionGenerator.jsx";
+import Composer from "./SpecsBuilder/Composer.jsx";
 
 const SpecsBuilder = () => {
     const [loading, setLoading] = useState(true);
@@ -16,7 +16,7 @@ const SpecsBuilder = () => {
             const res = await fetchGetData("/service/desc-builder/fetch_formula_link");
             if (res && res.entity_type) {
                 setCurrentFormulaName(res.entity_type.title_type);
-                setSelected(res.entity_type.id);
+                setSelectedEntityType(res.entity_type.id);
             }
         } catch (e) {
             console.error(e);
@@ -33,8 +33,8 @@ const SpecsBuilder = () => {
     const {
         loading: typesLoading,
         types,
-        selected,
-        setSelected,
+        selectedEntityType,
+        setSelectedEntityType,
         error: typesError,
         updateFormulaLink
     } = useFormulaTypeSelector(true);
@@ -50,8 +50,8 @@ const SpecsBuilder = () => {
                         currentFormulaName={currentFormulaName}
                         typesLoading={typesLoading}
                         types={types}
-                        selected={selected}
-                        setSelected={setSelected}
+                        selectedEntityType={selectedEntityType}
+                        setSelectedEntityType={setSelectedEntityType}
                         typesError={typesError}
                         updateFormulaLink={updateFormulaLink}
                         onUpdated={(newName) => {
@@ -60,7 +60,9 @@ const SpecsBuilder = () => {
                     />
                 </div>
             </div>
-            <DescriptionGenerator formulaId={selected}/>
+            {selectedEntityType && (
+                <Composer formulaEntityTypeId={selectedEntityType}/>
+            )}
         </>
     );
 };
