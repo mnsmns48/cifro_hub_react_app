@@ -1,37 +1,41 @@
-import {Col, Row, Table, Form, Input, Button, Card} from "antd";
+import {Table, Button, message} from "antd";
 import {useEffect, useState} from "react";
-import {fetchGetData, fetchPostData} from "../Common/api.js";
-import {getComposerColumns} from "./ComposerTableColumns.jsx";
-import DescriptionGenerator from "./DescriptionGenerator.jsx";
-import {ArrowLeftOutlined, CheckOutlined} from "@ant-design/icons";
+import {fetchGetData, fetchPostData, fetchPutData} from "../Common/api.js";
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
+import {PlusCircleOutlined} from "@ant-design/icons";
 import {getSpecsPathColumns} from "./SpecsPathColumns.jsx";
 
-const {TextArea} = Input;
-
-
-
-
-const Composer = ({formulaEntityTypeId}) => {
+const Composer = ({formulaEntityTypeId, selectedFormula, onEditFormula}) => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [selectedFormula, setSelectedFormula] = useState(null);
+
     const [specPaths, setSpecPaths] = useState({});
+    const [hoveredRow, setHoveredRow] = useState(null);
 
-
-    const [form] = Form.useForm();
-
+    const [isCreating, setIsCreating] = useState(false);
+    const [editingRowId, setEditingRowId] = useState(null);
+    const [createData, setCreateData] = useState(null);
+    const [newRow, setNewRow] = useState({
+        type_id: null,
+        source: null,
+        formula_id: null
+    });
 
     useEffect(() => {
         if (!selectedFormula) return;
+        const {id} = selectedFormula.formula;
+        const {source} = selectedFormula;
 
-        const formulaId = selectedFormula.formula.id;
-        const source = selectedFormula.source;
+        void loadSpecPaths(id, source);
+    }, [selectedFormula]);
 
-        void loadSpecPaths(formulaId, source);
-    }, [selectedFormula?.formula.id, selectedFormula?.source]);
-
+    const loadSpecPaths = async (formulaId, source) => {
+        const res = await fetchPostData("/service/desc-builder/fetch_spec_path", {
+            formula_id: formulaId,
+            source
+        });
+        setSpecPaths(prev => ({...prev, [formulaId]: res || []}));
+    };
 
     useEffect(() => {
         if (!formulaEntityTypeId) return;
@@ -42,92 +46,124 @@ const Composer = ({formulaEntityTypeId}) => {
             setData(res);
             setLoading(false);
         };
+
         void load();
     }, [formulaEntityTypeId]);
 
-    if (loading) {
-        return (<Spinner/>);
-    }
+    if (loading) return <Spinner/>;
 
 
-    const loadSpecPaths = async (formulaId, source) => {
-        const res = await fetchPostData(
-            "/service/desc-builder/fetch_spec_path",
-            {formula_id: formulaId, source}
-        );
+    const loadCreateData = async () => {
+        const res = await fetchGetData(`/service/desc-builder/create_new_composer/${formulaEntityTypeId}`);
+        setCreateData(res);
+    };
 
-        setSpecPaths(prev => ({...prev, [formulaId]: res || []}));
+    const startCreate = async () => {
+        await loadCreateData();
+        setIsCreating(true);
+        setEditingRowId("new");
     };
 
 
-    const handleEditFormula = (record) => {
-        setSelectedFormula(record);
-        setIsEditing(true);
+    const onSave = async (record) => {
+        if (!newRow.type_id || !newRow.source || !newRow.formula_id) {
+            message.warning("Заполните все поля");
+            return;
+        }
 
-        form.setFieldsValue({
-            formula: record.formula.formula,
-            is_active: record.formula.is_active
+        if (record.isNew) {
+            await fetchPostData("/service/desc-builder/save_new_composer", newRow);
+            message.success("Composer создан");
+        } else {
+
+            await fetchPutData(`/service/desc-builder/update_composer/${record.id}`, newRow);
+            message.success("Composer обновлён");
+        }
+
+        await reloadTable();
+        resetEditing();
+    };
+
+    const reloadTable = async () => {
+        const updated = await fetchGetData(`/service/desc-builder/fetch_composer/${formulaEntityTypeId}`);
+        setData(updated);
+    };
+
+    const resetEditing = () => {
+        setIsCreating(false);
+        setEditingRowId(null);
+        setNewRow({type_id: null, source: null, formula_id: null});
+    };
+
+
+    const onEdit = (record) => {
+        setEditingRowId(record.id);
+        setNewRow({
+            type_id: record.type.id,
+            source: record.source,
+            formula_id: record.formula.id
         });
     };
 
 
-    const handleSave = async () => {
-        await form.validateFields();
-        setIsEditing(false);
-        setSelectedFormula(null);
-    };
+    const onCancel = () => resetEditing();
 
-    const handleCancel = () => {
-        setIsEditing(false);
-        setSelectedFormula(null);
-    };
+    const composers = data.composers || [];
 
-    const columns = getComposerColumns({onEditFormula: handleEditFormula});
+    const tableData = isCreating
+        ? [{id: "new", isNew: true, ...newRow}, ...composers]
+        : composers;
 
-
-
+    const columns = getSpecsPathColumns({
+        createData,
+        newRow,
+        setNewRow,
+        editingRowId,
+        onSave,
+        onCancel,
+        onEdit,
+        onEditFormula
+    });
 
     return (
-        <Row gutter={10} align="top">
-            <Col span={16}>
-                {isEditing && (
-                    <Card
-                        key={selectedFormula?.formula.id}
-                        title={`Редактирование формулы: ${selectedFormula?.formula.name} ${selectedFormula?.source}`}
-                        variant={"borderless"}
-                    >
-                        <Form form={form} layout="vertical">
-                            <Form.Item name="formula" rules={[{required: true}]}>
-                                <TextArea rows={10}/>
-                            </Form.Item>
-                            <div style={{display: "flex", gap: 10}}>
-                                <Button icon={<ArrowLeftOutlined/>} onClick={handleCancel}/>
-                                <Button type="primary" icon={<CheckOutlined/>} onClick={handleSave}/>
-                            </div>
-                        </Form>
+        <>
 
-                        <Table
-                            rowKey={(_, index) => index}
-                            style={{marginTop: 15}}
-                            dataSource={specPaths[selectedFormula?.formula.id] || []}
-                            pagination={false}
-                            size="small"
-                            columns={getSpecsPathColumns()}
-                        />
-                    </Card>
-                )}
+            {selectedFormula && (
+                <Table
+                    rowKey={(_, index) => index}
+                    style={{marginTop: 15}}
+                    dataSource={specPaths[selectedFormula.formula.id] || []}
+                    pagination={false}
+                    size="small"
+                    columns={getSpecsPathColumns({})}
+                    onRow={(_, index) => ({
+                        onMouseEnter: () => setHoveredRow(index),
+                        onMouseLeave: () => setHoveredRow(null)
+                    })}
+                    rowClassName={(_, index) =>
+                        index === hoveredRow ? "spec-row-hover-red" : "spec-row-gray"
+                    }
+                />
+            )}
 
-                <Table rowKey="id" columns={columns}
-                       dataSource={data.composers}
-                       pagination={false}
-                       size="small"
-                       style={{marginTop: 15}}/>
-            </Col>
 
-            <Col span={8}>
-                <DescriptionGenerator/>
-            </Col>
-        </Row>
+            <Table
+                rowKey="id"
+                columns={columns}
+                dataSource={tableData}
+                pagination={false}
+                size="small"
+            />
+
+            {!isCreating && (
+                <div style={{marginTop: 10}}>
+                    <Button type="primary" icon={<PlusCircleOutlined/>} onClick={startCreate}>
+                        Создать новый composer
+                    </Button>
+                </div>
+            )}
+        </>
     );
 };
+
 export default Composer;

@@ -1,0 +1,7 @@
+.ant-table-tbody > tr.spec-row-gray > td {
+    background-color: #ededed !important;
+}
+
+.ant-table-tbody > tr.spec-row-hover-red > td {
+    background-color: #acacac !important;
+}
