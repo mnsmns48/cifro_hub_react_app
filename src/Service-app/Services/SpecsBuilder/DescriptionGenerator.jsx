@@ -42,11 +42,10 @@ const DescriptionGenerator = forwardRef((props, ref) => {
         }
     };
 
-    // 👉 ДАЁМ Composer возможность вызвать generate()
     useImperativeHandle(ref, () => ({
         regenerate() {
             if (Object.keys(resultMap).length > 0) {
-                generate();
+                void generate();
             }
         }
     }));
@@ -92,6 +91,6 @@ const DescriptionGenerator = forwardRef((props, ref) => {
         </>
     );
 });
-DescriptionGenerator.displayName = "DescriptionGenerator";
 
+DescriptionGenerator.displayName = "DescriptionGenerator";
 export default DescriptionGenerator;

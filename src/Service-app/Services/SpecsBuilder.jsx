@@ -114,13 +114,15 @@ const SpecsBuilder = () => {
                                         <Button type="primary" icon={<SaveOutlined/>} onClick={updateFormula}/>
                                     </div>
                                 </Form>
-
                             </Card>
                         )}
-                        <Composer formulaEntityTypeId={selectedEntityType}
-                                  selectedFormula={selectedFormula}
-                                  onEditFormula={handleEditFormula}
+                        <Composer
+                            formulaEntityTypeId={selectedEntityType}
+                            selectedFormula={selectedFormula}
+                            onEditFormula={handleEditFormula}
+                            onSpecPathChanged={() => descRef.current?.regenerate()}
                         />
+
                     </Col>
                     <Col span={8}>
                         <DescriptionGenerator ref={descRef}/>

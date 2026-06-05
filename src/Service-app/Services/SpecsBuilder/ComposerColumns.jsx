@@ -1,4 +1,4 @@
-import {Select, Button} from "antd";
+import {Select, Button, Popconfirm} from "antd";
 import {CloseOutlined, EditOutlined, RollbackOutlined, SaveOutlined} from "@ant-design/icons";
 
 export const getComposerColumns = ({
@@ -106,7 +106,7 @@ export const getComposerColumns = ({
                 return (
                     <div style={{display: "flex", gap: 8}}>
                         <Button size="small" onClick={() => onSave(record)} icon={<SaveOutlined/>}/>
-                        <Button size="small" onClick={() => onCancel(record)} icon={<RollbackOutlined />}/>
+                        <Button size="small" onClick={() => onCancel(record)} icon={<RollbackOutlined/>}/>
                     </div>
                 );
             }
@@ -114,7 +114,19 @@ export const getComposerColumns = ({
             return (
                 <div style={{display: "flex", gap: 8}}>
                     <Button size="small" onClick={() => onEdit(record)} icon={<EditOutlined/>}/>
-                    <Button size="small" danger onClick={() => onDelete(record)} icon={<CloseOutlined/>}/>
+                    <Popconfirm title="Удалить этот composer?"
+                                description="Это действие необратимо"
+                                okText="Удалить"
+                                cancelText="Отмена"
+                                onConfirm={() => onDelete(record)}
+                    >
+                        <Button
+                            size="small"
+                            danger
+                            icon={<CloseOutlined/>}
+                        />
+                    </Popconfirm>
+
                 </div>
             );
         }
