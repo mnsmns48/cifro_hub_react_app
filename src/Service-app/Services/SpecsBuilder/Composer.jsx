@@ -3,7 +3,9 @@ import {useEffect, useState} from "react";
 import {fetchGetData, fetchPostData, fetchPutData} from "../Common/api.js";
 import Spinner from "../../../Cifrotech-app/components/Spinner.jsx";
 import {PlusCircleOutlined} from "@ant-design/icons";
-import {getSpecsPathColumns} from "./SpecsPathColumns.jsx";
+import {getComposerColumns} from "./ComposerColumns.jsx";
+import {getSpecPathsTableColumns} from "./SpecPathsColumns.jsx";
+
 
 const Composer = ({formulaEntityTypeId, selectedFormula, onEditFormula}) => {
     const [loading, setLoading] = useState(true);
@@ -96,7 +98,8 @@ const Composer = ({formulaEntityTypeId, selectedFormula, onEditFormula}) => {
     };
 
 
-    const onEdit = (record) => {
+    const onEdit = async (record) => {
+        await loadCreateData();   // ← ДОБАВИТЬ
         setEditingRowId(record.id);
         setNewRow({
             type_id: record.type.id,
@@ -106,6 +109,10 @@ const Composer = ({formulaEntityTypeId, selectedFormula, onEditFormula}) => {
     };
 
 
+    const onDelete = (record) => {
+
+    }
+
     const onCancel = () => resetEditing();
 
     const composers = data.composers || [];
@@ -114,7 +121,7 @@ const Composer = ({formulaEntityTypeId, selectedFormula, onEditFormula}) => {
         ? [{id: "new", isNew: true, ...newRow}, ...composers]
         : composers;
 
-    const columns = getSpecsPathColumns({
+    const composerColumns = getComposerColumns({
         createData,
         newRow,
         setNewRow,
@@ -122,48 +129,76 @@ const Composer = ({formulaEntityTypeId, selectedFormula, onEditFormula}) => {
         onSave,
         onCancel,
         onEdit,
-        onEditFormula
+        onDelete,
+        onEditFormula,
     });
 
     return (
         <>
 
             {selectedFormula && (
-                <Table
-                    rowKey={(_, index) => index}
-                    style={{marginTop: 15}}
-                    dataSource={specPaths[selectedFormula.formula.id] || []}
-                    pagination={false}
-                    size="small"
-                    columns={getSpecsPathColumns({})}
-                    onRow={(_, index) => ({
-                        onMouseEnter: () => setHoveredRow(index),
-                        onMouseLeave: () => setHoveredRow(null)
-                    })}
-                    rowClassName={(_, index) =>
-                        index === hoveredRow ? "spec-row-hover-red" : "spec-row-gray"
-                    }
-                />
+                <div
+                    style={{
+                        background: "#fafafa",
+                        padding: "12px 12px 5px 12px",
+                        borderRadius: 6,
+                        marginTop: 5,
+                        marginBottom: 25
+                    }}
+                >
+                    <div style={{
+                        display: "inline-block",
+                        fontWeight: 600,
+                        marginBottom: 8,
+                        padding: "6px 10px",
+                        background: "#3a3a3a",
+                        border: "1px solid #d6e4ff",
+                        borderRadius: 6,
+                        color: "#e2fc2a",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.05)"
+                    }}>
+                        {selectedFormula.formula.name}
+                    </div>
+
+                    <Table
+                        rowKey={(_, index) => index}
+                        dataSource={specPaths[selectedFormula.formula.id] || []}
+                        pagination={false}
+                        size="small"
+                        columns={getSpecPathsTableColumns()}
+                        onRow={(_, index) => ({
+                            onMouseEnter: () => setHoveredRow(index),
+                            onMouseLeave: () => setHoveredRow(null)
+                        })}
+                        rowClassName={(_, index) =>
+                            index === hoveredRow ? "spec-row-hover-red" : "spec-row-gray"
+                        }
+                    />
+                </div>
             )}
 
 
             <Table
                 rowKey="id"
-                columns={columns}
+                columns={composerColumns}
                 dataSource={tableData}
                 pagination={false}
                 size="small"
             />
 
-            {!isCreating && (
-                <div style={{marginTop: 10}}>
-                    <Button type="primary" icon={<PlusCircleOutlined/>} onClick={startCreate}>
-                        Создать новый composer
-                    </Button>
-                </div>
-            )}
+            {
+                !isCreating && (
+                    <div style={{marginTop: 10}}>
+                        <Button type="primary" icon={<PlusCircleOutlined/>} onClick={startCreate}>
+                            Создать новый composer
+                        </Button>
+                    </div>
+                )
+            }
         </>
-    );
+    )
+        ;
+
 };
 
 export default Composer;

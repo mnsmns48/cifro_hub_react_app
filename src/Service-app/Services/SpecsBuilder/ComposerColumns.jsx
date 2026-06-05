@@ -1,15 +1,17 @@
 import {Select, Button} from "antd";
-import {CloseOutlined, EditOutlined, SaveOutlined} from "@ant-design/icons";
+import {CloseOutlined, EditOutlined, RollbackOutlined, SaveOutlined} from "@ant-design/icons";
 
-export const getSpecsPathColumns = ({
-                                        createData,
-                                        newRow,
-                                        setNewRow,
-                                        editingRowId,
-                                        onSave,
-                                        onCancel,
-                                        onEdit
-                                    }) => [
+export const getComposerColumns = ({
+                                       createData,
+                                       newRow,
+                                       setNewRow,
+                                       editingRowId,
+                                       onSave,
+                                       onCancel,
+                                       onEdit,
+                                       onDelete,
+                                       onEditFormula
+                                   }) => [
     {
         title: "Тип",
         dataIndex: ["type", "type"],
@@ -85,7 +87,12 @@ export const getSpecsPathColumns = ({
                 );
             }
 
-            return record.formula?.name;
+            return (
+                <a onClick={() => onEditFormula(record)}>
+                    {record.formula.name}
+                </a>
+            );
+
         }
     },
     {
@@ -98,15 +105,19 @@ export const getSpecsPathColumns = ({
             if (isNew || isEditing) {
                 return (
                     <div style={{display: "flex", gap: 8}}>
-                        <Button onClick={() => onSave(record)} icon={<SaveOutlined/>}/>
-                        <Button onClick={() => onCancel(record)} icon={<CloseOutlined/>}/>
+                        <Button size="small" onClick={() => onSave(record)} icon={<SaveOutlined/>}/>
+                        <Button size="small" onClick={() => onCancel(record)} icon={<RollbackOutlined />}/>
                     </div>
                 );
             }
 
             return (
-                <Button onClick={() => onEdit(record)} icon={<EditOutlined/>}/>
+                <div style={{display: "flex", gap: 8}}>
+                    <Button size="small" onClick={() => onEdit(record)} icon={<EditOutlined/>}/>
+                    <Button size="small" danger onClick={() => onDelete(record)} icon={<CloseOutlined/>}/>
+                </div>
             );
         }
     }
 ];
+

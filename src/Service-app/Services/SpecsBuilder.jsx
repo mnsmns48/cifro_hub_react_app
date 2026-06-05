@@ -101,6 +101,7 @@ const SpecsBuilder = () => {
             {selectedEntityType && (
                 <Row gutter={10} align="top">
                     <Col span={16}>
+
                         {isEditing && (
                             <Card key={selectedFormula?.formula.id} variant={"borderless"}>
                                 <Form form={form} layout="vertical">
@@ -113,7 +114,7 @@ const SpecsBuilder = () => {
                                         <Button type="primary" icon={<SaveOutlined/>} onClick={updateFormula}/>
                                     </div>
                                 </Form>
-                                <div style={{marginTop: 10}}>{selectedFormula?.formula.name}</div>
+
                             </Card>
                         )}
                         <Composer formulaEntityTypeId={selectedEntityType}
