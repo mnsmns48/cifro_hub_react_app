@@ -86,41 +86,32 @@ export const getSpecPathsTableColumns = ({
         dataIndex: "icon",
         align: "center",
         width: "15%",
-        render: (_, record) => {
-            const uploadProps = {
-                showUploadList: false,
-                beforeUpload: () => false,
-                customRequest: async ({file, onSuccess, onError}) => {
-                    try {
-                        await uploadIcon(record, file);
-                        onSuccess();
-                    } catch (e) {
-                        onError(e);
-                    }
-                },
-                onRemove: async () => {
-                    try {
-                        await deleteIcon(record);
-                    } catch (e) {
-                        message.error("Ошибка удаления", e);
-                    }
-                }
-            };
-
-            return (
-                <Upload {...uploadProps}>
-                    <img src={record.icon}
-                         alt="icon"
-                         style={{
-                             width: 30,
-                             height: 30,
-                             objectFit: "contain",
-                             cursor: "pointer"
-                         }}
-                    />
-                </Upload>
-            );
-        }
+        render: (_, record) => (
+            <Upload key={`${record.id}-${record.icon}`} showUploadList={false}
+                    customRequest={async (options) => {
+                        try {
+                            await uploadIcon(record, options.file);
+                            options.onSuccess?.("ok");
+                        } catch (e) {
+                            message.error("Ошибка загрузки", e);
+                        }
+                    }}>
+                <div style={{position: "relative", display: "inline-block", cursor: "pointer"}}>
+                    <img src={record.icon} alt="icon" style={{width: 30, height: 30, objectFit: "contain"}}/>
+                    <Button size="small" danger type="text"
+                            style={{position: "absolute", top: -8, right: -8, padding: 0, minWidth: 16, height: 16}}
+                            onClick={async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                try {
+                                    await deleteIcon(record);
+                                } catch {
+                                    message.error("Ошибка удаления")
+                                }
+                            }}>×</Button>
+                </div>
+            </Upload>
+        )
     },
     {
         title: "",

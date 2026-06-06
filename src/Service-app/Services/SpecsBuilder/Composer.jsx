@@ -29,7 +29,6 @@ const Composer = ({formulaEntityTypeId, selectedFormula, onEditFormula, onSpecPa
     } = useSpecPath({selectedFormula, onSpecPathChanged});
 
 
-
     useEffect(() => {
         if (!formulaEntityTypeId) return;
         const load = async () => {
