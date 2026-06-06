@@ -1,4 +1,4 @@
-import {Button, Popconfirm, Input} from "antd";
+import {Button, Popconfirm, Input, message, Upload} from "antd";
 import {
     CloseOutlined,
     EditOutlined,
@@ -13,7 +13,9 @@ export const getSpecPathsTableColumns = ({
                                              onCancel,
                                              onDelete,
                                              newRow,
-                                             setNewRow
+                                             setNewRow,
+                                             uploadIcon,
+                                             deleteIcon
                                          }) => [
     {
         title: "Переменная",
@@ -84,15 +86,39 @@ export const getSpecPathsTableColumns = ({
         dataIndex: "icon",
         align: "center",
         width: "15%",
-        ellipsis: true,
-        render: (icon) => {
-            if (!icon) return null;
+        render: (_, record) => {
+            const uploadProps = {
+                showUploadList: false,
+                beforeUpload: () => false,
+                customRequest: async ({file, onSuccess, onError}) => {
+                    try {
+                        await uploadIcon(record, file);
+                        onSuccess();
+                    } catch (e) {
+                        onError(e);
+                    }
+                },
+                onRemove: async () => {
+                    try {
+                        await deleteIcon(record);
+                    } catch (e) {
+                        message.error("Ошибка удаления", e);
+                    }
+                }
+            };
+
             return (
-                <img
-                    src={icon}
-                    alt="icon"
-                    style={{width: 30, height: 30, objectFit: "contain"}}
-                />
+                <Upload {...uploadProps}>
+                    <img src={record.icon}
+                         alt="icon"
+                         style={{
+                             width: 30,
+                             height: 30,
+                             objectFit: "contain",
+                             cursor: "pointer"
+                         }}
+                    />
+                </Upload>
             );
         }
     },

@@ -105,6 +105,36 @@ export const useSpecPath = ({selectedFormula, onSpecPathChanged}) => {
         ? [{id: "new", isNew: true, ...newRow}, ...(specPaths[formulaId] || [])]
         : (specPaths[formulaId] || []);
 
+    const uploadIcon = async (record, file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const res = await fetch(
+            `/service/desc-builder/spec_path/${record.id}/upload_icon`,
+            {method: "POST", body: formData}
+        );
+        if (!res.ok) throw new Error("Upload failed");
+
+        const data = await res.json();
+        message.success("Иконка обновлена");
+        record.icon = data.icon;
+        setSpecPaths(prev => ({...prev}));
+    };
+
+    const deleteIcon = async (record) => {
+        const res = await fetch(
+            `/service/desc-builder/spec_path/${record.id}/icon`,
+            {method: "DELETE"}
+        );
+
+        if (!res.ok) throw new Error("Delete failed");
+
+        const data = await res.json();
+        message.success("Иконка удалена");
+
+        record.icon = data.icon;
+        setSpecPaths(prev => ({...prev}));
+    };
 
     const specPathColumns = getSpecPathsTableColumns({
         editingRowId,
@@ -113,7 +143,9 @@ export const useSpecPath = ({selectedFormula, onSpecPathChanged}) => {
         onCancel,
         onDelete,
         newRow,
-        setNewRow
+        setNewRow,
+        deleteIcon,
+        uploadIcon
     });
 
     return {
