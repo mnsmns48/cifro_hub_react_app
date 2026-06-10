@@ -1,5 +1,5 @@
 import {Tooltip} from "antd";
-import ResolveModelTypeDependencies from "../Common/ResolveModelTypeDependencies.jsx";
+import DescriptionRenderer from "../Common/DescriptionRenderer.jsx";
 
 export const buildHubChooseElementsColumns = () => {
     return [
@@ -24,43 +24,47 @@ export const buildHubChooseElementsColumns = () => {
             title: "Название",
             dataIndex: "title",
             sorter: (a, b) => a.title.localeCompare(b.title),
-            render: (text, record) => (
-                <Tooltip
-                    placement="right"
-                    style={{
-                        maxWidth: 900,
-                        padding: 0,
-                    }}
-                    title={
-                        <div style={{maxWidth: 900}}>
-
-                            <div style={{textAlign: "left", marginBottom: 15}}>
-                                <ResolveModelTypeDependencies source={record.source} info={record.info}/>
-                            </div>
-                            {record.origins?.length ? (
-                                <div style={{maxWidth: 900}}>
-                                    {[...record.origins]
-                                        .sort((a, b) => a.output_price - b.output_price)
-                                        .map((a, i) => (
-                                            <div key={i} style={{marginBottom: 4}}>
-                                                <span>{a.title}: </span>
-                                                <span style={{color: "#7FFF00", fontWeight: 600}}>
+            render: (text, record) => {
+                const product_features_map = {
+                    [record.id]: record.info ? Object.assign({}, ...record.info) : null
+                };
+                return (
+                    <Tooltip
+                        placement="right"
+                        style={{
+                            maxWidth: 900,
+                            padding: 0,
+                        }}
+                        title={
+                            <div style={{maxWidth: 900}}>
+                                <div style={{textAlign: "left", marginBottom: 15}}>
+                                    <DescriptionRenderer product_features_map={product_features_map}/>
+                                </div>
+                                {record.origins?.length ? (
+                                    <div style={{maxWidth: 900}}>
+                                        {[...record.origins]
+                                            .sort((a, b) => a.output_price - b.output_price)
+                                            .map((a, i) => (
+                                                <div key={i} style={{marginBottom: 4}}>
+                                                    <span>{a.title}: </span>
+                                                    <span style={{color: "#7FFF00", fontWeight: 600}}>
                                             {a.output_price.toLocaleString("ru-RU")} ₽
                                         </span>
-                                            </div>
-                                        ))}
-                                </div>
-                            ) : (
-                                <div>Нет данных</div>
-                            )}
-                        </div>
-                    }
-                >
+                                                </div>
+                                            ))}
+                                    </div>
+                                ) : (
+                                    <div>Нет данных</div>
+                                )}
+                            </div>
+                        }
+                    >
             <span style={{cursor: "pointer"}}>
                 {text}
             </span>
-                </Tooltip>
-            )
+                    </Tooltip>
+                )
+            }
         },
         {
             title: "Тип",

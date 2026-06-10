@@ -1,5 +1,5 @@
 import {forwardRef, useImperativeHandle, useState} from "react";
-import {Input, Button, Spin, Typography, Card, message} from "antd";
+import {Input, Button, Spin, Typography, Card, message, Alert} from "antd";
 import {fetchPostData} from "../Common/api.js";
 
 const {Text, Paragraph} = Typography;
@@ -7,7 +7,9 @@ const {Text, Paragraph} = Typography;
 const DescriptionGenerator = forwardRef((props, ref) => {
     const [inputValue, setInputValue] = useState("");
     const [loading, setLoading] = useState(false);
-    const [resultMap, setResultMap] = useState({});
+
+    const [errorObj, setErrorObj] = useState(null);
+    const [products, setProducts] = useState({});
 
     const parseIds = () => {
         return inputValue
@@ -26,6 +28,9 @@ const DescriptionGenerator = forwardRef((props, ref) => {
         }
 
         setLoading(true);
+        setErrorObj(null);
+        setProducts({});
+
         const product_features_map = {};
         ids.forEach(id => product_features_map[id] = null);
 
@@ -34,9 +39,24 @@ const DescriptionGenerator = forwardRef((props, ref) => {
                 "/service/desc-builder/generate_description",
                 {product_features_map}
             );
-            if (res && typeof res === "object") {
-                setResultMap(res);
+
+            if (!res || typeof res !== "object") {
+                setErrorObj({error: "BadResponse", details: "Некорректный ответ сервера"});
+                return;
             }
+
+            if (res.error) {
+                setErrorObj(res.error);
+                return;
+            }
+
+            if (res.success && res.success.products) {
+                setProducts(res.success.products);
+                return;
+            }
+
+            setErrorObj({error: "UnknownFormat", details: "Неизвестный формат ответа сервера"});
+
         } finally {
             setLoading(false);
         }
@@ -44,7 +64,7 @@ const DescriptionGenerator = forwardRef((props, ref) => {
 
     useImperativeHandle(ref, () => ({
         regenerate() {
-            if (Object.keys(resultMap).length > 0) {
+            if (Object.keys(products).length > 0) {
                 void generate();
             }
         }
@@ -70,9 +90,19 @@ const DescriptionGenerator = forwardRef((props, ref) => {
                 </div>
             )}
 
-            {Object.keys(resultMap).length > 0 && (
+            {errorObj && (
+                <Alert
+                    style={{marginTop: 20}}
+                    type="error"
+                    message={errorObj.error}
+                    description={errorObj.details}
+                    showIcon
+                />
+            )}
+
+            {Object.keys(products).length > 0 && (
                 <div style={{display: "flex", flexDirection: "column", gap: 4, marginTop: 4}}>
-                    {Object.entries(resultMap).map(([productId, data]) => (
+                    {Object.entries(products).map(([productId, data]) => (
                         <Card key={productId} title={`Product ID: ${productId}`} style={{background: "#fafafa"}}>
                             {data.blocks.map((block, index) => (
                                 <div key={index} style={{display: "flex", gap: 10}}>

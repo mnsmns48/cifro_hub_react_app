@@ -2,7 +2,7 @@ import {Image, Button, Tooltip} from "antd";
 import {FileUnknownOutlined, LinkOutlined, PercentageOutlined,} from "@ant-design/icons";
 import {updateParsingItem} from "../api.js";
 import "../../Css/ParsingResults.css";
-import ResolveModelTypeDependencies from "../../Common/ResolveModelTypeDependencies.jsx";
+import DescriptionRenderer from "../../Common/DescriptionRenderer.jsx";
 
 export const createParsingColumns = (
     {setRows, showInputPrice, expandedRows, toggleExpand, openAttributesModal, showDependencyColumn}
@@ -111,15 +111,13 @@ export const createParsingColumns = (
 
 
             return (
-                <Tooltip placement="right"
-                         styles={{
-                             container: {
-                                 width: "15vw",
-                                 maxWidth: "15vw",
-                                 padding: 15
-                             }
-                         }}
-                         title={<ResolveModelTypeDependencies origin={record.origin}/>}
+                <Tooltip placement="right" styles={{
+                    container: {
+
+                        padding: 5
+                    }
+                }}
+                         title={<DescriptionRenderer origin={record.origin}/>}
                 >
                     {content}
                 </Tooltip>
