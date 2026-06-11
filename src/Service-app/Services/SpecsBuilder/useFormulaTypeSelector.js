@@ -47,6 +47,7 @@ export function useFormulaTypeSelector(enabled) {
             return null;
         } finally {
             setLoading(false);
+
         }
     };
 

@@ -28,6 +28,11 @@ const Composer = ({formulaEntityTypeId, selectedFormula, onEditFormula, onSpecPa
         loadSpecPaths
     } = useSpecPath({selectedFormula, onSpecPathChanged});
 
+    useEffect(() => {
+        if (!selectedFormula) return;
+        void reloadComposerTable();
+    }, [selectedFormula]);
+
 
     useEffect(() => {
         if (!formulaEntityTypeId) return;

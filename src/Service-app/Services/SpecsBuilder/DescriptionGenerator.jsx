@@ -105,7 +105,7 @@ const DescriptionGenerator = forwardRef((props, ref) => {
                     {Object.entries(products).map(([productId, data]) => (
                         <Card key={productId} title={`Product ID: ${productId}`} style={{background: "#fafafa"}}>
                             {data.blocks.map((block, index) => (
-                                <div key={index} style={{display: "flex", gap: 10}}>
+                                <div key={index} style={{display: "flex", gap: 10, alignItems: "center"}}>
                                     {block.icon && (
                                         <img src={block.icon} alt="" style={{width: 28, height: 28, opacity: 0.8}}/>
                                     )}

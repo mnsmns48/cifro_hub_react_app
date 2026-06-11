@@ -80,6 +80,7 @@ const SpecsBuilder = () => {
         );
 
         if (res) {
+
             descRef.current?.regenerate();
         }
     };
