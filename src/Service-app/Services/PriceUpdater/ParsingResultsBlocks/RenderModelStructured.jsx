@@ -1,11 +1,11 @@
 import {useEffect, useState} from "react";
 import {Modal, Table, Tooltip, Button} from "antd";
 import {fetchPostData} from "../../Common/api.js";
-import ResolveModelTypeDependencies from "../../Common/ResolveModelTypeDependencies.jsx";
 import Spinner from "../../../../Cifrotech-app/components/Spinner.jsx";
 import {QuestionCircleOutlined} from "@ant-design/icons";
 import "../../Css/RenderModelStructured.css"
 import EmptyState from "../../../../Ui/Empty.jsx";
+import DescriptionRenderer from "../../Common/DescriptionRenderer.jsx";
 
 
 const RenderModelStructured = ({vsl_id, onClose}) => {
@@ -44,56 +44,57 @@ const RenderModelStructured = ({vsl_id, onClose}) => {
             title: "Название",
             dataIndex: "title",
             sorter: (a, b) => a.title.localeCompare(b.title),
-            render: (text, record) => (
-                <Tooltip
-                    placement="right"
-                    overlayStyle={{maxWidth: 500, padding: 0}}
-                    title={
-                        <div style={{maxWidth: 900}}>
-                            <div style={{textAlign: "left", marginBottom: 15}}>
-                                <ResolveModelTypeDependencies
-                                    source={record.source}
-                                    info={record.info}
-                                />
-                            </div>
-
-                            {record.origins?.length ? (
-                                <div style={{
-                                    maxHeight: 180,
-                                    overflowY: "auto",
-                                    paddingRight: 6,
-                                    marginTop: 6,
-                                }}
-                                >
-                                    {[...record.origins]
-                                        .sort((a, b) => a.output_price - b.output_price)
-                                        .map((a, i) => (
-                                            <div key={i}
-                                                 style={{
-                                                     display: "flex",
-                                                     gap: 6,
-                                                     fontSize: 12,
-                                                     lineHeight: "16px",
-                                                     marginBottom: 2,
-                                                     alignItems: "center",
-                                                     whiteSpace: "nowrap",
-                                                 }}
-                                            >
-                                                <span style={{color: "#ccc"}}>{a.title}:</span>
-                                                <span style={{color: "#7FFF00", fontWeight: 600}}>
-                                                    {a.output_price.toLocaleString("ru-RU")} ₽
-                                                </span>
-                                                <span style={{color: "#999"}}>{a.origin}</span>
-                                            </div>
-                                        ))}
+            render: (text, record) => {
+                const product_features_map = {
+                    [record.id]: record.info ? Object.assign({}, ...record.info) : null
+                };
+                return (
+                    <Tooltip
+                        placement="right"
+                        overlayStyle={{maxWidth: 500, padding: 0}}
+                        title={
+                            <div style={{maxWidth: 900}}>
+                                <div style={{textAlign: "left", marginBottom: 15}}>
+                                    <DescriptionRenderer product_features_map={product_features_map}/>
                                 </div>
 
-                            ) : (
-                                <div>Нет данных</div>
-                            )}
-                        </div>
-                    }
-                >
+                                {record.origins?.length ? (
+                                    <div style={{
+                                        maxHeight: 180,
+                                        overflowY: "auto",
+                                        paddingRight: 6,
+                                        marginTop: 6,
+                                    }}
+                                    >
+                                        {[...record.origins]
+                                            .sort((a, b) => a.output_price - b.output_price)
+                                            .map((a, i) => (
+                                                <div key={i}
+                                                     style={{
+                                                         display: "flex",
+                                                         gap: 6,
+                                                         fontSize: 12,
+                                                         lineHeight: "16px",
+                                                         marginBottom: 2,
+                                                         alignItems: "center",
+                                                         whiteSpace: "nowrap",
+                                                     }}
+                                                >
+                                                    <span style={{color: "#ccc"}}>{a.title}:</span>
+                                                    <span style={{color: "#7FFF00", fontWeight: 600}}>
+                                                    {a.output_price.toLocaleString("ru-RU")} ₽
+                                                </span>
+                                                    <span style={{color: "#999"}}>{a.origin}</span>
+                                                </div>
+                                            ))}
+                                    </div>
+
+                                ) : (
+                                    <div>Нет данных</div>
+                                )}
+                            </div>
+                        }
+                    >
                     <span style={{
                         fontSize: 14,
                         fontWeight: 500,
@@ -102,8 +103,9 @@ const RenderModelStructured = ({vsl_id, onClose}) => {
                     }}> {text}
                     </span>
 
-                </Tooltip>
-            )
+                    </Tooltip>
+                )
+            }
         },
         {
             title: "Цена ОТ",

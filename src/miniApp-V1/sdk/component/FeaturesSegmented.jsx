@@ -45,7 +45,8 @@ export default function FeaturesSegmented({features}) {
                 {showInfo ?
                     <FeaturesComponentDetailed info={info} activeKey={activeKey} setActiveKey={setActiveKey}
                                                theme={theme}/> :
-                    <FeaturesComponentShort blocks={featuresBlocks}/>}
+                    <FeaturesComponentShort id={features?.id} info={features?.info}/>
+                }
             </div>
         </div>);
     }
@@ -86,9 +87,11 @@ export default function FeaturesSegmented({features}) {
             {tab === "cons" && hasCons && renderList(prosCons.disadvantage)}
 
             {tab === "info" && hasInfo && (showInfo ?
-                <FeaturesComponentDetailed info={info} activeKey={activeKey} setActiveKey={setActiveKey}
-                                           theme={theme}/> :
-                <FeaturesComponentShort blocks={featuresBlocks}/>)}
+                    <FeaturesComponentDetailed info={info} activeKey={activeKey} setActiveKey={setActiveKey}
+                                               theme={theme}/> :
+                    <FeaturesComponentShort id={features?.id} info={features?.info}/>
+
+            )}
         </div>
     </div>);
 }

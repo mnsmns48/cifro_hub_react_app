@@ -52,16 +52,36 @@ const ServiceApp = () => {
         )
     }));
 
+    const logoTab = {
+            key: "logo",
+            label: (
+                <a href="https://24cifrotech.ru" rel="noopener noreferrer" target="_blank"
+                   onClick={(e) => e.stopPropagation()}
+                   style={{display: "flex", alignItems: "center", gap: "12px", color: "inherit"}}>
+                    <div className="service-app-logo-link">
+                        <img src="/logo-cifro-hub.svg" alt="Cifro Hub" className="service-app-logo"/>
+                    </div>
+                    <span style={{fontSize: 14, fontWeight: 500}}>24cifrotech.ru</span>
+                </a>
+            ),
+            children: "null",
+            disabled: true,
+        }
+    ;
+
+    const tabsItems = [logoTab, ...items];
+
     return (
         <div className="service-app-container">
-            <Tabs className="service-app-tabs"
-                  tabPlacement="left"
-                  items={items}
-                  activeKey={activeKey}
-                  onChange={handleTabChange}
+            <Tabs
+                className="service-app-tabs"
+                tabPlacement="left"
+                items={tabsItems}
+                activeKey={activeKey}
+                onChange={handleTabChange}
             />
         </div>
     );
-};
+}
 
 export default ServiceApp;

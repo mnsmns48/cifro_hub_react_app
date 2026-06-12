@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Button, Modal, Popconfirm, Table} from "antd";
+import {Button, Modal, Popconfirm, Spin, Table} from "antd";
 import {fetchGetData, fetchPostData} from "./Common/api.js";
 import {featuresColumns} from "./FeaturesGlobal/FeaturesColumns.jsx";
 import './FeaturesGlobal/FeaturesGlobal.css'
@@ -10,15 +10,20 @@ import FeaturesAddNew from "./FeaturesGlobal/FeaturesAddNew.jsx";
 const buildFilters = (data) => {
     const typeSet = new Map();
     const brandSet = new Map();
+    const sourceSet = new Set();
+
 
     data.forEach(item => {
         typeSet.set(item.type.id, item.type.type);
         brandSet.set(item.brand.id, item.brand.brand);
+        sourceSet.add(item.source);
+
     });
 
     return {
         typeFilters: Array.from(typeSet, ([value, text]) => ({text, value})),
         brandFilters: Array.from(brandSet, ([value, text]) => ({text, value})),
+        sourceFilters: Array.from(sourceSet, (value) => ({text: value, value})),
     };
 };
 
@@ -45,6 +50,7 @@ const FeaturesGlobal = () => {
     const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
     const [formulas, setFormulas] = useState([]);
     const [isFormulaModalOpen, setIsFormulaModalOpen] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
 
     useEffect(() => {
@@ -93,16 +99,14 @@ const FeaturesGlobal = () => {
 
 
     let filteredData = filterData(
-        onlyNoLevel ? data.filter(item => !item.hub_level) : data,
-        search
-    );
+        onlyNoLevel ? data.filter(item => !item.hub_level) : data, search);
 
     if (onlyNoFormula) {
         filteredData = filteredData.filter(item => !item.formula);
     }
 
 
-    const {typeFilters, brandFilters} = buildFilters(data);
+    const {typeFilters, brandFilters, sourceFilters} = buildFilters(data);
 
     const rowSelection = {selectedRowKeys, onChange: (keys) => setSelectedRowKeys(keys),};
 
@@ -175,10 +179,42 @@ const FeaturesGlobal = () => {
         setSelectedRowKeys([]);
     };
 
+    const refreshItem = async (record) => {
+        setIsRefreshing(true)
+        try {
+            const payload = {
+                title: record.title,
+                type: record.type.type,
+                brand: record.brand.brand
+            };
+            const response = await fetchPostData(
+                "/service/product/update_product_from_dt",
+                payload
+            );
+            if (!response || !response.updated) return;
+            setData(prev =>
+                prev.map(item =>
+                    item.id === response.id
+                        ? {
+                            ...item,
+                            info: response.info,
+                            pros_cons: response.pros_cons
+                        }
+                        : item
+                )
+            );
+        } catch (e) {
+            console.error("Ошибка обновления:", e);
+        } finally {
+            setIsRefreshing(false)
+        }
+    };
+
 
     const columns = featuresColumns(
         typeFilters,
         brandFilters,
+        sourceFilters,
         search,
         setSearch,
         noLevelCount,
@@ -187,16 +223,38 @@ const FeaturesGlobal = () => {
         descriptionClick,
         noFormulaCount,
         onlyNoFormula,
-        setOnlyNoFormula
+        setOnlyNoFormula,
+        refreshItem
     );
 
 
     return (
         <>
+            {/* Полупрозрачный блокирующий спиннер */}
+            {isRefreshing && (
+                <div style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100vw",
+                    height: "100vh",
+                    backgroundColor: "rgba(255,255,255,0.6)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 9999
+                }}>
+                    <Spin size="large"/>
+                </div>
+            )}
+
             {selectedRowKeys.length === 0 && (
                 <Button size="small" style={{marginBottom: 12, display: "flex", gap: 8}} type="primary"
-                        onClick={newFeaturesProductClick}>Новый
-                    продукт</Button>)}
+                        onClick={newFeaturesProductClick}>
+                    Новый продукт
+                </Button>
+            )}
+
             {selectedRowKeys.length > 0 && (
                 <div style={{marginBottom: 12, display: "flex", gap: 8}}>
                     <Button type="primary" onClick={openHubPathModal} size="small">
@@ -213,21 +271,23 @@ const FeaturesGlobal = () => {
                         onConfirm={deleteFeatures}
                     >
                         <Button danger size="small">Удалить зависимость</Button>
-
                     </Popconfirm>
+
                     <Button size="small" onClick={openFormulaModal}>Формула</Button>
-                </div>)}
+                </div>
+            )}
 
-
-            <Table rowKey="id"
-                   className="compact-table"
-                   columns={columns}
-                   dataSource={filteredData}
-                   rowSelection={rowSelection}
-                   pagination={false}
-                   size="small"
-                   rowClassName={(record) => (!record.hub_level ? "no-level-row" : "")}
+            <Table
+                rowKey="id"
+                className="compact-table"
+                columns={columns}
+                dataSource={filteredData}
+                rowSelection={rowSelection}
+                pagination={false}
+                size="small"
+                rowClassName={(record) => (!record.hub_level ? "no-level-row" : "")}
             />
+
             <Modal
                 width={450}
                 open={isHubLevelModalOpen}
@@ -262,7 +322,6 @@ const FeaturesGlobal = () => {
                 </div>
             </Modal>
 
-
             <Modal
                 width={650}
                 open={isFormulaModalOpen}
@@ -289,7 +348,6 @@ const FeaturesGlobal = () => {
                 </div>
             </Modal>
 
-
             <FeaturesAddNew
                 open={isNewFeaturesProductModalOpen}
                 onClose={() => setIsNewFeaturesProductModalOpen(false)}
@@ -297,9 +355,12 @@ const FeaturesGlobal = () => {
             />
 
             <FeaturesComponent
-                open={isFeatureModalOpen} onClose={() => setIsFeatureModalOpen(false)} data={featureData}/>
+                open={isFeatureModalOpen}
+                onClose={() => setIsFeatureModalOpen(false)}
+                data={featureData}
+            />
         </>
     );
-};
+}
 
 export default FeaturesGlobal;

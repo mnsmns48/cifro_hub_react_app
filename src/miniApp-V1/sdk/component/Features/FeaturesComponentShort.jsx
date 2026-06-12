@@ -1,38 +1,97 @@
-import {useContext} from "react";
-import {ThemeContext} from "../../context.js";
-import styles from "../../css/features.module.css"
+import {useEffect, useState, useContext} from "react";
+import {Spin} from "antd";
 
-export default function FeaturesComponentShort({blocks}) {
+import {ThemeContext} from "../../context.js";
+import styles from "../../css/features.module.css";
+import {fetchPostData} from "../../../../Service-app/Services/Common/api.js";
+
+const FeaturesComponentShort = ({id, info}) => {
     const theme = useContext(ThemeContext);
+    const [blocks, setBlocks] = useState(null);
+
+
+    useEffect(() => {
+        if (!id || !info) {
+            setBlocks([]);
+            return;
+        }
+        setBlocks(null);
+        const infoDict = info ? Object.assign({}, ...info) : null;
+        const payload = {
+            product_features_map: {
+                [id]: infoDict
+            }
+        };
+
+        fetchPostData("/service/desc-builder/generate_description", payload)
+            .then((res) => {
+                const products = res?.success?.products || {};
+                const pid = Object.keys(products)[0];
+
+                if (!pid) {
+                    setBlocks([]);
+                    return;
+                }
+
+                setBlocks(products[pid]?.blocks || []);
+            })
+            .catch((err) => {
+                console.error("generate_description error:", err);
+                setBlocks([]);
+            });
+
+    }, [id, info]);
+
+
+    if (blocks === null) {
+        return (
+            <div style={{padding: 10, textAlign: "center"}}>
+                <Spin size="small"/>
+            </div>
+        );
+    }
+
+
+    if (!Array.isArray(blocks) || blocks.length === 0) {
+        return (
+            <div style={{padding: 10, color: "#999"}}>
+                Админ добавляет описание. Скоро всё будет
+            </div>
+        );
+    }
 
     return (
         <div style={{padding: "12px 0 0 18px"}}>
-            <table >
+            <table>
                 <tbody>
-                {blocks.map(({icon, title, specs}) => (
-                    <tr key={title}>
-
-                        <td style={{width: '12%'}}>
-                            <span style={{color: theme.colorMuted}}
-                                  className={styles.shortFeaturesIcon}>
-                                {icon}
-                            </span>
+                {blocks.map((block, index) => (
+                    <tr key={index}>
+                        <td style={{width: "12%"}}>
+                            {block.icon ? (
+                                <img
+                                    src={block.icon}
+                                    alt=""
+                                    style={{
+                                        width: 20,
+                                        height: 20,
+                                        objectFit: "contain",
+                                        opacity: 0.9
+                                    }}
+                                />
+                            ) : (
+                                <span style={{color: theme.colorMuted}} className={styles.shortFeaturesIcon}>•</span>
+                            )}
                         </td>
-
-
-                        <td style={{width: "30%", color: theme.colorText, fontSize: 14, fontFamily: theme.fontFamily}}>
-                            <strong>{title}</strong>
-                        </td>
-
 
                         <td style={{
-                            paddingLeft: "8px", lineHeight: 1.9, fontWeight: 501,
-                            fontFamily: theme.fontFamily, color: theme.colorSecondary
+                            paddingLeft: 8,
+                            lineHeight: 1.7,
+                            fontWeight: 501,
+                            fontFamily: theme.fontFamily,
+                            color: theme.colorSecondary,
+                            whiteSpace: "nowrap"
                         }}>
-                            {specs.map(
-                                s => `${s.value} ${s.label ?? ""}`
-                            ).join(" ")
-                            }
+                            {block.text}
                         </td>
                     </tr>
                 ))}
@@ -40,5 +99,6 @@ export default function FeaturesComponentShort({blocks}) {
             </table>
         </div>
     );
+};
 
-}
+export default FeaturesComponentShort;

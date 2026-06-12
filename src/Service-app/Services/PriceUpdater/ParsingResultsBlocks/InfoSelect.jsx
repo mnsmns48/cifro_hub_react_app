@@ -3,8 +3,8 @@ import {Button, Typography, Input} from "antd";
 import {ScissorOutlined, SelectOutlined} from "@ant-design/icons";
 import MyModal from "../../../../Ui/MyModal.jsx";
 import {deleteDependencies, fetchDependencyDetails, fetchItemDependencies, postDependencyUpdate} from "../api.js";
-import ResolveModelTypeDependencies from "../../Common/ResolveModelTypeDependencies.jsx";
 import Spinner from "../../../../Cifrotech-app/components/Spinner.jsx";
+import DescriptionRenderer from "../../Common/DescriptionRenderer.jsx";
 
 const {Search} = Input;
 const {Text} = Typography;
@@ -200,6 +200,7 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
         </>
     );
 
+
     return (
         <>
             {!autoOpen && (
@@ -230,7 +231,6 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
                 </span>
             )}
 
-
             <MyModal
                 isOpen={isOpen}
                 onConfirm={closeModal}
@@ -253,10 +253,7 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
                 title={null}
                 content={
                     dependencyResult ? (
-                        <ResolveModelTypeDependencies
-                            source={dependencyResult.source}
-                            info={dependencyResult.info}
-                        />
+                        <DescriptionRenderer origin={origin}/>
                     ) : null
                 }
                 footer={null}
