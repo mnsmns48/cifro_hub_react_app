@@ -36,7 +36,7 @@ const DescriptionGenerator = forwardRef((props, ref) => {
 
         try {
             const res = await fetchPostData(
-                "/service/desc-builder/generate_description",
+                "/generate_description",
                 {product_features_map}
             );
 
