@@ -23,7 +23,7 @@ const FeaturesComponentShort = ({id, info}) => {
             }
         };
 
-        fetchPostData("/service/desc-builder/generate_description", payload)
+        fetchPostData("/generate_description", payload)
             .then((res) => {
                 const products = res?.success?.products || {};
                 const pid = Object.keys(products)[0];

@@ -20,7 +20,7 @@ const DescriptionRenderer = ({origin = null, product_features_map = null}) => {
             payload.origins = [Number(origin)];
         }
 
-        fetchPostData("/service/desc-builder/generate_description", payload)
+        fetchPostData("/generate_description", payload)
             .then((res) => {
                 const products = res?.success?.products || {};
                 const id = Object.keys(products)[0];
