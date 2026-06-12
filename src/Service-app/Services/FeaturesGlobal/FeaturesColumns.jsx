@@ -1,9 +1,11 @@
 import {Badge, Button, Input} from "antd";
+import {SyncOutlined} from "@ant-design/icons";
 
 
 export const featuresColumns = (
     typeFilters,
     brandFilters,
+    sourceFilters,
     search,
     setSearch,
     noLevelCount,
@@ -12,7 +14,8 @@ export const featuresColumns = (
     descriptionClick,
     noFormulaCount,
     onlyNoFormula,
-    setOnlyNoFormula
+    setOnlyNoFormula,
+    refreshItem
 ) => [
     {
         title: "Тип",
@@ -46,6 +49,26 @@ export const featuresColumns = (
             <Button type="link"
                     style={{padding: 0}}
                     onClick={() => descriptionClick(record)}> {record.title} </Button>)
+    },
+    {
+        title: "Источник",
+        dataIndex: ["source"],
+        key: "source",
+        width: 80,
+        filters: sourceFilters,
+        onFilter: (value, record) => record.source === value,
+    },
+    {
+        title: "Обновить",
+        key: "refresh",
+        width: 50,
+        align: "center",
+        render: (_, record) => (
+            <SyncOutlined
+                style={{fontSize: 18, cursor: "pointer"}}
+                onClick={() => refreshItem(record)}
+            />
+        ),
     },
     {
         title: () => (
@@ -124,6 +147,4 @@ export const featuresColumns = (
             </span>
             ),
     }
-
-
 ];
