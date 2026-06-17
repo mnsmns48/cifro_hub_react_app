@@ -2,7 +2,8 @@ import {
     ApiOutlined,
     AppstoreAddOutlined, BarChartOutlined, BuildOutlined,
     DollarOutlined,
-    FileSearchOutlined, FunctionOutlined, IdcardOutlined,
+    FunctionOutlined,
+    IdcardOutlined,
     PictureOutlined,
     PrinterOutlined,
     StarOutlined,
@@ -36,10 +37,10 @@ export const serviceRegistry = [
     //     loader: () => import("./Services/PriceUpdater.jsx"),
     // },
     {
-        key: "ApiIntegration",
+        key: "ApiBridge",
         title: "Сбор данных (API)",
         icon: makeIcon(ApiOutlined),
-        loader: () => import("./Services/ApiIntegration.jsx"),
+        loader: () => import("./Services/ApiBridge.jsx"),
     },
     {
         key: "FeaturesGlobal",
