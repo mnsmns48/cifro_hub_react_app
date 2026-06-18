@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {fetchGetData} from "./Common/api.js";
 import {ApiOutlined} from "@ant-design/icons";
 import {Tooltip} from "antd";
-import CatalogContent from "./ApiIntegration/CatalogContent.jsx";
+import CatalogContent from "./ApiBridge/CatalogContent.jsx";
 
 const ApiBridge = () => {
     const [vendors, setVendors] = useState([]);
@@ -79,10 +79,10 @@ const ApiBridge = () => {
                 )}
                     <ApiOutlined style={{fontSize: 20, color: connected ? "limegreen" : "red"}}/>
                     {connected && ping !== null && (
-                        <div style={{marginLeft: 10, color: "#999"}}>{ping} ms</div>
+                        <div style={{color: "#999"}}>{ping} ms</div>
                     )}
                     {!connected && (
-                        <div style={{marginLeft: 10, color: "#999"}}>{status}</div>
+                        <div style={{color: "#999"}}>{status}</div>
                     )}
                 </div>
             </Tooltip>
