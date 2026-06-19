@@ -105,7 +105,6 @@ const VslUpdateComponent = ({isOpen, onClose, priceSyncList, onStepbystep}) => {
                onCancel={onClose}
                footer={null}
                width={1200}
-               closable={false}
                maskClosable={false}
         >
             {rows.length === 0 ? (

@@ -11,7 +11,7 @@ const CatalogContent = ({vendorId, vendorFunction, contractorId, deliveryLocatio
     const [execTime, setExecTime] = useState(0);
     const [progressId, setProgressId] = useState(null);
     const [progress, setProgress] = useState(null);
-    // const [productsReady, setProductsReady] = useState(false);
+
 
     useEffect(() => {
         if (!progressId) return;
@@ -29,66 +29,46 @@ const CatalogContent = ({vendorId, vendorFunction, contractorId, deliveryLocatio
         return () => evtSource.close();
     }, [progressId]);
 
-    return (
-        <div style={{position: "relative"}}>
+    return (<div style={{position: "relative"}}>
 
-            <ProgressOverlay progress={progress}/>
+        <ProgressOverlay progress={progress}/>
 
-            <Row gutter={16} style={{marginTop: 20}}>
-                <Col span={6}>
-                    <CategoriesTree
-                        vendorId={vendorId}
-                        vendorFunction={vendorFunction}
+        <Row gutter={16} style={{marginTop: 20}}>
+            <Col span={6}>
+                <CategoriesTree vendorId={vendorId}
+                                vendorFunction={vendorFunction}
+                                onSelectCategory={(catId) => {
+                                    setSelectedCategory(catId)
+                                }}
+                                onStartLoading={() => {
+                                    setProgress({percent: 0, page: 0, pages: 0, total_items: 0, eta: 0});
+                                }}/>
 
-                        onSelectCategory={(catId) => {
-                            setSelectedCategory(catId);
-                        }}
+            </Col>
+            <Col span={18}>
+                {rowCount > 0 && (<div style={{marginBottom: 8, fontSize: 16}}>
+                    <OrderedListOutlined style={{color: "#1890ff", marginRight: 6}}/>
+                    <strong>{rowCount}</strong>
+                    <FieldTimeOutlined style={{color: "#fa8c16", marginLeft: 20, marginRight: 6}}/>
+                    <strong>{execTime}</strong> сек
+                </div>)}
 
-                        onStartLoading={() => {
-                            setProgress({
-                                percent: 0,
-                                page: 0,
-                                pages: 0,
-                                total_items: 0,
-                                eta: 0
-                            });
-                        }}
-                    />
-
-
-                </Col>
-
-                <Col span={18}>
-                    {rowCount > 0 && (
-                        <div style={{marginBottom: 8, fontSize: 16}}>
-                            <OrderedListOutlined style={{color: "#1890ff", marginRight: 6}}/>
-                            <strong>{rowCount}</strong> шт
-
-                            <FieldTimeOutlined style={{color: "#fa8c16", marginLeft: 20, marginRight: 6}}/>
-                            <strong>{execTime}</strong> сек
-                        </div>
-
-                    )}
-
-                    {selectedCategory && (
-                        <ProductsItems
-                            categoryId={selectedCategory}
-                            vendorId={vendorId}
-                            contractorId={contractorId}
-                            deliveryLocationId={deliveryLocationId}
-                            onProgressId={setProgressId}
-                            onProgressDone={() => {
-                                setProgress(null);
-                                setProgressId(null);
-                            }}
-                            setRowCount={setRowCount}
-                            setExecTime={setExecTime}
-                        />
-                    )}
-                </Col>
-            </Row>
-        </div>
-    );
+                {selectedCategory !== null && (<ProductsItems
+                    categoryId={selectedCategory}
+                    vendorId={vendorId}
+                    contractorId={contractorId}
+                    deliveryLocationId={deliveryLocationId}
+                    onProgressId={setProgressId}
+                    onProgressDone={() => {
+                        setProgress(null);
+                        setProgressId(null)
+                    }}
+                    setRowCount={setRowCount}
+                    setExecTime={setExecTime}
+                />)}
+            </Col>
+        </Row>
+    </div>);
 };
 
 export default CatalogContent;

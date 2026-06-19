@@ -1,4 +1,4 @@
-const ProgressOverlay = ({ progress }) => {
+const ProgressOverlay = ({progress}) => {
     if (!progress) return null;
 
     return (
@@ -28,18 +28,20 @@ const ProgressOverlay = ({ progress }) => {
                     height: "100%",
                     background: "#1890ff",
                     transition: "width 0.3s ease"
-                }} />
+                }}/>
             </div>
 
-            <div style={{fontSize: 14, fontWeight: 500}}>
-                Загружаем товары: {progress.percent}%
-            </div>
 
             <div style={{fontSize: 12, color: "#666"}}>
                 Страница {progress.page} из {progress.pages} •
-                Получено {progress.total_items} •
-                Время выполнения: {progress.eta}s
+                Получено {progress.total_items}
             </div>
+            {progress.eta > 0 && (
+                <div style={{fontSize: 16, fontWeight: 600}}>
+                    Осталось {progress.eta} сек
+                </div>
+            )}
+
         </div>
     );
 };

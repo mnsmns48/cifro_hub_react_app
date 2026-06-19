@@ -123,20 +123,13 @@ const CategoriesTree = ({
 
     const handleSelect = async (_, info) => {
         const node = info.node;
-
-        // путь от корня до выбранного узла
         let path = findPath(treeData, node.key) || [node.key];
-
-        // дети ещё не загружены
         if (node.children === null) {
             const children = await loadChildren(node);
 
             path = findPath(treeData, node.key) || path;
-
-            // раскрываем только текущую цепочку
             setExpandedKeys(path);
 
-            // лист → грузим товары
             if (children.length === 0) {
                 onStartLoading?.();
                 onSelectCategory?.(node.categoryId);
@@ -145,14 +138,12 @@ const CategoriesTree = ({
             return;
         }
 
-        // лист → грузим товары
         if (node.isLeaf) {
             onStartLoading?.();
             onSelectCategory?.(node.categoryId);
             return;
         }
 
-        // не лист → оставляем открытой только текущую цепочку
         setExpandedKeys(path);
     };
 

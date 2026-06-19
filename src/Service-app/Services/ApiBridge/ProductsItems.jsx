@@ -1,6 +1,7 @@
 import {Table} from "antd";
 import axios from "axios";
 import {useEffect, useState} from "react";
+import {getProductColumns} from "./ProductItemsColumns.jsx";
 
 const ProductsItems = ({
                            categoryId,
@@ -12,8 +13,11 @@ const ProductsItems = ({
                            setRowCount,
                            setExecTime
                        }) => {
+
     const [products, setProducts] = useState([]);
     const [loaded, setLoaded] = useState(false);
+    const [brands, setBrands] = useState([]);
+    const [selectedBrands, setSelectedBrands] = useState([]);
 
     useEffect(() => {
         const ready = [categoryId, vendorId, contractorId, deliveryLocationId]
@@ -23,7 +27,6 @@ const ProductsItems = ({
             setLoaded(false);
             void loadProducts();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [categoryId]);
 
     const loadProducts = async () => {
@@ -41,36 +44,46 @@ const ProductsItems = ({
             setProducts(items);
             setRowCount(res.data?.total ?? items.length);
             setExecTime(res.data?.exec_time);
+
+            const uniqueBrands = [...new Set(items.map(p => p.brand).filter(Boolean))].sort();
+            setBrands(uniqueBrands);
+
+            setSelectedBrands([]);
+
             setLoaded(true);
         } catch (e) {
             console.error("loadProducts error:", e);
             setProducts([]);
             setRowCount(0);
-
             setLoaded(true);
         } finally {
             onProgressDone();
         }
     };
 
-    if (!loaded) return null;
 
-    const columns = [
-        {title: "Название", dataIndex: "name", key: "name", width: "40%"},
-        {title: "Код", dataIndex: "productCode", key: "productCode", width: 120},
-        {title: "Бренд", dataIndex: "brand", key: "brand", width: 120},
-        {title: "Цена", dataIndex: "price", key: "price", width: 120},
-        {title: "Остаток", dataIndex: "amount", key: "amount", width: 100},
-        {title: "Доставка", dataIndex: "delivery", key: "delivery", width: 100}
-    ];
+    const filteredProducts =
+        selectedBrands.length === 0
+            ? products
+            : products.filter(p => selectedBrands.includes(p.brand));
+
+    const columns = getProductColumns(brands, selectedBrands);
+
+    if (!loaded) return null;
 
     return (
         <Table
-            dataSource={products}
+            dataSource={filteredProducts}
             columns={columns}
-            rowKey="productCode"
+            key={categoryId}
+            rowKey={(record) => `${record.productCode}-${record.brand}`}
             size="small"
-            pagination={{pageSize: 30, showSizeChanger: true}}
+            pagination={{pageSize: 30}}
+
+
+            onChange={(pagination, filters) => {
+                setSelectedBrands(filters.brand || []);
+            }}
         />
     );
 };
