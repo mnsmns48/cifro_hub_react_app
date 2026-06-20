@@ -3,6 +3,7 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 import {getProductColumns} from "./ProductItemsColumns.jsx";
 
+
 const ProductsItems = ({
                            categoryId,
                            vendorId,
@@ -11,13 +12,25 @@ const ProductsItems = ({
                            onProgressId,
                            onProgressDone,
                            setRowCount,
-                           setExecTime
+                           setExecTime,
+                           setAlreadyExists
                        }) => {
 
     const [products, setProducts] = useState([]);
     const [loaded, setLoaded] = useState(false);
     const [brands, setBrands] = useState([]);
     const [selectedBrands, setSelectedBrands] = useState([]);
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [search, setSearch] = useState("");
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 300);
+
+        return () => clearTimeout(handler);
+    }, [search]);
+
 
     useEffect(() => {
         const ready = [categoryId, vendorId, contractorId, deliveryLocationId]
@@ -39,17 +52,14 @@ const ProductsItems = ({
                 `/service/microline/vendors/${vendorId}/products`,
                 {params: {categoryId, contractorId, deliveryLocationId, progress: progressId}}
             );
-
             const items = Array.isArray(res.data?.products) ? res.data.products : [];
             setProducts(items);
             setRowCount(res.data?.total ?? items.length);
             setExecTime(res.data?.exec_time);
-
+            setAlreadyExists(res.data?.already_exists ?? false);
             const uniqueBrands = [...new Set(items.map(p => p.brand).filter(Boolean))].sort();
             setBrands(uniqueBrands);
-
             setSelectedBrands([]);
-
             setLoaded(true);
         } catch (e) {
             console.error("loadProducts error:", e);
@@ -62,12 +72,21 @@ const ProductsItems = ({
     };
 
 
-    const filteredProducts =
-        selectedBrands.length === 0
-            ? products
-            : products.filter(p => selectedBrands.includes(p.brand));
+    const filteredProducts = products
+        .filter(p => {
+            const brandOk =
+                selectedBrands.length === 0 ||
+                selectedBrands.includes(p.brand);
 
-    const columns = getProductColumns(brands, selectedBrands);
+            const searchOk =
+                !debouncedSearch ||
+                p.name.toLowerCase().includes(debouncedSearch.toLowerCase());
+
+            return brandOk && searchOk;
+        });
+
+
+    const columns = getProductColumns(brands, search, setSearch);
 
     if (!loaded) return null;
 
@@ -78,10 +97,8 @@ const ProductsItems = ({
             key={categoryId}
             rowKey={(record) => `${record.productCode}-${record.brand}`}
             size="small"
-            pagination={{pageSize: 30}}
-
-
-            onChange={(pagination, filters) => {
+            pagination={false}
+            onChange={(filters) => {
                 setSelectedBrands(filters.brand || []);
             }}
         />

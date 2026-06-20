@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { Tree } from "antd";
-import { fetchGetData } from "../Common/api.js";
+import {useEffect, useState} from "react";
+import {Tree} from "antd";
+import {fetchGetData} from "../Common/api.js";
 
 const CategoriesTree = ({
                             vendorId,
@@ -16,6 +16,7 @@ const CategoriesTree = ({
         title: cat.name,
         key: String(cat.categoryId),
         categoryId: cat.categoryId,
+        idPath: cat.idPath,
         isLeaf: false,
         children: null
     });
@@ -124,6 +125,7 @@ const CategoriesTree = ({
     const handleSelect = async (_, info) => {
         const node = info.node;
         let path = findPath(treeData, node.key) || [node.key];
+
         if (node.children === null) {
             const children = await loadChildren(node);
 
@@ -132,20 +134,20 @@ const CategoriesTree = ({
 
             if (children.length === 0) {
                 onStartLoading?.();
-                onSelectCategory?.(node.categoryId);
+                onSelectCategory?.(node);
             }
-
             return;
         }
 
         if (node.isLeaf) {
             onStartLoading?.();
-            onSelectCategory?.(node.categoryId);
+            onSelectCategory?.(node);
             return;
         }
 
         setExpandedKeys(path);
     };
+
 
     return (
         <Tree
