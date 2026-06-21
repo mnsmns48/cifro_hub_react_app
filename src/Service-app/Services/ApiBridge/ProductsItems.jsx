@@ -56,7 +56,7 @@ const ProductsItems = ({
             setProducts(items);
             setRowCount(res.data?.total ?? items.length);
             setExecTime(res.data?.exec_time);
-            setAlreadyExists(res.data?.already_exists ?? false);
+            setAlreadyExists(res.data?.already_exists ?? null);
             const uniqueBrands = [...new Set(items.map(p => p.brand).filter(Boolean))].sort();
             setBrands(uniqueBrands);
             setSelectedBrands([]);

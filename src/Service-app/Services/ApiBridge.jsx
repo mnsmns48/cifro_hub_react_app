@@ -65,27 +65,28 @@ const ApiBridge = () => {
 
     return (
         <>
-            <Tooltip title="Проверить соединение">
-                <div onClick={() => initVendor(vendor)} style={{
-                    display: "flex",
-                    justifyContent: "start",
-                    alignItems: "center",
-                    gap: 10,
-                    cursor: "pointer",
-                    userSelect: "none",
-                    paddingBottom: 10,
-                }}>{vendors.length === 1 && vendor && (
-                    <div>{vendor.name} ({vendor.function})</div>
-                )}
-                    <ApiOutlined style={{fontSize: 20, color: connected ? "limegreen" : "red"}}/>
-                    {connected && ping !== null && (
-                        <div style={{color: "#999"}}>{ping} ms</div>
-                    )}
-                    {!connected && (
-                        <div style={{color: "#999"}}>{status}</div>
-                    )}
-                </div>
-            </Tooltip>
+
+            <div style={{
+                display: "flex",
+                justifyContent: "start",
+                alignItems: "center",
+                gap: 10,
+                userSelect: "none",
+                paddingBottom: 10,
+            }}>{vendors.length === 1 && vendor && (
+                <div>{vendor.name} ({vendor.function})</div>
+            )}
+                <Tooltip title="Проверить соединение">
+                    <div style={{display: "flex", alignItems: "center", gap: 8, cursor: "pointer"}}
+                         onClick={() => initVendor(vendor)}>
+                        <ApiOutlined style={{fontSize: 20, color: connected ? "limegreen" : "red"}}/>
+                        {connected && ping !== null && (<span style={{color: "#999",}}>{ping} ms</span>)}
+                        {!connected && (<span style={{color: "#999"}}>{status}</span>)}
+                    </div>
+                </Tooltip>
+
+            </div>
+
 
             {vendor && access && (
                 <CatalogContent
