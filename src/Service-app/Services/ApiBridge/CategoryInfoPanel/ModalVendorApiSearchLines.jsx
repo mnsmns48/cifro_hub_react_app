@@ -1,6 +1,6 @@
 import {useEffect, useState, useMemo} from "react";
-import {Modal, Spin, Input, Table, Tooltip} from "antd";
-import {fetchGetData} from "../../Common/api.js";
+import {Modal, Spin, Input, Table, Tooltip, message} from "antd";
+import {fetchDeleteData, fetchGetData, fetchPostData, fetchPutData} from "../../Common/api.js";
 import {getModalVendorApiSearchLinesColumns} from "./ModalVendorApiSearchLinesColumns.jsx";
 import {AppstoreAddOutlined} from "@ant-design/icons";
 
@@ -11,6 +11,7 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
     const [linkedVSL, setLinkedVSL] = useState([]);
     const [search, setSearch] = useState("");
     const [newRow, setNewRow] = useState(null);
+    const [editRow, setEditRow] = useState(null);
     const [brandsList, setBrandsList] = useState([]);
 
     useEffect(() => {
@@ -45,6 +46,7 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
                 setBrandsList(res || []);
             } catch (e) {
                 console.error("load brands error:", e);
+                setBrandsList([]);
             }
         };
 
@@ -87,18 +89,86 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
     };
 
 
-
     const updateNewRow = (field, value) => {
-        setNewRow(prev => ({ ...prev, [field]: value }));
+        setNewRow(prev => ({...prev, [field]: value}));
     };
 
     const handleUndo = () => {
         setNewRow(null);
     };
 
-    const handleSaveNew = () => {
-        console.log("SAVE NEW VendorSearchLine:", newRow);
+    const saveVSL = async (row, isNew) => {
+        try {
+            const payload = {
+                ...(isNew ? {} : {id: row.id}),
+                vendor_id: row.vendor_id ?? vendorId,
+                title: row.title,
+                url: row.url,
+                brands: row.brands.map(id => {
+                    const b = brandsList.find(x => x.id === id);
+                    return {id: b.id, brand: b.brand};
+                })
+            };
+            const updated = isNew
+                ? await fetchPostData("/service/create_vsl_with_brand", payload)
+                : await fetchPutData("/service/update_vsl_with_brand", payload);
+            if (!isNew) setEditRow(null);
+            setAllVSL(prev => {
+                if (isNew) return [updated, ...prev];
+                return prev.map(v => (v.id === updated.id ? updated : v));
+            });
+
+            if (isNew) setNewRow(null);
+            message.success(isNew ? "Создано" : "Обновлено");
+        } catch (e) {
+            console.error("save VSL error:", e);
+
+            let errMsg = isNew
+                ? "Ошибка при создании VendorSearchLine"
+                : "Ошибка при обновлении VendorSearchLine";
+
+            if (e?.response?.data?.detail) errMsg = e.response.data.detail;
+            else if (typeof e === "string") errMsg = e;
+            else if (e?.message) errMsg = e.message;
+
+            message.error(errMsg);
+            if (isNew) setNewRow(null);
+        }
     };
+
+
+    const handleDelete = async (vslId) => {
+        try {
+            await fetchDeleteData(`/service/delete_vsl/${vslId}`);
+
+            setAllVSL(prev => prev.filter(v => v.id !== vslId));
+
+            message.success("Удалено");
+        } catch (e) {
+            console.error("delete VSL error:", e);
+            let errMsg = "Ошибка при удалении";
+            if (e?.response?.data?.detail) errMsg = e.response.data.detail;
+            else if (e?.message) errMsg = e.message;
+            message.error(errMsg);
+        }
+    };
+
+
+    const handleEdit = (record) => {
+        setEditRow({
+            ...record,
+            __isEdit: true,
+            brands: record.brands?.map(b => b.id) || []
+        });
+    };
+
+    const updateEditRow = (field, value) => {
+        setEditRow(prev => ({...prev, [field]: value}));
+    };
+
+    const handleSaveNew = () => saveVSL(newRow, true);
+    const handleSaveEdit = () => saveVSL(editRow, false);
+    const handleUndoEdit = () => setEditRow(null);
 
 
     const dataColumns = getModalVendorApiSearchLinesColumns(
@@ -107,16 +177,31 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
         updateNewRow,
         handleSaveNew,
         handleUndo,
+        handleDelete,
+        handleEdit,
+        handleSaveEdit,
+        updateEditRow,
+        handleUndoEdit,
         brandsList
     );
 
-    const tableData = newRow ? [newRow, ...filteredVSL] : filteredVSL;
+
+    let tableData = filteredVSL;
+    if (newRow) {
+        tableData = [newRow, ...tableData];
+    }
+    if (editRow) {
+        tableData = tableData.map(v =>
+            v.id === editRow.id ? editRow : v
+        );
+    }
+
 
     return (
         <Modal open={open}
                onCancel={onClose}
                footer={null}
-               width={900}
+               width={1136}
                title="Vendor Search Lines">
             {loading && <Spin/>}
             {!loading && (
