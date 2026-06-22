@@ -3,6 +3,7 @@ import {Modal, Spin, Input, Table, Tooltip, message} from "antd";
 import {fetchDeleteData, fetchGetData, fetchPostData, fetchPutData} from "../../Common/api.js";
 import {getModalVendorApiSearchLinesColumns} from "./ModalVendorApiSearchLinesColumns.jsx";
 import {AppstoreAddOutlined} from "@ant-design/icons";
+import axios from "axios";
 
 const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
 
@@ -59,6 +60,30 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
             if (linkedVSL[i].id === id) return true;
         }
         return false;
+    };
+
+    const toggleLink = async (vslId) => {
+        const isAlreadyLinked = linkedVSL.some(v => v.id === vslId);
+
+        try {
+            if (isAlreadyLinked) {
+                await axios.delete("/service/remove_link_vsl_api_search", {
+                    data: {
+                        api_search_id: apiSearchId,
+                        vsl_id: vslId
+                    }
+                });
+                setLinkedVSL(prev => prev.filter(v => v.id !== vslId));
+            } else {
+                await fetchPostData("/service/add_link_vsl_api_search", {
+                    api_search_id: apiSearchId,
+                    vsl_id: vslId
+                });
+                setLinkedVSL(prev => [...prev, {id: vslId}]);
+            }
+        } catch (e) {
+            message.error("Ошибка при изменении связи", e);
+        }
     };
 
 
@@ -136,13 +161,10 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
         }
     };
 
-
     const handleDelete = async (vslId) => {
         try {
             await fetchDeleteData(`/service/delete_vsl/${vslId}`);
-
             setAllVSL(prev => prev.filter(v => v.id !== vslId));
-
             message.success("Удалено");
         } catch (e) {
             console.error("delete VSL error:", e);
@@ -173,6 +195,7 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
 
     const dataColumns = getModalVendorApiSearchLinesColumns(
         isLinked,
+        toggleLink,
         newRow,
         updateNewRow,
         handleSaveNew,

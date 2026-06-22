@@ -2,6 +2,7 @@ import {Checkbox, Input, Select, Button, Space, Popconfirm} from "antd";
 import {DeleteOutlined, EditOutlined, SaveOutlined, UndoOutlined} from "@ant-design/icons";
 
 export function getModalVendorApiSearchLinesColumns(isLinked,
+                                                    toggleLink,
                                                     newRow,
                                                     updateNewRow,
                                                     handleSaveNew,
@@ -17,7 +18,7 @@ export function getModalVendorApiSearchLinesColumns(isLinked,
             dataIndex: "id",
             width: 40,
             render: (id, record) =>
-                record?.__isNew ? null : <Checkbox checked={isLinked(id)}/>
+                record?.__isNew ? null : <Checkbox checked={isLinked(id)} onChange={() => toggleLink(id)}/>
         },
         {
             title: "Название",
@@ -114,7 +115,7 @@ export function getModalVendorApiSearchLinesColumns(isLinked,
 
                 if (record?.__isEdit) {
                     return (
-                        <Space>
+                        <Space size="small">
                             <Button size="small" icon={<SaveOutlined/>} onClick={handleSaveEdit}/>
                             <Button size="small" icon={<UndoOutlined/>} onClick={handleUndoEdit}/>
                         </Space>
@@ -122,7 +123,7 @@ export function getModalVendorApiSearchLinesColumns(isLinked,
                 }
 
                 return (
-                    <Space>
+                    <Space size="small">
                         <Button size="small"
                                 icon={<EditOutlined/>}
                                 onClick={() => handleEdit(record)}/>
