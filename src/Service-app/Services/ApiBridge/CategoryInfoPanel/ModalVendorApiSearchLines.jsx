@@ -1,8 +1,8 @@
 import {useEffect, useState, useMemo} from "react";
-import {Modal, Spin, Input, Table, Tooltip, message} from "antd";
+import {Modal, Spin, Input, Table, Tooltip, message, Button} from "antd";
 import {fetchDeleteData, fetchGetData, fetchPostData, fetchPutData} from "../../Common/api.js";
 import {getModalVendorApiSearchLinesColumns} from "./ModalVendorApiSearchLinesColumns.jsx";
-import {AppstoreAddOutlined} from "@ant-design/icons";
+import {FileAddOutlined, UndoOutlined} from "@ant-design/icons";
 import axios from "axios";
 
 const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
@@ -221,22 +221,22 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
 
 
     return (
-        <Modal open={open}
-               onCancel={onClose}
-               footer={null}
-               width={1136}
-               title="Vendor Search Lines">
+        <Modal open={open} onCancel={onClose} footer={null} width={1136} title="Vendor Search Lines">
             {loading && <Spin/>}
             {!loading && (
                 <div>
                     <Input placeholder="Поиск по названию..."
                            value={search}
-                           onChange={(e) => setSearch(e.target.value)}
-                           style={{marginBottom: 8}}/>
-                    <Tooltip title="Создать новую VendorSearchLine">
-                        <AppstoreAddOutlined style={{fontSize: 22, color: "#555555", marginBottom: 8}}
-                                             onClick={handleCreateNew}/>
+                           onChange={(e) => setSearch(e.target.value)}/>
+
+                    <Tooltip title={newRow ? "Отменить создание" : "Создать новую VendorSearchLine"}>
+                        <Button size="small" type={newRow ? "default" : "primary"}
+                                onClick={newRow ? handleUndo : handleCreateNew}
+                                icon={newRow ? <UndoOutlined/> : <FileAddOutlined/>} style={{margin: "12px 0"}}>
+                            {newRow ? "Отмена" : "Создать"}
+                        </Button>
                     </Tooltip>
+
                     <Table dataSource={tableData} columns={dataColumns} rowKey="id" size="small"
                            pagination={false} scroll={{y: 400}}/>
                 </div>
