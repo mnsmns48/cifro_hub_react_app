@@ -1,7 +1,7 @@
 import {
     ApiOutlined,
     AppstoreAddOutlined, BarChartOutlined, BuildOutlined,
-    DollarOutlined,
+    DollarOutlined, FileSearchOutlined,
     FunctionOutlined,
     IdcardOutlined,
     PictureOutlined,
@@ -30,12 +30,12 @@ export const serviceRegistry = [
         icon: makeIcon(StarOutlined),
         loader: () => import("./Services/HubMenuLevels.jsx"),
     },
-    // {
-    //     key: "PriceUpdater",
-    //     title: "Сбор данных",
-    //     icon: makeIcon(FileSearchOutlined),
-    //     loader: () => import("./Services/PriceUpdater.jsx"),
-    // },
+    {
+        key: "PriceUpdater",
+        title: "Парсинг",
+        icon: makeIcon(FileSearchOutlined),
+        loader: () => import("./Services/PriceUpdater.jsx"),
+    },
     {
         key: "ApiBridge",
         title: "Сбор данных (API)",

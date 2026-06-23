@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import CategoriesTree from "./CategoriesTree.jsx";
 import ProductsItems from "./ProductsItems.jsx";
 import ProgressOverlay from "./ProgressOverlay.jsx";
@@ -16,6 +16,8 @@ const CatalogContent = ({vendorId, vendorFunction, contractorId, deliveryLocatio
     const [alreadyExists, setAlreadyExists] = useState(null);
     const [selectedProducts, setSelectedProducts] = useState([]);
 
+
+    const productsItemsRef = useRef(null);
 
     useEffect(() => {
         if (!progressId) return;
@@ -42,7 +44,7 @@ const CatalogContent = ({vendorId, vendorFunction, contractorId, deliveryLocatio
         try {
             const added = await fetchPostData(
                 "/service/product/update_brands",
-                { brands: brands_bulk }
+                {brands: brands_bulk}
             );
             setSelectedProducts([]);
             if (added?.length > 0) {
@@ -55,6 +57,12 @@ const CatalogContent = ({vendorId, vendorFunction, contractorId, deliveryLocatio
         }
     };
 
+
+    const handleSaveParsingLines = (linkedVSL) => {
+        void productsItemsRef.current?.saveParsingLines(linkedVSL);
+    };
+
+
     return (
         <div style={{position: "relative"}}>
             <ProgressOverlay progress={progress}/>
@@ -66,7 +74,10 @@ const CatalogContent = ({vendorId, vendorFunction, contractorId, deliveryLocatio
                         idPath={selectedNode?.idPath}
                         alreadyExists={alreadyExists}
                         vendorId={vendorId}
-                        onAdded={(val) => setAlreadyExists(val)}
+                        onAdded={(data) => {
+                            setAlreadyExists(data);
+                        }}
+                        onSaveParsingLines={handleSaveParsingLines}
                     />
                     <div>
                         <CategoriesTree vendorId={vendorId}
@@ -96,6 +107,7 @@ const CatalogContent = ({vendorId, vendorFunction, contractorId, deliveryLocatio
 
                     {selectedNode ? (
                         <ProductsItems
+                            ref={productsItemsRef}
                             categoryId={selectedNode.categoryId}
                             idPath={selectedNode.idPath}
                             vendorId={vendorId}
@@ -113,7 +125,6 @@ const CatalogContent = ({vendorId, vendorFunction, contractorId, deliveryLocatio
                             setSelectedProducts={setSelectedProducts}
                         />
                     ) : null}
-
                 </Col>
             </Row>
         </div>);

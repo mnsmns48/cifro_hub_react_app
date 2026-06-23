@@ -2,10 +2,10 @@ import {useEffect, useState, useMemo} from "react";
 import {Modal, Spin, Input, Table, Tooltip, message, Button} from "antd";
 import {fetchDeleteData, fetchGetData, fetchPostData, fetchPutData} from "../../Common/api.js";
 import {getModalVendorApiSearchLinesColumns} from "./ModalVendorApiSearchLinesColumns.jsx";
-import {FileAddOutlined, UndoOutlined} from "@ant-design/icons";
+import {FileAddOutlined, PullRequestOutlined, UndoOutlined} from "@ant-design/icons";
 import axios from "axios";
 
-const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
+const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId, onVslChanged, onSaveParsingLines}) => {
 
     const [loading, setLoading] = useState(true);
     const [allVSL, setAllVSL] = useState([]);
@@ -73,18 +73,30 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
                         vsl_id: vslId
                     }
                 });
-                setLinkedVSL(prev => prev.filter(v => v.id !== vslId));
+                const updated = linkedVSL.filter(v => v.id !== vslId);
+                setLinkedVSL(updated);
+                onVslChanged?.({
+                    allVSL,
+                    linkedVSL: updated
+                });
             } else {
                 await fetchPostData("/service/add_link_vsl_api_search", {
                     api_search_id: apiSearchId,
                     vsl_id: vslId
                 });
-                setLinkedVSL(prev => [...prev, {id: vslId}]);
+                const updated = [...linkedVSL, {id: vslId}];
+                setLinkedVSL(updated);
+                onVslChanged?.({
+                    allVSL,
+                    linkedVSL: updated
+                });
             }
+
         } catch (e) {
             message.error("Ошибка при изменении связи", e);
         }
     };
+
 
 
     const filteredVSL = useMemo(() => {
@@ -137,13 +149,13 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
             const updated = isNew
                 ? await fetchPostData("/service/create_vsl_with_brand", payload)
                 : await fetchPutData("/service/update_vsl_with_brand", payload);
-            if (!isNew) setEditRow(null);
+            if (!isNew) setEditRow(null); onVslChanged?.();
             setAllVSL(prev => {
                 if (isNew) return [updated, ...prev];
                 return prev.map(v => (v.id === updated.id ? updated : v));
             });
 
-            if (isNew) setNewRow(null);
+            if (isNew) setNewRow(null); onVslChanged?.();
             message.success(isNew ? "Создано" : "Обновлено");
         } catch (e) {
             console.error("save VSL error:", e);
@@ -165,6 +177,7 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
         try {
             await fetchDeleteData(`/service/delete_vsl/${vslId}`);
             setAllVSL(prev => prev.filter(v => v.id !== vslId));
+            onVslChanged?.();
             message.success("Удалено");
         } catch (e) {
             console.error("delete VSL error:", e);
@@ -209,15 +222,21 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
     );
 
 
-    let tableData = filteredVSL;
+    const linkedRows = filteredVSL.filter(v => linkedVSL.some(l => l.id === v.id));
+    const unlinkedRows = filteredVSL.filter(v => !linkedVSL.some(l => l.id === v.id));
+
+    let tableData = [...linkedRows, ...unlinkedRows];
+
     if (newRow) {
         tableData = [newRow, ...tableData];
     }
+
     if (editRow) {
         tableData = tableData.map(v =>
             v.id === editRow.id ? editRow : v
         );
     }
+
 
 
     return (
@@ -236,6 +255,15 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId}) => {
                             {newRow ? "Отмена" : "Создать"}
                         </Button>
                     </Tooltip>
+
+                    <Button size="small"
+                            type="primary"
+                            style={{margin: "12px 12px 0"}}
+                            icon={<PullRequestOutlined/>}
+                            onClick={() => onSaveParsingLines(linkedVSL)}>
+                        Сохранить данные
+                    </Button>
+
 
                     <Table dataSource={tableData} columns={dataColumns} rowKey="id" size="small"
                            pagination={false} scroll={{y: 400}}/>

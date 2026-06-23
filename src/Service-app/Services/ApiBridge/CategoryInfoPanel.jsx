@@ -10,7 +10,9 @@ const CategoryInfoPanel = ({
                                idPath,
                                alreadyExists,
                                vendorId,
-                               onAdded
+                               onAdded,
+                               onVslChanged,
+                               onSaveParsingLines
                            }) => {
 
     const [openApiSearchLines, setOpenApiSearchLines] = useState(false);
@@ -25,6 +27,7 @@ const CategoryInfoPanel = ({
         e.stopPropagation();
         try {
             const payload = {
+
                 vendor_id: vendorId,
                 category_id: nodeKey,
                 title,
@@ -34,6 +37,7 @@ const CategoryInfoPanel = ({
             if (res.status === "ok") {
                 onAdded({
                     ...payload,
+                    id: res.id,
                     search_params: null,
                     status: true
                 });
@@ -118,6 +122,8 @@ const CategoryInfoPanel = ({
                     onClose={() => setOpenApiSearchLines(false)}
                     apiSearchId={alreadyExists.id}
                     vendorId={vendorId}
+                    onVslChange={onVslChanged}
+                    onSaveParsingLines={onSaveParsingLines}
                 />
             )}
 
