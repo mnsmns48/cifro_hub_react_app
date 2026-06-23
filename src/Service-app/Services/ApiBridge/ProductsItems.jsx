@@ -13,7 +13,9 @@ const ProductsItems = ({
                            onProgressDone,
                            setRowCount,
                            setExecTime,
-                           setAlreadyExists
+                           setAlreadyExists,
+                           selectedProducts,
+                           setSelectedProducts
                        }) => {
 
     const [products, setProducts] = useState([]);
@@ -22,6 +24,7 @@ const ProductsItems = ({
     const [selectedBrands, setSelectedBrands] = useState([]);
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [search, setSearch] = useState("");
+
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -88,10 +91,19 @@ const ProductsItems = ({
 
     const columns = getProductColumns(brands, search, setSearch);
 
+    const productsSelection = {
+        selectedRowKeys: selectedProducts.map(
+            p => `${p.productCode}-${p.brand}`
+        ),
+        onChange: (selectedRowKeys, selectedRows) => {
+            setSelectedProducts(selectedRows);
+        }
+    };
     if (!loaded) return null;
 
     return (
         <Table
+            rowSelection={productsSelection}
             dataSource={filteredProducts}
             columns={columns}
             key={categoryId}

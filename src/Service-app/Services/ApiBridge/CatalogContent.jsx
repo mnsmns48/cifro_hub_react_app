@@ -2,9 +2,10 @@ import {useEffect, useState} from "react";
 import CategoriesTree from "./CategoriesTree.jsx";
 import ProductsItems from "./ProductsItems.jsx";
 import ProgressOverlay from "./ProgressOverlay.jsx";
-import {Col, Row} from "antd";
+import {Button, Col, message, Row} from "antd";
 import {FieldTimeOutlined, OrderedListOutlined} from "@ant-design/icons";
 import CategoryInfoPanel from "./CategoryInfoPanel.jsx";
+import {fetchPostData} from "../Common/api.js";
 
 const CatalogContent = ({vendorId, vendorFunction, contractorId, deliveryLocationId}) => {
     const [selectedNode, setSelectedNode] = useState(null);
@@ -13,6 +14,7 @@ const CatalogContent = ({vendorId, vendorFunction, contractorId, deliveryLocatio
     const [progressId, setProgressId] = useState(null);
     const [progress, setProgress] = useState(null);
     const [alreadyExists, setAlreadyExists] = useState(null);
+    const [selectedProducts, setSelectedProducts] = useState([]);
 
 
     useEffect(() => {
@@ -32,6 +34,26 @@ const CatalogContent = ({vendorId, vendorFunction, contractorId, deliveryLocatio
         return () => evtSource.close();
     }, [progressId]);
 
+
+    const handleAddBrands = async () => {
+        if (!selectedProducts?.length) return;
+        const brands_bulk = selectedProducts.map(p => p.brand).filter(Boolean);
+        if (brands_bulk.length === 0) return;
+        try {
+            const added = await fetchPostData(
+                "/service/product/update_brands",
+                { brands: brands_bulk }
+            );
+            setSelectedProducts([]);
+            if (added?.length > 0) {
+                message.success(`Добавлены бренды: ${added.join(", ")}`);
+            } else {
+                message.info("Все бренды уже существуют");
+            }
+        } catch (e) {
+            console.error("Ошибка добавления брендов:", e);
+        }
+    };
 
     return (
         <div style={{position: "relative"}}>
@@ -57,12 +79,20 @@ const CatalogContent = ({vendorId, vendorFunction, contractorId, deliveryLocatio
 
                 </Col>
                 <Col span={16}>
-                    {rowCount > 0 && (<div style={{marginBottom: 8, fontSize: 16}}>
-                        <OrderedListOutlined style={{color: "#1890ff", marginRight: 6}}/>
-                        <strong>{rowCount}</strong>
-                        <FieldTimeOutlined style={{color: "#fa8c16", marginLeft: 20, marginRight: 6}}/>
-                        <strong>{execTime}</strong> сек
-                    </div>)}
+                    {rowCount > 0 && (
+                        <div style={{marginBottom: 8, fontSize: 16}}>
+                            <OrderedListOutlined style={{color: "#1890ff", marginRight: 6}}/>
+                            <strong>{rowCount}</strong>
+                            <FieldTimeOutlined style={{color: "#fa8c16", marginLeft: 20, marginRight: 6}}/>
+                            <strong>{execTime}</strong> сек
+                            {selectedProducts?.length > 0 && (
+                                <Button style={{marginLeft: 6}} type="primary" onClick={handleAddBrands}>
+                                    Добавить бренды
+                                </Button>
+                            )}
+
+                        </div>
+                    )}
 
                     {selectedNode ? (
                         <ProductsItems
@@ -79,6 +109,8 @@ const CatalogContent = ({vendorId, vendorFunction, contractorId, deliveryLocatio
                             setRowCount={setRowCount}
                             setExecTime={setExecTime}
                             setAlreadyExists={setAlreadyExists}
+                            selectedProducts={selectedProducts}
+                            setSelectedProducts={setSelectedProducts}
                         />
                     ) : null}
 
