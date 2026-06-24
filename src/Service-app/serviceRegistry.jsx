@@ -32,7 +32,7 @@ export const serviceRegistry = [
     },
     {
         key: "PriceUpdater",
-        title: "Парсинг",
+        title: "Парсинг ссылки",
         icon: makeIcon(FileSearchOutlined),
         loader: () => import("./Services/PriceUpdater.jsx"),
     },

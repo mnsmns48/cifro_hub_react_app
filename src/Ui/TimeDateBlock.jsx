@@ -35,37 +35,48 @@ const TimeDayBlock = ({ isoString }) => {
 
     return (
         <div style={styles.wrapper}>
-             <div style={styles.time}><ClockCircleOutlined style={{color: '#999999'}}/>&nbsp;&nbsp;{`${hours}:${minutes}`}</div>
-            <div style={{ ...styles.dateBase, color: dateColor }}>{dateLabel}</div>
+            <div style={styles.time}>
+                <ClockCircleOutlined style={{ color: "#999" }} />
+                &nbsp;&nbsp;{hours}:{minutes}
+            </div>
+
+            <div style={{ ...styles.dateBase, color: dateColor }}>
+                {dateLabel}
+            </div>
         </div>
     );
 };
 
 const styles = {
     wrapper: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        borderRadius: '30px',
-        backgroundColor: 'rgba(109,123,154,0.36)',
-        boxShadow: '0 2px 2px rgba(0,22,0,100)',
-        margin: '3px'
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "2px 4px",
+        margin: "2px 0",
+        backgroundColor: "#939393",
+        borderRadius: "4px",
+        lineHeight: 1.2,
     },
     time: {
-        fontSize: '0,7em',
-        color: '#222',
+        fontSize: "0.75rem",
+
+        color: "#333",
+        display: "flex",
+        alignItems: "center",
     },
     dateBase: {
-        fontSize: '0.8rem',
+        fontSize: "0.75rem",
+        marginTop: "1px",
     },
     dateToday: {
-        color: '#e2fc2a',
+        color: "#c4e800",
     },
     dateYesterday: {
-        color: '#ff4d4f',
+        color: "#ff4d4f",
     },
     dateDefault: {
-        color: '#214255',
+        color: "#214255",
     },
 };
 

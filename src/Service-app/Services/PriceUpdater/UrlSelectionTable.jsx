@@ -40,53 +40,53 @@ export const UrlSelectionTableColumns = ({
                 </a>
             )
     },
-    {
-        key: "isSyncFeatures",
-        align: "center",
-        width: 30,
-        render: (_, record) => (
-            <Checkbox
-                className={styles.checkBoxSync}
-                checked={isSyncFeatures[record.id] ?? false}
-                onChange={(e) =>
-                    handleAction({
-                        key: "isSyncFeatures",
-                        selectedRow: record,
-                        value: e.target.checked
-                    })
-                }
-            />
-        ),
-    },
-    {
-        key: "startParsing",
-        align: "center",
-        width: 50,
-        render: (_, record) => (
-            <Popconfirm
-                title="Вы уверены, что хотите обновить данные в этой таблице?"
-                okText="Да"
-                cancelText="Нет"
-                onConfirm={() => {
-                    handleAction({
-                        key: "startParsing",
-                        selectedRow: record,
-                    });
-                }}
-            >
-                <Button
-                    icon={<SyncOutlined />}
-                    className={styles.actionParsingBtn}
-                />
-            </Popconfirm>
-        ),
-    },
+    // {
+    //     key: "isSyncFeatures",
+    //     align: "center",
+    //     width: 30,
+    //     render: (_, record) => (
+    //         <Checkbox
+    //             className={styles.checkBoxSync}
+    //             checked={isSyncFeatures[record.id] ?? false}
+    //             onChange={(e) =>
+    //                 handleAction({
+    //                     key: "isSyncFeatures",
+    //                     selectedRow: record,
+    //                     value: e.target.checked
+    //                 })
+    //             }
+    //         />
+    //     ),
+    // },
+    // {
+    //     key: "startParsing",
+    //     align: "center",
+    //     width: 50,
+    //     render: (_, record) => (
+    //         <Popconfirm
+    //             title="Вы уверены, что хотите обновить данные в этой таблице?"
+    //             okText="Да"
+    //             cancelText="Нет"
+    //             onConfirm={() => {
+    //                 handleAction({
+    //                     key: "startParsing",
+    //                     selectedRow: record,
+    //                 });
+    //             }}
+    //         >
+    //             <Button
+    //                 icon={<SyncOutlined />}
+    //                 className={styles.actionParsingBtn}
+    //             />
+    //         </Popconfirm>
+    //     ),
+    // },
     {
         title: 'Собрано',
         dataIndex: 'dt_parsed',
         key: 'dt_parsed',
         align: 'center',
-        width: 100,
+        width: 65,
         render: (text) => <TimeDateBlock isoString={text}/>
     },
     {
