@@ -1,6 +1,7 @@
 import {Input} from "antd";
 import {CarOutlined} from "@ant-design/icons";
 
+
 export const getProductColumns = (brands, search, setSearch) => [
     {
         title: () => (
@@ -26,5 +27,5 @@ export const getProductColumns = (brands, search, setSearch) => [
 
     {title: "Цена", dataIndex: "price", key: "price", width: 120, align: "center"},
     {title: "Остаток", dataIndex: "amount", key: "amount", width: 100, align: "center"},
-    {title: <CarOutlined />, dataIndex: "delivery", key: "delivery", width: 100, align: "center"}
+    {title: <CarOutlined/>, dataIndex: "delivery", key: "delivery", width: 100, align: "center"}
 ];

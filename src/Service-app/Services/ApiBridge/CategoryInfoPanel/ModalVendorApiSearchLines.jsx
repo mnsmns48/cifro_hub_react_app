@@ -79,12 +79,14 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId, onVslC
                     allVSL,
                     linkedVSL: updated
                 });
+
             } else {
                 await fetchPostData("/service/add_link_vsl_api_search", {
                     api_search_id: apiSearchId,
                     vsl_id: vslId
                 });
-                const updated = [...linkedVSL, {id: vslId}];
+                const full = allVSL.find(v => v.id === vslId);
+                const updated = [...linkedVSL, full];
                 setLinkedVSL(updated);
                 onVslChanged?.({
                     allVSL,
@@ -96,7 +98,6 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId, onVslC
             message.error("Ошибка при изменении связи", e);
         }
     };
-
 
 
     const filteredVSL = useMemo(() => {
@@ -149,13 +150,15 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId, onVslC
             const updated = isNew
                 ? await fetchPostData("/service/create_vsl_with_brand", payload)
                 : await fetchPutData("/service/update_vsl_with_brand", payload);
-            if (!isNew) setEditRow(null); onVslChanged?.();
+            if (!isNew) setEditRow(null);
+            onVslChanged?.();
             setAllVSL(prev => {
                 if (isNew) return [updated, ...prev];
                 return prev.map(v => (v.id === updated.id ? updated : v));
             });
 
-            if (isNew) setNewRow(null); onVslChanged?.();
+            if (isNew) setNewRow(null);
+            onVslChanged?.();
             message.success(isNew ? "Создано" : "Обновлено");
         } catch (e) {
             console.error("save VSL error:", e);
@@ -236,7 +239,6 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId, onVslC
             v.id === editRow.id ? editRow : v
         );
     }
-
 
 
     return (

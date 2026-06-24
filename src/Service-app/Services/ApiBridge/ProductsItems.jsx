@@ -3,7 +3,7 @@ import axios from "axios";
 import {forwardRef, useEffect, useImperativeHandle, useState} from "react";
 import {getProductColumns} from "./ProductItemsColumns.jsx";
 import {fetchPostData} from "../Common/api.js";
-
+import "./styles.css"
 
 const ProductsItems = forwardRef(({
                                       categoryId,
@@ -103,8 +103,8 @@ const ProductsItems = forwardRef(({
 
         useImperativeHandle(ref, () => ({
             saveParsingLines: async (linkedVSL) => {
-                console.log(linkedVSL);
-                console.log(products);
+                console.log("linkedVSL", linkedVSL);
+                console.log("products", products);
                 await fetchPostData("/service/update_parsing_line_data_from_api", {
                     linked_VSL: linkedVSL,
                     raw_products: products
@@ -119,6 +119,7 @@ const ProductsItems = forwardRef(({
         return (
             <Table
                 rowSelection={productsSelection}
+                className="products-items-table"
                 dataSource={filteredProducts}
                 columns={columns}
                 key={categoryId}
@@ -128,7 +129,6 @@ const ProductsItems = forwardRef(({
                 onChange={(filters) => {
                     setSelectedBrands(filters.brand || []);
                 }}
-                style={{ fontSize: 9 }}
             />
         );
     }

@@ -1,0 +1,5 @@
+.products-items-table .ant-table-thead > tr > th,
+.products-items-table .ant-table-tbody > tr > td {
+    font-size: 11px;
+
+}
