@@ -36,7 +36,7 @@ const TimeDayBlock = ({ isoString }) => {
     return (
         <div style={styles.wrapper}>
             <div style={styles.time}>
-                <ClockCircleOutlined style={{ color: "#999" }} />
+                <ClockCircleOutlined style={{ color: "#c4e800" }} />
                 &nbsp;&nbsp;{hours}:{minutes}
             </div>
 
@@ -54,7 +54,7 @@ const styles = {
         alignItems: "center",
         padding: "2px 4px",
         margin: "2px 0",
-        backgroundColor: "#939393",
+        backgroundColor: "#aaaaaa",
         borderRadius: "4px",
         lineHeight: 1.2,
     },
