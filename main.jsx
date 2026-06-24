@@ -1,12 +1,25 @@
 import {createRoot} from 'react-dom/client';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import CifrotechMainApp from "./src/CifrotechMainApp.jsx";
-import CheckAccess from "./src/Auth/CheckAccess.jsx";
-
-import WebApp from "./src/miniApp-V1/Webapp.jsx";
+import React from "react";
+// import CifrotechMainApp from "./src/CifrotechMainApp.jsx";
+// import CheckAccess from "./src/Auth/CheckAccess.jsx";
+//
+// import WebApp from "./src/miniApp-V1/Webapp.jsx";
 
 
 const root = createRoot(document.getElementById('root'));
+
+const CheckAccess = React.lazy(() =>
+    import("./src/Auth/CheckAccess.jsx")
+);
+
+const WebApp = React.lazy(() =>
+    import("./src/miniApp-V1/Webapp.jsx")
+);
+
+const CifrotechMainApp = React.lazy(() =>
+    import("./src/CifrotechMainApp.jsx")
+);
 
 root.render(
     <Router>

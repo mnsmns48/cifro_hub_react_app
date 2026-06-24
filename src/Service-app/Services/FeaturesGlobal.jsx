@@ -230,7 +230,6 @@ const FeaturesGlobal = () => {
 
     return (
         <>
-            {/* Полупрозрачный блокирующий спиннер */}
             {isRefreshing && (
                 <div style={{
                     position: "fixed",

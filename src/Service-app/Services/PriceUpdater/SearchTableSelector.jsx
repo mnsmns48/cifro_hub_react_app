@@ -1,6 +1,6 @@
 import {useState} from "react";
 import axios from "axios";
-import {Button, Table} from "antd";
+import {Button, Input, Table} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
 import {UrlSelectionTableColumns} from "./UrlSelectionTable.jsx";
 
@@ -17,6 +17,7 @@ const SearchTableSelector = ({
     const [selectedVSL, setSelectedVSL] = useState(null);
     const [editingKey, setEditingKey] = useState(null);
     const [editedValues, setEditedValues] = useState({});
+    const [search, setSearch] = useState("");
 
 
     const handleEdit = (record) => {
@@ -62,9 +63,23 @@ const SearchTableSelector = ({
         }
     };
 
+    const filteredData = search.trim()
+        ? tableData.filter(item =>
+            item.title?.toLowerCase().includes(search.toLowerCase())
+        )
+        : tableData;
 
     return (
         <div>
+            <div style={{width:'26.5%'}}>
+                <Input
+                    placeholder="Поиск по названию..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    style={{marginBottom: 8}}
+                    allowClear
+                />
+            </div>
             <Table
                 onRow={(record) => ({
                     onClick: () => {
@@ -92,7 +107,7 @@ const SearchTableSelector = ({
                     showDeleteModal
                 })}
                 showHeader={false}
-                dataSource={tableData}
+                dataSource={filteredData}
                 rowKey="id"
                 size="small"
                 pagination={false}

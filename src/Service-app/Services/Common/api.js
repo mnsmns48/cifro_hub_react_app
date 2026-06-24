@@ -16,7 +16,8 @@ export async function fetchPostData(endpoint, payload = {}) {
         return response.data;
     } catch (error) {
         console.error("Проблема с бэкендом (POST)", error);
-        return null;
+        throw error;
+
     }
 }
 
@@ -26,7 +27,7 @@ export async function fetchPutData(endpoint, payload = {}) {
         return response.data;
     } catch (error) {
         console.error("Проблема с бэкендом (PUT)", error);
-        return null;
+        throw error;
     }
 }
 
@@ -36,6 +37,6 @@ export async function fetchDeleteData(endpoint) {
         return response.data;
     } catch (error) {
         console.error("Проблема с бэкендом (DELETE)", error);
-        return null;
+        throw error;
     }
 }
