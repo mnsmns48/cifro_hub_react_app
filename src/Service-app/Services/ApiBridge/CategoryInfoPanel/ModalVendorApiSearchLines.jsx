@@ -62,42 +62,42 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId, onVslC
         return false;
     };
 
-    const toggleLink = async (vslId) => {
-        const isAlreadyLinked = linkedVSL.some(v => v.id === vslId);
+        const toggleLink = async (vslId) => {
+            const isAlreadyLinked = linkedVSL.some(v => v.id === vslId);
 
-        try {
-            if (isAlreadyLinked) {
-                await axios.delete("/service/remove_link_vsl_api_search", {
-                    data: {
+            try {
+                if (isAlreadyLinked) {
+                    await axios.delete("/service/remove_link_vsl_api_search", {
+                        data: {
+                            api_search_id: apiSearchId,
+                            vsl_id: vslId
+                        }
+                    });
+                    const updated = linkedVSL.filter(v => v.id !== vslId);
+                    setLinkedVSL(updated);
+                    onVslChanged?.({
+                        allVSL,
+                        linkedVSL: updated
+                    });
+
+                } else {
+                    await fetchPostData("/service/add_link_vsl_api_search", {
                         api_search_id: apiSearchId,
                         vsl_id: vslId
-                    }
-                });
-                const updated = linkedVSL.filter(v => v.id !== vslId);
-                setLinkedVSL(updated);
-                onVslChanged?.({
-                    allVSL,
-                    linkedVSL: updated
-                });
+                    });
+                    const full = allVSL.find(v => v.id === vslId);
+                    const updated = [...linkedVSL, full];
+                    setLinkedVSL(updated);
+                    onVslChanged?.({
+                        allVSL,
+                        linkedVSL: updated
+                    });
+                }
 
-            } else {
-                await fetchPostData("/service/add_link_vsl_api_search", {
-                    api_search_id: apiSearchId,
-                    vsl_id: vslId
-                });
-                const full = allVSL.find(v => v.id === vslId);
-                const updated = [...linkedVSL, full];
-                setLinkedVSL(updated);
-                onVslChanged?.({
-                    allVSL,
-                    linkedVSL: updated
-                });
+            } catch (e) {
+                message.error("Ошибка при изменении связи", e);
             }
-
-        } catch (e) {
-            message.error("Ошибка при изменении связи", e);
-        }
-    };
+        };
 
 
     const filteredVSL = useMemo(() => {
@@ -147,19 +147,27 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId, onVslC
                     return {id: b.id, brand: b.brand};
                 })
             };
+
             const updated = isNew
                 ? await fetchPostData("/service/create_vsl_with_brand", payload)
                 : await fetchPutData("/service/update_vsl_with_brand", payload);
-            if (!isNew) setEditRow(null);
-            onVslChanged?.();
+
+
             setAllVSL(prev => {
                 if (isNew) return [updated, ...prev];
                 return prev.map(v => (v.id === updated.id ? updated : v));
             });
 
+            setLinkedVSL(prev =>
+                prev.map(v => (v.id === updated.id ? updated : v))
+            );
+
+            if (!isNew) setEditRow(null);
             if (isNew) setNewRow(null);
+
             onVslChanged?.();
             message.success(isNew ? "Создано" : "Обновлено");
+
         } catch (e) {
             console.error("save VSL error:", e);
 
@@ -175,6 +183,7 @@ const ModalVendorApiSearchLines = ({open, onClose, apiSearchId, vendorId, onVslC
             if (isNew) setNewRow(null);
         }
     };
+
 
     const handleDelete = async (vslId) => {
         try {
