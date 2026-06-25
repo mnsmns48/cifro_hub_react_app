@@ -50,7 +50,13 @@ export function getModalVendorApiSearchLinesColumns(isLinked,
                     return (
                         <Select
                             mode="multiple"
-                            style={{width: "100%"}}
+                            style={{ width: "100%" }}
+                            showSearch={{
+                                filterOption: (input, option) =>
+                                    (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                            }}
+                            optionFilterProp="label"
+                            allowClear
                             value={record.brands}
                             onChange={(value) =>
                                 record.__isNew

@@ -103,15 +103,15 @@ const ProductsItems = forwardRef(({
 
         useImperativeHandle(ref, () => ({
             saveParsingLines: async (linkedVSL) => {
-                console.log("linkedVSL", linkedVSL);
-                console.log("products", products);
-                await fetchPostData("/service/update_parsing_line_data_from_api", {
+                const res = await fetchPostData("/service/update_parsing_line_data_from_api", {
                     linked_VSL: linkedVSL,
                     raw_products: products
                 });
-                message.success("ParsingLine обновлены");
+                const count = res?.inserted ?? 0;
+                message.success(`Добавлено ${count} строк в ParsingLine`);
             }
         }));
+
 
         if (!loaded) return null;
 
