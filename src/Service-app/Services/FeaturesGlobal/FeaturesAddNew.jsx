@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+    import {useEffect, useState} from "react";
 import {Modal, Select, Input, Button, message} from "antd";
 import {fetchGetData, fetchPostData} from "../Common/api.js";
 import CreateBrandOrTypeModal from "./CreateBrandOrTypeModal.jsx";

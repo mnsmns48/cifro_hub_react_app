@@ -227,6 +227,9 @@ const FeaturesGlobal = () => {
         refreshItem
     );
 
+    const addedFromBulk = async (feature) => {
+        setFeatureData(feature)
+    }
 
     return (
         <>
@@ -355,8 +358,8 @@ const FeaturesGlobal = () => {
 
             <FeaturesComponent
                 open={isFeatureModalOpen}
-                onClose={() => setIsFeatureModalOpen(false)}
                 data={featureData}
+                addedFromBulk={addedFromBulk}
             />
         </>
     );
