@@ -1,5 +1,5 @@
 import {Table, Input, Button, Popconfirm} from "antd";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {
     EditOutlined,
     DeleteOutlined,
@@ -15,6 +15,12 @@ const InfoTable = ({featureId, info}) => {
     const [editValue, setEditValue] = useState("");
     const [editingInner, setEditingInner] = useState(null);
 
+
+    useEffect(() => {
+
+        setData(info);
+
+    }, [info]);
 
     const fadeStyle = {
         transition: "all 0.5s ease",
@@ -60,7 +66,7 @@ const InfoTable = ({featureId, info}) => {
             return;
         }
         const result = await fetchPostData(
-            "service/features/Update_info_category",
+            "service/features/update_info_category",
             {
                 id: featureId,
                 old_category_title: oldKey,

@@ -98,34 +98,26 @@ const FeaturesAddNew = ({open, onClose, onCreated}) => {
 
         if (created && created.id) {
             message.success("Продукт успешно создан");
-
+            onClose();
             onCreated(created);
             setSelectedType(null);
             setSelectedBrand(null);
             setTitle("");
-            onClose();
+
         }
 
     };
 
     return (
         <>
-            <Modal
-                width={800}
-                open={open}
-                onCancel={() => {
-                    onClose();
-                    setSelectedType(null);
-                    setSelectedBrand(null);
-                    setTitle("")
-                }}
-
-                footer={
-                    <Button type="primary" onClick={handleCreateFeature}>
-                        Создать
-                    </Button>
-                }
-            >
+            <Modal width={800} open={open}
+                   onCancel={() => {
+                       onClose();
+                       setSelectedType(null);
+                       setSelectedBrand(null);
+                       setTitle("")
+                   }}
+                   footer={<Button type="primary" onClick={handleCreateFeature}>Создать</Button>}>
                 <div style={{display: "flex", flexDirection: "column", gap: 20, marginTop: 30}}>
 
                     <Select
@@ -144,11 +136,8 @@ const FeaturesAddNew = ({open, onClose, onCreated}) => {
                         options={brandOptions}
                     />
 
-                    <Input
-                        placeholder="Название нового продукта"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                    />
+                    <Input placeholder="Название нового продукта" value={title}
+                           onChange={(e) => setTitle(e.target.value)}/>
                 </div>
             </Modal>
 
@@ -156,22 +145,37 @@ const FeaturesAddNew = ({open, onClose, onCreated}) => {
                 open={createModalOpen}
                 onClose={() => setCreateModalOpen(false)}
                 mode={createMode}
-                onCreate={async (name) => {
-                    if (createMode === "type") {
-                        const created = await fetchPostData("/service/features/add_new_type", {title: name});
-                        if (created && created.id) {
-                            setTypes(prev => [...prev, created]);
-                            setSelectedType(created.id);
+                onCreate={async (obj) => {
+                    try {
+                        let created;
+
+                        if (createMode === "type") {
+                            created = await fetchPostData("/service/features/add_new_type", obj);
+
+                            if (created.id) {
+                                setCreateModalOpen(false);
+                                setTypes(prev => [...prev, created]);
+                                setSelectedType(created.id);
+                            }
+
+                        } else {
+                            created = await fetchPostData("/service/features/add_new_brand", obj);
+
+                            if (created.id) {
+                                setCreateModalOpen(false);
+                                setBrands(prev => [...prev, created]);
+                                setSelectedBrand(created.id);
+                            }
                         }
-                    } else {
-                        const created = await fetchPostData("/service/features/add_new_brand", {title: name});
-                        if (created && created.id) {
-                            setBrands(prev => [...prev, created]);
-                            setSelectedBrand(created.id);
-                        }
+
+                    } catch (error) {
+                        const detail = error?.response?.data?.detail || "Неизвестная ошибка";
+                        message.error(detail);
                     }
                 }}
+
             />
+
         </>
     );
 };
