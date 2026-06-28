@@ -14,7 +14,7 @@ const ParsingButtonsCommonComponent = ({
                                            onComplete,
                                        }) => {
     const [confirmOpen, setConfirmOpen] = useState(false);
-    const [syncFeatures, setSyncFeatures] = useState(initialSyncOption); // ← локальное состояние
+    const [syncFeatures, setSyncFeatures] = useState(initialSyncOption);
     const [errorOpen, setErrorOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 

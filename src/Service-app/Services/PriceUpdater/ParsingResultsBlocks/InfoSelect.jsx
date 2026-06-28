@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Button, Typography, Input} from "antd";
+import {Button, Typography, Input, Checkbox} from "antd";
 import {ScissorOutlined, SelectOutlined} from "@ant-design/icons";
 import MyModal from "../../../../Ui/MyModal.jsx";
 import {deleteDependencies, fetchDependencyDetails, fetchItemDependencies, postDependencyUpdate} from "../api.js";
@@ -162,21 +162,19 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
         <Text type="danger">{error}</Text>
     ) : (
         <>
-            <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12}}>
-                <Search
-                    placeholder="Поиск по названию"
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    allowClear
-                    style={{flex: 1, marginRight: 8}}
-                />
 
-                <Button
-                    icon={<ScissorOutlined/>}
-                    onClick={handleDelete}
-                    type="default"
-                    danger
-                >
+            <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 12
+            }}>
+                {/*<Checkbox style={{marginRight: 8}}>Локально</Checkbox>*/}
+
+                <Search placeholder="Поиск по названию" value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)} allowClear style={{flex: 1, marginRight: 8}}/>
+
+                <Button icon={<ScissorOutlined/>} onClick={handleDelete} danger size="small">
                     Отвязать
                 </Button>
             </div>
@@ -186,18 +184,18 @@ const InfoSelect = ({titles, origin, record, setRows, onClose, autoOpen = false}
                     <Button
                         key={i}
                         block
-                        type="default"
                         size="small"
-                        style={{marginBottom: 8}}
+                        style={{marginBottom: 6}}
                         onClick={() => handleChoose(item)}
                     >
                         {typeof item === "string" ? item : item.title || "Без названия"}
                     </Button>
                 ))
             ) : (
-                <Text type="secondary">Ничего не найдено</Text>
+                <Text type="secondary">Сервер вернул пустой список</Text>
             )}
         </>
+
     );
 
 

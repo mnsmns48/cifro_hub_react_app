@@ -6,6 +6,7 @@ import './FeaturesGlobal/FeaturesGlobal.css'
 import FeaturesComponent from "./FeaturesGlobal/FeaturesComponent.jsx";
 import axios from "axios";
 import FeaturesAddNew from "./FeaturesGlobal/FeaturesAddNew.jsx";
+import BulkInsertModal from "./FeaturesGlobal/BulkInsertModal.jsx";
 
 const buildFilters = (data) => {
     const typeSet = new Map();
@@ -51,6 +52,7 @@ const FeaturesGlobal = () => {
     const [formulas, setFormulas] = useState([]);
     const [isFormulaModalOpen, setIsFormulaModalOpen] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [bulkOpen, setBulkOpen] = useState(false);
 
 
     useEffect(() => {
@@ -356,11 +358,15 @@ const FeaturesGlobal = () => {
                 onCreated={handleFeatureCreated}
             />
 
-            <FeaturesComponent
-                open={isFeatureModalOpen}
-                data={featureData}
-                addedFromBulk={addedFromBulk}
+            <FeaturesComponent open={isFeatureModalOpen} data={featureData} setBulkOpen={setBulkOpen}
+                               onClose={() => {
+                                   setIsFeatureModalOpen(false);
+                                   setFeatureData([])
+                               }}
+                               onCreated={handleFeatureCreated}
             />
+            <BulkInsertModal open={bulkOpen} onClose={() => setBulkOpen(false)}
+                             featureId={featureData?.id} addedFromBulk={addedFromBulk}/>
         </>
     );
 }

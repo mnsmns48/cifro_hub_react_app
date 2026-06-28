@@ -5,7 +5,7 @@ import {fetchPostData} from "../Common/api.js";
 
 const {TextArea} = Input;
 
-const emptyBlock = {param: "",  bulk: ""};
+const emptyBlock = {param: "", bulk: ""};
 
 const BulkInsertModal = ({open, onClose, featureId, addedFromBulk}) => {
 
@@ -65,8 +65,7 @@ const BulkInsertModal = ({open, onClose, featureId, addedFromBulk}) => {
                 }
             );
 
-            await addedFromBulk(resp?.data);
-
+            await addedFromBulk(resp);
             setBlocks([
                 {
                     param: "Основные",
