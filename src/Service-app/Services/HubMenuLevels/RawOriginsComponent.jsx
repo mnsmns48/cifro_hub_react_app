@@ -359,6 +359,13 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
                         </Button>
                     )}
 
+                    {selectedRowKeys.length > 0 && (
+                        <Button className="fixed-button fixed-button-clear-parsing-line"
+                                onClick={() => handleAddDependenceMulti(selectedRowKeys)}>
+                            Очистить эти строки ({selectedRowKeys.length}) <ShareAltOutlined/>
+                        </Button>
+                    )}
+
                     {!!dependencySelection && (
                         <InfoSelect
                             titles={dependencySelection.titles}

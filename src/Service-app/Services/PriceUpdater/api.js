@@ -102,7 +102,7 @@ export const clearMediaData = async (origins) => {
 
 
 export async function deleteParsingItems(origins) {
-    const res = await fetch("/service/delete_parsing_items/", {
+    const res = await fetch("/service/delete_parsing_item_ever/", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(origins),

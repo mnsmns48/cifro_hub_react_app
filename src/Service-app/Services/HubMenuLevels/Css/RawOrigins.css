@@ -21,3 +21,15 @@
 .fixed-button-dependency:hover {
     color: #b5b5b4 !important;
 }
+
+
+.fixed-button-clear-parsing-line {
+    position: fixed;
+    background: #e3a6a6;
+    top: 65%;
+}
+
+
+.fixed-button-clear-parsing-line:hover {
+    background: #af7f7f !important;
+}
