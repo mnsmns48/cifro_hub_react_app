@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useState} from "react";
-import {Badge, Button, Modal, Spin, Table} from "antd";
+import {Badge, Button, message, Modal, Spin, Table} from "antd";
 import {fetchPostData} from "../Common/api.js";
 import {getRawOriginsColumns} from "./RawOriginsColumns.jsx";
 import {LinkOutlined, QuestionOutlined, ShareAltOutlined} from "@ant-design/icons";
@@ -96,7 +96,6 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
             missingModelFilterActive,
             missingAttrsFilterActive
         );
-
         setData(filtered);
 
         if (attributesModalData) {
@@ -152,13 +151,14 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
 
 
     const groupByVsl = (origins, vslList) => {
+
         return vslList
             .map(vsl => {
                 const children = origins
                     .filter(o => o.vsl_id === vsl.id)
                     .map(o => ({
                         ...o,
-                        key: o.origin
+                        key: `${o.vsl_id}_${o.origin}`
                     }));
 
                 if (!children.length) return null;
@@ -319,7 +319,9 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
     const handleAddDependenceMulti = (selectedKeys) => {
         if (!selectedKeys.length) return;
 
-        const selectedRecords = rows.filter(r => selectedKeys.includes(r.origin));
+        const selectedRecords = rows.filter(r =>
+            selectedKeys.includes(`${r.vsl_id}_${r.origin}`)
+        );
 
         const originList = selectedRecords.map(r => r.origin);
         const titleList = selectedRecords.map(r => String(r.title ?? "??"));
@@ -344,8 +346,67 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
         );
     }
 
+
+    const handleClearParsingLineMulti = async (selectedKeys) => {
+        if (!selectedKeys.length) return;
+
+        const selectedRows = rows.filter(r =>
+            selectedKeys.includes(`${r.vsl_id}_${r.origin}`)
+        );
+
+        const origins = selectedRows.map(r => r.origin);
+        const vslIds = [...new Set(selectedRows.map(r => r.vsl_id))];
+
+        try {
+            await fetchPostData("/service/delete_from_parsing_line", {
+                origins,
+                vsl_id: vslIds[0]
+            });
+
+            setRows(prev =>
+                prev.filter(
+                    row =>
+                        !selectedRows.some(
+                            s => s.origin === row.origin && s.vsl_id === row.vsl_id
+                        )
+                )
+            );
+
+            setSelectedRowKeys([]);
+
+            message.success("Элементы удалены из строк парсинга");
+        } catch (e) {
+            message.error(`Не удалось удалить элементы, ${e}`);
+        }
+    };
+
+    const handleAddDeleteEverMulti = async (selectedKeys) => {
+        if (!selectedKeys.length) return;
+        try {
+            const origins = [
+                ...new Set(
+                    rows
+                        .filter(r => selectedKeys.includes(`${r.vsl_id}_${r.origin}`))
+                        .map(r => r.origin)
+                )
+            ];
+
+            await fetchPostData("/service/delete_parsing_item_ever", origins);
+
+            setRows(prev =>
+                prev.filter(r => !origins.includes(r.origin))
+            );
+
+            setSelectedRowKeys([]);
+            message.success("Элементы помечены как удаленные");
+        } catch (e) {
+            message.error(`Не удалось удалить элементы, ${e}`);
+        }
+    };
+
+
     return (
-        <Modal open={isOpen} onCancel={onClose} width={1280} footer={null}>
+        <Modal open={isOpen} onCancel={onClose} width={1280} footer={null} maskClosable={false} keyboard={false}>
             {loading ? (
                 <div style={{padding: 40, textAlign: "center"}}>
                     <Spin size="small"/>
@@ -355,14 +416,21 @@ const RawOriginsComponent = ({priceSyncList, isOpen, onClose}) => {
                     {selectedRowKeys.length > 0 && (
                         <Button className="fixed-button fixed-button-dependency"
                                 onClick={() => handleAddDependenceMulti(selectedRowKeys)}>
-                            Зависимость ({selectedRowKeys.length}) <ShareAltOutlined/>
+                            Зависимость({selectedRowKeys.length}) <ShareAltOutlined/>
                         </Button>
                     )}
 
                     {selectedRowKeys.length > 0 && (
                         <Button className="fixed-button fixed-button-clear-parsing-line"
-                                onClick={() => handleAddDependenceMulti(selectedRowKeys)}>
-                            Очистить эти строки ({selectedRowKeys.length}) <ShareAltOutlined/>
+                                onClick={() => handleClearParsingLineMulti(selectedRowKeys)}>
+                            Очистить({selectedRowKeys.length}) <ShareAltOutlined/>
+                        </Button>
+                    )}
+
+                    {selectedRowKeys.length > 0 && (
+                        <Button className="fixed-button fixed-button-delete_ever"
+                                onClick={() => handleAddDeleteEverMulti(selectedRowKeys)}>
+                            Удалить навсегда({selectedRowKeys.length}) <ShareAltOutlined/>
                         </Button>
                     )}
 

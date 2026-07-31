@@ -155,6 +155,7 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
         handleClearMedia,
         handleClearFromHub,
         handleAddToHub,
+        handleClearParsingLine,
         refreshParsingResult
     } = useParsingActions(
         {
@@ -266,6 +267,7 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                                 onAddToHub={handleAddToHubClick}
                                 onClearMedia={() => handleClearMedia(selectedRowKeys)}
                                 onRemoveFromHub={() => handleClearFromHub(selectedRowKeys)}
+                                onRemoveParsingLine={() => handleClearParsingLine(selectedRowKeys)}
             />
 
             {dependencySelection && (

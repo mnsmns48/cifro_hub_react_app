@@ -1,6 +1,7 @@
 import {useCallback} from "react";
 import {deleteStockItems} from "../HubMenuLevels/api.js";
 import {clearMediaData, deleteParsingItems, reCalcOutputPrices} from "../PriceUpdater/api.js";
+import {fetchPostData} from "../Common/api.js";
 
 
 export const useParsingActions = ({
@@ -75,6 +76,19 @@ export const useParsingActions = ({
         );
     }, [setRows, setSelectedRowKeys]);
 
+    const handleClearParsingLine = useCallback(async (originsToClear) => {
+        if (!originsToClear.length) return;
+
+        await fetchPostData("/service/delete_from_parsing_line", {
+            origins: originsToClear,
+            vsl_id: vslId
+        });
+        setRows(prev =>
+            prev.filter(row => !originsToClear.includes(row.origin))
+        );
+        setSelectedRowKeys([]);
+    }, [vslId, setRows, setSelectedRowKeys]);
+
     const handleAddToHub = useCallback((updatedOrigins) => {
         if (!Array.isArray(updatedOrigins) || !updatedOrigins.length) return;
 
@@ -106,6 +120,7 @@ export const useParsingActions = ({
         handleDelete,
         handleClearMedia,
         handleClearFromHub,
+        handleClearParsingLine,
         handleAddToHub,
         refreshParsingResult
     };

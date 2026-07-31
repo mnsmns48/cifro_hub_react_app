@@ -51,17 +51,19 @@
 .fixed-hub-button-dependency,
 .fixed-hub-button-clear-media,
 .fixed-hub-button-add,
+.fixed-hub-button-clear-parsing-element,
 .fixed-hub-button-remove {
     position: fixed;
 }
 
 
-
-.fixed-hub-button-clear-media { top: 65%; }
 .fixed-hub-button-dependency {top: 60%; }
+.fixed-hub-button-clear-media { top: 65%; }
 .fixed-hub-button-add { top: 70%; background-color: #e2fc2a !important; }
-.fixed-hub-button-remove { top: 80%; }
-.fixed-hub-button-delete { top: 85%; background-color: #ff4d4f !important; color: #ffffff !important; }
+
+.fixed-hub-button-clear-parsing-element { top: 80% }
+.fixed-hub-button-remove { top: 85%; }
+.fixed-hub-button-delete { top: 95%; background-color: #ff4d4f !important; color: #ffffff !important; }
 
 .fixed-hub-button-delete:hover {
     background-color: #ff4d4f !important;
@@ -70,6 +72,7 @@
 
 .fixed-hub-button-clear-media:hover,
 .fixed-hub-button-dependency:hover,
+.fixed-hub-button-clear-parsing-element:hover,
 .fixed-hub-button-add:hover,
 .fixed-hub-button-remove:hover {
     color: #b5b5b4 !important;

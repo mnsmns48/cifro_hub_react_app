@@ -1,7 +1,7 @@
 
 .fixed-button {
     position: fixed;
-    left: 11%;
+    left: 12%;
     transform: translate(-100%, -50%);
     z-index: 1000;
     font-weight: bold;
@@ -18,18 +18,24 @@
 }
 
 
-.fixed-button-dependency:hover {
-    color: #b5b5b4 !important;
-}
-
-
 .fixed-button-clear-parsing-line {
     position: fixed;
-    background: #e3a6a6;
+    background: #eadaaf;
     top: 65%;
 }
 
 
 .fixed-button-clear-parsing-line:hover {
-    background: #af7f7f !important;
+    background: #cfc19b !important;
+}
+
+.fixed-button-delete_ever{
+    position: fixed;
+    background: #dfb4a7;
+    top: 70%;
+}
+
+
+.fixed-button-delete_ever:hover {
+    background: #DFB4A7FF !important;
 }
