@@ -1,7 +1,7 @@
 import {useEffect, useState, useCallback} from "react";
 import {fetchGetData, fetchPostData} from "../../Common/api.js";
 import {Button, Col, Modal, Radio, Row, Select, message, Input, Spin, Dropdown} from "antd";
-import {FileImageOutlined, LoadingOutlined, SaveOutlined} from "@ant-design/icons";
+import {LoadingOutlined, SaveOutlined} from "@ant-design/icons";
 import AttributesImageContainer from "./AttributeImageConteiner.jsx";
 import MultiUploadDropzone from "./MultiUploadDropzone.jsx";
 
@@ -13,10 +13,10 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
     const [exists, setExists] = useState([]);
     const [selectedFormula, setSelectedFormula] = useState(null);
     const [generatedName, setGeneratedName] = useState("");
-    const [showImages, setShowImages] = useState(false);
+    // const [showImages, setShowImages] = useState(false);
     const [dependencyList, setDependencyList] = useState([]);
     const [selectedDependencyOrigin, setSelectedDependencyOrigin] = useState(null);
-    const [haveImages, setHaveImages] = useState(false);
+    // const [haveImages, setHaveImages] = useState(false);
     const [formulas, setFormulas] = useState([]);
 
 
@@ -26,10 +26,10 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
         setExists([]);
         setSelectedFormula(null);
         setGeneratedName("");
-        setShowImages(false);
+        // setShowImages(false);
         setDependencyList([]);
         setSelectedDependencyOrigin(null);
-        setHaveImages(false);
+        // setHaveImages(false);
     };
 
     const handleClose = () => {
@@ -50,10 +50,10 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
             });
         setAllowable(result?.attributes_allowable ?? []);
         setExists(result?.attributes_exists ?? []);
-        setHaveImages(result?.have_images ?? false);
-        if (result?.have_images) {
-            setShowImages(true)
-        }
+        // setHaveImages(result?.have_images ?? false);
+        // if (result?.have_images) {
+        //     setShowImages(true)
+        // }
         setSelectedFormula(result?.formula ?? null)
         setLoading(false);
     }, [data]);
@@ -358,14 +358,14 @@ const AttributesModal = ({open, data, onClose, onSaved, onUploaded}) => {
                             </div>
                         )}
 
-                        {!showImages && !haveImages && (
-                            <Button onClick={() => setShowImages(true)} style={{marginTop: 4}}>
-                                Синхронизировать картинки <FileImageOutlined style={{fontSize: 20}}/>
-                            </Button>
-                        )}
+                        {/*{!showImages && !haveImages && (*/}
+                        {/*    <Button onClick={() => setShowImages(true)} style={{marginTop: 4}}>*/}
+                        {/*        Синхронизировать картинки <FileImageOutlined style={{fontSize: 20}}/>*/}
+                        {/*    </Button>*/}
+                        {/*)}*/}
 
 
-                        {showImages && data?.origin && (
+                        {data?.origin && (
                             <div style={{margin: 10}}>
                                 <div style={{margin: 10}}>
                                     <MultiUploadDropzone
