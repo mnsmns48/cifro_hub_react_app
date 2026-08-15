@@ -1,4 +1,16 @@
-import {Button, Descriptions, Input, InputNumber, message, Popconfirm, Select, Space, Switch, Tag} from "antd";
+import {
+    Button,
+    Collapse,
+    Descriptions,
+    Input,
+    InputNumber,
+    message,
+    Popconfirm,
+    Select,
+    Space,
+    Switch,
+    Tag
+} from "antd";
 import {
     DashOutlined,
     DeleteOutlined,
@@ -275,48 +287,61 @@ export const getAnalyticsColumns = ({
 
     if (!isCreatingRuleLine) {
         columns.splice(3, 0, {
-                title: "Value Maps",
-                key: "value_maps",
-                align: "center",
-                width: "20%",
-                render: (_, record) => {
-                    const maps = record.value_maps;
+            key: "value_maps",
+            align: "center",
+            width: "20%",
+            render: (_, record) => {
+                const maps = record.value_maps;
 
-                    return (
-                        <div
-                            style={{cursor: "pointer"}}
-                            onClick={() => handleOpenValueMapModal(record)}
-                        >
-                            {maps?.length ? (
-                                <Descriptions
-                                    size="small"
-                                    column={1}
-                                    bordered={false}
-                                    style={{margin: 0}}
-                                >
-                                    {maps.map((vm) => (
-                                        <Descriptions.Item
-                                            key={vm.id}
-                                            label={
-                                                <span style={{display: "inline-block", lineHeight: 1.2}}>
-                                                    {vm.attr_value.value}
-                                                    <br/>
-                                                    <span style={{color: "#999", fontSize: 13}}>
-                                                        {vm.attr_value.alias}
-                                                    </span>
-                                            </span>}>
-                                            <Tag color="blue">{vm.multiplier}</Tag>
-                                        </Descriptions.Item>
-                                    ))}
-                                </Descriptions>
-                            ) : (
-                                <span style={{color: "#999"}}><PlusSquareOutlined/> <DashOutlined/></span>
-                            )}
-                        </div>
-                    );
-                }
+                return (
+                    <Collapse
+                        bordered={false}
+                        size="small"
+                        items={[
+                            {
+                                key: "vm", label: "Value Maps",
+                                children: (
+                                    <div
+                                        style={{cursor: "pointer"}}
+                                        onClick={() => handleOpenValueMapModal(record)}
+                                    >
+                                        {maps?.length ? (
+                                            <Descriptions
+                                                size="small"
+                                                column={1}
+                                                bordered={false}
+                                                style={{margin: 0}}
+                                            >
+                                                {maps.map((vm) => (
+                                                    <Descriptions.Item
+                                                        key={vm.id}
+                                                        label={
+                                                            <span style={{display: "inline-block", lineHeight: 1.2}}>
+                                                            {vm.attr_value.value}
+                                                                <br/>
+                                                            <span style={{color: "#999", fontSize: 13}}>
+                                                                {vm.attr_value.alias}
+                                                            </span>
+                                                        </span>
+                                                        }
+                                                    >
+                                                        <Tag color="blue">{vm.multiplier}</Tag>
+                                                    </Descriptions.Item>
+                                                ))}
+                                            </Descriptions>
+                                        ) : (
+                                            <span style={{color: "#999"}}>
+                                            <PlusSquareOutlined/> <DashOutlined/>
+                                        </span>
+                                        )}
+                                    </div>
+                                )
+                            }
+                        ]}
+                    />
+                );
             }
-        );
+        });
     }
 
 
