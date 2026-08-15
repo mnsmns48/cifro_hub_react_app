@@ -15,6 +15,8 @@ const TabKeys = () => {
     const [keys, setKeys] = useState([]);
     const [editingId, setEditingId] = useState(null);
     const [editingValue, setEditingValue] = useState("");
+    const [editingAlias, setEditingAlias] = useState("");
+
 
     const loadKeys = () => {
         fetchGetData("/service/attributes/get_attr_keys").then((data) => {
@@ -39,7 +41,9 @@ const TabKeys = () => {
     const startEdit = (record) => {
         setEditingId(record.id);
         setEditingValue(record.key);
+        setEditingAlias(record.alias || "");
     };
+
 
     const saveEdit = async () => {
         if (!editingValue.trim()) {
@@ -48,16 +52,19 @@ const TabKeys = () => {
 
         if (editingId === "new") {
             await fetchPostData(
-                `/service/attributes/create_attr_key?key=${encodeURIComponent(editingValue)}`
+                "/service/attributes/create_attr_key",
+                {key: editingValue, alias: editingAlias}
             );
         } else {
             await fetchPutData(
-                `/service/attributes/update_attr_key?key_id=${editingId}&new_key=${encodeURIComponent(editingValue)}`
+                "/service/attributes/update_attr_key",
+                {key_id: editingId, new_key: editingValue, alias: editingAlias}
             );
         }
 
         setEditingId(null);
         setEditingValue("");
+        setEditingAlias("");
         loadKeys();
     };
 
@@ -79,11 +86,26 @@ const TabKeys = () => {
                             value={editingValue}
                             onChange={(e) => setEditingValue(e.target.value)}
                             onPressEnter={saveEdit}
-                            onBlur={saveEdit}
                         />
                     );
                 }
                 return record.key;
+            }
+        },
+        {
+            dataIndex: "alias",
+            key: "alias",
+            render: (_, record) => {
+                if (editingId === record.id) {
+                    return (
+                        <Input
+                            value={editingAlias}
+                            onChange={(e) => setEditingAlias(e.target.value)}
+                            onPressEnter={saveEdit}
+                        />
+                    );
+                }
+                return record.alias;
             }
         },
         {
@@ -129,7 +151,7 @@ const TabKeys = () => {
     return (
         <div>
             <Table columns={columns} dataSource={keys} rowKey="id" pagination={false} showHeader={false}
-                   style={{marginBottom: 16}} className={styles.table} locale={{ emptyText: <EmptyState /> }}/>
+                   style={{marginBottom: 16}} className={styles.table} locale={{emptyText: <EmptyState/>}}/>
 
             <div style={{textAlign: "start"}}>
                 <a style={{fontSize: 16, cursor: "default"}} onClick={addEmptyRow}>Добавить ключ</a>
