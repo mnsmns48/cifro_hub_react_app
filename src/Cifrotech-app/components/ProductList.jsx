@@ -1,9 +1,9 @@
-import {Card, Pagination} from "antd";
+import {Card, Pagination, Image} from "antd";
 import Meta from "antd/es/card/Meta";
 import './ProductList.css';
 import ProductFeatures from "./ProductFeatures.jsx";
 import {useNavigate, useSearchParams} from 'react-router-dom';
-import ProductImage from './ProductImage.jsx'
+
 import Spinner from "./Spinner.jsx";
 
 function cleanTitle(title) {
@@ -45,7 +45,19 @@ const ProductList = ({content, endpoint, collapsed}) => {
                                     }
                                     : undefined
                             }
-                            cover={<ProductImage id={item.code} title={item.name}/>}>
+                            cover={
+                                <Image
+                                    src={`/pics/${item.code}.jpg`}
+                                    alt={item.name}
+                                    className="product-image"
+                                    onError={(e) => {
+                                        e.target.src = `/pics/10000.jpg`;
+                                        e.target.alt = "not_image";
+                                    }}
+                                    preview={false}
+                                />
+                            }
+                        >
                             <div className="product-title">{cleanTitle(item.name)}</div>
                             <div className="additional">
                                 <p className="price">{`${item.price} ₽`}</p>
