@@ -16,6 +16,7 @@ export const UrlSelectionTableColumns = ({
         title: "Title",
         dataIndex: "title",
         key: "title",
+        sorter: (a, b) => a.title.localeCompare(b.title),
         width: 250,
         ellipsis: true,
         render: (text, record) =>
@@ -85,12 +86,12 @@ export const UrlSelectionTableColumns = ({
         title: 'Собрано',
         dataIndex: 'dt_parsed',
         key: 'dt_parsed',
-        align: 'center',
-        width: 65,
+        align: 'start',
+        width: 120,
+        sorter: (a, b) => new Date(a.dt_parsed) - new Date(b.dt_parsed),
         render: (text) => <TimeDateBlock isoString={text}/>
     },
     {
-        title: 'Действия',
         key: 'actions',
         width: 50,
         render: (_, record) => (

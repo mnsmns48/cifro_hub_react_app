@@ -1,13 +1,11 @@
 import {ClockCircleOutlined} from "@ant-design/icons";
-
 const TimeDayBlock = ({ isoString }) => {
-    if (!isoString) {
-        return "";
-    }
+    if (!isoString) return "";
+
     const date = new Date(isoString);
     const now = new Date();
 
-    const pad = (num) => String(num).padStart(2, '0');
+    const pad = (n) => String(n).padStart(2, "0");
 
     const hours = pad(date.getHours());
     const minutes = pad(date.getMinutes());
@@ -22,27 +20,24 @@ const TimeDayBlock = ({ isoString }) => {
     yesterday.setDate(now.getDate() - 1);
     const isYesterday = date.toDateString() === yesterday.toDateString();
 
-    let dateLabel = `${day}-${month}-${year}`;
-    let dateColor = styles.dateDefault.color;
+    const dateLabel = isSameDay
+        ? "Сегодня"
+        : isYesterday
+            ? "Вчера"
+            : `${day}.${month}.${year}`;
 
-    if (isSameDay) {
-        dateLabel = 'Сегодня';
-        dateColor = styles.dateToday.color;
-    } else if (isYesterday) {
-        dateLabel = 'Вчера';
-        dateColor = styles.dateYesterday.color;
-    }
+    const dateColor = isSameDay
+        ? "#c4e800"
+        : isYesterday
+            ? "#ff4d4f"
+            : "#214255";
 
     return (
         <div style={styles.wrapper}>
-            <div style={styles.time}>
-                <ClockCircleOutlined style={{ color: "#c4e800" }} />
-                &nbsp;&nbsp;{hours}:{minutes}
-            </div>
-
-            <div style={{ ...styles.dateBase, color: dateColor }}>
-                {dateLabel}
-            </div>
+            <ClockCircleOutlined style={{ color: "#c4e800", fontSize: 12 }} />
+            <span style={styles.text}>
+                {hours}:{minutes} • <span style={{ color: dateColor }}>{dateLabel}</span>
+            </span>
         </div>
     );
 };
@@ -50,33 +45,18 @@ const TimeDayBlock = ({ isoString }) => {
 const styles = {
     wrapper: {
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
-        padding: "2px 4px",
-        margin: "2px 0",
-        backgroundColor: "#aaaaaa",
-        borderRadius: "4px",
-        lineHeight: 1.2,
+        gap: 4,
+        maxWidth: 150,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
     },
-    time: {
+    text: {
         fontSize: "0.75rem",
-
-        color: "#333",
-        display: "flex",
-        alignItems: "center",
-    },
-    dateBase: {
-        fontSize: "0.75rem",
-        marginTop: "1px",
-    },
-    dateToday: {
-        color: "#c4e800",
-    },
-    dateYesterday: {
-        color: "#ff4d4f",
-    },
-    dateDefault: {
-        color: "#214255",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
     },
 };
 

@@ -106,7 +106,7 @@ const SearchTableSelector = ({
                     isSyncFeatures,
                     showDeleteModal
                 })}
-                showHeader={false}
+                showHeader={true}
                 dataSource={filteredData}
                 rowKey="id"
                 size="small"

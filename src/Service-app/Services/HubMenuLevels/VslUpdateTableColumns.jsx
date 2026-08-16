@@ -45,7 +45,7 @@ const getComparisonTableColumns = (setRows, progressMap, setProgressMap, isUpdat
         title: "Обновлено",
         dataIndex: "dt_parsed",
         key: "dt_parsed",
-        width: "10%",
+        width: "15%",
         render: (value) => <TimeDayBlock isoString={value}/>
     },
 
