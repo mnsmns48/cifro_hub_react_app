@@ -1,10 +1,11 @@
-import {Button, Popconfirm, Input, message, Upload} from "antd";
+import {Button, Popconfirm, Input, message, Upload, Switch} from "antd";
 import {
     CloseOutlined,
     EditOutlined,
     RollbackOutlined,
     SaveOutlined
 } from "@ant-design/icons";
+
 
 export const getSpecPathsTableColumns = ({
                                              editingRowId,
@@ -15,12 +16,13 @@ export const getSpecPathsTableColumns = ({
                                              newRow,
                                              setNewRow,
                                              uploadIcon,
-                                             deleteIcon
+                                             deleteIcon,
+                                             onToggleFilter
                                          }) => [
     {
         title: "Переменная",
         dataIndex: "title",
-        width: "21%",
+        width: "20%",
         align: "center",
         render: (_, record) => {
             const isEditing = editingRowId === record.id || record.isNew;
@@ -39,7 +41,7 @@ export const getSpecPathsTableColumns = ({
     {
         title: "Категория",
         align: "center",
-        width: "26%",
+        width: "20%",
         render: (_, record) => {
             const isEditing = editingRowId === record.id || record.isNew;
 
@@ -62,7 +64,7 @@ export const getSpecPathsTableColumns = ({
     {
         title: "Параметр",
         align: "center",
-        width: "26%",
+        width: "20%",
         render: (_, record) => {
             const isEditing = editingRowId === record.id || record.isNew;
 
@@ -78,6 +80,49 @@ export const getSpecPathsTableColumns = ({
                             path: [prev.path?.[0] ?? "", e.target.value]
                         }))
                     }
+                />
+            );
+        }
+    },
+    {
+        title: "Alias для фильтра",
+        dataIndex: "alias",
+        key: "alias",
+        align: "center",
+        width: "20%",
+        render: (_, record) => {
+            const isEditing = editingRowId === record.id || record.isNew;
+
+            if (!isEditing) return record.alias;
+
+            return (
+                <Input
+                    size="small"
+                    value={newRow.alias ?? ""}
+                    onChange={e =>
+                        setNewRow(prev => ({
+                            ...prev,
+                            alias: e.target.value
+                        }))
+                    }
+                />
+            );
+        }
+    },
+    {
+        dataIndex: "in_filter",
+        key: "in_filter",
+        align: "center",
+        width: "10%",
+        render: (_, record) => {
+            if (!record.alias) {
+                return "";
+            }
+
+            return (
+                <Switch
+                    checked={record.in_filter ?? false}
+                    onChange={(checked) => onToggleFilter(record, checked)}
                 />
             );
         }
@@ -115,7 +160,7 @@ export const getSpecPathsTableColumns = ({
     },
     {
         title: "",
-        width: "12%",
+        width: "10%",
         align: "center",
         render: (_, record) => {
             const isNew = record.isNew;
