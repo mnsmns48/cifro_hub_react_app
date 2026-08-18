@@ -1,3 +1,47 @@
 .table :global(.ant-table-cell) {
     padding: 4px !important;
 }
+
+.wrapper {
+    max-width: 70%;
+}
+
+.select {
+    width: 300px;
+    margin-bottom: 16px;
+}
+
+.addBlock {
+    margin-bottom: 12px;
+}
+
+.addLink {
+    font-size: 16px;
+    cursor: pointer;
+    color: #1677ff;
+}
+
+.addForm {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input {
+    width: 30%;
+}
+
+.collapseBlock {
+    margin-bottom: 12px;
+}
+
+.collapseLink {
+    font-size: 16px;
+    cursor: pointer;
+    color: #1677ff;
+}
+
+.table {
+    width: 80%;
+}
