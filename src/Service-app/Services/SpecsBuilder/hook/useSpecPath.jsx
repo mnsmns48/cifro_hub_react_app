@@ -181,11 +181,8 @@ export const useSpecPath = ({selectedFormula, onSpecPathChanged}) => {
             in_filter: checked
         });
 
-        if (!formulaId || !source) {
-            return;
-        }
-
         await loadSpecPaths(formulaId, source);
+
         onSpecPathChanged?.();
     };
 
@@ -204,7 +201,7 @@ export const useSpecPath = ({selectedFormula, onSpecPathChanged}) => {
                 uploadIcon,
                 onToggleFilter
             }),
-        [editingRowId, newRow]
+        [editingRowId, newRow, specPaths]
     );
 
     return {
