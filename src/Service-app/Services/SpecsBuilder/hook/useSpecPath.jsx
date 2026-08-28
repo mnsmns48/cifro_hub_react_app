@@ -21,10 +21,12 @@ export const useSpecPath = ({selectedFormula, onSpecPathChanged}) => {
     const formulaId = selectedFormula?.formula?.id;
     const source = selectedFormula?.source;
 
-    // -----------------------------
-    // LOAD
-    // -----------------------------
+
     const loadSpecPaths = useCallback(async (formulaId, source) => {
+        if (!formulaId || !source) {
+            return;
+        }
+
         const res = await fetchPostData("/service/desc-builder/fetch_spec_path", {
             formula_id: formulaId,
             source
@@ -36,18 +38,14 @@ export const useSpecPath = ({selectedFormula, onSpecPathChanged}) => {
         }));
     }, []);
 
-    // -----------------------------
-    // CREATE
-    // -----------------------------
+
     const startCreateSpecPath = () => {
         setIsCreating(true);
         setEditingRowId("new");
         setNewRow(emptyRow);
     };
 
-    // -----------------------------
-    // SAVE
-    // -----------------------------
+
     const onSave = async (record) => {
         if (!newRow.title || !newRow.path?.length) {
             message.warning("Заполните title и path");
@@ -80,9 +78,7 @@ export const useSpecPath = ({selectedFormula, onSpecPathChanged}) => {
         resetEditing();
     };
 
-    // -----------------------------
-    // EDIT
-    // -----------------------------
+
     const onEdit = (record) => {
         setEditingRowId(record.id);
         setNewRow({
@@ -94,9 +90,7 @@ export const useSpecPath = ({selectedFormula, onSpecPathChanged}) => {
         });
     };
 
-    // -----------------------------
-    // DELETE
-    // -----------------------------
+
     const onDelete = async (record) => {
         await fetchPostData("/service/desc-builder/delete_spec_path", {
             id: record.id
@@ -108,9 +102,7 @@ export const useSpecPath = ({selectedFormula, onSpecPathChanged}) => {
         onSpecPathChanged?.();
     };
 
-    // -----------------------------
-    // RESET
-    // -----------------------------
+
     const resetEditing = () => {
         setIsCreating(false);
         setEditingRowId(null);
@@ -119,9 +111,7 @@ export const useSpecPath = ({selectedFormula, onSpecPathChanged}) => {
 
     const onCancel = () => resetEditing();
 
-    // -----------------------------
-    // TABLE DATA
-    // -----------------------------
+
     const specPathTableData = useMemo(() => {
         const list = specPaths[formulaId] || [];
 
@@ -132,9 +122,7 @@ export const useSpecPath = ({selectedFormula, onSpecPathChanged}) => {
         return list;
     }, [specPaths, formulaId, isCreating, newRow]);
 
-    // -----------------------------
-    // ICON UPLOAD
-    // -----------------------------
+
     const uploadIcon = async (record, file) => {
         const formData = new FormData();
         formData.append("file", file);
@@ -176,16 +164,15 @@ export const useSpecPath = ({selectedFormula, onSpecPathChanged}) => {
         });
     };
 
+
     const onToggleFilter = async (record, checked) => {
-        // локально обновляем UI
         setSpecPaths(prev => {
             const updated = (prev[formulaId] || []).map(item =>
-                item.id === record.id ? { ...item, in_filter: checked } : item
+                item.id === record.id ? {...item, in_filter: checked} : item
             );
-            return { ...prev, [formulaId]: updated };
+            return {...prev, [formulaId]: updated};
         });
 
-        // отправляем на бэкенд
         await fetchPostData("/service/desc-builder/update_spec_path", {
             id: record.id,
             title: record.title,
@@ -194,10 +181,14 @@ export const useSpecPath = ({selectedFormula, onSpecPathChanged}) => {
             in_filter: checked
         });
 
-        // перезагружаем таблицу
+        if (!formulaId || !source) {
+            return;
+        }
+
         await loadSpecPaths(formulaId, source);
         onSpecPathChanged?.();
     };
+
 
     const specPathColumns = useMemo(
         () =>
