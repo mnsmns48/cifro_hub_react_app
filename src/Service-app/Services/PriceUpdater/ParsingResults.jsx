@@ -24,9 +24,10 @@ import "../Css/ParsingResults.css";
 import {fetchPostData} from "../Common/api.js";
 import {createHubLoading} from "../HubMenuLevels/api.js";
 import RenderModelStructured from "./ParsingResultsBlocks/RenderModelStructured.jsx";
+import ParsingLinesMoveModal from "./ParsingResultsBlocks/ParsingLinesMoveModal.jsx";
 
 
-const ParsingResults = ({url, result, vslId, onRangeChange}) => {
+const ParsingResults = ({url, result, vslId, onRangeChange, vendorID}) => {
     const [rows, setRows] = useState(result.data ?? []);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [expandedRows, setExpandedRows] = useState(null);
@@ -44,6 +45,8 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
     const [isAutoLoading, setIsAutoLoading] = useState(false);
     const [showDependencyColumn, setShowDependencyColumn] = useState(false);
     const [isRenderStructuredOpen, setIsRenderStructuredOpen] = useState(false);
+    const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+    const [moveModalData, setMoveModalData] = useState(null);
 
 
     useEffect(() => {
@@ -219,6 +222,16 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
         setAddToHubModalVisible(true);
     };
 
+    const openMoveModal = () => {
+        if (!selectedRowKeys.length) return;
+
+        setMoveModalData({
+            origins: selectedRowKeys,
+            vslId
+        });
+
+        setIsMoveModalOpen(true);
+    };
 
     return (
         <>
@@ -253,12 +266,12 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                             setShowDependencyColumn={setShowDependencyColumn}
             />
 
-            {vslId  && (
+            {vslId && (
                 <Button icon={<ReadOutlined/>} variant="solid" color="primary"
                         onClick={() => setIsRenderStructuredOpen(true)}>
                     Показать структурировано
                 </Button>
-                )
+            )
             }
 
             <ParsingBulkActions selectedCount={selectedRowKeys.length}
@@ -268,6 +281,7 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                                 onClearMedia={() => handleClearMedia(selectedRowKeys)}
                                 onRemoveFromHub={() => handleClearFromHub(selectedRowKeys)}
                                 onRemoveParsingLine={() => handleClearParsingLine(selectedRowKeys)}
+                                onMoveParsingLine={() => openMoveModal(selectedRowKeys)}
             />
 
             {dependencySelection && (
@@ -362,6 +376,13 @@ const ParsingResults = ({url, result, vslId, onRangeChange}) => {
                                  });
                              }}
             />
+            <ParsingLinesMoveModal isOpen={isMoveModalOpen}
+                                   onClose={() => setIsMoveModalOpen(false)}
+                                   data={{origins: selectedRowKeys, refreshParsingResult}}
+                                   vendorID={vendorID}
+                                   currentVslID={vslId}
+            />
+
         </>
     );
 };

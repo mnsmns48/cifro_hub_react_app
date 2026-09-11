@@ -1,5 +1,5 @@
-import {Input, Button, Checkbox, Popconfirm} from 'antd';
-import {EditOutlined, SaveOutlined, DeleteOutlined, SyncOutlined} from '@ant-design/icons';
+import {Input, Button, Tag, Badge} from 'antd';
+import {EditOutlined, SaveOutlined, DeleteOutlined} from '@ant-design/icons';
 import TimeDateBlock from "../../../Ui/TimeDateBlock.jsx";
 import styles from "../Css/urlselection.module.css";
 
@@ -12,6 +12,7 @@ export const UrlSelectionTableColumns = ({
                                              isSyncFeatures,
                                              showDeleteModal
                                          }) => [
+
     {
         title: "Title",
         dataIndex: "title",
@@ -24,21 +25,30 @@ export const UrlSelectionTableColumns = ({
                 <Input
                     value={editedValues.title || ''}
                     onChange={(e) =>
-                        editedValues.set(prev => ({ ...prev, title: e.target.value }))
+                        editedValues.set(prev => ({...prev, title: e.target.value}))
                     }
                 />
             ) : (
-                <a
-                    className={styles.linkText}
-                    onClick={() => {
-                        handleAction({
-                            key: "prevResults",
-                            selectedRow: record
-                        });
-                    }}
-                >
-                    {text}
-                </a>
+                <div style={{display: "flex", alignItems: "center", gap: 8}}>
+                    <Badge
+                        count={record.count_lines}
+                        style={{
+                            backgroundColor: record.is_default ? "#ff4d4f" : "#10a4da"
+                        }}
+                    />
+
+                    <a
+                        className={styles.linkText}
+                        onClick={() => {
+                            handleAction({
+                                key: "prevResults",
+                                selectedRow: record
+                            });
+                        }}
+                    >
+                        {text}
+                    </a>
+                </div>
             )
     },
     // {
@@ -119,5 +129,6 @@ export const UrlSelectionTableColumns = ({
                 onChange={(e) => editedValues.set(prev => ({...prev, url: e.target.value}))}/>) : (
             <a href={text} target="_blank" rel="noopener noreferrer"
                style={{color: '#3a3a3a', fontSize: '0.8em'}}> {text} </a>)
-    }
+    },
+
 ];

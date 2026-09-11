@@ -259,6 +259,7 @@ const PriceUpdater = () => {
                         result={parsedData}
                         vslId={selectedVSLRow?.id}
                         onRangeChange={handleRangeChange}
+                        vendorID={selectedVendor}
                     />
                 </>
             )}

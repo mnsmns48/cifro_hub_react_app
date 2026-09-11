@@ -14,7 +14,8 @@ const ParsingBulkActions = ({
                                 onAddToHub,
                                 onClearMedia,
                                 onRemoveFromHub,
-                                onRemoveParsingLine
+                                onRemoveParsingLine,
+                                onMoveParsingLine
                             }) => {
     if (!selectedCount) return null;
 
@@ -76,6 +77,11 @@ const ParsingBulkActions = ({
                     className="fixed-hub-button fixed-hub-button-clear-parsing-element"
             >
                 Убрать из ParsingLine ({selectedCount}) <RestOutlined/>
+            </Button>
+            <Button onClick={onMoveParsingLine}
+                    className="fixed-hub-button fixed-hub-button-move-parsing-element"
+            >
+                Переместить в другой ParsingLine <RestOutlined/>
             </Button>
         </div>
     );

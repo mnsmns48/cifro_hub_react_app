@@ -59,7 +59,9 @@
 
 .fixed-hub-button-dependency {top: 60%; }
 .fixed-hub-button-clear-media { top: 65%; }
+.fixed-hub-button-move-parsing-element {top: 75%}
 .fixed-hub-button-add { top: 70%; background-color: #e2fc2a !important; }
+
 
 .fixed-hub-button-clear-parsing-element { top: 80% }
 .fixed-hub-button-remove { top: 85%; }

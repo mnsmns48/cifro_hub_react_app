@@ -1,6 +1,6 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
-import {Button, Input, Table} from "antd";
+import {Button, Input, Select, Table, Tooltip} from "antd";
 import MyModal from "../../../Ui/MyModal.jsx";
 import {UrlSelectionTableColumns} from "./UrlSelectionTable.jsx";
 
@@ -18,6 +18,12 @@ const SearchTableSelector = ({
     const [editingKey, setEditingKey] = useState(null);
     const [editedValues, setEditedValues] = useState({});
     const [search, setSearch] = useState("");
+    const [defaultVSL, setDefaultVSL] = useState(null);
+
+    useEffect(() => {
+        const def = tableData.find(item => item.is_default);
+        setDefaultVSL(def?.id || null);
+    }, [tableData]);
 
 
     const handleEdit = (record) => {
@@ -71,15 +77,42 @@ const SearchTableSelector = ({
 
     return (
         <div>
-            <div style={{width:'26.5%'}}>
-                <Input
-                    placeholder="Поиск по названию..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    style={{marginBottom: 8}}
-                    allowClear
-                />
+            <div style={{display: 'flex', gap: '12px', marginBottom: 8, alignItems: 'center'}}>
+
+                <div style={{width: '26.5%'}}>
+                    <Input placeholder="Поиск по названию..."
+                           value={search}
+                           onChange={(e) => setSearch(e.target.value)}
+                           allowClear
+                    />
+                </div>
+
+                <div style={{display: 'flex', alignItems: 'center', width: '26.5%', gap: '8px'}}>
+
+                    <Tooltip title="Сюда попадают несортированные товары" placement="top">
+                <span style={{fontSize: '0.85em', color: '#555', whiteSpace: 'nowrap', cursor: 'pointer'}}>
+                    ⚠️ Несортированные
+                </span>
+                    </Tooltip>
+
+                    <Select placeholder="Выбрать"
+                            value={defaultVSL}
+                            onChange={async (value) => {
+                                await axios.post(`/service/set_default_vsl/${value}`);
+                                setDefaultVSL(value);
+                                refreshTableData();
+                            }}
+                            style={{flexGrow: 1}}
+                            options={tableData.map(item => ({
+                                label: item.title,
+                                value: item.id
+                            }))}
+                    />
+                </div>
+
             </div>
+
+
             <Table
                 onRow={(record) => ({
                     onClick: () => {
