@@ -25,6 +25,42 @@ export default function InfoInMain() {
 
     return (
         <>
+            <div style={{
+                margin: "16px 16px 8px",
+                padding: "16px",
+                borderRadius: 14,
+                textAlign: "center",
+                background: "rgba(22, 119, 255, 0.06)",
+                border: "1px solid rgba(22, 119, 255, 0.15)",
+                fontFamily: "'TT Firs Neue', sans-serif"
+            }}
+            >
+                <div style={{fontSize: 17, fontWeight: 600, marginBottom: 6}}>
+                    Новый сайт 24cifrotech
+                </div>
+
+                <div style={{fontSize: 14, lineHeight: 1.5, opacity: 0.75, marginBottom: 12}}>
+                    Мы запустили новый сайт с удобным каталогом и навигацией
+                </div>
+
+                <a href="https://24cifrotech.ru"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   style={{
+                       display: "inline-flex",
+                       alignItems: "center",
+                       justifyContent: "center",
+                       padding: "9px 18px",
+                       borderRadius: 10,
+                       background: "#1677ff",
+                       color: "#fff",
+                       fontSize: 15,
+                       fontWeight: 500,
+                       textDecoration: "none"
+                   }}>
+                    Перейти на 24Cifrotech.ru →
+                </a>
+            </div>
             <div style={{position: "relative", zIndex: 10}}>
                 <a href="tel:+79787156486"
                    style={{
