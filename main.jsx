@@ -26,9 +26,9 @@ const CifrotechMainApp = React.lazy(() =>
 root.render(
     <Router>
         <Routes>
-            <Route path="/webapp/*" element={<WebApp/>}/>
+            <Route path="/webapp" element={<WebApp/>}/>
             <Route path={`${import.meta.env.VITE_SERVICE_POINT}/*`} element={<CheckAccess/>}/>
-            <Route path="/lenino/*" element={<CifrotechMainApp/>}/>
+            <Route path="/*" element={<CifrotechMainApp/>}/>
         </Routes>
     </Router>
 );
