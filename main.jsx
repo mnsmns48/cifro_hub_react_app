@@ -7,7 +7,9 @@ import React from "react";
 // import WebApp from "./src/miniApp-V1/Webapp.jsx";
 
 
-const root = createRoot(document.getElementById('root'));
+const root = createRoot(
+    document.getElementById("root")
+);
 
 const CheckAccess = React.lazy(() =>
     import("./src/Auth/CheckAccess.jsx")
@@ -24,9 +26,9 @@ const CifrotechMainApp = React.lazy(() =>
 root.render(
     <Router>
         <Routes>
-            <Route path="/webapp" element={<WebApp/>}/>
-            <Route path={import.meta.env.VITE_SERVICE_POINT} element={<CheckAccess/>}/>
-            <Route path="/*" element={<CifrotechMainApp/>}/>
+            <Route path="/webapp/*" element={<WebApp/>}/>
+            <Route path={`${import.meta.env.VITE_SERVICE_POINT}/*`} element={<CheckAccess/>}/>
+            <Route path="/lenino/*" element={<CifrotechMainApp/>}/>
         </Routes>
     </Router>
 );
