@@ -61,6 +61,7 @@
 
 .service-app-tabs .ant-tabs-tab {
     padding-left: 6px !important;
+    margin: 0 !important;
 }
 
 .service-app-tabs .ant-tabs-tab {
