@@ -35,9 +35,6 @@ export default function InfoInMain() {
                 fontFamily: "'TT Firs Neue', sans-serif"
             }}
             >
-                <div style={{fontSize: 17, fontWeight: 600, marginBottom: 6}}>
-                    Новый сайт 24cifrotech
-                </div>
 
                 <div style={{fontSize: 14, lineHeight: 1.5, opacity: 0.75, marginBottom: 12}}>
                     Мы запустили новый сайт с удобным каталогом и навигацией
