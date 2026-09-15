@@ -26,7 +26,7 @@ root.render(
         <Routes>
             <Route path="/webapp" element={<WebApp/>}/>
             <Route path={import.meta.env.VITE_SERVICE_POINT} element={<CheckAccess/>}/>
-            <Route path="/*" element={<CifrotechMainApp/>}/>
+            <Route path={import.meta.env.VITE_AVAILABLE_POINT} element={<CifrotechMainApp/>}/>
         </Routes>
     </Router>
 );

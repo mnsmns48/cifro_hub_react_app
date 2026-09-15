@@ -56,7 +56,8 @@ const ServiceApp = () => {
     const available = {
             key: "logo",
             label: (
-                <a href="https://1385988-ci25991.tw1.ru" rel="noopener noreferrer" target="_blank"
+                <a href={`https://1385988-ci25991.tw1.ru/${import.meta.env.VITE_AVAILABLE_POINT}`} rel="noopener noreferrer"
+                   target="_blank"
                    onClick={(e) => e.stopPropagation()}
                    style={{display: "flex", alignItems: "center", gap: "12px", color: "inherit"}}>
                     <div className="service-app-logo-link">
