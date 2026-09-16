@@ -2,7 +2,7 @@ import './Auth.css';
 import {Modal, Button} from "antd";
 import axios from "axios";
 import {useState} from "react";
-import logo from '/logo-cifro-hub.png'
+import logo from '/admin-logo2.svg'
 
 export default function Authorization() {
     const [isModalVisible, setIsModalVisible] = useState(false);

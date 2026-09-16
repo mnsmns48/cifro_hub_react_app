@@ -53,23 +53,6 @@ const ServiceApp = () => {
     }));
 
 
-    const available = {
-            key: "logo",
-            label: (
-                <a href={`https://1385988-ci25991.tw1.ru${import.meta.env.VITE_AVAILABLE_POINT}`} rel="noopener noreferrer"
-                   target="_blank"
-                   onClick={(e) => e.stopPropagation()}
-                   style={{display: "flex", alignItems: "center", gap: "12px", color: "inherit"}}>
-                    <div className="service-app-logo-link">
-                        <img src="/logo-cifro-hub.svg" alt="Cifro Hub" className="service-app-logo"/>
-                    </div>
-                    <span style={{fontSize: 14, fontWeight: 500}}>Ленино наличие</span>
-                </a>
-            ),
-            children: "null",
-        }
-    ;
-
     const nextFront = {
             key: "logo",
             label: (
@@ -86,7 +69,7 @@ const ServiceApp = () => {
         }
     ;
 
-    const tabsItems = [available, nextFront, ...items];
+    const tabsItems = [nextFront, ...items];
 
     return (
         <div className="service-app-container">
